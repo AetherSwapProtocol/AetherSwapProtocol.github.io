@@ -1,129 +1,299 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AetherSwap – Web3 DEX</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0d0d1a, #1a0033);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      padding: 40px 20px;
-      text-align: center;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AetherSwap - Web3 DEX on Solana</title>
+<style>
+  /* Reset & base */
+  body {
+    margin: 0; padding: 0; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #2c004b, #4c008c);
+    color: #eee;
+    padding-top: 40px; /* espace pour ticker */
+    text-align: center;
+  }
+  /* Ticker */
+  #crypto-ticker {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #1a0033;
+    color: #eee;
+    font-weight: 600;
+    padding: 8px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 2px solid #7c4dff;
+    z-index: 9999;
+  }
+  #crypto-ticker .ticker-content {
+    display: inline-block;
+    padding-left: 100%;
+    animation: scroll-left 20s linear infinite;
+  }
+  #crypto-ticker .item {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 50px;
+    font-size: 14px;
+  }
+  #crypto-ticker .item img {
+    width: 20px; height: 20px;
+    margin-right: 6px;
+  }
+  #crypto-ticker .price {
+    margin-right: 8px;
+  }
+  #crypto-ticker .change {
+    font-weight: 700;
+  }
+  .green { color: #4caf50; }
+  .red { color: #f44336; }
+  @keyframes scroll-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
 
-    .lang-switch {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-    }
+  /* Conteneur principal */
+  .container {
+    max-width: 600px;
+    margin: auto;
+    padding: 40px 20px;
+    background: rgba(30,10,60,0.8);
+    border-radius: 12px;
+    box-shadow: 0 0 30px #7c4dffaa;
+  }
 
-    .lang-switch button {
-      background: none;
-      border: 1px solid #555;
-      color: #aaa;
-      padding: 6px 10px;
-      margin-left: 5px;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: 0.3s;
-    }
+  h1 {
+    font-size: 2.8rem;
+    margin-bottom: 0.3em;
+    text-shadow: 0 0 10px #9f7fff;
+  }
 
-    .lang-switch button:hover {
-      background: #333;
-      color: #fff;
-    }
+  p.description {
+    font-size: 1.2rem;
+    margin-bottom: 2em;
+    color: #ccc;
+  }
 
+  /* Phrase intro réseaux sociaux */
+  .social-intro {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #bbb;
+  }
+
+  /* Liens réseaux sociaux */
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+  .social-links a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ddd;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+  }
+  .social-links a:hover {
+    color: #9f7fff;
+    filter: drop-shadow(0 0 5px #9f7fff);
+    transform: scale(1.1);
+  }
+  .social-links img {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Boutons switch langue */
+  .lang-switch {
+    margin-bottom: 25px;
+  }
+  .lang-switch button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    margin: 0 8px;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.3s ease;
+  }
+  .lang-switch button.active,
+  .lang-switch button:hover {
+    color: #9f7fff;
+  }
+
+  /* Animation fade-in pour texte et liens */
+  .fade-in {
+    opacity: 0;
+    animation: fadeInUp 1s forwards;
+  }
+  .fade-in.delay-1 { animation-delay: 0.3s; }
+  .fade-in.delay-2 { animation-delay: 0.6s; }
+  .fade-in.delay-3 { animation-delay: 0.9s; }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
     h1 {
-      font-size: 3em;
-      color: #7c4dff;
-      margin-bottom: 10px;
+      font-size: 2rem;
     }
-
-    h2 {
-      color: #00bcd4;
-      margin-bottom: 30px;
+    .social-links {
+      flex-direction: column;
+      gap: 20px;
     }
-
-    p {
-      max-width: 600px;
-      line-height: 1.6;
-      font-size: 1.2em;
-      margin-bottom: 40px;
-    }
-
-    .links a {
-      display: inline-block;
-      margin: 10px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      background: #222;
-      color: #00e5ff;
-      text-decoration: none;
-      font-weight: bold;
-      border: 2px solid #00e5ff;
-      transition: 0.3s;
-    }
-
-    .links a:hover {
-      background: #00e5ff;
-      color: #000;
-    }
-
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 2em;
-      }
-
-      p {
-        font-size: 1em;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="lang-switch">
-    <button onclick="switchLang('fr')">🇫🇷</button>
-    <button onclick="switchLang('en')">🇬🇧</button>
+
+  <!-- Ticker crypto -->
+  <div id="crypto-ticker">
+    <div class="ticker-content" id="ticker-content">Loading prices...</div>
   </div>
 
-  <h1>AetherSwap</h1>
-  <h2 id="tagline">Le DEX Web3 sur Solana</h2>
-  <p id="description">
-    Un exchange décentralisé rapide, sécurisé et construit sur Solana.<br>
-    Rejoignez la communauté pendant que nous construisons l’avenir de la finance décentralisée.
-  </p>
+  <div class="container">
 
-  <div class="links">
-    <a href="https://x.com/AetherSwap" target="_blank">🐦 X (Twitter)</a>
-    <a href="https://t.me/AetherSwapOfficial" target="_blank">🗣️ Groupe Telegram</a>
-    <a href="https://t.me/AetherSwap" target="_blank">📢 Canal Telegram</a>
-    <a href="https://discord.gg/AetherSwap" target="_blank">🎮 Discord</a>
+    <!-- Switch langues -->
+    <div class="lang-switch" aria-label="Language switcher">
+      <button aria-label="English" id="btn-en" class="active">🇬🇧</button>
+      <button aria-label="Français" id="btn-fr">🇫🇷</button>
+      <button aria-label="中文" id="btn-zh">🇨🇳</button>
+    </div>
+
+    <!-- Titres et paragraphes -->
+    <h1 class="fade-in delay-1" id="title">The Web3 DEX on Solana</h1>
+    <p class="description fade-in delay-2" id="description">
+      We are building a decentralized, community-driven swap protocol on Solana blockchain. Join us early and be part of the revolution!
+    </p>
+
+    <!-- Phrase réseaux sociaux -->
+    <div class="social-intro fade-in delay-3" id="social-intro">Join AetherSwap’s social networks</div>
+
+    <!-- Liens sociaux -->
+    <div class="social-links fade-in delay-3">
+      <a href="https://x.com/AetherSwap" target="_blank" rel="noopener" id="link-twitter" aria-label="X Twitter">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="X logo" /> X
+      </a>
+      <a href="https://t.me/AetherSwap" target="_blank" rel="noopener" id="link-telegram" aria-label="Telegram">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram logo" />
+        Telegram
+      </a>
+      <a href="https://discord.gg/AetherSwap" target="_blank" rel="noopener" id="link-discord" aria-label="Discord">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord logo" />
+        Discord
+      </a>
+    </div>
   </div>
 
-  <script>
-    const content = {
-      fr: {
-        tagline: "Le DEX Web3 sur Solana",
-        description: "Un exchange décentralisé rapide, sécurisé et construit sur Solana.<br>Rejoignez la communauté pendant que nous construisons l’avenir de la finance décentralisée."
-      },
-      en: {
-        tagline: "The Web3 DEX on Solana",
-        description: "A fast, secure and decentralized exchange built on Solana.<br>Join the community while we build the future of decentralized finance."
-      }
-    };
-
-    function switchLang(lang) {
-      document.getElementById('tagline').textContent = content[lang].tagline;
-      document.getElementById('description').innerHTML = content[lang].description;
+<script>
+  // Texte en 3 langues
+  const texts = {
+    en: {
+      title: "The Web3 DEX on Solana",
+      description: "We are building a decentralized, community-driven swap protocol on Solana blockchain. Join us early and be part of the revolution!",
+      socialIntro: "Join AetherSwap’s social networks"
+    },
+    fr: {
+      title: "Le DEX Web3 sur Solana",
+      description: "Nous construisons un protocole swap décentralisé et communautaire sur la blockchain Solana. Rejoignez-nous tôt et faites partie de la révolution !",
+      socialIntro: "Rejoignez les réseaux sociaux d’AetherSwap"
+    },
+    zh: {
+      title: "基于Solana的Web3去中心化交易所",
+      description: "我们正在构建一个基于Solana区块链的去中心化社区驱动交换协议。提前加入我们，成为革命的一部分！",
+      socialIntro: "加入AetherSwap的社交网络"
     }
-  </script>
+  };
+
+  // Gestion du switch langue
+  const btnEn = document.getElementById("btn-en");
+  const btnFr = document.getElementById("btn-fr");
+  const btnZh = document.getElementById("btn-zh");
+
+  function setLanguage(lang) {
+    document.getElementById("title").textContent = texts[lang].title;
+    document.getElementById("description").textContent = texts[lang].description;
+    document.getElementById("social-intro").textContent = texts[lang].socialIntro;
+
+    btnEn.classList.remove("active");
+    btnFr.classList.remove("active");
+    btnZh.classList.remove("active");
+
+    if(lang === "en") btnEn.classList.add("active");
+    else if(lang === "fr") btnFr.classList.add("active");
+    else if(lang === "zh") btnZh.classList.add("active");
+  }
+
+  btnEn.onclick = () => setLanguage("en");
+  btnFr.onclick = () => setLanguage("fr");
+  btnZh.onclick = () => setLanguage("zh");
+
+  // Initialise en anglais par défaut
+  setLanguage("en");
+
+
+  // Ticker crypto
+
+  const cryptos = [
+    { id: "bitcoin", symbol: "BTC", icon: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png" },
+    { id: "ethereum", symbol: "ETH", icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png" },
+    { id: "solana", symbol: "SOL", icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png" },
+    { id: "sui", symbol: "SUI", icon: "https://assets.coingecko.com/coins/images/19143/small/sui.png" }
+  ];
+
+  async function fetchPrices() {
+    try {
+      const ids = cryptos.map(c => c.id).join(",");
+      const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+      const data = await res.json();
+
+      const tickerContent = document.getElementById("ticker-content");
+      tickerContent.innerHTML = "";
+
+      cryptos.forEach(c => {
+        if (!data[c.id]) return;
+        const price = data[c.id].usd.toFixed(2);
+        const change = data[c.id].usd_24h_change.toFixed(2);
+
+        const changeClass = change >= 0 ? "green" : "red";
+        const sign = change >= 0 ? "+" : "";
+
+        const item = document.createElement("div");
+        item.className = "item";
+
+        item.innerHTML = `
+          <img src="${c.icon}" alt="${c.symbol}" title="${c.symbol}" />
+          <span class="price">${c.symbol}: $${price}</span>
+          <span class="change ${changeClass}">${sign}${change}%</span>
+        `;
+        tickerContent.appendChild(item);
+      });
+    } catch (err) {
+      document.getElementById("ticker-content").textContent = "Error loading prices.";
+      console.error(err);
+    }
+  }
+
+  fetchPrices();
+  setInterval(fetchPrices, 30000);
+</script>
 </body>
 </html>
