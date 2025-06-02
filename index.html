@@ -3,297 +3,289 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AetherSwap - Web3 DEX on Solana</title>
+<title>AetherSwap</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 <style>
-  /* Reset & base */
+  :root {
+    --bg: #0d0d0f;
+    --fg: #e3e3e3;
+    --accent: #7b5fff; /* bleu violet */
+    --green: #4ade80;
+    --red: #f87171;
+    --bar-bg: #111;
+    --btn-bg: #7b5fff;
+    --btn-hover: #6746e9;
+  }
   body {
-    margin: 0; padding: 0; 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #2c004b, #4c008c);
-    color: #eee;
-    padding-top: 40px; /* espace pour ticker */
+    margin: 0; padding-top: 6rem;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--fg);
+    display: flex; flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
     text-align: center;
   }
-  /* Ticker */
-  #crypto-ticker {
+  /* Lang selector top right */
+  #lang-selector {
     position: fixed;
-    top: 0; left: 0; right: 0;
-    background: #1a0033;
-    color: #eee;
-    font-weight: 600;
-    padding: 8px 0;
-    overflow: hidden;
-    white-space: nowrap;
-    border-bottom: 2px solid #7c4dff;
-    z-index: 9999;
+    top: 0.7rem; right: 1rem;
+    background: var(--bar-bg);
+    border-radius: 5px;
+    padding: 0.3rem 0.8rem;
+    font-size: 1rem;
+    color: var(--fg);
+    border: 1px solid #444;
+    cursor: pointer;
+    z-index: 10001;
+    user-select: none;
+    box-shadow: 0 0 5px #0008;
+    transition: background-color 0.3s ease;
   }
-  #crypto-ticker .ticker-content {
+  #lang-selector:hover {
+    background-color: #222;
+  }
+
+  /* Crypto price banner */
+  #crypto-bar {
+    position: fixed;
+    top: 3rem; left: 0; right: 0;
+    background: var(--bar-bg);
+    color: var(--fg);
+    font-family: monospace;
+    font-size: 1.1rem;
+    padding: 0.4rem 1rem;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 1px solid #222;
+    z-index: 10000;
+    user-select: none;
+    white-space: nowrap;
+    box-shadow: inset 0 -1px 4px #0008;
+  }
+  #crypto-bar .ticker {
     display: inline-block;
     padding-left: 100%;
-    animation: scroll-left 20s linear infinite;
+    animation: ticker-scroll 20s linear infinite;
   }
-  #crypto-ticker .item {
-    display: inline-flex;
-    align-items: center;
-    margin-right: 50px;
-    font-size: 14px;
-  }
-  #crypto-ticker .item img {
-    width: 20px; height: 20px;
-    margin-right: 6px;
-  }
-  #crypto-ticker .price {
-    margin-right: 8px;
-  }
-  #crypto-ticker .change {
-    font-weight: 700;
-  }
-  .green { color: #4caf50; }
-  .red { color: #f44336; }
-  @keyframes scroll-left {
+  @keyframes ticker-scroll {
     0% { transform: translateX(0); }
     100% { transform: translateX(-100%); }
   }
+  .crypto-positive { color: var(--green); font-weight: 600; }
+  .crypto-negative { color: var(--red); font-weight: 600; }
 
-  /* Conteneur principal */
-  .container {
-    max-width: 600px;
-    margin: auto;
-    padding: 40px 20px;
-    background: rgba(30,10,60,0.8);
-    border-radius: 12px;
-    box-shadow: 0 0 30px #7c4dffaa;
+  /* Main content */
+  main {
+    max-width: 720px;
+    margin: 3rem 1rem 4rem;
+    padding: 0;
   }
-
   h1 {
-    font-size: 2.8rem;
-    margin-bottom: 0.3em;
-    text-shadow: 0 0 10px #9f7fff;
-  }
-
-  p.description {
-    font-size: 1.2rem;
-    margin-bottom: 2em;
-    color: #ccc;
-  }
-
-  /* Phrase intro réseaux sociaux */
-  .social-intro {
-    font-size: 1.1rem;
-    margin-bottom: 15px;
+    font-size: 3rem;
     font-weight: 600;
-    color: #bbb;
+    margin: 0.5rem 0 0.3rem;
+    color: var(--accent);
+  }
+  p.emphase {
+    font-style: italic;
+    font-size: 1.3rem;
+    margin: 0 0 1.5rem;
+    max-width: 600px;
+    line-height: 1.5;
+    color: var(--accent);
+  }
+  section.intro-section p {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    margin-top: 0;
+    margin-bottom: 3rem;
+    color: var(--fg);
   }
 
-  /* Liens réseaux sociaux */
-  .social-links {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-bottom: 30px;
-  }
-  .social-links a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #ddd;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-  }
-  .social-links a:hover {
-    color: #9f7fff;
-    filter: drop-shadow(0 0 5px #9f7fff);
-    transform: scale(1.1);
-  }
-  .social-links img {
-    width: 28px;
-    height: 28px;
+  /* Visitors counter */
+  #visitor-counter {
+    font-family: monospace;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    color: var(--accent);
+    user-select: none;
   }
 
-  /* Boutons switch langue */
-  .lang-switch {
-    margin-bottom: 25px;
+  /* Social call-to-action */
+  #socials {
+    margin-top: 3rem;
   }
-  .lang-switch button {
-    background: none;
-    border: none;
+  #socials h2 {
+    color: var(--accent);
     font-size: 1.5rem;
-    margin: 0 8px;
-    cursor: pointer;
-    color: #ccc;
-    transition: color 0.3s ease;
+    margin-bottom: 1rem;
   }
-  .lang-switch button.active,
-  .lang-switch button:hover {
-    color: #9f7fff;
+  #socials p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
   }
-
-  /* Animation fade-in pour texte et liens */
-  .fade-in {
-    opacity: 0;
-    animation: fadeInUp 1s forwards;
+  #socials a {
+    display: inline-block;
+    margin: 0 1rem;
+    color: var(--fg);
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
-  .fade-in.delay-1 { animation-delay: 0.3s; }
-  .fade-in.delay-2 { animation-delay: 0.6s; }
-  .fade-in.delay-3 { animation-delay: 0.9s; }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  #socials a:hover,
+  #socials a:focus {
+    background-color: var(--accent);
+    color: var(--bg);
+    outline: none;
   }
 
-  /* Responsive */
+  /* Responsive tweaks */
   @media (max-width: 480px) {
-    h1 {
-      font-size: 2rem;
+    h1 { font-size: 2.2rem; }
+    #crypto-bar {
+      font-size: 1rem;
+      padding: 0.3rem 0.6rem;
     }
-    .social-links {
-      flex-direction: column;
-      gap: 20px;
+    #socials a {
+      margin: 0 0.5rem;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
     }
   }
 </style>
 </head>
 <body>
 
-  <!-- Ticker crypto -->
-  <div id="crypto-ticker">
-    <div class="ticker-content" id="ticker-content">Loading prices...</div>
+<!-- Language selector -->
+<select id="lang-selector" aria-label="Select language">
+  <option value="en" selected>English</option>
+  <option value="fr">Français</option>
+  <option value="zh">中文</option>
+</select>
+
+<!-- Crypto prices banner -->
+<div id="crypto-bar" aria-live="polite" aria-atomic="true" role="region">
+  <div class="ticker" id="ticker-content">
+    Loading prices...
   </div>
+</div>
 
-  <div class="container">
-
-    <!-- Switch langues -->
-    <div class="lang-switch" aria-label="Language switcher">
-      <button aria-label="English" id="btn-en" class="active">🇬🇧</button>
-      <button aria-label="Français" id="btn-fr">🇫🇷</button>
-      <button aria-label="中文" id="btn-zh">🇨🇳</button>
-    </div>
-
-    <!-- Titres et paragraphes -->
-    <h1 class="fade-in delay-1" id="title">The Web3 DEX on Solana</h1>
-    <p class="description fade-in delay-2" id="description">
-      We are building a decentralized, community-driven swap protocol on Solana blockchain. Join us early and be part of the revolution!
+<main>
+  <h1 id="title">AetherSwap</h1>
+  <p class="emphase" id="tagline">The decentralized exchange redefining the future of crypto trading.</p>
+  <section class="intro-section" id="intro-text">
+    <p>
+      Join us on our journey to build a seamless, transparent, and secure multi-chain swapping experience — designed for the community, by the community.
     </p>
+  </section>
 
-    <!-- Phrase réseaux sociaux -->
-    <div class="social-intro fade-in delay-3" id="social-intro">Join AetherSwap’s social networks</div>
-
-    <!-- Liens sociaux -->
-    <div class="social-links fade-in delay-3">
-      <a href="https://x.com/AetherSwap" target="_blank" rel="noopener" id="link-twitter" aria-label="X Twitter">
-        <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="X logo" /> X
-      </a>
-      <a href="https://t.me/AetherSwap" target="_blank" rel="noopener" id="link-telegram" aria-label="Telegram">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram logo" />
-        Telegram
-      </a>
-      <a href="https://discord.gg/AetherSwap" target="_blank" rel="noopener" id="link-discord" aria-label="Discord">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord logo" />
-        Discord
-      </a>
-    </div>
+  <div id="visitor-counter" aria-live="polite" aria-atomic="true">
+    Visitors who viewed this page: <span id="visitor-count">...</span>
   </div>
+
+  <section id="socials" aria-label="Join our social networks">
+    <h2>Join our community</h2>
+    <p>Follow us and stay updated on Telegram, Twitter, and Discord!</p>
+    <a href="https://t.me/AetherSwap" target="_blank" rel="noopener noreferrer" aria-label="Join Telegram">Telegram</a>
+    <a href="https://twitter.com/AetherSwap" target="_blank" rel="noopener noreferrer" aria-label="Follow on Twitter">Twitter</a>
+    <a href="https://discord.gg/AetherSwap" target="_blank" rel="noopener noreferrer" aria-label="Join Discord">Discord</a>
+  </section>
+</main>
 
 <script>
-  // Texte en 3 langues
+  // Language switcher text content
   const texts = {
     en: {
-      title: "The Web3 DEX on Solana",
-      description: "We are building a decentralized, community-driven swap protocol on Solana blockchain. Join us early and be part of the revolution!",
-      socialIntro: "Join AetherSwap’s social networks"
+      title: "AetherSwap",
+      tagline: "The decentralized exchange redefining the future of crypto trading.",
+      intro: "Join us on our journey to build a seamless, transparent, and secure multi-chain swapping experience — designed for the community, by the community.",
+      socialsTitle: "Join our community",
+      socialsDesc: "Follow us and stay updated on Telegram, Twitter, and Discord!",
     },
     fr: {
-      title: "Le DEX Web3 sur Solana",
-      description: "Nous construisons un protocole swap décentralisé et communautaire sur la blockchain Solana. Rejoignez-nous tôt et faites partie de la révolution !",
-      socialIntro: "Rejoignez les réseaux sociaux d’AetherSwap"
+      title: "AetherSwap",
+      tagline: "L’échange décentralisé qui redéfinit l’avenir du trading crypto.",
+      intro: "Rejoignez-nous dans notre aventure pour créer une expérience d’échange multi-chain fluide, transparente et sécurisée — conçue pour la communauté, par la communauté.",
+      socialsTitle: "Rejoignez notre communauté",
+      socialsDesc: "Suivez-nous et restez informés sur Telegram, Twitter et Discord !",
     },
     zh: {
-      title: "基于Solana的Web3去中心化交易所",
-      description: "我们正在构建一个基于Solana区块链的去中心化社区驱动交换协议。提前加入我们，成为革命的一部分！",
-      socialIntro: "加入AetherSwap的社交网络"
+      title: "AetherSwap",
+      tagline: "重新定义加密交易未来的去中心化交易所。",
+      intro: "加入我们，共同打造无缝、透明且安全的多链交换体验——为社区而建，由社区驱动。",
+      socialsTitle: "加入我们的社区",
+      socialsDesc: "关注我们的 Telegram、Twitter 和 Discord，获取最新资讯！",
     }
   };
 
-  // Gestion du switch langue
-  const btnEn = document.getElementById("btn-en");
-  const btnFr = document.getElementById("btn-fr");
-  const btnZh = document.getElementById("btn-zh");
+  const langSelector = document.getElementById('lang-selector');
+  const titleEl = document.getElementById('title');
+  const taglineEl = document.querySelector('.emphase');
+  const introEl = document.getElementById('intro-text').querySelector('p');
+  const socialsSection = document.getElementById('socials');
+  const socialsTitle = socialsSection.querySelector('h2');
+  const socialsDesc = socialsSection.querySelector('p');
 
-  function setLanguage(lang) {
-    document.getElementById("title").textContent = texts[lang].title;
-    document.getElementById("description").textContent = texts[lang].description;
-    document.getElementById("social-intro").textContent = texts[lang].socialIntro;
+  langSelector.addEventListener('change', (e) => {
+    const lang = e.target.value;
+    const t = texts[lang] || texts.en;
+    titleEl.textContent = t.title;
+    taglineEl.textContent = t.tagline;
+    introEl.textContent = t.intro;
+    socialsTitle.textContent = t.socialsTitle;
+    socialsDesc.textContent = t.socialsDesc;
+  });
 
-    btnEn.classList.remove("active");
-    btnFr.classList.remove("active");
-    btnZh.classList.remove("active");
-
-    if(lang === "en") btnEn.classList.add("active");
-    else if(lang === "fr") btnFr.classList.add("active");
-    else if(lang === "zh") btnZh.classList.add("active");
-  }
-
-  btnEn.onclick = () => setLanguage("en");
-  btnFr.onclick = () => setLanguage("fr");
-  btnZh.onclick = () => setLanguage("zh");
-
-  // Initialise en anglais par défaut
-  setLanguage("en");
-
-
-  // Ticker crypto
-
-  const cryptos = [
-    { id: "bitcoin", symbol: "BTC", icon: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png" },
-    { id: "ethereum", symbol: "ETH", icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png" },
-    { id: "solana", symbol: "SOL", icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png" },
-    { id: "sui", symbol: "SUI", icon: "https://assets.coingecko.com/coins/images/19143/small/sui.png" }
-  ];
-
+  // Fetch and update crypto prices with live API (CoinGecko)
   async function fetchPrices() {
+    const apiURL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,solana,ethereum&vs_currencies=usd&include_24hr_change=true';
     try {
-      const ids = cryptos.map(c => c.id).join(",");
-      const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+      const res = await fetch(apiURL);
       const data = await res.json();
 
-      const tickerContent = document.getElementById("ticker-content");
-      tickerContent.innerHTML = "";
+      const formatPrice = (p) => p.toFixed(2);
+      const formatChange = (c) => (c > 0 ? `+${c.toFixed(2)}%` : `${c.toFixed(2)}%`);
 
-      cryptos.forEach(c => {
-        if (!data[c.id]) return;
-        const price = data[c.id].usd.toFixed(2);
-        const change = data[c.id].usd_24h_change.toFixed(2);
+      const coins = [
+        { id: 'bitcoin', symbol: 'BTC' },
+        { id: 'solana', symbol: 'SOL' },
+        { id: 'ethereum', symbol: 'ETH' },
+      ];
 
-        const changeClass = change >= 0 ? "green" : "red";
-        const sign = change >= 0 ? "+" : "";
+      let tickerHTML = coins.map(coin => {
+        const price = data[coin.id].usd;
+        const change = data[coin.id].usd_24h_change;
+        const positive = change >= 0;
+        const colorClass = positive ? 'crypto-positive' : 'crypto-negative';
+        return `${coin.symbol}: $${formatPrice(price)} <span class="${colorClass}">(${formatChange(change)})</span>`;
+      }).join(' — ');
 
-        const item = document.createElement("div");
-        item.className = "item";
-
-        item.innerHTML = `
-          <img src="${c.icon}" alt="${c.symbol}" title="${c.symbol}" />
-          <span class="price">${c.symbol}: $${price}</span>
-          <span class="change ${changeClass}">${sign}${change}%</span>
-        `;
-        tickerContent.appendChild(item);
-      });
+      document.getElementById('ticker-content').innerHTML = tickerHTML;
     } catch (err) {
-      document.getElementById("ticker-content").textContent = "Error loading prices.";
+      document.getElementById('ticker-content').textContent = 'Failed to load prices.';
       console.error(err);
     }
   }
 
   fetchPrices();
-  setInterval(fetchPrices, 30000);
+  // Refresh prices every 60 seconds
+  setInterval(fetchPrices, 60000);
+
+  // Visitor counter with CountAPI
+  fetch('https://api.countapi.xyz/hit/aetherswap/visits')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('visitor-count').textContent = data.value;
+    })
+    .catch(() => {
+      document.getElementById('visitor-count').textContent = 'N/A';
+    });
 </script>
+
 </body>
 </html>
