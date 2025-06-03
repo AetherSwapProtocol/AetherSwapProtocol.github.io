@@ -1,21 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="AetherSwap - Decentralized multi-chain exchange" />
-    <meta name="keywords" content="crypto, exchange, defi, blockchain, swap" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AetherSwap - Decentralized multi-chain exchange">
+    <meta name="keywords" content="crypto, exchange, defi, blockchain, swap">
     <title>AetherSwap | Decentralized Exchange</title>
-
-    <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-    <!-- AOS CSS (Animations on Scroll) -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet" />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #6366f1;
@@ -49,19 +43,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Particles container */
-        #particles-js {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
         }
 
         /* Header & Navigation */
@@ -136,13 +117,8 @@
         }
 
         @keyframes ticker-scroll {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(-100%);
-            }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
         }
 
         .ticker-item {
@@ -338,14 +314,11 @@
     </style>
 </head>
 <body>
-    <!-- Particles Background -->
-    <div id="particles-js"></div>
-
     <!-- Header with Language Selector -->
-    <header class="header" data-aos="fade-down">
-        <a href="#" class="logo" id="logo-text">
+    <header class="header">
+        <a href="#" class="logo">
             <i class="fas fa-exchange-alt logo-icon"></i>
-            AetherSwap
+            <span id="logo-text">AetherSwap</span>
         </a>
         <div class="nav-lang">
             <select id="lang-selector" class="lang-selector" aria-label="Select language">
@@ -357,4 +330,215 @@
     </header>
 
     <!-- Crypto Ticker -->
-    <div class="ticker-bar" aria-live="polite" data-aos="fade
+    <div class="ticker-bar" aria-live="polite">
+        <div class="ticker-content" id="ticker-content">
+            <span class="ticker-item">Loading market data...</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main">
+        <section class="hero">
+            <h1 class="hero-title" id="hero-title">AetherSwap</h1>
+            <p class="hero-subtitle" id="hero-subtitle">The decentralized exchange redefining crypto trading</p>
+        </section>
+
+        <section class="card">
+            <h2 class="card-title" id="card-title">Our Vision</h2>
+            <p class="card-text" id="card-text">
+                Join us on our journey to build a seamless, transparent, and secure multi-chain swapping experience — designed for the community, by the community.
+            </p>
+        </section>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="visitor-count">...</div>
+                <div class="stat-label" id="visitor-label">Visitors</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">100%</div>
+                <div class="stat-label" id="uptime-label">Uptime</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">10+</div>
+                <div class="stat-label" id="chains-label">Chains</div>
+            </div>
+        </div>
+
+        <section class="social-section">
+            <h2 class="social-title" id="social-title">Join Our Community</h2>
+            <p class="social-description" id="social-description">Follow us and stay updated on our latest developments</p>
+            <div class="social-links">
+                <a href="https://t.me/AetherSwap" class="social-link" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-telegram social-icon"></i>
+                    <span id="telegram-text">Telegram</span>
+                </a>
+                <a href="https://twitter.com/AetherSwap" class="social-link" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-twitter social-icon"></i>
+                    <span id="twitter-text">Twitter</span>
+                </a>
+                <a href="https://discord.gg/AetherSwap" class="social-link" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-discord social-icon"></i>
+                    <span id="discord-text">Discord</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text" id="footer-text">© 2023 AetherSwap. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Language Content
+        const translations = {
+            en: {
+                logoText: "AetherSwap",
+                heroTitle: "AetherSwap",
+                heroSubtitle: "The decentralized exchange redefining crypto trading",
+                cardTitle: "Our Vision",
+                cardText: "Join us on our journey to build a seamless, transparent, and secure multi-chain swapping experience — designed for the community, by the community.",
+                visitorLabel: "Visitors",
+                uptimeLabel: "Uptime",
+                chainsLabel: "Chains",
+                socialTitle: "Join Our Community",
+                socialDescription: "Follow us and stay updated on our latest developments",
+                telegramText: "Telegram",
+                twitterText: "Twitter",
+                discordText: "Discord",
+                footerText: "© 2023 AetherSwap. All rights reserved."
+            },
+            fr: {
+                logoText: "AetherSwap",
+                heroTitle: "AetherSwap",
+                heroSubtitle: "L'échange décentralisé qui redéfinit le trading crypto",
+                cardTitle: "Notre Vision",
+                cardText: "Rejoignez-nous dans notre aventure pour créer une expérience d'échange multi-chaîne fluide, transparente et sécurisée — conçue par et pour la communauté.",
+                visitorLabel: "Visiteurs",
+                uptimeLabel: "Disponibilité",
+                chainsLabel: "Blockchains",
+                socialTitle: "Rejoignez Notre Communauté",
+                socialDescription: "Suivez-nous pour rester informé de nos derniers développements",
+                telegramText: "Telegram",
+                twitterText: "Twitter",
+                discordText: "Discord",
+                footerText: "© 2023 AetherSwap. Tous droits réservés."
+            },
+            zh: {
+                logoText: "AetherSwap",
+                heroTitle: "AetherSwap",
+                heroSubtitle: "重新定义加密交易的去中心化交易所",
+                cardTitle: "我们的愿景",
+                cardText: "加入我们，共同打造无缝、透明且安全的多链交换体验——为社区而建，由社区驱动。",
+                visitorLabel: "访问者",
+                uptimeLabel: "运行时间",
+                chainsLabel: "链支持",
+                socialTitle: "加入我们的社区",
+                socialDescription: "关注我们获取最新动态",
+                telegramText: "电报",
+                twitterText: "推特",
+                discordText: "Discord",
+                footerText: "© 2023 AetherSwap。保留所有权利。"
+            }
+        };
+
+        // DOM Elements
+        const langSelector = document.getElementById('lang-selector');
+        const elementsToTranslate = {
+            'logo-text': 'logoText',
+            'hero-title': 'heroTitle',
+            'hero-subtitle': 'heroSubtitle',
+            'card-title': 'cardTitle',
+            'card-text': 'cardText',
+            'visitor-label': 'visitorLabel',
+            'uptime-label': 'uptimeLabel',
+            'chains-label': 'chainsLabel',
+            'social-title': 'socialTitle',
+            'social-description': 'socialDescription',
+            'telegram-text': 'telegramText',
+            'twitter-text': 'twitterText',
+            'discord-text': 'discordText',
+            'footer-text': 'footerText'
+        };
+
+        // Language Switcher
+        function updateLanguage(lang) {
+            const t = translations[lang] || translations.en;
+            
+            // Update all translatable elements
+            Object.entries(elementsToTranslate).forEach(([id, key]) => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = t[key];
+            });
+        }
+
+        langSelector.addEventListener('change', (e) => {
+            updateLanguage(e.target.value);
+        });
+
+        // Initialize with default language
+        updateLanguage(langSelector.value);
+
+        // Crypto Ticker
+        async function fetchCryptoPrices() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,cardano&vs_currencies=usd&include_24hr_change=true');
+                const data = await response.json();
+                
+                const coins = [
+                    { id: 'bitcoin', symbol: 'BTC' },
+                    { id: 'ethereum', symbol: 'ETH' },
+                    { id: 'solana', symbol: 'SOL' },
+                    { id: 'cardano', symbol: 'ADA' }
+                ];
+                
+                let tickerHTML = '';
+                
+                coins.forEach(coin => {
+                    const price = data[coin.id]?.usd?.toFixed(2) || 'N/A';
+                    const change = data[coin.id]?.usd_24h_change?.toFixed(2) || '0.00';
+                    const isPositive = parseFloat(change) >= 0;
+                    
+                    tickerHTML += `
+                        <span class="ticker-item">
+                            ${coin.symbol}: $${price} 
+                            <span class="${isPositive ? 'positive' : 'negative'}">
+                                (${isPositive ? '+' : ''}${change}%)
+                            </span>
+                        </span>
+                    `;
+                });
+                
+                document.getElementById('ticker-content').innerHTML = tickerHTML;
+            } catch (error) {
+                console.error('Error fetching crypto prices:', error);
+                document.getElementById('ticker-content').innerHTML = `
+                    <span class="ticker-item">Market data temporarily unavailable</span>
+                `;
+            }
+        }
+
+        // Visitor Counter
+        async function updateVisitorCounter() {
+            try {
+                const response = await fetch('https://api.countapi.xyz/hit/aetherswap/production');
+                const data = await response.json();
+                document.getElementById('visitor-count').textContent = data.value.toLocaleString();
+            } catch (error) {
+                console.error('Error updating visitor counter:', error);
+                document.getElementById('visitor-count').textContent = 'N/A';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCryptoPrices();
+            updateVisitorCounter();
+            
+            // Refresh prices every 60 seconds
+            setInterval(fetchCryptoPrices, 60000);
+        });
+    </script>
+</body>
+</html>
