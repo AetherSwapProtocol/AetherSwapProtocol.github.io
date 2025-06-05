@@ -5,10 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content="AetherSwap - Decentralized multi-chain exchange" />
 <meta name="keywords" content="crypto, exchange, defi, blockchain, swap" />
+<meta property="og:title" content="AetherSwap - Decentralized Multi-Chain Exchange">
+<meta property="og:description" content="Swap your tokens securely and instantly across multiple blockchains">
+<meta name="twitter:card" content="summary_large_image">
 <title>AetherSwap | Decentralized Exchange</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.rel='stylesheet'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" /></noscript>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <style>
   :root {
@@ -22,458 +26,500 @@
     --success: #10b981;
     --danger: #ef4444;
     --white: #ffffff;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
     --radius: 0.5rem;
-    --radius-lg: 0.75rem;
+    --breakpoint-md: 768px;
+    
+    /* Dark mode variables - will be overridden if dark mode is active */
+    --bg-color: var(--light);
+    --text-color: var(--dark);
+    --surface-color: var(--white);
+    --border-color: var(--light-gray);
+  }
+
+  /* Dark mode colors */
+  [data-theme="dark"] {
+    --bg-color: #0f172a;
+    --text-color: #f8fafc;
+    --surface-color: #1e293b;
+    --border-color: #334155;
   }
 
   * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    margin:0; padding:0; box-sizing:border-box;
   }
-
   body {
-    font-family: "Inter", sans-serif;
-    line-height: 1.6;
-    color: var(--dark);
-    background-color: var(--light);
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    transition: background 0.3s ease, color 0.3s ease;
   }
-
-  /* Header & Navigation */
   .header {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: var(--white);
+    top:0; left:0; right:0;
+    background: var(--surface-color);
     box-shadow: var(--shadow);
-    z-index: 100;
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    z-index: 1000;
+    transition: background 0.3s ease;
   }
-
   .logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary);
-    text-decoration: none;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--primary);
     user-select: none;
+    text-decoration: none;
   }
-
-  .logo-icon {
-    color: var(--primary-dark);
+  .logo img {
+    height: 40px;
   }
-
-  .nav-lang {
+  .header-controls {
     display: flex;
-    align-items: center;
     gap: 1rem;
+    align-items: center;
   }
-
-  .lang-selector {
-    padding: 0.375rem 0.75rem;
+  .lang-selector, .theme-toggle {
+    border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    border: 1px solid var(--light-gray);
-    background-color: var(--white);
-    color: var(--dark);
-    font-family: inherit;
-    font-size: 0.875rem;
+    background: var(--surface-color);
+    color: var(--text-color);
+    padding: 0.3rem 0.6rem;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease;
   }
-
-  .lang-selector:hover {
+  .lang-selector:hover, .theme-toggle:hover {
     border-color: var(--primary-light);
   }
-
-  /* Crypto Ticker */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
   .ticker-bar {
     position: fixed;
-    top: 4.5rem;
-    left: 0;
-    right: 0;
-    background-color: var(--white);
-    padding: 0.75rem 2rem;
-    border-bottom: 1px solid var(--light-gray);
-    z-index: 90;
+    top: 4.6rem;
+    left: 0; right: 0;
+    background: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.7rem 2rem;
     overflow: hidden;
+    z-index: 900;
+    transition: background 0.3s ease, border-color 0.3s ease;
   }
-
   .ticker-content {
     display: inline-block;
     white-space: nowrap;
-    padding-left: 100%;
     animation: ticker-scroll 25s linear infinite;
     font-weight: 600;
     font-size: 0.9rem;
-    color: var(--dark);
-    user-select: none;
+    color: var(--text-color);
+    will-change: transform;
   }
-
   @keyframes ticker-scroll {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-100%);
-    }
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
   }
-
   .ticker-item {
     display: inline-block;
-    margin-right: 2rem;
+    margin-right: 2.5rem;
   }
-
   .positive {
     color: var(--success);
   }
-
   .negative {
     color: var(--danger);
   }
-
-  /* Main Content */
-  .main {
-    flex: 1;
-    padding: 7rem 2rem 4rem;
-    max-width: 1200px;
+  main {
+    padding: 8rem 2rem 4rem;
+    max-width: 1100px;
     margin: 0 auto;
-    width: 100%;
+    flex-grow: 1;
   }
-
-  .hero {
-    text-align: center;
-    margin-bottom: 3rem;
-    user-select: none;
-  }
-
-  .hero-title {
+  h1.hero-title {
     font-size: 3rem;
     font-weight: 700;
     color: var(--primary-dark);
     margin-bottom: 1rem;
-    line-height: 1.2;
+    text-align: center;
   }
-
-  .hero-subtitle {
-    font-size: 1.25rem;
+  p.hero-subtitle {
+    font-size: 1.2rem;
     color: var(--gray);
-    max-width: 600px;
-    margin: 0 auto 2rem;
+    max-width: 650px;
+    margin: 0 auto 2.5rem;
+    text-align: center;
   }
-
-  .card {
-    background-color: var(--white);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
+  .section {
+    background: var(--surface-color);
+    border-radius: var(--radius);
     box-shadow: var(--shadow);
-    border: 1px solid var(--light-gray);
-    margin-bottom: 2rem;
-    user-select: none;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    transition: background 0.3s ease;
   }
-
-  .card-title {
+  .section-title {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--primary-dark);
     margin-bottom: 1rem;
   }
-
-  .card-text {
-    color: var(--dark);
-    margin-bottom: 1.5rem;
+  .section-text {
+    color: var(--text-color);
     line-height: 1.5;
+    margin-bottom: 1.5rem;
   }
-
-  /* Stats */
   .stats {
     display: flex;
     justify-content: center;
     gap: 2rem;
-    margin: 2rem 0;
     flex-wrap: wrap;
   }
-
-  .stat-item {
-    text-align: center;
-    padding: 1rem 2rem;
-    background-color: var(--white);
+  .stat {
+    background: var(--primary-light);
+    color: var(--white);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--light-gray);
-    user-select: none;
+    padding: 1rem 1.5rem;
     min-width: 120px;
-  }
-
-  .stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary);
-  }
-
-  .stat-label {
-    font-size: 0.875rem;
-    color: var(--gray);
-  }
-
-  /* Social Links */
-  .social-section {
     text-align: center;
-    margin-top: 3rem;
-    user-select: none;
   }
-
-  .social-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--primary-dark);
-    margin-bottom: 1rem;
+  .stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
   }
-
-  .social-description {
-    color: var(--gray);
-    margin-bottom: 2rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+  .stat-label {
+    font-size: 0.9rem;
   }
-
   .social-links {
     display: flex;
     justify-content: center;
     gap: 1rem;
     flex-wrap: wrap;
   }
-
   .social-link {
-    display: inline-flex;
+    background: var(--primary);
+    color: var(--white);
+    padding: 0.75rem 1.4rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+    display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background-color: var(--primary);
-    color: var(--white);
-    font-weight: 500;
     text-decoration: none;
-    border-radius: var(--radius);
-    transition: all 0.2s ease;
+    transition: background 0.2s ease;
   }
-
   .social-link:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    background: var(--primary-dark);
   }
-
-  .social-icon {
+  .social-link i {
     font-size: 1rem;
   }
-
-  /* Visitor counter */
-  .visitor-counter {
+  footer.footer {
+    background: var(--surface-color);
+    border-top: 1px solid var(--border-color);
     text-align: center;
-    margin-top: 2rem;
-    font-size: 1rem;
+    padding: 1.5rem 2rem;
+    font-size: 0.9rem;
     color: var(--gray);
-    user-select: none;
+    transition: background 0.3s ease, border-color 0.3s ease;
   }
-
-  /* Footer */
-  .footer {
-    text-align: center;
-    padding: 2rem;
-    background-color: var(--white);
-    border-top: 1px solid var(--light-gray);
-    margin-top: 4rem;
-    user-select: none;
-  }
-
-  .footer-text {
-    color: var(--gray);
-    font-size: 0.875rem;
-  }
-
-  /* Responsive */
   @media (max-width: 768px) {
-    .header {
-      padding: 1rem;
+    h1.hero-title {
+      font-size: 2.2rem;
     }
-
-    .main {
-      padding: 6rem 1rem 3rem;
+    main {
+      padding: 7rem 1rem 3rem;
     }
-
-    .hero-title {
-      font-size: 2.25rem;
-    }
-
-    .hero-subtitle {
-      font-size: 1.1rem;
-    }
-
     .stats {
       gap: 1rem;
     }
-
-    .stat-item {
+    .stat {
       min-width: 100px;
       padding: 0.75rem 1rem;
+    }
+    .header-controls {
+      gap: 0.5rem;
     }
   }
 </style>
 </head>
 <body>
+
 <header class="header" role="banner">
-  <a href="#" class="logo" aria-label="AetherSwap Home">
-    <i class="fas fa-fire logo-icon" aria-hidden="true"></i>AetherSwap
+  <a href="#" class="logo" aria-label="AetherSwap logo">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAgCAYAAADx7cNcAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABF0lEQVRoge3XwQkCQRAF0EOPCJ6bFv+gnhEYLAyaDrAlruED0vT5jh1V7WJrvxb4AwEMgCwDn7r8WAwHgBpy5jwBzDdpDUNMA06q/AlAC0A4VUBpVY6nWAHM+AFz2k1NQKo98NKN1VhSx+UQCQ+gITrsmvUMAf2nnWYNtBOgOm5t4NoDwA5FOM8eAlC4w0riT0XglDoCm+i6BzCNZb9F8cgCrrm4P2Gy5mRdv3BkX2RQnNQz6DrAZ+qU9QY+nCgByCJ6Phq0wPzT3Oq6nZqDK5ABR+IxY8LvEcCR4AqO+z+YYO9QQn4AVXUUfxavqxMAAAAASUVORK5CYII=" alt="AetherSwap Logo" />
+    AetherSwap
   </a>
-  <nav class="nav-lang" aria-label="Language selector">
-    <select id="language" class="lang-selector" aria-live="polite" aria-label="Select language">
+  <div class="header-controls">
+    <select class="lang-selector" aria-label="Select Language" id="lang-select">
       <option value="en">English</option>
       <option value="fr">Français</option>
       <option value="es">Español</option>
       <option value="de">Deutsch</option>
       <option value="zh">中文</option>
     </select>
-  </nav>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <i class="fas fa-moon"></i>
+    </button>
+  </div>
 </header>
 
-<div class="ticker-bar" aria-live="polite" aria-atomic="true" role="region" aria-label="Cryptocurrency prices ticker">
+<div class="ticker-bar" aria-live="polite" aria-atomic="true">
   <div class="ticker-content" id="ticker">
-    <!-- Crypto prices will scroll here -->
-    Loading prices...
+    <span class="ticker-item">BTC $28,500 <span class="positive">+2.5%</span></span>
+    <span class="ticker-item">ETH $1,800 <span class="negative">-1.2%</span></span>
+    <span class="ticker-item">SOL $22.3 <span class="positive">+3.1%</span></span>
+    <span class="ticker-item">ADA $0.33 <span class="positive">+0.7%</span></span>
+    <span class="ticker-item">DOT $6.1 <span class="negative">-0.4%</span></span>
   </div>
 </div>
 
-<main class="main" role="main">
-  <section class="hero" aria-labelledby="hero-title">
-    <h1 id="hero-title" class="hero-title">AetherSwap — The Future of Decentralized Trading</h1>
-    <p class="hero-subtitle">Multi-chain, lightning-fast, with real-time crypto prices and community support.</p>
-  </section>
+<main role="main">
+  <h1 class="hero-title" id="hero-title">Decentralized Multi-Chain Exchange</h1>
+  <p class="hero-subtitle" id="hero-subtitle">Swap your tokens securely and instantly across multiple blockchains.</p>
 
-  <section aria-labelledby="features-title" class="card">
-    <h2 id="features-title" class="card-title">Why Choose AetherSwap?</h2>
-    <p class="card-text">
-      Experience an intuitive interface, ultra-low fees, and top-notch security.
-      Swap your favorite tokens instantly on Ethereum, Binance Smart Chain, and Solana.
+  <section class="section" aria-labelledby="section1-title">
+    <h2 class="section-title" id="section1-title">Why AetherSwap?</h2>
+    <p class="section-text" id="section1-text">
+      Experience seamless token swapping with low fees, fast transactions, and the highest security standards.
     </p>
-    <div class="stats" aria-label="Key statistics">
-      <div class="stat-item" tabindex="0">
-        <div class="stat-value" id="stat-pairs">150+</div>
-        <div class="stat-label">Trading Pairs</div>
+  </section>
+
+  <section class="section" aria-labelledby="section2-title">
+    <h2 class="section-title" id="section2-title">Statistics</h2>
+    <div class="stats" role="list">
+      <div class="stat" role="listitem" aria-label="Total Volume">
+        <div class="stat-value" id="stat-volume">1.2M+</div>
+        <div class="stat-label" id="stat-volume-label">Total Volume</div>
       </div>
-      <div class="stat-item" tabindex="0">
-        <div class="stat-value" id="stat-volume">$20M+</div>
-        <div class="stat-label">24h Volume</div>
+      <div class="stat" role="listitem" aria-label="Active Users">
+        <div class="stat-value" id="stat-users">45K+</div>
+        <div class="stat-label" id="stat-users-label">Active Users</div>
       </div>
-      <div class="stat-item" tabindex="0">
-        <div class="stat-value" id="stat-users">10K+</div>
-        <div class="stat-label">Active Users</div>
+      <div class="stat" role="listitem" aria-label="Supported Chains">
+        <div class="stat-value" id="stat-chains">12</div>
+        <div class="stat-label" id="stat-chains-label">Supported Chains</div>
       </div>
     </div>
   </section>
 
-  <section class="social-section" aria-labelledby="community-title">
-    <h2 id="community-title" class="social-title">Join Our Community</h2>
-    <p class="social-description">Stay updated, get support, and share ideas on our official channels.</p>
+  <section class="section" aria-labelledby="section3-title">
+    <h2 class="section-title" id="section3-title">Connect with Us</h2>
+    <p class="section-text" id="section3-text">
+      Stay updated by following us on social media and joining our community.
+    </p>
     <div class="social-links">
-      <a
-        href="https://t.me/aetherswap"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="social-link"
-        aria-label="Telegram"
-        ><i class="fab fa-telegram-plane social-icon" aria-hidden="true"></i>Telegram</a
-      >
-      <a
-        href="https://twitter.com/aetherswap"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="social-link"
-        aria-label="Twitter"
-        ><i class="fab fa-twitter social-icon" aria-hidden="true"></i>Twitter</a
-      >
-      <a
-        href="https://discord.gg/aetherswap"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="social-link"
-        aria-label="Discord"
-        ><i class="fab fa-discord social-icon" aria-hidden="true"></i>Discord</a
-      >
+      <a href="https://twitter.com/aetherswap" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Twitter">
+        <i class="fab fa-twitter"></i> <span id="social-twitter">Twitter</span>
+      </a>
+      <a href="https://discord.gg/aetherswap" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Discord">
+        <i class="fab fa-discord"></i> <span id="social-discord">Discord</span>
+      </a>
+      <a href="https://t.me/aetherswap" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Telegram">
+        <i class="fab fa-telegram"></i> <span id="social-telegram">Telegram</span>
+      </a>
     </div>
-  </section>
-
-  <section class="visitor-counter" aria-live="polite" aria-atomic="true" role="region" aria-label="Visitor counter">
-    Visitors on this page: <span id="visitorCount">0</span>
   </section>
 </main>
 
 <footer class="footer" role="contentinfo">
-  <p class="footer-text">&copy; 2025 AetherSwap. All rights reserved.</p>
+  <p id="footer-text">&copy; 2025 AetherSwap. All rights reserved.</p>
 </footer>
 
 <script>
-  // Crypto ticker fetch and update (CoinGecko public API)
-  async function fetchCryptoPrices() {
-    try {
-      const response = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,binancecoin,solana,tether&vs_currencies=usd&include_24hr_change=true'
-      );
-      const data = await response.json();
+  // Contenu texte par langue
+  const texts = {
+    en: {
+      heroTitle: "Decentralized Multi-Chain Exchange",
+      heroSubtitle: "Swap your tokens securely and instantly across multiple blockchains.",
+      section1Title: "Why AetherSwap?",
+      section1Text: "Experience seamless token swapping with low fees, fast transactions, and the highest security standards.",
+      section2Title: "Statistics",
+      statVolume: "1.2M+",
+      statVolumeLabel: "Total Volume",
+      statUsers: "45K+",
+      statUsersLabel: "Active Users",
+      statChains: "12",
+      statChainsLabel: "Supported Chains",
+      section3Title: "Connect with Us",
+      section3Text: "Stay updated by following us on social media and joining our community.",
+      socialTwitter: "Twitter",
+      socialDiscord: "Discord",
+      socialTelegram: "Telegram",
+      footerText: "© 2025 AetherSwap. All rights reserved.",
+    },
+    fr: {
+      heroTitle: "Échange Décentralisé Multi-Chaines",
+      heroSubtitle: "Échangez vos tokens en toute sécurité et instantanément sur plusieurs blockchains.",
+      section1Title: "Pourquoi AetherSwap ?",
+      section1Text: "Profitez d'un échange de tokens fluide avec des frais bas, des transactions rapides, et les plus hauts standards de sécurité.",
+      section2Title: "Statistiques",
+      statVolume: "1,2M+",
+      statVolumeLabel: "Volume Total",
+      statUsers: "45K+",
+      statUsersLabel: "Utilisateurs Actifs",
+      statChains: "12",
+      statChainsLabel: "Chaînes Supportées",
+      section3Title: "Connectez-vous avec Nous",
+      section3Text: "Restez informé en nous suivant sur les réseaux sociaux et en rejoignant notre communauté.",
+      socialTwitter: "Twitter",
+      socialDiscord: "Discord",
+      socialTelegram: "Telegram",
+      footerText: "© 2025 AetherSwap. Tous droits réservés.",
+    },
+    es: {
+      heroTitle: "Intercambio Descentralizado Multi-Cadena",
+      heroSubtitle: "Intercambia tus tokens de forma segura e instantánea en múltiples blockchains.",
+      section1Title: "¿Por qué AetherSwap?",
+      section1Text: "Experimenta un intercambio fluido de tokens con bajas tarifas, transacciones rápidas y los más altos estándares de seguridad.",
+      section2Title: "Estadísticas",
+      statVolume: "1,2M+",
+      statVolumeLabel: "Volumen Total",
+      statUsers: "45K+",
+      statUsersLabel: "Usuarios Activos",
+      statChains: "12",
+      statChainsLabel: "Cadenas Soportadas",
+      section3Title: "Conéctate con Nosotros",
+      section3Text: "Mantente actualizado siguiendo nuestras redes sociales y uniéndote a nuestra comunidad.",
+      socialTwitter: "Twitter",
+      socialDiscord: "Discord",
+      socialTelegram: "Telegram",
+      footerText: "© 2025 AetherSwap. Todos los derechos reservados.",
+    },
+    de: {
+      heroTitle: "Dezentrale Multi-Chain Börse",
+      heroSubtitle: "Tausche deine Tokens sicher und sofort über mehrere Blockchains.",
+      section1Title: "Warum AetherSwap?",
+      section1Text: "Erlebe nahtlosen Token-Austausch mit niedrigen Gebühren, schnellen Transaktionen und höchsten Sicherheitsstandards.",
+      section2Title: "Statistiken",
+      statVolume: "1,2M+",
+      statVolumeLabel: "Gesamtvolumen",
+      statUsers: "45K+",
+      statUsersLabel: "Aktive Nutzer",
+      statChains: "12",
+      statChainsLabel: "Unterstützte Chains",
+      section3Title: "Kontaktiere uns",
+      section3Text: "Bleibe auf dem Laufenden, indem du uns in den sozialen Medien folgst und unserer Community beitrittst.",
+      socialTwitter: "Twitter",
+      socialDiscord: "Discord",
+      socialTelegram: "Telegram",
+      footerText: "© 2025 AetherSwap. Alle Rechte vorbehalten.",
+    },
+    zh: {
+      heroTitle: "去中心化多链交易所",
+      heroSubtitle: "安全即时地跨多个区块链交换您的代币。",
+      section1Title: "为什么选择AetherSwap？",
+      section1Text: "体验低费用、快速交易和最高安全标准的无缝代币交换。",
+      section2Title: "统计数据",
+      statVolume: "120万+",
+      statVolumeLabel: "总交易量",
+      statUsers: "4.5万+",
+      statUsersLabel: "活跃用户",
+      statChains: "12",
+      statChainsLabel: "支持链",
+      section3Title: "联系我们",
+      section3Text: "通过关注我们的社交媒体和加入我们的社区保持更新。",
+      socialTwitter: "推特",
+      socialDiscord: "Discord",
+      socialTelegram: "电报",
+      footerText: "© 2025 AetherSwap。保留所有权利。",
+    }
+  };
 
-      const coins = [
-        { id: 'bitcoin', symbol: 'BTC' },
-        { id: 'ethereum', symbol: 'ETH' },
-        { id: 'binancecoin', symbol: 'BNB' },
-        { id: 'solana', symbol: 'SOL' },
-        { id: 'tether', symbol: 'USDT' }
-      ];
+  // Éléments DOM
+  const langSelect = document.getElementById('lang-select');
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeIcon = themeToggle.querySelector('i');
 
-      let tickerHTML = '';
-      coins.forEach((coin) => {
-        if (data[coin.id]) {
-          const price = data[coin.id].usd.toFixed(2);
-          const change = data[coin.id].usd_24h_change.toFixed(2);
-          const changeClass = change >= 0 ? 'positive' : 'negative';
-          tickerHTML += `<span class="ticker-item">${coin.symbol}: $${price} <span class="${changeClass}">(${change}%)</span></span>`;
-        }
-      });
+  // Fonction pour mettre à jour les textes
+  function updateTexts(lang) {
+    if (!texts[lang]) lang = 'en'; // Fallback to English
+    
+    document.documentElement.lang = lang;
+    document.getElementById('hero-title').textContent = texts[lang].heroTitle;
+    document.getElementById('hero-subtitle').textContent = texts[lang].heroSubtitle;
+    document.getElementById('section1-title').textContent = texts[lang].section1Title;
+    document.getElementById('section1-text').textContent = texts[lang].section1Text;
+    document.getElementById('section2-title').textContent = texts[lang].section2Title;
+    document.getElementById('stat-volume').textContent = texts[lang].statVolume;
+    document.getElementById('stat-volume-label').textContent = texts[lang].statVolumeLabel;
+    document.getElementById('stat-users').textContent = texts[lang].statUsers;
+    document.getElementById('stat-users-label').textContent = texts[lang].statUsersLabel;
+    document.getElementById('stat-chains').textContent = texts[lang].statChains;
+    document.getElementById('stat-chains-label').textContent = texts[lang].statChainsLabel;
+    document.getElementById('section3-title').textContent = texts[lang].section3Title;
+    document.getElementById('section3-text').textContent = texts[lang].section3Text;
+    document.getElementById('social-twitter').textContent = texts[lang].socialTwitter;
+    document.getElementById('social-discord').textContent = texts[lang].socialDiscord;
+    document.getElementById('social-telegram').textContent = texts[lang].socialTelegram;
+    document.getElementById('footer-text').textContent = texts[lang].footerText;
+  }
 
-      document.getElementById('ticker').innerHTML = tickerHTML;
-    } catch (error) {
-      document.getElementById('ticker').textContent = 'Failed to load prices.';
-      console.error('Error fetching crypto prices:', error);
+  // Gestionnaire d'événement pour le changement de langue
+  langSelect.addEventListener('change', (e) => {
+    const selectedLang = e.target.value;
+    localStorage.setItem('preferredLang', selectedLang);
+    updateTexts(selectedLang);
+  });
+
+  // Fonction pour basculer le thème
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      themeIcon.classList.replace('fa-sun', 'fa-moon');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      themeIcon.classList.replace('fa-moon', 'fa-sun');
     }
   }
 
-  fetchCryptoPrices();
-  setInterval(fetchCryptoPrices, 30000); // Update every 30 seconds
+  // Gestionnaire d'événement pour le basculement du thème
+  themeToggle.addEventListener('click', toggleTheme);
 
-  // Visitor counter (simple increment per page load using localStorage)
-  function updateVisitorCount() {
-    let count = localStorage.getItem('visitorCount') || 0;
-    count = parseInt(count) + 1;
-    localStorage.setItem('visitorCount', count);
-    document.getElementById('visitorCount').textContent = count.toLocaleString();
-  }
-  updateVisitorCount();
+  // Initialisation au chargement
+  document.addEventListener('DOMContentLoaded', () => {
+    // Récupérer la langue préférée
+    const preferredLang = localStorage.getItem('preferredLang') || 'en';
+    langSelect.value = preferredLang;
+    updateTexts(preferredLang);
+    
+    // Récupérer le thème préféré
+    const preferredTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    
+    if (preferredTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      themeIcon.classList.replace('fa-moon', 'fa-sun');
+    }
+    
+    // Mettre à jour l'icône du thème
+    themeToggle.setAttribute('aria-label', preferredTheme === 'dark' ? 'Toggle light mode' : 'Toggle dark mode');
+  });
 
-  // Language selector (simple UI demo, no actual translation)
-  document.getElementById('language').addEventListener('change', (e) => {
-    alert(`Language changed to: ${e.target.value}. (Translation feature coming soon!)`);
+  // Écouter les changements de préférence système
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem('theme')) {
+      if (e.matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeIcon.classList.replace('fa-sun', 'fa-moon');
+      }
+    }
   });
 </script>
 </body>
