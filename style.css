@@ -1,10 +1,21 @@
-body {
+/* Reset */
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body & fonts */
+body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #1e1e2f;
   color: #f5f5f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Header */
 header {
   background: #2c2c40;
   display: flex;
@@ -17,6 +28,12 @@ header {
   height: 40px;
 }
 
+nav {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
 nav ul {
   list-style: none;
   display: flex;
@@ -26,11 +43,176 @@ nav ul {
 nav a {
   color: #00ffff;
   text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+nav a:hover,
+nav a:focus {
+  color: #66ffff;
+  outline: none;
 }
 
 select {
   background: #222;
-  color: #fff;
+  color: #00ffff;
+  border: 1px solid #00ffff;
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+select:hover,
+select:focus {
+  background-color: #00ffff;
+  color: #222;
+  outline: none;
+}
+
+/* Dark mode toggle button */
+#darkModeToggle {
+  background: transparent;
   border: none;
-  padding: 0.5em;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: #00ffff;
+  transition: color 0.3s ease;
+  padding: 0.2em 0.5em;
+  border-radius: 5px;
+}
+
+#darkModeToggle:hover,
+#darkModeToggle:focus {
+  color: #33ffff;
+  outline: none;
+}
+
+/* Main content */
+main {
+  flex-grow: 1;
+  padding: 2em;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 90%;
+}
+
+/* Hero section */
+#hero {
+  text-align: center;
+  margin-bottom: 3em;
+}
+
+#hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5em;
+  color: #00ffff;
+}
+
+#hero p {
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+/* Tokens section */
+#tokens {
+  margin-bottom: 3em;
+}
+
+#tokens h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #00ffff;
+  padding-bottom: 0.3rem;
+}
+
+#tokenList {
+  background: #2c2c40;
+  border-radius: 8px;
+  padding: 1em;
+  min-height: 100px;
+  color: #a0f0f0;
+}
+
+/* Connect wallet section */
+#connect h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #00ffff;
+  padding-bottom: 0.3rem;
+}
+
+#connect button {
+  background-color: #00ffff;
+  color: #222;
+  border: none;
+  padding: 0.75em 2em;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#connect button:hover,
+#connect button:focus {
+  background-color: #33ffff;
+  outline: none;
+}
+
+#walletStatus {
+  margin-top: 0.8em;
+  font-style: italic;
+  color: #ccc;
+}
+
+/* Footer */
+footer {
+  background: #2c2c40;
+  text-align: center;
+  padding: 1em 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Dark mode styles */
+body.light-mode {
+  background-color: #f5f5f5;
+  color: #222;
+}
+
+body.light-mode header,
+body.light-mode footer,
+body.light-mode #tokenList {
+  background-color: #e0e0e0;
+  color: #222;
+}
+
+body.light-mode nav a,
+body.light-mode select,
+body.light-mode #darkModeToggle {
+  color: #0077cc;
+}
+
+/* Responsive - mobile */
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    gap: 1em;
+  }
+  
+  nav ul {
+    flex-direction: column;
+    gap: 1em;
+    align-items: center;
+  }
+  
+  main {
+    padding: 1em;
+    width: 95%;
+  }
+  
+  #hero h1 {
+    font-size: 2rem;
+  }
 }
