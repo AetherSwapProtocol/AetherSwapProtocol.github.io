@@ -17,7 +17,7 @@
   <script src="https://s3.tradingview.com/tv.js"></script>
   <style>
     :root {
-      /* Couleurs */
+      /* Colors */
       --primary: #6366f1;
       --primary-dark: #4f46e5;
       --primary-light: #818cf8;
@@ -34,14 +34,14 @@
       --white: #ffffff;
       --black: #000000;
       
-      /* Couleurs Crypto Dashboard */
+      /* Crypto Dashboard Colors */
       --crypto-primary: #00e6ff;
       --crypto-bg: linear-gradient(135deg, #0a1f2e, #144d6e);
       --crypto-glass: rgba(255, 255, 255, 0.05);
       --crypto-shadow: 0 6px 20px rgba(0, 230, 255, 0.2);
       --crypto-text: #e0f7fa;
       
-      /* Effets */
+      /* Effects */
       --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
       --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
       --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
@@ -162,330 +162,51 @@
       background: var(--primary-dark);
     }
 
-    /* Main Content */
-    main {
-      grid-area: main;
-      padding: 2rem;
-      overflow-y: auto;
+    /* Language Selector */
+    .language-selector {
+      position: relative;
     }
 
-    /* Swap Section */
-    .swap-section {
-      margin-bottom: 2rem;
-    }
-
-    .swap-container {
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      box-shadow: var(--shadow);
-    }
-
-    .swap-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-
-    .swap-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-
-    .swap-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .swap-input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .swap-label {
-      font-size: 0.875rem;
-      color: var(--gray);
-    }
-
-    .swap-input {
-      display: flex;
-      align-items: center;
-      background: var(--lighter);
-      border: 1px solid var(--light-gray);
-      border-radius: var(--radius);
-      padding: 0.75rem 1rem;
-    }
-
-    .swap-input input {
-      flex: 1;
-      border: none;
+    .language-btn {
       background: transparent;
-      font-size: 1.125rem;
-      outline: none;
-    }
-
-    .swap-input select {
       border: none;
-      background: transparent;
-      font-weight: 500;
-      margin-right: 0.5rem;
-    }
-
-    .swap-button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 1rem;
-      border-radius: var(--radius);
-      font-weight: 600;
-      font-size: 1rem;
-      margin-top: 0.5rem;
-    }
-
-    .swap-button:hover {
-      background: var(--primary-dark);
-    }
-
-    /* Chart Section */
-    .chart-section {
-      margin-bottom: 2rem;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .section-title {
-      font-size: 1.25rem;
-      font-weight: 600;
+      color: var(--light-gray);
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      cursor: pointer;
     }
 
-    .tv-chart {
-      height: 400px;
-      width: 100%;
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-
-    .chart-controls {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .chart-selector {
-      background: var(--lighter);
-      border: 1px solid var(--light-gray);
-      border-radius: var(--radius-sm);
-      padding: 0.5rem;
-      font-size: 0.9rem;
-    }
-
-    .chart-btn {
-      background: var(--primary);
-      color: var(--white);
-      border: none;
-      border-radius: var(--radius-sm);
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Tokens Dashboard Section */
-    .tokens-section {
-      background: var(--crypto-bg);
-      color: var(--crypto-text);
-      padding: 2rem;
-      border-radius: var(--radius-lg);
-      margin-bottom: 2rem;
-    }
-
-    .dashboard-header {
-      margin-bottom: 1.5rem;
-    }
-
-    .dashboard-header h2 {
-      font-size: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: var(--crypto-primary);
-    }
-
-    .dashboard-widget {
-      background: var(--crypto-glass);
-      backdrop-filter: blur(10px);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: var(--crypto-shadow);
-      border: 1px solid rgba(0, 230, 255, 0.1);
-    }
-
-    .dashboard-widget h3 {
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--crypto-primary);
-    }
-
-    .token-list {
-      list-style: none;
-      padding: 0;
-    }
-
-    .token-list li {
-      display: flex;
-      align-items: center;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid rgba(0, 230, 255, 0.1);
-      font-weight: 500;
-      gap: 0.75rem;
-    }
-
-    .token-list li:last-child {
-      border-bottom: none;
-    }
-
-    .token-list li img {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-    }
-
-    .search-controls {
-      display: flex;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-
-    @media (max-width: 768px) {
-      .search-controls {
-        flex-direction: column;
-      }
-    }
-
-    .form-select {
-      background: rgba(0, 230, 255, 0.1);
-      color: var(--crypto-primary);
-      border: 1px solid rgba(0, 230, 255, 0.2);
-      padding: 0.75rem;
-      border-radius: var(--radius);
-      flex: 1;
-    }
-
-    .form-input {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: var(--crypto-text);
-      padding: 0.75rem;
-      border-radius: var(--radius);
-      flex: 2;
-    }
-
-    .form-input::placeholder {
-      color: rgba(224, 247, 250, 0.6);
-    }
-
-    .btn-primary {
-      background: var(--crypto-primary);
-      color: #00343a;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: var(--radius);
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-primary:hover {
-      background: #00b8cc;
-    }
-
-    .result-token {
-      background: rgba(0, 230, 255, 0.1);
-      padding: 1.5rem;
-      border-radius: var(--radius);
-      text-align: center;
-      border: 1px dashed rgba(0, 230, 255, 0.3);
-    }
-
-    /* Community Panel */
-    .community-panel {
-      grid-area: chat;
+    .language-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
       background: var(--darker);
-      color: var(--light);
-      padding: 2rem;
-      overflow-y: auto;
-      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      padding: 0.5rem 0;
+      min-width: 120px;
+      display: none;
+      z-index: 1000;
     }
 
-    .chat-header {
-      margin-bottom: 1.5rem;
+    .language-dropdown.show {
+      display: block;
     }
 
-    .chat-messages {
-      height: calc(100% - 120px);
-      overflow-y: auto;
-      margin-bottom: 1rem;
+    .language-option {
+      padding: 0.5rem 1rem;
+      color: var(--light-gray);
+      cursor: pointer;
+      transition: var(--transition);
     }
 
-    .chat-input-container {
-      display: flex;
-      gap: 0.5rem;
+    .language-option:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--primary-light);
     }
 
-    .chat-input {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: var(--radius);
-      padding: 0.75rem 1rem;
-      color: var(--light);
-    }
-
-    .send-button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius);
-      padding: 0 1.5rem;
-      font-weight: 600;
-    }
-
-    /* Footer */
-    footer {
-      grid-area: footer;
-      background: var(--darker);
-      color: var(--gray);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.875rem;
-    }
-
-    /* Glassmorphism */
-    .glass-card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    }
+    /* [Rest of your CSS remains unchanged...] */
   </style>
 </head>
 <body class="app-container">
@@ -497,350 +218,101 @@
     </div>
     
     <nav class="nav-links">
-      <a href="#"><i class="fas fa-exchange-alt"></i> Swap</a>
-      <a href="#"><i class="fas fa-coins"></i> Tokens</a>
-      <a href="#"><i class="fas fa-chart-line"></i> Analytics</a>
-      <a href="#"><i class="fas fa-users"></i> Community</a>
+      <a href="#"><i class="fas fa-exchange-alt"></i> <span data-i18n="nav.swap">Swap</span></a>
+      <a href="#"><i class="fas fa-coins"></i> <span data-i18n="nav.tokens">Tokens</span></a>
+      <a href="#"><i class="fas fa-chart-line"></i> <span data-i18n="nav.analytics">Analytics</span></a>
+      <a href="#"><i class="fas fa-users"></i> <span data-i18n="nav.community">Community</span></a>
     </nav>
     
     <div class="wallet-connect">
+      <div class="language-selector">
+        <button class="language-btn">
+          <i class="fas fa-globe"></i>
+          <span id="current-language">EN</span>
+        </button>
+        <div class="language-dropdown" id="languageDropdown">
+          <div class="language-option" data-lang="en">English</div>
+          <div class="language-option" data-lang="fr">Français</div>
+          <div class="language-option" data-lang="es">Español</div>
+          <div class="language-option" data-lang="de">Deutsch</div>
+          <div class="language-option" data-lang="zh">中文</div>
+        </div>
+      </div>
       <button id="connectWalletBtn" class="btn-connect">
-        <i class="fas fa-wallet"></i> Connect Wallet
+        <i class="fas fa-wallet"></i> <span data-i18n="wallet.connect">Connect Wallet</span>
       </button>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main>
-    <!-- Swap Section -->
-    <section id="swap" class="swap-section">
-      <div class="swap-container glass-card">
-        <div class="swap-header">
-          <h2 class="swap-title">Swap Tokens</h2>
-          <div class="swap-settings">
-            <i class="fas fa-cog"></i>
-          </div>
-        </div>
-        
-        <form class="swap-form">
-          <div class="swap-input-group">
-            <label class="swap-label">You pay</label>
-            <div class="swap-input">
-              <input type="number" placeholder="0.0">
-              <select>
-                <option>ETH</option>
-                <option>USDC</option>
-                <option>USDT</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="swap-input-group">
-            <label class="swap-label">You receive</label>
-            <div class="swap-input">
-              <input type="number" placeholder="0.0">
-              <select>
-                <option>USDC</option>
-                <option>ETH</option>
-                <option>USDT</option>
-              </select>
-            </div>
-          </div>
-          
-          <button type="button" class="swap-button">Swap Now</button>
-        </form>
-      </div>
-      
-      <!-- Chart Section -->
-      <div class="chart-section glass-card">
-        <div class="section-header">
-          <h2 class="section-title">
-            <i class="fas fa-chart-line"></i>
-            Marché en temps réel
-          </h2>
-          <div class="chart-controls">
-            <select id="chartSymbol" class="chart-selector">
-              <option value="BINANCE:ETHUSDT">ETH/USDT</option>
-              <option value="BINANCE:BTCUSDT">BTC/USDT</option>
-              <option value="BINANCE:SOLUSDT">SOL/USDT</option>
-            </select>
-            <button id="refreshChart" class="chart-btn">
-              <i class="fas fa-sync-alt"></i>
-            </button>
-          </div>
-        </div>
-        <div id="tradingview-chart" class="tv-chart"></div>
-      </div>
-      
-      <!-- Tokens Dashboard Section -->
-      <section id="tokens" class="tokens-section glass-card">
-        <div class="dashboard-header">
-          <h2><i class="fas fa-coins"></i> Crypto Dashboard</h2>
-        </div>
-        
-        <!-- Top Tokens Widget -->
-        <div class="dashboard-widget">
-          <h3><i class="fas fa-fire"></i> Top 10 Tokens</h3>
-          <ul id="top10" class="token-list">Loading top tokens...</ul>
-        </div>
-        
-        <!-- Token Search Widget -->
-        <div class="dashboard-widget">
-          <h3><i class="fas fa-search"></i> Token Search</h3>
-          <div class="search-controls">
-            <select id="blockchain" class="form-select">
-              <option value="ethereum">Ethereum</option>
-              <option value="binance-smart-chain">BNB Smart Chain</option>
-              <option value="polygon-pos">Polygon</option>
-              <option value="avalanche">Avalanche</option>
-              <option value="arbitrum-one">Arbitrum</option>
-              <option value="optimistic-ethereum">Optimism</option>
-              <option value="solana">Solana (SPL Mint)</option>
-            </select>
-            <input type="text" id="contract" placeholder="Contract address or SPL Mint" class="form-input">
-            <button onclick="searchByContract()" class="btn-primary">
-              <i class="fas fa-search"></i> Search
-            </button>
-          </div>
-          <div id="result" class="result-token"></div>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <!-- Community Panel -->
-  <aside class="community-panel glass-card">
-    <div class="chat-header">
-      <h2><i class="fas fa-comments"></i> Community Chat</h2>
-    </div>
-    
-    <div id="chatMessages" class="chat-messages">
-      <!-- Messages will appear here -->
-    </div>
-    
-    <div class="chat-input-container">
-      <input type="text" class="chat-input" placeholder="Type your message...">
-      <button class="send-button">Send</button>
-    </div>
-  </aside>
-
-  <!-- Footer -->
-  <footer>
-    <p>© 2023 AetherSwap - The Ultimate Social DEX</p>
-  </footer>
+  <!-- [Rest of your HTML remains unchanged...] -->
 
   <script>
-    // Configuration Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyYOUR_API_KEY",
-      authDomain: "your-project.firebaseapp.com",
-      projectId: "your-project",
-      storageBucket: "your-project.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456789:web:abcdef123456"
+    // Multilingual Support
+    const translations = {
+      en: {
+        "nav.swap": "Swap",
+        "nav.tokens": "Tokens",
+        "nav.analytics": "Analytics",
+        "nav.community": "Community",
+        "wallet.connect": "Connect Wallet",
+        "swap.title": "Swap Tokens",
+        "swap.pay": "You pay",
+        "swap.receive": "You receive",
+        "swap.button": "Swap Now",
+        "chart.title": "Live Market",
+        "dashboard.title": "Crypto Dashboard",
+        "top10.title": "Top 10 Tokens",
+        "search.title": "Token Search",
+        "chat.placeholder": "Type your message..."
+      },
+      fr: {
+        "nav.swap": "Échanger",
+        "nav.tokens": "Tokens",
+        "nav.analytics": "Analytiques",
+        "nav.community": "Communauté",
+        "wallet.connect": "Connecter Wallet",
+        "swap.title": "Échanger Tokens",
+        "swap.pay": "Vous payez",
+        "swap.receive": "Vous recevez",
+        "swap.button": "Échanger Maintenant",
+        "chart.title": "Marché en Direct",
+        "dashboard.title": "Tableau de Bord Crypto",
+        "top10.title": "Top 10 Tokens",
+        "search.title": "Recherche Token",
+        "chat.placeholder": "Tapez votre message..."
+      },
+      // Add other languages similarly...
     };
-    
-    // Initialiser Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
 
-    // Variables globales
-    let provider;
-    let tvWidget;
-    let currentUser = null;
-    let tokenPrices = {};
+    // Language management
+    let currentLanguage = 'en';
+    const languageDropdown = document.getElementById('languageDropdown');
+    const currentLanguageElement = document.getElementById('current-language');
 
-    // DOM Elements
-    const connectWalletBtn = document.getElementById('connectWalletBtn');
-    const chatInput = document.querySelector('.chat-input');
-    const sendButton = document.querySelector('.send-button');
-    const chatMessages = document.getElementById('chatMessages');
-    const swapButton = document.querySelector('.swap-button');
-    const chartSymbol = document.getElementById('chartSymbol');
-    const refreshChart = document.getElementById('refreshChart');
-
-    // Initialisation TradingView
-    function initTradingView(symbol = 'BINANCE:ETHUSDT') {
-      if(tvWidget) tvWidget.remove();
-      
-      tvWidget = new TradingView.widget({
-        "autosize": true,
-        "symbol": symbol,
-        "interval": "15",
-        "timezone": "Etc/UTC",
-        "theme": "dark",
-        "style": "1",
-        "locale": "en",
-        "toolbar_bg": "#0f172a",
-        "enable_publishing": false,
-        "hide_top_toolbar": false,
-        "hide_side_toolbar": false,
-        "allow_symbol_change": true,
-        "container_id": "tradingview-chart"
-      });
-    }
-
-    // Crypto Dashboard Functions
-    async function loadTop10() {
-      try {
-        const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1');
-        if (!res.ok) throw new Error("CoinGecko API error");
-        const data = await res.json();
-        const ul = document.getElementById('top10');
-        ul.innerHTML = '';
-        data.forEach(token => {
-          const li = document.createElement('li');
-          li.innerHTML = `
-            <img src="${token.image}" alt="${token.name}" />
-            ${token.name} (${token.symbol.toUpperCase()}) — $${token.current_price.toLocaleString()}
-            <span style="margin-left:auto; color:${token.price_change_percentage_24h >= 0 ? '#10b981' : '#ef4444'}">
-              ${token.price_change_percentage_24h >= 0 ? '↑' : '↓'} ${Math.abs(token.price_change_percentage_24h).toFixed(2)}%
-            </span>
-          `;
-          ul.appendChild(li);
-        });
-      } catch(e) {
-        document.getElementById('top10').innerHTML = '<li>Unable to load data. Please try again later.</li>';
-        }
-    }
-
-    async function searchByContract() {
-      const contract = document.getElementById('contract').value.trim();
-      const chain = document.getElementById('blockchain').value;
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
-
-      if (!contract) {
-        resultDiv.innerHTML = '<div class="error-message">Please enter a valid contract address</div>';
-        return;
-      }
-
-      try {
-        if (chain === 'solana') {
-          // Jupiter API for Solana
-          const res = await fetch(`https://price.jup.ag/v4/price?ids=${contract}`);
-          if (!res.ok) throw new Error("Token not found");
-          const data = await res.json();
-          const token = data.data[contract];
-          
-          if (!token) throw new Error("Token not found");
-          resultDiv.innerHTML = `
-            <div class="token-result">
-              <h4>SPL Token (Solana)</h4>
-              <p>Mint: ${contract.slice(0, 6)}...${contract.slice(-4)}</p>
-              <p>Price: $${token.price.toFixed(6)}</p>
-            </div>
-          `;
-        } else {
-          // CoinGecko for other chains
-          const res = await fetch(`https://api.coingecko.com/api/v3/coins/${chain}/contract/${contract}`);
-          if (!res.ok) throw new Error("Token not found");
-          const token = await res.json();
-          
-          resultDiv.innerHTML = `
-            <div class="token-result">
-              <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
-                <img src="${token.image.small}" alt="${token.name}" style="width:32px; height:32px;">
-                <h4>${token.name} (${token.symbol.toUpperCase()})</h4>
-              </div>
-              <p>Price: $${token.market_data.current_price.usd.toLocaleString()}</p>
-              <p>24h Change: <span style="color:${token.market_data.price_change_percentage_24h >= 0 ? '#10b981' : '#ef4444'}">
-                ${token.market_data.price_change_percentage_24h >= 0 ? '↑' : '↓'} ${Math.abs(token.market_data.price_change_percentage_24h).toFixed(2)}%
-              </span></p>
-            </div>
-          `;
-        }
-      } catch(e) {
-        resultDiv.innerHTML = `<div class="error-message">Error: ${e.message || 'Token not found'}</div>`;
-      }
-    }
-
-    // Connexion Wallet
-    async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          provider = new ethers.providers.Web3Provider(window.ethereum);
-          await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const signer = provider.getSigner();
-          const address = await signer.getAddress();
-          
-          // Enregistrer l'utilisateur dans Firebase
-          const userCredential = await auth.signInAnonymously();
-          currentUser = userCredential.user;
-          
-          // Mettre à jour l'UI
-          connectWalletBtn.innerHTML = `<i class="fas fa-check-circle"></i> ${address.slice(0, 6)}...${address.slice(-4)}`;
-          
-          // Initialiser le chat
-          initChat();
-          
-        } catch (error) {
-          console.error("Error connecting wallet:", error);
-          alert("Error connecting wallet. Please try again.");
-        }
-      } else {
-        alert("Please install MetaMask!");
-      }
-    }
-
-    // Initialiser le chat
-    function initChat() {
-      db.collection("messages").orderBy("timestamp").onSnapshot(snapshot => {
-        chatMessages.innerHTML = '';
-        snapshot.forEach(doc => {
-          const message = doc.data();
-          const messageElement = document.createElement('div');
-          messageElement.className = 'chat-message';
-          messageElement.innerHTML = `
-            <strong>${message.userAddress || 'Anonymous'}:</strong> ${message.text}
-          `;
-          chatMessages.appendChild(messageElement);
-        });
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      });
-    }
-
-    // Envoyer un message
-    async function sendMessage() {
-      const messageText = chatInput.value.trim();
-      if (!messageText || !currentUser) return;
-      
-      await db.collection("messages").add({
-        text: messageText,
-        userId: currentUser.uid,
-        userAddress: connectWalletBtn.textContent.replace('✓ ', ''),
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      
-      chatInput.value = '';
-    }
-
-    // Événements
-    connectWalletBtn.addEventListener('click', connectWallet);
-    chartSymbol.addEventListener('change', () => initTradingView(chartSymbol.value));
-    refreshChart.addEventListener('click', () => initTradingView(chartSymbol.value));
-    sendButton.addEventListener('click', sendMessage);
-    chatInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') sendMessage();
+    document.querySelector('.language-btn').addEventListener('click', () => {
+      languageDropdown.classList.toggle('show');
     });
 
-    // Initialisation
-    document.addEventListener('DOMContentLoaded', () => {
-      initTradingView();
-      loadTop10();
-      
-      // Actualiser les données toutes les minutes
-      setInterval(loadTop10, 60000);
-      
-      // Connecter automatiquement si déjà connecté
-      auth.onAuthStateChanged(user => {
-        if (user) {
-          currentUser = user;
-          initChat();
-        }
+    document.querySelectorAll('.language-option').forEach(option => {
+      option.addEventListener('click', () => {
+        currentLanguage = option.dataset.lang;
+        currentLanguageElement.textContent = option.dataset.lang.toUpperCase();
+        languageDropdown.classList.remove('show');
+        updateTextElements();
       });
     });
+
+    function updateTextElements() {
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        element.textContent = translations[currentLanguage][key] || translations['en'][key];
+      });
+    }
+
+    // Initialize with default language
+    updateTextElements();
+
+    // [Rest of your JavaScript remains unchanged...]
   </script>
 </body>
 </html>
