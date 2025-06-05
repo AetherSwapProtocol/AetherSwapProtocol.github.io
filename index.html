@@ -1,51 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AetherSwap - Multi-chain DEX</title>
-  <link rel="stylesheet" href="style.css" />
-  <script defer src="app.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AetherSwap - Multi-chain Solana DEX</title>
+<link rel="stylesheet" href="style.css" />
+<!-- Wallet Adapter CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-wallets@0.15.10/lib/index.iife.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-base@0.15.10/lib/index.iife.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-react-ui@0.15.10/lib/index.iife.min.js"></script>
+<script defer src="app.js"></script>
 </head>
 <body>
-  <header>
-    <img src="logo.png" alt="AetherSwap Logo" id="logo" />
-    <nav>
-      <ul>
-        <li><a href="#features" data-i18n="features">Features</a></li>
-        <li><a href="#tokens" data-i18n="top_tokens">Top Tokens</a></li>
-        <li><a href="#connect" data-i18n="connect_wallet">Connect Wallet</a></li>
-      </ul>
-      <select id="languageSwitcher">
-        <option value="en">English</option>
-        <option value="fr">Français</option>
-        <option value="es">Español</option>
-        <option value="zh">中文</option>
-      </select>
-      <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌓</button>
-    </nav>
-  </header>
+<header>
+  <img src="logo.png" alt="AetherSwap Logo" id="logo" />
+  <nav>
+    <ul>
+      <li><a href="#hero" data-i18n="home">Home</a></li>
+      <li><a href="#tokens" data-i18n="top_tokens">Top Tokens</a></li>
+      <li><a href="#connect" data-i18n="connect_wallet">Connect Wallet</a></li>
+      <li><a href="#social" data-i18n="social">Social</a></li>
+    </ul>
+    <select id="languageSwitcher"></select>
+  </nav>
+</header>
 
-  <main>
-    <section id="hero">
-      <h1 data-i18n="welcome">Welcome to AetherSwap</h1>
-      <p data-i18n="sub_welcome">The next-gen multi-chain DEX built on Solana.</p>
-    </section>
+<main>
+  <section id="hero">
+    <h1 data-i18n="welcome">Welcome to AetherSwap</h1>
+    <p data-i18n="sub_welcome">The next-gen multi-chain DEX built on Solana, ultra-fast and secure.</p>
+  </section>
 
-    <section id="tokens">
-      <h2 data-i18n="top_tokens">Top Tokens</h2>
-      <div id="tokenList">Loading real-time data...</div>
-    </section>
+  <section id="tokens">
+    <h2 data-i18n="top_tokens">Top Tokens</h2>
+    <div id="tokenList">Loading tokens...</div>
+  </section>
 
-    <section id="connect">
-      <h2 data-i18n="connect_wallet">Connect Your Wallet</h2>
-      <button onclick="connectWallet()">Connect</button>
-      <p id="walletStatus">Not connected</p>
-    </section>
-  </main>
+  <section id="connect">
+    <h2 data-i18n="connect_wallet">Connect Your Wallet</h2>
+    <button id="connectBtn">Connect</button>
+    <p id="walletStatus" data-i18n="not_connected">Not connected</p>
+  </section>
 
-  <footer>
-    <p>&copy; 2025 AetherSwap</p>
-  </footer>
+  <section id="social">
+    <h2 data-i18n="join_us">Join Us on Social Media</h2>
+    <p data-i18n="social_desc">Follow AetherSwap and stay updated with all latest news and developments!</p>
+    <div id="socialLinks">
+      <a href="https://twitter.com/AetherSwap" target="_blank" aria-label="Twitter" rel="noopener noreferrer">
+        <img src="icons/twitter.svg" alt="Twitter" />
+      </a>
+      <a href="https://discord.gg/AetherSwap" target="_blank" aria-label="Discord" rel="noopener noreferrer">
+        <img src="icons/discord.svg" alt="Discord" />
+      </a>
+      <a href="https://t.me/AetherSwap" target="_blank" aria-label="Telegram" rel="noopener noreferrer">
+        <img src="icons/telegram.svg" alt="Telegram" />
+      </a>
+      <a href="https://instagram.com/AetherSwap" target="_blank" aria-label="Instagram" rel="noopener noreferrer">
+        <img src="icons/instagram.svg" alt="Instagram" />
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2025 AetherSwap. All rights reserved.</p>
+</footer>
 </body>
 </html>
