@@ -3,316 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap | Ultimate Social DEX</title>
-  <!-- Fonts & Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Web3 Libraries -->
-  <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <!-- TradingView -->
-  <script src="https://s3.tradingview.com/tv.js"></script>
+  <title>AetherSwap | Ultimate DEX</title>
   <style>
-    :root {
-      /* Colors */
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --primary-light: #818cf8;
-      --dark: #1e293b;
-      --darker: #0f172a;
-      --light: #f8fafc;
-      --lighter: #f9fafb;
-      --gray: #64748b;
-      --light-gray: #e2e8f0;
-      --success: #10b981;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --info: #3b82f6;
-      --white: #ffffff;
-      --black: #000000;
-      
-      /* Crypto Dashboard Colors */
-      --crypto-primary: #00e6ff;
-      --crypto-bg: linear-gradient(135deg, #0a1f2e, #144d6e);
-      --crypto-glass: rgba(255, 255, 255, 0.05);
-      --crypto-shadow: 0 6px 20px rgba(0, 230, 255, 0.2);
-      --crypto-text: #e0f7fa;
-      
-      /* Effects */
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-      --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-      --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-      --radius-sm: 0.25rem;
-      --radius: 0.5rem;
-      --radius-lg: 1rem;
-      --transition: all 0.2s ease-in-out;
-      
-      /* Dimensions */
-      --header-height: 80px;
-      --footer-height: 60px;
-      --max-width: 1400px;
-    }
-
-    /* Reset & Base */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
       font-family: 'Inter', sans-serif;
-      color: var(--dark);
-      background-color: var(--lighter);
-      line-height: 1.6;
-      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      background: #f0f2f5;
     }
-
-    a {
-      color: var(--primary);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-
-    a:hover {
-      color: var(--primary-dark);
-    }
-
-    button {
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    /* Layout */
-    .app-container {
-      display: grid;
-      grid-template-areas:
-        "header header"
-        "main chat"
-        "footer footer";
-      grid-template-columns: 1fr 380px;
-      grid-template-rows: var(--header-height) 1fr var(--footer-height);
-      min-height: 100vh;
-      max-width: var(--max-width);
-      margin: 0 auto;
-    }
-
-    /* Header */
     header {
-      grid-area: header;
-      background: var(--darker);
-      padding: 0 2rem;
+      background: #1e293b;
+      color: white;
+      padding: 1rem;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      box-shadow: var(--shadow-md);
-      z-index: 100;
+      align-items: center;
     }
-
     .logo {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 10px;
     }
-
-    .logo img {
-      height: 40px;
+    .logo-img {
+      width: 30px;
+      height: 30px;
     }
-
-    .logo h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--white);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    .nav-links a {
-      color: var(--light-gray);
-      font-weight: 500;
-    }
-
-    .nav-links a:hover {
-      color: var(--primary-light);
-    }
-
-    .wallet-connect {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .btn-connect {
-      background: var(--primary);
+    .wallet-btn {
+      background: #6366f1;
       color: white;
       border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: var(--radius);
-      font-weight: 600;
-    }
-
-    .btn-connect:hover {
-      background: var(--primary-dark);
-    }
-
-    /* Language Selector */
-    .language-selector {
-      position: relative;
-    }
-
-    .language-btn {
-      background: transparent;
-      border: none;
-      color: var(--light-gray);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      padding: 8px 16px;
+      border-radius: 4px;
       cursor: pointer;
     }
-
-    .language-dropdown {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background: var(--darker);
-      border-radius: var(--radius-sm);
-      box-shadow: var(--shadow-md);
-      padding: 0.5rem 0;
-      min-width: 120px;
-      display: none;
-      z-index: 1000;
+    main {
+      padding: 2rem;
     }
-
-    .language-dropdown.show {
-      display: block;
+    footer {
+      background: #1e293b;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
     }
-
-    .language-option {
-      padding: 0.5rem 1rem;
-      color: var(--light-gray);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .language-option:hover {
-      background: rgba(255,255,255,0.1);
-      color: var(--primary-light);
-    }
-
-    /* [Rest of your CSS remains unchanged...] */
   </style>
 </head>
-<body class="app-container">
-  <!-- Header -->
-  <header class="header">
+<body>
+  <header>
     <div class="logo">
-      <img src="https://img.icons8.com/fluency/48/000000/ethereum.png" alt="AetherSwap Logo">
+      <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" class="logo-img" alt="Logo">
       <h1>AetherSwap</h1>
     </div>
-    
-    <nav class="nav-links">
-      <a href="#"><i class="fas fa-exchange-alt"></i> <span data-i18n="nav.swap">Swap</span></a>
-      <a href="#"><i class="fas fa-coins"></i> <span data-i18n="nav.tokens">Tokens</span></a>
-      <a href="#"><i class="fas fa-chart-line"></i> <span data-i18n="nav.analytics">Analytics</span></a>
-      <a href="#"><i class="fas fa-users"></i> <span data-i18n="nav.community">Community</span></a>
-    </nav>
-    
-    <div class="wallet-connect">
-      <div class="language-selector">
-        <button class="language-btn">
-          <i class="fas fa-globe"></i>
-          <span id="current-language">EN</span>
-        </button>
-        <div class="language-dropdown" id="languageDropdown">
-          <div class="language-option" data-lang="en">English</div>
-          <div class="language-option" data-lang="fr">Français</div>
-          <div class="language-option" data-lang="es">Español</div>
-          <div class="language-option" data-lang="de">Deutsch</div>
-          <div class="language-option" data-lang="zh">中文</div>
-        </div>
-      </div>
-      <button id="connectWalletBtn" class="btn-connect">
-        <i class="fas fa-wallet"></i> <span data-i18n="wallet.connect">Connect Wallet</span>
-      </button>
-    </div>
+    <button id="connectWalletBtn" class="wallet-btn">
+      Connect Wallet
+    </button>
   </header>
 
-  <!-- [Rest of your HTML remains unchanged...] -->
+  <main>
+    <h2>Welcome to AetherSwap</h2>
+    <p>The ultimate decentralized exchange platform.</p>
+  </main>
+
+  <footer>
+    <p>© 2025 AetherSwap - All rights reserved</p>
+  </footer>
 
   <script>
-    // Multilingual Support
-    const translations = {
-      en: {
-        "nav.swap": "Swap",
-        "nav.tokens": "Tokens",
-        "nav.analytics": "Analytics",
-        "nav.community": "Community",
-        "wallet.connect": "Connect Wallet",
-        "swap.title": "Swap Tokens",
-        "swap.pay": "You pay",
-        "swap.receive": "You receive",
-        "swap.button": "Swap Now",
-        "chart.title": "Live Market",
-        "dashboard.title": "Crypto Dashboard",
-        "top10.title": "Top 10 Tokens",
-        "search.title": "Token Search",
-        "chat.placeholder": "Type your message..."
-      },
-      fr: {
-        "nav.swap": "Échanger",
-        "nav.tokens": "Tokens",
-        "nav.analytics": "Analytiques",
-        "nav.community": "Communauté",
-        "wallet.connect": "Connecter Wallet",
-        "swap.title": "Échanger Tokens",
-        "swap.pay": "Vous payez",
-        "swap.receive": "Vous recevez",
-        "swap.button": "Échanger Maintenant",
-        "chart.title": "Marché en Direct",
-        "dashboard.title": "Tableau de Bord Crypto",
-        "top10.title": "Top 10 Tokens",
-        "search.title": "Recherche Token",
-        "chat.placeholder": "Tapez votre message..."
-      },
-      // Add other languages similarly...
-    };
-
-    // Language management
-    let currentLanguage = 'en';
-    const languageDropdown = document.getElementById('languageDropdown');
-    const currentLanguageElement = document.getElementById('current-language');
-
-    document.querySelector('.language-btn').addEventListener('click', () => {
-      languageDropdown.classList.toggle('show');
+    // Simple wallet connection
+    document.getElementById('connectWalletBtn').addEventListener('click', async () => {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          document.getElementById('connectWalletBtn').textContent = 
+            `${accounts[0].substring(0, 6)}...${accounts[0].substring(38)}`;
+        } catch (error) {
+          console.error("Error connecting wallet:", error);
+        }
+      } else {
+        alert("Please install MetaMask!");
+      }
     });
 
-    document.querySelectorAll('.language-option').forEach(option => {
-      option.addEventListener('click', () => {
-        currentLanguage = option.dataset.lang;
-        currentLanguageElement.textContent = option.dataset.lang.toUpperCase();
-        languageDropdown.classList.remove('show');
-        updateTextElements();
-      });
-    });
-
-    function updateTextElements() {
-      document.querySelectorAll('[data-i18n]').forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        element.textContent = translations[currentLanguage][key] || translations['en'][key];
-      });
-    }
-
-    // Initialize with default language
-    updateTextElements();
-
-    // [Rest of your JavaScript remains unchanged...]
+    console.log("AetherSwap is ready!");
   </script>
 </body>
 </html>
