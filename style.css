@@ -1,0 +1,158 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121224;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+header {
+  background: linear-gradient(90deg, #00ffe7, #00bcd4);
+  padding: 1em 2em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#logo {
+  height: 48px;
+}
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.8em;
+  padding: 0;
+  margin: 0;
+}
+nav ul li a {
+  color: #121224;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.1em;
+  transition: color 0.3s ease;
+}
+nav ul li a:hover {
+  color: #00ffe7;
+}
+select {
+  background: #121224;
+  color: #00ffe7;
+  border: 1px solid #00ffe7;
+  padding: 0.3em 0.6em;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+main {
+  flex: 1;
+  padding: 2em;
+  max-width: 960px;
+  margin: 0 auto;
+}
+#hero h1 {
+  font-size: 2.8rem;
+  margin-bottom: 0.3em;
+  color: #00ffe7;
+}
+#hero p {
+  font-size: 1.3rem;
+  color: #a0a0a0;
+  margin-top: 0;
+}
+#tokens {
+  margin-top: 3em;
+}
+#tokens h2 {
+  font-size: 2rem;
+  margin-bottom: 1em;
+  color: #00bcd4;
+}
+#tokenList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 1.5em;
+}
+.token-card {
+  background: #1f2133;
+  padding: 1.2em;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #00ffe7aa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+.token-card:hover {
+  transform: scale(1.05);
+}
+.token-logo {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.8em;
+}
+.token-name {
+  font-weight: 700;
+  font-size: 1.1em;
+  margin-bottom: 0.3em;
+}
+.token-price {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #00ffcc;
+}
+#connect {
+  margin-top: 3em;
+  text-align: center;
+}
+#connect h2 {
+  font-size: 2rem;
+  margin-bottom: 1em;
+  color: #00bcd4;
+}
+#connect button {
+  background: #00ffe7;
+  border: none;
+  padding: 0.7em 1.8em;
+  font-size: 1.1em;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 700;
+  color: #121224;
+  transition: background 0.3s ease;
+}
+#connect button:hover {
+  background: #00bcd4;
+}
+#walletStatus {
+  margin-top: 0.8em;
+  font-weight: 600;
+}
+#socials {
+  margin-top: 4em;
+  text-align: center;
+}
+#socialLinks a {
+  color: #00ffe7;
+  font-weight: 700;
+  margin: 0 0.7em;
+  text-decoration: none;
+  font-size: 1.1em;
+}
+#socialLinks a:hover {
+  text-decoration: underline;
+}
+footer {
+  background: #0d0d1a;
+  text-align: center;
+  padding: 1em 0;
+  font-size: 0.9em;
+  color: #666;
+}
+@media (max-width: 600px) {
+  #tokenList {
+    grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
+  }
+  nav ul {
+    gap: 1em;
+  }
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AetherSwap - Multi-chain DEX</title>
+<link rel="stylesheet" href="style.css" />
+<script defer src="app.js"></script>
+</head>
+<body>
+<header>
+  <img src="assets/logo.png" alt="AetherSwap Logo" id="logo" />
+  <nav>
+    <ul>
+      <li><a href="#features" data-i18n="features">Features</a></li>
+      <li><a href="#tokens" data-i18n="top_tokens">Top Tokens</a></li>
+      <li><a href="#connect" data-i18n="connect_wallet">Connect Wallet</a></li>
+    </ul>
+    <select id="languageSwitcher"></select>
+  </nav>
+</header>
+
+<main>
+  <section id="hero">
+    <h1 data-i18n="welcome">Welcome to AetherSwap</h1>
+    <p data-i18n="sub_welcome">The next-gen multi-chain DEX built on Solana.</p>
+  </section>
+
+  <section id="tokens">
+    <h2 data-i18n="top_tokens">Top Tokens</h2>
+    <div id="tokenList">Loading real-time data...</div>
+  </section>
+
+  <section id="connect">
+    <h2 data-i18n="connect_wallet">Connect Your Wallet</h2>
+    <button id="connectWalletBtn">Connect</button>
+    <p id="walletStatus">Not connected</p>
+  </section>
+
+  <section id="socials">
+    <h2>Join Our Community</h2>
+    <div id="socialLinks">
+      <a href="https://twitter.com/AetherSwap" target="_blank" rel="noopener">Twitter</a> |
+      <a href="https://discord.gg/AetherSwap" target="_blank" rel="noopener">Discord</a> |
+      <a href="https://t.me/AetherSwap" target="_blank" rel="noopener">Telegram</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2025 AetherSwap</p>
+</footer>
+</body>
+</html>
