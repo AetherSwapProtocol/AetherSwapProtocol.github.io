@@ -3,119 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherSwap | DEX Interface</title>
-    <!-- Import des mêmes dépendances que index.html -->
+    <title>AetherSwap | Decentralized Exchange</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@solana/web3.js@latest"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Styles cohérents avec index.html */
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        
         body {
-            background-color: #0a0a0a;
-            color: white;
             font-family: 'Space Grotesk', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
         }
+        
         .gradient-text {
             background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
+        
         .gradient-border {
-            border: 2px solid transparent;
-            border-image: linear-gradient(45deg, #7e22ce, #3b82f6);
-            border-image-slice: 1;
+            position: relative;
+            border-radius: 1rem;
+            z-index: 0;
+        }
+        
+        .gradient-border::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 1rem;
+            background: linear-gradient(45deg, #7e22ce, #3b82f6, #7e22ce);
+            background-size: 200% 200%;
+            z-index: -1;
+            animation: gradient 3s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .token-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .solana-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        .swap-container {
+            max-width: 450px;
+            margin: 0 auto;
         }
     </style>
 </head>
-<body>
-    <!-- Barre de navigation cohérente -->
-    <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+<body class="min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="container mx-auto px-6 py-6 flex justify-between items-center">
         <a href="index.html" class="flex items-center space-x-2">
-            <div class="w-8 h-8 rounded-full gradient-border flex items-center justify-center">
-                <div class="w-6 h-6 bg-black rounded-full flex items-center justify-center">
-                    <i class="fas fa-arrow-left text-purple-400"></i>
+            <div class="w-10 h-10 rounded-full gradient-border flex items-center justify-center">
+                <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#7e22ce" />
+                                <stop offset="100%" stop-color="#3b82f6" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                    </svg>
                 </div>
             </div>
-            <span class="text-xl font-bold gradient-text">Back to Home</span>
+            <span class="text-2xl font-bold gradient-text">AetherSwap</span>
         </a>
-        <div class="flex items-center space-x-4">
-            <button id="connect-wallet" class="gradient-border px-4 py-2 rounded-full text-sm">
-                Connect Wallet
-            </button>
-        </div>
+        
+        <button id="connect-wallet" class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition">
+            Connect Wallet
+        </button>
     </nav>
 
-    <!-- Interface principale d'échange -->
-    <main class="container mx-auto px-4 py-8 max-w-md">
-        <div class="gradient-border rounded-xl p-1 mb-6">
-            <div class="bg-gray-900 rounded-xl p-4">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="font-bold text-lg">Swap</h2>
-                    <button class="text-purple-400 hover:text-purple-300">
+    <!-- Main Swap Interface -->
+    <main class="container mx-auto px-4 py-8 swap-container">
+        <div class="gradient-border rounded-2xl overflow-hidden">
+            <div class="bg-gray-900 rounded-2xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold">Swap</h2>
+                    <button class="text-gray-400 hover:text-purple-400">
                         <i class="fas fa-cog"></i>
                     </button>
                 </div>
                 
-                <!-- Champ "From" -->
-                <div class="bg-gray-800 rounded-lg p-3 mb-3">
+                <!-- From Token -->
+                <div class="bg-gray-800 rounded-xl p-4 mb-4">
                     <div class="flex justify-between mb-2">
-                        <span class="text-gray-400 text-sm">From</span>
-                        <span class="text-gray-400 text-sm">Balance: 0.0</span>
+                        <span class="text-gray-400">From</span>
+                        <span class="text-gray-400">Balance: <span id="from-balance">0.0</span></span>
                     </div>
-                    <div class="flex items-center">
-                        <input type="number" placeholder="0.0" class="bg-transparent text-2xl w-full focus:outline-none">
-                        <button class="bg-gray-700 px-3 py-2 rounded-lg flex items-center">
-                            <span class="mr-2">SOL</span>
-                            <i class="fas fa-chevron-down"></i>
+                    <div class="flex justify-between items-center">
+                        <input type="number" placeholder="0.0" class="bg-transparent text-2xl w-3/4 focus:outline-none" id="from-amount">
+                        <button id="from-token-select" class="flex items-center space-x-2 bg-gray-700 px-3 py-2 rounded-lg">
+                            <img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" class="w-6 h-6 rounded-full">
+                            <span>SOL</span>
+                            <i class="fas fa-chevron-down text-gray-400"></i>
                         </button>
                     </div>
                 </div>
                 
-                <!-- Bouton d'inversion -->
+                <!-- Swap Direction -->
                 <div class="flex justify-center my-2">
-                    <button class="bg-gray-800 p-2 rounded-full hover:bg-gray-700">
-                        <i class="fas fa-arrow-down text-purple-400"></i>
+                    <button class="bg-gray-800 p-2 rounded-full hover:bg-gray-700 transition" id="switch-tokens">
+                        <i class="fas fa-arrow-down text-purple-500"></i>
                     </button>
                 </div>
                 
-                <!-- Champ "To" -->
-                <div class="bg-gray-800 rounded-lg p-3 mb-4">
+                <!-- To Token -->
+                <div class="bg-gray-800 rounded-xl p-4 mb-6">
                     <div class="flex justify-between mb-2">
-                        <span class="text-gray-400 text-sm">To</span>
-                        <span class="text-gray-400 text-sm">Balance: 0.0</span>
+                        <span class="text-gray-400">To</span>
+                        <span class="text-gray-400">Balance: <span id="to-balance">0.0</span></span>
                     </div>
-                    <div class="flex items-center">
-                        <input type="number" placeholder="0.0" class="bg-transparent text-2xl w-full focus:outline-none">
-                        <button class="bg-gray-700 px-3 py-2 rounded-lg flex items-center">
-                            <span class="mr-2">Select Token</span>
-                            <i class="fas fa-chevron-down"></i>
+                    <div class="flex justify-between items-center">
+                        <input type="number" placeholder="0.0" class="bg-transparent text-2xl w-3/4 focus:outline-none" id="to-amount" readonly>
+                        <button id="to-token-select" class="flex items-center space-x-2 bg-gray-700 px-3 py-2 rounded-lg">
+                            <div class="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center">
+                                <i class="fas fa-search text-xs text-white"></i>
+                            </div>
+                            <span>Select</span>
+                            <i class="fas fa-chevron-down text-gray-400"></i>
                         </button>
                     </div>
                 </div>
                 
-                <!-- Bouton de swap -->
-                <button id="swap-button" class="w-full bg-purple-600 hover:bg-purple-700 py-3 rounded-lg font-bold transition disabled:opacity-50" disabled>
-                    Connect Wallet to Swap
+                <!-- Swap Button -->
+                <button id="swap-button" class="w-full gradient-border py-3 rounded-xl font-bold text-white hover:opacity-90 transition disabled:opacity-50" disabled>
+                    Connect Wallet
                 </button>
             </div>
         </div>
         
-        <!-- Section des statistiques -->
-        <div class="bg-gray-900 rounded-xl p-4 mb-6">
-            <h3 class="font-bold mb-3">Swap Details</h3>
-            <div class="space-y-2 text-sm">
+        <!-- Swap Details -->
+        <div class="bg-gray-900 rounded-2xl p-6 mt-6 border border-gray-800">
+            <h3 class="font-bold mb-4">Swap Details</h3>
+            <div class="space-y-3 text-sm">
                 <div class="flex justify-between">
                     <span class="text-gray-400">Exchange Rate</span>
-                    <span>-</span>
+                    <span id="exchange-rate">-</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-400">Minimum Received</span>
-                    <span>-</span>
+                    <span id="min-received">-</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-400">Price Impact</span>
-                    <span>-</span>
+                    <span id="price-impact">-</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-400">Liquidity Provider Fee</span>
@@ -125,31 +184,183 @@
         </div>
     </main>
 
-    <!-- Scripts JavaScript -->
+    <!-- Token Selection Modal -->
+    <div id="token-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden border border-gray-800">
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+                <h3 class="font-bold">Select Token</h3>
+                <button id="close-modal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <input type="text" id="token-search" placeholder="Search by name or address" class="w-full bg-gray-800 p-3 rounded-lg mb-4 text-sm">
+                <div class="max-h-[60vh] overflow-y-auto">
+                    <div id="token-list" class="divide-y divide-gray-800"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Connexion wallet
-        document.getElementById('connect-wallet').addEventListener('click', async () => {
+        // Token list (simplified)
+        const TOKENS = [
+            {
+                symbol: "SOL",
+                name: "Solana",
+                mint: "So11111111111111111111111111111111111111112",
+                decimals: 9,
+                logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+            },
+            {
+                symbol: "USDC",
+                name: "USD Coin",
+                mint: "EPjFWdd5AufqSSqeM2q6DQNpMQNcFcSq2GmKkExN6TfK",
+                decimals: 6,
+                logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2q6DQNpMQNcFcSq2GmKkExN6TfK/logo.png"
+            },
+            {
+                symbol: "USDT",
+                name: "Tether USD",
+                mint: "Es9vMFrzaCERmJfrE4H2FYD1KZbYUsMrhPkMk81A7xKZ",
+                decimals: 6,
+                logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrE4H2FYD1KZbYUsMrhPkMk81A7xKZ/logo.png"
+            },
+            {
+                symbol: "AETH",
+                name: "AetherSwap Token",
+                mint: "AETH...", // Replace with actual mint address
+                decimals: 9,
+                logo: "https://via.placeholder.com/32" // Replace with actual logo
+            }
+        ];
+
+        // Current selection
+        let currentFromToken = TOKENS[0];
+        let currentToToken = null;
+        let isSelectingFor = 'from'; // 'from' or 'to'
+
+        // DOM Elements
+        const connectWalletBtn = document.getElementById('connect-wallet');
+        const swapButton = document.getElementById('swap-button');
+        const fromTokenSelect = document.getElementById('from-token-select');
+        const toTokenSelect = document.getElementById('to-token-select');
+        const tokenModal = document.getElementById('token-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const tokenList = document.getElementById('token-list');
+        const tokenSearch = document.getElementById('token-search');
+        const switchTokensBtn = document.getElementById('switch-tokens');
+
+        // Wallet connection
+        connectWalletBtn.addEventListener('click', async () => {
             try {
                 if (window.solana && window.solana.isPhantom) {
                     const response = await window.solana.connect();
                     const publicKey = response.publicKey.toString();
-                    console.log('Connected to:', publicKey);
-                    document.getElementById('swap-button').textContent = 'Swap Now';
-                    document.getElementById('swap-button').disabled = false;
+                    console.log('Connected:', publicKey);
+                    connectWalletBtn.textContent = publicKey.slice(0, 4) + '...' + publicKey.slice(-4);
+                    swapButton.disabled = false;
+                    swapButton.textContent = 'Swap Now';
+                    
+                    // Here you would fetch token balances
+                    document.getElementById('from-balance').textContent = '1.42';
                 } else {
-                    alert('Phantom Wallet not found! Install it from https://phantom.app/');
+                    alert('Please install Phantom Wallet!');
                 }
             } catch (error) {
                 console.error('Connection error:', error);
             }
         });
 
-        // Logique de swap (simplifiée)
-        document.getElementById('swap-button').addEventListener('click', () => {
-            alert('Swap functionality will be implemented here!');
-            // Ici vous ajouteriez la logique réelle de swap
-            // utilisant @solana/web3.js et les smart contracts
+        // Token selection
+        fromTokenSelect.addEventListener('click', () => {
+            isSelectingFor = 'from';
+            showTokenModal();
         });
+
+        toTokenSelect.addEventListener('click', () => {
+            isSelectingFor = 'to';
+            showTokenModal();
+        });
+
+        // Switch tokens
+        switchTokensBtn.addEventListener('click', () => {
+            if (currentFromToken && currentToToken) {
+                [currentFromToken, currentToToken] = [currentToToken, currentFromToken];
+                updateTokenDisplay();
+            }
+        });
+
+        // Modal control
+        closeModalBtn.addEventListener('click', () => {
+            tokenModal.classList.add('hidden');
+        });
+
+        // Token search
+        tokenSearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            renderTokenList(TOKENS.filter(token => 
+                token.symbol.toLowerCase().includes(searchTerm) || 
+                token.name.toLowerCase().includes(searchTerm)
+            );
+        });
+
+        // Render token list in modal
+        function renderTokenList(tokens) {
+            tokenList.innerHTML = tokens.map(token => `
+                <div class="token-item p-3 hover:bg-gray-800 cursor-pointer flex items-center" 
+                     data-mint="${token.mint}" 
+                     data-symbol="${token.symbol}" 
+                     data-logo="${token.logo}">
+                    <img src="${token.logo}" class="w-8 h-8 mr-3 rounded-full">
+                    <div>
+                        <div class="font-medium">${token.symbol}</div>
+                        <div class="text-xs text-gray-400">${token.name}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.token-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const selectedToken = TOKENS.find(t => t.mint === item.dataset.mint);
+                    if (isSelectingFor === 'from') {
+                        currentFromToken = selectedToken;
+                    } else {
+                        currentToToken = selectedToken;
+                    }
+                    updateTokenDisplay();
+                    tokenModal.classList.add('hidden');
+                });
+            });
+        }
+
+        // Show token modal
+        function showTokenModal() {
+            renderTokenList(TOKENS);
+            tokenModal.classList.remove('hidden');
+        }
+
+        // Update token display
+        function updateTokenDisplay() {
+            if (currentFromToken) {
+                fromTokenSelect.innerHTML = `
+                    <img src="${currentFromToken.logo}" class="w-6 h-6 rounded-full">
+                    <span>${currentFromToken.symbol}</span>
+                    <i class="fas fa-chevron-down text-gray-400"></i>
+                `;
+            }
+
+            if (currentToToken) {
+                toTokenSelect.innerHTML = `
+                    <img src="${currentToToken.logo}" class="w-6 h-6 rounded-full">
+                    <span>${currentToToken.symbol}</span>
+                    <i class="fas fa-chevron-down text-gray-400"></i>
+                `;
+            }
+        }
+
+        // Initialize
+        renderTokenList(TOKENS);
     </script>
 </body>
 </html>
