@@ -1,1 +1,60 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AetherSwap | Next-Gen Privacy DEX</title><script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/@solana/web3.js@latest"></script><style>.language-selector{position:fixed;top:1rem;right:1rem;z-index:50;opacity:0.7;transition:opacity 0.2s}.language-selector:hover{opacity:1}.language-selector select{background:rgba(30,41,59,0.7);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1)}</style></head><body class="min-h-screen bg-gray-900 text-white"><div class="language-selector"><select id="language-select" class="px-3 py-1 rounded-lg text-sm focus:outline-none"><option value="en">🇬🇧 English</option><option value="fr">🇫🇷 Français</option><option value="es">🇪🇸 Español</option><option value="zh">🇨🇳 中文</option><option value="ja">🇯🇵 日本語</option><option value="de">🇩🇪 Deutsch</option></select></div><div class="container mx-auto p-4 max-w-md pt-16"><div class="flex flex-col items-center mb-8"><img src="your-logo.png" alt="AetherSwap Logo" class="w-20 h-20 mb-4"><h1 class="text-3xl font-bold">AetherSwap</h1><p class="text-gray-400">by [YourName]</p></div><div class="mb-6"><div class="flex justify-between items-center mb-2"><h2 class="font-semibold">Select Token</h2><button id="custom-token-btn" class="text-xs text-purple-400 hover:text-purple-300">+ Add Custom Token</button></div><input type="text" id="token-search" placeholder="Search by name or contract address" class="w-full bg-gray-700 p-3 rounded-lg mb-3 text-sm"><div class="max-h-60 overflow-y-auto bg-gray-800 rounded-lg"><div id="token-list" class="divide-y divide-gray-700"></div></div></div><div class="bg-gray-800 rounded-xl p-6 shadow-2xl"></div></div><script>const PRELOADED_TOKENS=[{symbol:"SOL",name:"Solana",mint:"So11111111111111111111111111111111111111112",decimals:9,logo:"https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"},{symbol:"USDC",name:"USD Coin",mint:"EPjFWdd5AufqSSqeM2q6DQNpMQNcFcSq2GmKkExN6TfK",decimals:6,logo:"https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2q6DQNpMQNcFcSq2GmKkExN6TfK/logo.png"},{symbol:"USDT",name:"Tether USD",mint:"Es9vMFrzaCERmJfrE4H2FYD1KZbYUsMrhPkMk81A7xKZ",decimals:6,logo:"https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrE4H2FYD1KZbYUsMrhPkMk81A7xKZ/logo.png"},{symbol:"RAY",name:"Raydium",mint:"4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",decimals:6,logo:"https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R/logo.png"}];const TRANSLATIONS={en:{select_token:"Select Token",add_custom:"+ Add Custom Token",search_placeholder:"Search by name or contract address"},fr:{select_token:"Sélectionner un Token",add_custom:"+ Ajouter un Token",search_placeholder:"Rechercher par nom ou adresse de contrat"},es:{select_token:"Seleccionar Token",add_custom:"+ Agregar Token Personalizado",search_placeholder:"Buscar por nombre o dirección de contrato"}};document.addEventListener("DOMContentLoaded",()=>{renderTokenList(PRELOADED_TOKENS),document.getElementById("language-select").addEventListener("change",e=>{updateLanguage(e.target.value)}),document.getElementById("token-search").addEventListener("input",e=>{searchTokens(e.target.value)}),document.getElementById("custom-token-btn").addEventListener("click",()=>{addCustomToken()})});function renderTokenList(e){const t=document.getElementById("token-list");t.innerHTML=e.map(e=>`<div class="token-item p-3 hover:bg-gray-700 cursor-pointer flex items-center" data-mint="${e.mint}"><img src="${e.logo}" class="w-6 h-6 mr-3 rounded-full"><div><div class="font-medium">${e.symbol}</div><div class="text-xs text-gray-400">${e.name}</div></div></div>`).join(""),document.querySelectorAll(".token-item").forEach(e=>{e.addEventListener("click",()=>{selectToken(e.dataset.mint)})})}function searchTokens(e){const t=PRELOADED_TOKENS.filter(t=>t.symbol.toLowerCase().includes(e.toLowerCase())||t.name.toLowerCase().includes(e.toLowerCase())||t.mint.toLowerCase().includes(e.toLowerCase()));renderTokenList(t)}function addCustomToken(){const e=prompt("Enter token contract address:");if(e&&e.length>0){alert("Custom token validation is not implemented in this demo.")}}function updateLanguage(e){document.documentElement.lang=e;const t=TRANSLATIONS[e]||TRANSLATIONS.en;document.getElementById("token-search").placeholder=t.search_placeholder,document.getElementById("custom-token-btn").textContent=t.add_custom}function selectToken(e){alert("Token selected: "+e)}</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherSwap | Next-Gen Privacy DEX</title>
+    <!-- Ajoutez ces lignes pour la cohérence avec votre première page -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0a0a0a;
+        }
+        
+        /* Ajoutez ici tous vos styles gradient/text de la première page */
+        .gradient-text {
+            background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-900 text-white">
+    <!-- Ajoutez la navigation comme dans votre première page -->
+    <nav class="container mx-auto px-6 py-6 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <div class="w-10 h-10 rounded-full gradient-border flex items-center justify-center">
+                <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#7e22ce" />
+                                <stop offset="100%" stop-color="#3b82f6" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
+            </div>
+            <span class="text-2xl font-bold gradient-text">AetherSwap</span>
+        </div>
+        
+        <a href="index.html" class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition">
+            Return Home
+        </a>
+    </nav>
+
+    <!-- Gardez votre contenu swap.html existant -->
+    <div class="container mx-auto p-4 max-w-md pt-16">
+        <!-- ... Votre code de sélection de token existant ... -->
+    </div>
+
+    <!-- Ajoutez le footer de votre première page si nécessaire -->
+</body>
+</html>
