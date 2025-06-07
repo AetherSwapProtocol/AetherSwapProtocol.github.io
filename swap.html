@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherSwap | Decentralized Exchange</title>
-    <!-- CDNs identiques à index.html -->
+    <title>AetherSwap | Swap Interface</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@solana/web3.js@latest"></script>
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Styles COPIÉS-COLLÉS de index.html */
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        /* Styles de base identiques à index.html */
         body {
             font-family: 'Space Grotesk', sans-serif;
             background-color: #0a0a0a;
             color: #ffffff;
-            overflow-x: hidden;
         }
         .gradient-text {
             background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
@@ -46,475 +42,142 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        .token-animation {
-            animation: float 6s ease-in-out infinite;
+
+        /* Styles spécifiques pour le swap */
+        .wallet-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
         }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
+        .token-logo {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
         }
-        .solana-pulse {
-            animation: pulse 2s infinite;
+        #wallet-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            z-index: 10;
         }
-        @keyframes pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
-        .stats-card {
-            backdrop-filter: blur(10px);
-            background: rgba(15, 15, 15, 0.7);
-        }
-        
-        /* Nouveaux styles pour les améliorations */
-        .error-message {
-            animation: shake 0.5s;
-            border-color: #ef4444 !important;
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-5px); }
-            40%, 80% { transform: translateX(5px); }
-        }
-        .token-modal {
-            backdrop-filter: blur(12px);
+        .wallet-option:hover {
+            background: rgba(126, 34, 206, 0.1);
         }
     </style>
 </head>
 <body class="min-h-screen">
-    <!-- Barre de navigation IDENTIQUE à index.html -->
+    <!-- Barre de navigation améliorée -->
     <nav class="container mx-auto px-6 py-6 flex justify-between items-center">
         <a href="index.html" class="flex items-center space-x-2">
             <div class="w-10 h-10 rounded-full gradient-border flex items-center justify-center">
                 <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-                        <defs>
-                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#7e22ce" />
-                                <stop offset="100%" stop-color="#3b82f6" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                    </svg>
+                    <i class="fas fa-arrow-left text-purple-400"></i>
                 </div>
             </div>
             <span class="text-2xl font-bold gradient-text">AetherSwap</span>
         </a>
         
-        <button id="connect-wallet" class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition">
-            Connect Wallet
-        </button>
+        <!-- Nouveau bouton Connect Wallet avec menu déroulant -->
+        <div class="relative">
+            <button id="connect-wallet" class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition flex items-center">
+                <span id="wallet-text">Connect Wallet</span>
+                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+            </button>
+            
+            <div id="wallet-menu" class="mt-2 w-48 bg-gray-900 rounded-xl border border-gray-800 py-1">
+                <a href="#" class="wallet-option flex items-center px-4 py-2" data-wallet="phantom">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDIyQzE3LjUyMjggMjIgMjIgMTcuNTIyOCAyMiAxMkMyMiA2LjQ3NzE1IDE3LjUyMjggMiAxMiAyQzYuNDc3MTUgMiAyIDYuNDc3MTUgMiAxMkMyIDE3LjUyMjggNi40NzcxNSAyMiAxMiAyMloiIGZpbGw9IiM0MkM1QjkiLz4KPHBhdGggZD0iTTEyIDEzLjVWMTYuNUwxNC41IDE1TDEyIDEzLjVaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTIgNy41VjEzLjVMMTAgMTJMMTIgMTAuNVY3LjVaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNy41IDEwTDEyIDEzLjVWMTYuNUw3LjUgMTNWMTBaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" class="wallet-icon mr-3">
+                    Phantom
+                </a>
+                <a href="#" class="wallet-option flex items-center px-4 py-2" data-wallet="solflare">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDIyQzE3LjUyMjggMjIgMjIgMTcuNTIyOCAyMiAxMkMyMiA2LjQ3NzE1IDE3LjUyMjggMiAxMiAyQzYuNDc3MTUgMiAyIDYuNDc3MTUgMiAxMkMyIDE3LjUyMjggNi40NzcxNSAyMiAxMiAyMloiIGZpbGw9IiNGRkYiLz4KPHBhdGggZD0iTTcuMjA3MDMgMTIuNDE0MkwxMC42MDE2IDE1LjgwODhDMTEuMzg0OCAxNi41OTIgMTIuNjE1MiAxNi41OTIgMTMuMzk4NCAxNS44MDg4TDE2Ljc5MyAxMi40MTQyQzE3LjU3NjIgMTEuNjMxIDE3LjU3NjIgMTAuNDAwNiAxNi43OTMgOS42MTc0MUMxNi4wMDk4IDguODM0MjIgMTQuNzc5NCA4LjgzNDIyIDEzLjk5NjIgOS42MTc0MUwxMi43MDcgMTAuOTA2NkwxMS40MTc4IDkuNjE3NDFDMTEuMDI2MiA5LjIyNTgxIDEwLjQ5MDggOS4wMzAxMiA5Ljk5NjA5IDkuMDgzODVDOS41MDEzOSA5LjEzNzU4IDkuMTA5NzcgOS41MjkyMyA5LjA1NjA0IDEwLjAyMzlDOC45ODQzNSAxMC43Njg5IDkuNTkxNDcgMTEuMzc2IDEwLjMzNjUgMTEuMzA0M0wxMC45MDY0IDEwLjkwNjZMMTIuMDAzNyAxMkMxMi4zOTUzIDEyLjM5MTYgMTIuMzk1MyAxMi45OTk4IDEyLjAwMzcgMTMuMzkxNEMxMS42MTIxIDEzLjc4MyAxMS4wMDM5IDEzLjc4MyAxMC42MTIzIDEzLjM5MTRMNy4yMDcwMyAxMFYxMi40MTQyWiIgZmlsbD0iIzAwMDAwMCIvPgo8L3N2Zz4=" class="wallet-icon mr-3">
+                    Solflare
+                </a>
+                <a href="#" class="wallet-option flex items-center px-4 py-2" data-wallet="backpack">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgN0gxMlYxN0g0VjdaIiBzdHJva2U9IiM3RTIyQ0UiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA3SDIwVjE3SDEyVjdaIiBzdHJva2U9IiMzQjgyRjYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPg==" class="wallet-icon mr-3">
+                    Backpack
+                </a>
+            </div>
+        </div>
     </nav>
 
-    <!-- Interface principale - Structure conservée mais améliorée -->
+    <!-- Interface de Swap -->
     <main class="container mx-auto px-4 py-8 max-w-md">
-        <div class="gradient-border rounded-2xl">
-            <div class="bg-gray-900 rounded-2xl p-6">
-                <!-- En-tête identique au style original -->
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold">Swap</h2>
-                    <button class="text-gray-400 hover:text-purple-400 transition">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                </div>
-                
-                <!-- From Token - Style cohérent avec animations -->
-                <div class="bg-gray-800 rounded-xl p-4 mb-4 transition-all duration-300 hover:bg-gray-750">
-                    <div class="flex justify-between mb-2">
-                        <span class="text-gray-400">From</span>
-                        <span class="text-gray-400">Balance: <span id="from-balance">0.0</span></span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <input type="number" placeholder="0.0" class="bg-transparent text-2xl w-3/4 focus:outline-none" id="from-amount">
-                        <button id="from-token-select" class="flex items-center space-x-2 bg-gray-700 px-3 py-2 rounded-lg hover:bg-gray-600 transition">
-                            <img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" class="w-6 h-6 rounded-full">
-                            <span>SOL</span>
-                            <i class="fas fa-chevron-down text-gray-400"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Bouton d'inversion - Animation améliorée -->
-                <div class="flex justify-center my-2">
-                    <button id="switch-tokens" class="bg-gray-800 p-2 rounded-full hover:bg-gray-700 transition transform hover:rotate-180 duration-300">
-                        <i class="fas fa-arrow-down text-purple-500"></i>
-                    </button>
-                </div>
-                
-                <!-- To Token -->
-                <div class="bg-gray-800 rounded-xl p-4 mb-6 transition-all duration-300 hover:bg-gray-750">
-                    <div class="flex justify-between mb-2">
-                        <span class="text-gray-400">To</span>
-                        <span class="text-gray-400">Balance: <span id="to-balance">0.0</span></span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <input type="number" placeholder="0.0" class="bg-transparent text-2xl w-3/4 focus:outline-none" id="to-amount" readonly>
-                        <button id="to-token-select" class="flex items-center space-x-2 bg-gray-700 px-3 py-2 rounded-lg hover:bg-gray-600 transition">
-                            <div class="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center">
-                                <i class="fas fa-search text-xs text-white"></i>
-                            </div>
-                            <span>Select</span>
-                            <i class="fas fa-chevron-down text-gray-400"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Bouton Swap - Style original amélioré -->
-                <button id="swap-button" class="w-full gradient-border py-3 rounded-xl font-bold text-white hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center" disabled>
-                    <span id="swap-text">Connect Wallet</span>
-                    <i id="swap-spinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Détails du swap - Style carte comme dans index.html -->
-        <div class="stats-card rounded-2xl p-6 mt-6 border border-gray-800">
-            <h3 class="font-bold mb-4 gradient-text">Swap Details</h3>
-            <div class="space-y-3 text-sm">
-                <div class="flex justify-between">
-                    <span class="text-gray-400">Exchange Rate</span>
-                    <span id="exchange-rate">-</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-400">Minimum Received</span>
-                    <span id="min-received">-</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-400">Price Impact</span>
-                    <span id="price-impact"><0.01%</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-400">Liquidity Provider Fee</span>
-                    <span class="gradient-text">0.05%</span>
-                </div>
-            </div>
-        </div>
+        <!-- Votre interface de swap existante... -->
     </main>
 
-    <!-- Token Modal - Style cohérent avec le thème -->
-    <div id="token-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-4 token-modal">
-        <div class="bg-gray-900 rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden gradient-border">
-            <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-                <h3 class="font-bold gradient-text">Select Token</h3>
-                <button id="close-modal" class="text-gray-400 hover:text-purple-400 transition">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="p-4">
-                <input type="text" id="token-search" placeholder="Search by name or address" class="w-full bg-gray-800 p-3 rounded-lg mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-                <div class="max-h-[60vh] overflow-y-auto pr-2">
-                    <div id="token-list" class="divide-y divide-gray-800"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Loading Animation -->
-    <lottie-player 
-        id="loading-animation"
-        src="https://assets1.lottiefiles.com/packages/lf20_h9kds1my.json" 
-        style="width: 150px; height: 150px; display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;"
-        loop autoplay>
-    </lottie-player>
-
-    <!-- Transaction Notification -->
-    <div id="tx-notification" class="fixed bottom-4 right-4 bg-gray-900 rounded-xl px-6 py-4 shadow-xl hidden z-50 gradient-border">
-        <div class="flex items-center space-x-3">
-            <i class="fas fa-check-circle text-green-400 text-xl"></i>
-            <div>
-                <div class="font-bold">Swap Successful!</div>
-                <div class="text-sm text-gray-400" id="tx-details">10 SOL → 1500 USDC</div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Configuration identique à la précédente
-        const TOKENS = [
-            {
-                symbol: "SOL",
-                name: "Solana",
-                mint: "So11111111111111111111111111111111111111112",
-                decimals: 9,
-                logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
-            },
-            {
-                symbol: "USDC",
-                name: "USD Coin",
-                mint: "EPjFWdd5AufqSSqeM2q6DQNpMQNcFcSq2GmKkExN6TfK",
-                decimals: 6,
-                logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2q6DQNpMQNcFcSq2GmKkExN6TfK/logo.png"
-            },
-            {
-                symbol: "USDT",
-                name: "Tether USD",
-                mint: "Es9vMFrzaCERmJfrE4H2FYD1KZbYUsMrhPkMk81A7xKZ",
-                decimals: 6,
-                logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrE4H2FYD1KZbYUsMrhPkMk81A7xKZ/logo.png"
-            },
-            {
-                symbol: "AETH",
-                name: "AetherSwap Token",
-                mint: "AETH...",
-                decimals: 9,
-                logo: "https://via.placeholder.com/32/7e22ce/ffffff?text=AETH"
-            }
-        ];
-
-        // Variables d'état
-        let currentFromToken = TOKENS[0];
-        let currentToToken = null;
-        let isSelectingFor = 'from';
-        let walletConnected = false;
-
-        // Initialisation
-        document.addEventListener("DOMContentLoaded", () => {
-            initTokenModal();
-            setupEventListeners();
-            updateTokenDisplay();
+        // Gestion du menu Wallet
+        document.getElementById('connect-wallet').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('wallet-menu').style.display = 
+                document.getElementById('wallet-menu').style.display === 'block' ? 'none' : 'block';
         });
 
-        function initTokenModal() {
-            renderTokenList(TOKENS);
-            document.getElementById('token-search').addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                renderTokenList(TOKENS.filter(token => 
-                    token.symbol.toLowerCase().includes(term) || 
-                    token.name.toLowerCase().includes(term)
-                );
-            });
-        }
+        // Fermer le menu quand on clique ailleurs
+        window.addEventListener('click', function() {
+            document.getElementById('wallet-menu').style.display = 'none';
+        });
 
-        function setupEventListeners() {
-            // Connexion Wallet
-            document.getElementById('connect-wallet').addEventListener('click', connectWallet);
-            
-            // Sélection Tokens
-            document.getElementById('from-token-select').addEventListener('click', () => showTokenModal('from'));
-            document.getElementById('to-token-select').addEventListener('click', () => showTokenModal('to'));
-            
-            // Switch Tokens
-            document.getElementById('switch-tokens').addEventListener('click', switchTokens);
-            
-            // Modal
-            document.getElementById('close-modal').addEventListener('click', () => {
-                document.getElementById('token-modal').classList.add('hidden');
-            });
-            
-            // Input Amount
-            document.getElementById('from-amount').addEventListener('input', handleAmountInput);
-            
-            // Swap Button
-            document.getElementById('swap-button').addEventListener('click', executeSwap);
-        }
+        // Connexion aux différents wallets
+        document.querySelectorAll('.wallet-option').forEach(option => {
+            option.addEventListener('click', async function(e) {
+                e.preventDefault();
+                const walletType = this.dataset.wallet;
+                const walletText = document.getElementById('wallet-text');
+                
+                walletText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Connecting...';
+                
+                try {
+                    let provider;
+                    switch(walletType) {
+                        case 'phantom':
+                            provider = window.phantom?.solana;
+                            break;
+                        case 'solflare':
+                            provider = window.solflare;
+                            break;
+                        case 'backpack':
+                            provider = window.backpack;
+                            break;
+                    }
 
-        async function connectWallet() {
-            const connectBtn = document.getElementById('connect-wallet');
-            const swapBtn = document.getElementById('swap-button');
-            
-            try {
-                if (window.solana?.isPhantom) {
-                    connectBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Connecting...';
+                    if (!provider) {
+                        if (walletType === 'phantom') {
+                            window.open('https://phantom.app/', '_blank');
+                        }
+                        throw new Error(`${walletType} not detected!`);
+                    }
+
+                    const response = await provider.connect();
+                    const publicKey = response.publicKey.toString();
+                    walletText.textContent = `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
                     
-                    const { publicKey } = await window.solana.connect();
-                    const shortAddress = `${publicKey.toString().slice(0, 4)}...${publicKey.toString().slice(-4)}`;
+                    // Activer le bouton de swap
+                    document.getElementById('swap-button').disabled = false;
                     
-                    connectBtn.innerHTML = `<i class="fas fa-wallet mr-2"></i>${shortAddress}`;
-                    swapBtn.disabled = false;
-                    swapBtn.querySelector('#swap-text').textContent = 'Swap Now';
-                    walletConnected = true;
+                    // Ici vous chargeriez les balances réelles
+                    console.log(`Connected with ${publicKey}`);
                     
-                    // Simuler un solde (à remplacer par un vrai appel)
-                    document.getElementById('from-balance').textContent = '1.42';
-                } else {
-                    throw new Error('Phantom Wallet not detected!');
+                } catch (error) {
+                    console.error(error);
+                    walletText.textContent = 'Connect Wallet';
+                    alert(`Connection failed: ${error.message}`);
                 }
-            } catch (error) {
-                console.error("Connection error:", error);
-                connectBtn.textContent = 'Connect Wallet';
-                showErrorNotification(error.message);
-            }
-        }
-
-        function showTokenModal(forToken) {
-            isSelectingFor = forToken;
-            document.getElementById('token-modal').classList.remove('hidden');
-            document.getElementById('token-search').value = '';
-            renderTokenList(TOKENS);
-        }
-
-        function renderTokenList(tokens) {
-            const tokenList = document.getElementById('token-list');
-            tokenList.innerHTML = tokens.map(token => `
-                <div class="token-item p-3 hover:bg-gray-800 cursor-pointer flex items-center transition" 
-                     data-mint="${token.mint}">
-                    <img src="${token.logo}" class="w-8 h-8 mr-3 rounded-full">
-                    <div class="flex-1">
-                        <div class="font-medium">${token.symbol}</div>
-                        <div class="text-xs text-gray-400">${token.name}</div>
-                    </div>
-                    ${currentFromToken?.mint === token.mint || currentToToken?.mint === token.mint ? 
-                      '<i class="fas fa-check text-purple-500 ml-2"></i>' : ''}
-                </div>
-            `).join('');
-            
-            document.querySelectorAll('.token-item').forEach(item => {
-                item.addEventListener('click', () => selectToken(item.dataset.mint));
             });
-        }
+        });
 
-        function selectToken(mint) {
-            const token = TOKENS.find(t => t.mint === mint);
-            if (isSelectingFor === 'from') {
-                currentFromToken = token;
-            } else {
-                currentToToken = token;
-            }
-            updateTokenDisplay();
-            document.getElementById('token-modal').classList.add('hidden');
-            updateExchangeRate();
-        }
-
-        function updateTokenDisplay() {
-            if (currentFromToken) {
-                document.getElementById('from-token-select').innerHTML = `
-                    <img src="${currentFromToken.logo}" class="w-6 h-6 rounded-full">
-                    <span>${currentFromToken.symbol}</span>
-                    <i class="fas fa-chevron-down text-gray-400 ml-1"></i>
-                `;
-            }
-            
-            if (currentToToken) {
-                document.getElementById('to-token-select').innerHTML = `
-                    <img src="${currentToToken.logo}" class="w-6 h-6 rounded-full">
-                    <span>${currentToToken.symbol}</span>
-                    <i class="fas fa-chevron-down text-gray-400 ml-1"></i>
-                `;
-            }
-        }
-
-        function switchTokens() {
-            if (!currentFromToken || !currentToToken) return;
-            
-            [currentFromToken, currentToToken] = [currentToToken, currentFromToken];
-            updateTokenDisplay();
-            
-            // Échange les montants
-            const fromAmount = document.getElementById('from-amount').value;
-            const toAmount = document.getElementById('to-amount').value;
-            document.getElementById('from-amount').value = toAmount;
-            document.getElementById('to-amount').value = fromAmount;
-            
-            updateExchangeRate();
-        }
-
-        function handleAmountInput(e) {
-            updateExchangeRate();
-            
-            // Validation du solde
-            const balance = parseFloat(document.getElementById('from-balance').textContent);
-            const amount = parseFloat(e.target.value);
-            
-            if (amount > balance) {
-                e.target.classList.add('error-message');
-                document.getElementById('swap-button').disabled = true;
-                setTimeout(() => e.target.classList.remove('error-message'), 1000);
-            } else if (walletConnected && currentFromToken && currentToToken) {
-                document.getElementById('swap-button').disabled = false;
-            }
-        }
-
-        function updateExchangeRate() {
-            if (!currentFromToken || !currentToToken) return;
-            
-            // Simulation de taux (à remplacer par un vrai appel API)
-            const rates = {
-                "SOL_USDC": 150,
-                "SOL_USDT": 149,
-                "USDC_USDT": 0.99,
-                "USDC_SOL": 0.0067,
-                "USDT_SOL": 0.0068
+        // Simulation de prix en temps réel
+        async function updatePrices() {
+            // En production, utilisez une API comme Jupiter
+            const mockPrices = {
+                'SOL_USDC': 150,
+                'SOL_USDT': 149,
+                'USDC_USDT': 0.99
             };
             
-            const pair = `${currentFromToken.symbol}_${currentToToken.symbol}`;
-            const reversePair = `${currentToToken.symbol}_${currentFromToken.symbol}`;
-            let rate = rates[pair] || (rates[reversePair] ? (1 / rates[reversePair]).toFixed(6) : 1);
-            
-            document.getElementById('exchange-rate').textContent = `1 ${currentFromToken.symbol} ≈ ${rate} ${currentToToken.symbol}`;
-            
-            // Mise à jour du montant de sortie
-            const inputAmount = parseFloat(document.getElementById('from-amount').value) || 0;
-            const outputAmount = inputAmount * rate;
-            document.getElementById('to-amount').value = outputAmount.toFixed(6);
-            
-            // Mise à jour des détails
-            document.getElementById('min-received').textContent = (outputAmount * 0.99).toFixed(6);
-            document.getElementById('tx-details').textContent = 
-                `${inputAmount} ${currentFromToken.symbol} → ${outputAmount.toFixed(2)} ${currentToToken.symbol}`;
-        }
-
-        async function executeSwap() {
-            if (!walletConnected || !currentFromToken || !currentToToken) return;
-            
-            const swapBtn = document.getElementById('swap-button');
-            const swapText = document.getElementById('swap-text');
-            const spinner = document.getElementById('swap-spinner');
-            const loader = document.getElementById('loading-animation');
-            const fromAmount = parseFloat(document.getElementById('from-amount').value);
-            
-            // État de chargement
-            swapBtn.disabled = true;
-            swapText.textContent = 'Processing...';
-            spinner.classList.remove('hidden');
-            loader.style.display = 'block';
-            
-            try {
-                // Simulation de transaction (2 secondes)
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // Succès
-                showTransactionNotification();
-                
-                // Réinitialisation
-                document.getElementById('from-amount').value = '';
-                document.getElementById('to-amount').value = '';
-                
-                // Mise à jour du solde (simulé)
-                const currentBalance = parseFloat(document.getElementById('from-balance').textContent);
-                document.getElementById('from-balance').textContent = (currentBalance - fromAmount).toFixed(2);
-                
-            } catch (error) {
-                console.error("Swap error:", error);
-                showErrorNotification(error.message);
-            } finally {
-                // Reset UI
-                swapBtn.disabled = false;
-                swapText.textContent = 'Swap Now';
-                spinner.classList.add('hidden');
-                loader.style.display = 'none';
-            }
-        }
-
-        function showTransactionNotification() {
-            const notif = document.getElementById('tx-notification');
-            notif.classList.remove('hidden');
-            setTimeout(() => notif.classList.add('hidden'), 5000);
-        }
-
-        function showErrorNotification(message) {
-            const notif = document.getElementById('tx-notification');
-            notif.innerHTML = `
-                <div class="flex items-center space-x-3">
-                    <i class="fas fa-times-circle text-red-400 text-xl"></i>
-                    <div>
-                        <div class="font-bold">Error</div>
-                        <div class="text-sm text-gray-400">${message}</div>
-                    </div>
-                </div>
-            `;
-            notif.classList.remove('hidden');
-            setTimeout(() => notif.classList.add('hidden'), 5000);
+            // Ici vous mettriez à jour l'interface avec les vrais prix
+            console.log("Prices updated:", mockPrices);
         }
     </script>
 </body>
