@@ -1,627 +1,760 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AetherSwap | Next-Gen DEX</title>
-  <!-- Meta tags améliorés pour le SEO -->
-  <meta name="description" content="Swap tokens instantly on Solana with AetherSwap's lightning-fast DEX">
-  <meta name="keywords" content="Solana, DEX, Swap, Crypto, DeFi">
+  <title>AetherSwap | Next-Gen Privacy DEX</title>
   
-  <!-- CDNs optimisés -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.2.0/lib/index.iife.min.js"></script>
+  <!-- Enhanced Meta Tags -->
+  <meta name="description" content="Swap tokens instantly on Solana with ZK-privacy and lightning-fast speeds">
+  <meta name="keywords" content="Solana, DEX, Swap, Crypto, DeFi, Web5, ZKP">
+  <meta name="theme-color" content="#6366f1">
   
-  <!-- Fonts modernes (Google Fonts) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Security Headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https: 'unsafe-eval'; style-src 'self' https: 'unsafe-inline'; connect-src *">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
   
-  <!-- Animations (GSAP) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <!-- Preload Critical Resources -->
+  <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+  <link rel="preload" href="https://unpkg.com/@solana/web3.js@2.0.0" as="script">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" as="style">
   
+  <!-- Modern CSS with Layers -->
   <style>
-    :root {
-      --primary: #6366f1;
-      --secondary: #8b5cf6;
-      --dark: #0f172a;
-      --darker: #020617;
-      --card: #1e293b;
+    @layer base, components, utilities;
+    
+    @layer base {
+      :root {
+        --primary: #6366f1;
+        --secondary: #8b5cf6;
+        --dark: #0f172a;
+        --darker: #020617;
+        --card: #1e293b;
+      }
+      
+      [data-theme="light"] {
+        --primary: #4f46e5;
+        --secondary: #7c3aed;
+        --dark: #f1f5f9;
+        --darker: #e2e8f0;
+        --card: #ffffff;
+      }
     }
     
-    body {
-      background: radial-gradient(circle at 10% 20%, var(--darker), var(--dark);
-      color: white;
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
+    @layer components {
+      body {
+        background: radial-gradient(circle at 10% 20%, var(--darker), var(--dark));
+        color: white;
+        font-family: 'Inter', sans-serif;
+        min-height: 100dvh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 1rem;
+      }
+      
+      .glass-card {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.36);
+        
+        @container (width > 400px) {
+          width: min(100%, 28rem);
+        }
+      }
+      
+      .token-input {
+        background: rgba(15, 23, 42, 0.5);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        &:focus {
+          box-shadow: 0 0 0 2px var(--primary);
+        }
+      }
+      
+      .gradient-btn {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        background-size: 200% 200%;
+        transition: all 0.3s ease, background-position 0.5s;
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+          background-position: 100% 100%;
+        }
+      }
     }
     
-    .glass-card {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.36);
+    @layer utilities {
+      .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      
+      .text-balance {
+        text-wrap: balance;
+      }
     }
     
-    .token-input {
-      background: rgba(15, 23, 42, 0.5);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* View Transition API */
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
     
-    .token-input:focus {
-      box-shadow: 0 0 0 2px var(--primary);
-    }
-    
-    .gradient-btn {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      background-size: 200% 200%;
-      transition: all 0.3s ease, background-position 0.5s;
-    }
-    
-    .gradient-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
-      background-position: 100% 100%;
-    }
-    
-    .swap-btn {
-      transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-    
-    .swap-btn:hover {
-      transform: rotate(180deg);
-    }
-    
-    /* Effets de chargement animés */
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    
-    .animate-pulse {
-      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-    
-    /* Dark mode toggle */
-    .toggle-bg:after {
-      content: '';
-      @apply absolute top-0.5 left-0.5 bg-white dark:bg-gray-300 border border-gray-300 rounded-full h-5 w-5 transition shadow-sm;
-    }
-    
-    input:checked + .toggle-bg:after {
-      transform: translateX(100%);
+    .swap-transition {
+      view-transition-name: swap-card;
+      animation: fade-in 0.3s ease;
     }
   </style>
+  
+  <!-- Tailwind with JIT -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,aspect-ratio,line-clamp,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Modern Solana Web3 -->
+  <script type="module">
+    import { Connection, VersionedTransaction } from 'https://esm.sh/@solana/web3.js@2.0.0';
+    import { TokenListProvider } from 'https://esm.sh/@solana/spl-token-registry@2.0.0';
+  </script>
+  
+  <!-- WASM Loader -->
+  <script type="module">
+    const wasm = await WebAssembly.instantiateStreaming(
+      fetch('https://your-cdn.com/swap-calculator.wasm'),
+      { env: { memory: new WebAssembly.Memory({ initial: 256 }) }
+    );
+    window.swapCalculator = wasm.instance.exports;
+  </script>
 </head>
-<body class="dark:bg-gray-900 transition-colors duration-300">
-  <!-- Dark Mode Toggle -->
-  <div class="absolute top-4 left-4 flex items-center space-x-2">
-    <span class="text-sm">🌙</span>
-    <label class="relative inline-flex items-center cursor-pointer">
-      <input type="checkbox" id="dark-mode-toggle" class="sr-only peer">
-      <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-      <span class="text-sm">☀️</span>
-    </label>
-  </div>
-
-  <!-- Language selector -->
-  <div class="absolute top-4 right-4">
-    <select id="language-select" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-      <option value="en" data-flag="🇬🇧">English</option>
-      <option value="fr" data-flag="🇫🇷">Français</option>
-    </select>
-  </div>
-
-  <!-- Main Swap Card -->
-  <div class="glass-card max-w-md w-full p-8 rounded-2xl space-y-6 transform transition-all duration-300 hover:scale-[1.01]">
-    <!-- Animated Header -->
-    <div class="text-center">
-      <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent" data-i18n="title">AetherSwap</h1>
-      <p class="text-gray-400 mt-1 text-sm">Instant Solana Token Swaps</p>
+<body>
+  <!-- View Transition Wrapper -->
+  <div class="swap-transition">
+    <!-- Theme Toggle -->
+    <div class="absolute top-4 left-4 flex items-center gap-2">
+      <button id="theme-toggle" class="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors">
+        <span class="dark:hidden">🌙</span>
+        <span class="hidden dark:inline">☀️</span>
+      </button>
+      
+      <!-- Language Selector -->
+      <select id="language-select" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <option value="en">🇬🇧 English</option>
+        <option value="fr">🇫🇷 Français</option>
+      </select>
     </div>
-
-    <!-- Connect Wallet Button -->
-    <button id="connect-wallet" class="gradient-btn w-full flex items-center justify-center space-x-2 py-3 rounded-xl font-medium text-white">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
-      </svg>
-      <span data-i18n="connect_wallet">Connect Wallet</span>
-    </button>
-
-    <!-- From Token Card -->
-    <div class="bg-gray-800/50 p-4 rounded-xl border border-gray-700/50">
-      <div class="flex justify-between items-center mb-2">
-        <label class="block text-sm text-gray-300" data-i18n="from">From</label>
-        <div class="text-xs text-gray-400 flex items-center">
-          <span data-i18n="balance">Balance</span>: <span id="from-balance" class="ml-1 font-medium">0</span>
-          <button id="max-btn" class="ml-2 text-indigo-400 hover:text-indigo-300 text-xs font-medium" data-i18n="max">Max</button>
+    
+    <!-- Main Swap Interface -->
+    <main class="glass-card w-full p-6 rounded-2xl space-y-6 container-type:inline-size">
+      <header class="text-center">
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent text-balance">
+          AetherSwap
+        </h1>
+        <p class="text-gray-400 mt-1 text-sm">ZK-Powered Solana Swaps</p>
+      </header>
+      
+      <!-- Wallet Connection -->
+      <button id="connect-wallet" class="gradient-btn w-full flex items-center justify-center gap-2 py-3 rounded-xl font-medium text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+        </svg>
+        <span data-i18n="connect_wallet">Connect Wallet</span>
+      </button>
+      
+      <!-- Swap Form -->
+      <div class="space-y-4">
+        <!-- From Token -->
+        <div class="bg-gray-800/50 p-4 rounded-xl border border-gray-700/50">
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-sm text-gray-300" data-i18n="from">From</label>
+            <div class="text-xs text-gray-400 flex items-center">
+              <span data-i18n="balance">Balance</span>: <span id="from-balance" class="ml-1 font-medium">0</span>
+              <button id="max-btn" class="ml-2 text-indigo-400 hover:text-indigo-300 text-xs font-medium" data-i18n="max">Max</button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-2">
+            <input id="from-amount" type="number" min="0" step="any" placeholder="0.0" 
+                   class="token-input text-2xl font-medium w-full bg-transparent focus:outline-none text-white" />
+            <token-select id="from-token"></token-select>
+          </div>
+        </div>
+        
+        <!-- Swap Direction -->
+        <div class="flex justify-center -my-3 z-10 relative">
+          <button id="swap-direction" class="swap-btn bg-gray-800 p-3 rounded-full border-2 border-gray-700 hover:bg-gray-700 shadow-lg transition-transform duration-300 hover:rotate-180">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- To Token -->
+        <div class="bg-gray-800/50 p-4 rounded-xl border border-gray-700/50">
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-sm text-gray-300" data-i18n="to">To</label>
+            <div class="text-xs text-gray-400">
+              <span data-i18n="balance">Balance</span>: <span id="to-balance" class="ml-1 font-medium">0</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-2">
+            <input id="to-amount" type="text" placeholder="0.0" disabled
+                   class="token-input text-2xl font-medium w-full bg-transparent text-white" />
+            <token-select id="to-token"></token-select>
+          </div>
         </div>
       </div>
-      <div class="flex items-center justify-between">
-        <input id="from-amount" type="number" min="0" step="any" placeholder="0.0" 
-               class="token-input text-2xl font-medium w-full bg-transparent focus:outline-none text-white" />
-        <select id="from-token" class="ml-3 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500">
-          <!-- Populated by JS -->
-        </select>
+      
+      <!-- Advanced Settings -->
+      <details class="bg-gray-800/30 rounded-lg overflow-hidden">
+        <summary class="px-4 py-3 text-sm cursor-pointer flex justify-between items-center">
+          <span data-i18n="advanced_settings">Advanced Settings</span>
+          <svg class="w-4 h-4 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </summary>
+        <div class="px-4 pb-3 pt-1 space-y-3">
+          <!-- Slippage -->
+          <div class="flex justify-between items-center text-sm">
+            <label for="slippage" class="text-gray-300" data-i18n="slippage">Slippage tolerance:</label>
+            <div class="flex gap-2">
+              <button class="slippage-btn px-2 py-1 rounded text-xs bg-gray-700 hover:bg-gray-600" value="0.1">0.1%</button>
+              <button class="slippage-btn px-2 py-1 rounded text-xs bg-indigo-600 text-white" value="0.5">0.5%</button>
+              <button class="slippage-btn px-2 py-1 rounded text-xs bg-gray-700 hover:bg-gray-600" value="1">1%</button>
+            </div>
+          </div>
+          
+          <!-- Turbo Mode -->
+          <div class="flex justify-between items-center text-sm">
+            <label class="text-gray-300" data-i18n="turbo_mode">Turbo Mode:</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="turbo-toggle" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-indigo-600 transition-colors">
+                <div class="absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full h-5 w-5 transition-transform peer-checked:translate-x-full"></div>
+              </div>
+            </label>
+          </div>
+          
+          <!-- Private Swap -->
+          <div class="flex justify-between items-center text-sm">
+            <label class="text-gray-300" data-i18n="private_swap">Private Swap (ZK):</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="zk-toggle" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-indigo-600 transition-colors">
+                <div class="absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full h-5 w-5 transition-transform peer-checked:translate-x-full"></div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </details>
+      
+      <!-- Swap Button -->
+      <button id="swap-btn" class="gradient-btn w-full py-3 rounded-xl font-bold text-white text-lg shadow-lg hover:shadow-indigo-500/20 transition-all" data-i18n="swap">
+        Swap Now
+      </button>
+      
+      <!-- Transaction Status -->
+      <div id="tx-status" class="min-h-[24px] text-center text-sm">
+        <!-- Dynamic content -->
       </div>
-    </div>
-
-    <!-- Swap Direction Button -->
-    <div class="flex justify-center -my-3 z-10 relative">
-      <button id="swap-direction" class="swap-btn bg-gray-800 p-3 rounded-full border-2 border-gray-700 hover:bg-gray-700 shadow-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+      
+      <!-- Network Status -->
+      <div class="flex items-center justify-center gap-2 text-xs text-gray-400">
+        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        <span>Solana Mainnet</span>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Custom Token Select Element -->
+  <template id="token-select-template">
+    <div class="relative">
+      <button class="token-select-button flex items-center gap-2 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm min-w-[120px]">
+        <span class="token-icon">🟣</span>
+        <span class="token-symbol">SOL</span>
+        <svg class="w-4 h-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-    </div>
-
-    <!-- To Token Card -->
-    <div class="bg-gray-800/50 p-4 rounded-xl border border-gray-700/50">
-      <div class="flex justify-between items-center mb-2">
-        <label class="block text-sm text-gray-300" data-i18n="to">To</label>
-        <div class="text-xs text-gray-400">
-          <span data-i18n="balance">Balance</span>: <span id="to-balance" class="ml-1 font-medium">0</span>
+      <div class="token-dropdown hidden absolute z-10 mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg shadow-lg overflow-hidden">
+        <div class="p-2 border-b border-gray-700">
+          <input type="text" placeholder="Search tokens..." class="w-full p-2 bg-gray-900 rounded text-sm">
         </div>
-      </div>
-      <div class="flex items-center justify-between">
-        <input id="to-amount" type="text" placeholder="0.0" disabled
-               class="token-input text-2xl font-medium w-full bg-transparent text-white" />
-        <select id="to-token" class="ml-3 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500">
-          <!-- Populated by JS -->
-        </select>
-      </div>
-    </div>
-
-    <!-- Slippage Settings -->
-    <div class="bg-gray-800/30 p-3 rounded-lg">
-      <div class="flex justify-between items-center text-sm">
-        <label for="slippage" class="text-gray-300" data-i18n="slippage">Slippage tolerance:</label>
-        <div class="flex space-x-2">
-          <button class="slippage-btn px-2 py-1 rounded text-xs bg-gray-700 hover:bg-gray-600" value="0.1">0.1%</button>
-          <button class="slippage-btn px-2 py-1 rounded text-xs bg-indigo-600 text-white" value="0.5">0.5%</button>
-          <button class="slippage-btn px-2 py-1 rounded text-xs bg-gray-700 hover:bg-gray-600" value="1">1%</button>
+        <div class="max-h-60 overflow-y-auto">
+          <!-- Tokens populated by JS -->
         </div>
       </div>
     </div>
-
-    <!-- Swap Button -->
-    <button id="swap-btn" class="gradient-btn w-full py-3 rounded-xl font-bold text-white text-lg shadow-lg" data-i18n="swap">
-      Swap Now
-    </button>
-
-    <!-- Transaction Status -->
-    <div id="tx-status" class="min-h-[24px] text-center text-sm">
-      <!-- Status messages appear here -->
+  </template>
+  
+  <!-- Transaction Dialog -->
+  <dialog id="tx-dialog" class="bg-gray-800 rounded-xl border border-gray-700 backdrop:bg-black/50 p-0 max-w-md w-full">
+    <div class="p-6 space-y-4">
+      <h3 class="text-xl font-bold text-center" data-i18n="confirm_swap">Confirm Swap</h3>
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between">
+          <span class="text-gray-400" data-i18n="rate">Rate</span>
+          <span id="tx-rate">1 SOL = 24.52 USDC</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400" data-i18n="minimum_received">Minimum received</span>
+          <span id="tx-min-received">24.42 USDC</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400" data-i18n="price_impact">Price impact</span>
+          <span id="tx-price-impact">0.12%</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400" data-i18n="network_fee">Network fee</span>
+          <span id="tx-network-fee">0.0005 SOL</span>
+        </div>
+      </div>
+      <div class="pt-4 flex gap-3">
+        <button id="tx-cancel" class="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors" data-i18n="cancel">Cancel</button>
+        <button id="tx-confirm" class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors" data-i18n="confirm">Confirm</button>
+      </div>
     </div>
-
-    <!-- Network Status -->
-    <div class="flex items-center justify-center space-x-2 text-xs text-gray-400">
-      <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-      <span>Solana Mainnet</span>
-    </div>
-  </div>
-
-  <!-- FontAwesome -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-  <script>
-    // ======= DARK MODE TOGGLE =======
-    const darkModeToggle = document.getElementById('dark-mode-toggle');
-    darkModeToggle.addEventListener('change', () => {
-      document.documentElement.classList.toggle('dark');
-      localStorage.setItem('darkMode', darkModeToggle.checked);
-    });
-
-    // Check for saved user preference or system preference
-    if (localStorage.getItem('darkMode') === 'true' || 
-        (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-      darkModeToggle.checked = true;
-    }
-
-    // ======= ANIMATIONS =======
-    gsap.from(".glass-card", {
-      duration: 0.8,
-      y: 20,
-      opacity: 0,
-      ease: "power3.out"
-    });
-
-    // ======= TRANSLATIONS =======
-    const translations = {
-      en: {
-        title: "AetherSwap",
-        connect_wallet: "Connect Wallet",
-        from: "From",
-        to: "To",
-        balance: "Balance",
-        max: "Max",
-        swap: "Swap Now",
-        slippage: "Slippage tolerance:",
-        connected: "Connected ✔",
-        please_install_phantom: "Please install Phantom Wallet.",
-        invalid_amount: "Please enter a valid amount.",
-        wallet_not_connected: "Wallet not connected.",
-        fetching_quote: "Fetching best price...",
-        swap_success: "Swap successful! View on explorer: ",
-        swap_failed: "Swap failed, see console.",
-      },
-      fr: {
-        title: "AetherSwap",
-        connect_wallet: "Connecter le portefeuille",
-        from: "De",
-        to: "À",
-        balance: "Solde",
-        max: "Max",
-        swap: "Échanger maintenant",
-        slippage: "Tolérance de glissement:",
-        connected: "Connecté ✔",
-        please_install_phantom: "Veuillez installer Phantom Wallet.",
-        invalid_amount: "Veuillez saisir un montant valide.",
-        wallet_not_connected: "Portefeuille non connecté.",
-        fetching_quote: "Recherche du meilleur prix...",
-        swap_success: "Échange réussi ! Voir sur l'explorateur : ",
-        swap_failed: "Échec de l'échange, voir console.",
-      }
+  </dialog>
+  
+  <!-- Modern JavaScript -->
+  <script type="module">
+    // ======== CONSTANTS ========
+    const TOKEN_LIST_URL = 'https://token-list.solana.com/solana.tokenlist.json';
+    const RPC_ENDPOINT = 'https://api.mainnet-beta.solana.com';
+    const ZK_PROVER_URL = 'https://zk-prover.aetherswap.xyz';
+    
+    // ======== STATE ========
+    let state = {
+      wallet: null,
+      tokens: [],
+      balances: {},
+      rates: {},
+      slippage: 0.5,
+      turboMode: false,
+      zkMode: false,
+      language: 'en'
     };
-
-    let currentLang = 'en';
-
-    // Update all translatable elements
-    function updateLanguage(lang) {
-      currentLang = lang;
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (translations[lang][key]) {
-          el.textContent = translations[lang][key];
-        }
-      });
+    
+    // ======== WEB COMPONENTS ========
+    class TokenSelect extends HTMLElement {
+      constructor() {
+        super();
+        const template = document.getElementById('token-select-template').content;
+        this.attachShadow({ mode: 'open' }).appendChild(template.cloneNode(true));
+        
+        this.button = this.shadowRoot.querySelector('.token-select-button');
+        this.dropdown = this.shadowRoot.querySelector('.token-dropdown');
+        this.search = this.shadowRoot.querySelector('input');
+        this.list = this.shadowRoot.querySelector('.token-dropdown > div');
+        
+        this.button.addEventListener('click', () => this.toggleDropdown());
+        document.addEventListener('click', (e) => {
+          if (!this.contains(e.target)) this.closeDropdown();
+        });
+      }
+      
+      toggleDropdown() {
+        this.dropdown.classList.toggle('hidden');
+      }
+      
+      closeDropdown() {
+        this.dropdown.classList.add('hidden');
+      }
+      
+      setTokens(tokens) {
+        this.list.innerHTML = '';
+        tokens.forEach(token => {
+          const item = document.createElement('div');
+          item.className = 'flex items-center p-3 hover:bg-gray-700 cursor-pointer';
+          item.innerHTML = `
+            <span class="mr-2">${token.icon || '🟢'}</span>
+            <span class="flex-1">${token.symbol}</span>
+            <span class="text-gray-400 text-sm">${token.name || ''}</span>
+          `;
+          item.addEventListener('click', () => {
+            this.selectToken(token);
+            this.closeDropdown();
+          });
+          this.list.appendChild(item);
+        });
+      }
+      
+      selectToken(token) {
+        this.shadowRoot.querySelector('.token-icon').textContent = token.icon || '🟢';
+        this.shadowRoot.querySelector('.token-symbol').textContent = token.symbol;
+        this.dispatchEvent(new CustomEvent('token-change', { detail: token }));
+      }
     }
-
-    // Language selector
-    const langSelect = document.getElementById('language-select');
-    langSelect.addEventListener('change', (e) => {
-      updateLanguage(e.target.value);
-      // Animate language change
-      gsap.from("[data-i18n]", {
-        duration: 0.3,
-        y: -5,
-        opacity: 0,
-        stagger: 0.05
-      });
-    });
-
-    updateLanguage(currentLang);
-
-    // ======= SOLANA SETUP =======
-    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-    let wallet = null;
-
-    // Common tokens (mainnet)
-    const TOKENS = [
-      { symbol: "SOL", mint: "So11111111111111111111111111111111111111112", decimals: 9, icon: "🟣" },
-      { symbol: "USDC", mint: "EPjFWdd5AufqSSqeM2q6DQNpMQcFcSq2GmKkExN6TfK", decimals: 6, icon: "🔵" },
-      { symbol: "USDT", mint: "Es9vMFrzaCERaEfeT5gDEgCk5kL7zESg8TLEosrpT5wE", decimals: 6, icon: "🟢" },
-      { symbol: "BONK", mint: "DezXQ4r2KPdNCz8DMceGU5Gm9gCejrKP1LefPfYtJGpT", decimals: 9, icon: "🐶" },
-    ];
-
-    // DOM Elements
-    const fromTokenSelect = document.getElementById('from-token');
-    const toTokenSelect = document.getElementById('to-token');
-    const fromAmountInput = document.getElementById('from-amount');
-    const toAmountInput = document.getElementById('to-amount');
-    const fromBalanceSpan = document.getElementById('from-balance');
-    const toBalanceSpan = document.getElementById('to-balance');
-    const connectWalletBtn = document.getElementById('connect-wallet');
-    const maxBtn = document.getElementById('max-btn');
-    const swapBtn = document.getElementById('swap-btn');
-    const swapDirBtn = document.getElementById('swap-direction');
-    const txStatus = document.getElementById('tx-status');
-    const slippageBtns = document.querySelectorAll('.slippage-btn');
-
-    // Populate token selects with icons
-    function populateTokenSelectors() {
-      TOKENS.forEach(token => {
-        let opt1 = new Option(`${token.icon} ${token.symbol}`, token.mint);
-        let opt2 = new Option(`${token.icon} ${token.symbol}`, token.mint);
-        fromTokenSelect.add(opt1);
-        toTokenSelect.add(opt2);
-      });
-      fromTokenSelect.value = TOKENS[0].mint; // SOL
-      toTokenSelect.value = TOKENS[1].mint;   // USDC
-    }
-
-    populateTokenSelectors();
-
-    // Slippage buttons
-    slippageBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        slippageBtns.forEach(b => b.classList.remove('bg-indigo-600', 'text-white'));
-        btn.classList.add('bg-indigo-600', 'text-white');
-        updateQuote();
-      });
-    });
-
-    // Connect wallet with animation
-    connectWalletBtn.addEventListener('click', async () => {
-      if (window.solana && window.solana.isPhantom) {
+    
+    customElements.define('token-select', TokenSelect);
+    
+    // ======== INITIALIZATION ========
+    document.addEventListener('DOMContentLoaded', async () => {
+      await initTheme();
+      await initLanguage();
+      await initTokenList();
+      initEventListeners();
+      
+      // Check for service worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(console.error);
+      }
+      
+      // Check for wallet
+      if ('wallet' in window) {
         try {
-          gsap.to(connectWalletBtn, {
-            scale: 0.95,
-            duration: 0.2,
-            onComplete: async () => {
-              const resp = await window.solana.connect();
-              wallet = resp.publicKey;
-              connectWalletBtn.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                </svg>
-                <span>${translations[currentLang].connected}</span>
-              `;
-              await updateBalances();
-              gsap.from(connectWalletBtn, { scale: 1.05, duration: 0.3 });
-            }
-          });
+          state.wallet = await window.wallet.connect();
+          updateWalletUI();
         } catch (e) {
-          console.error(e);
-          txStatus.textContent = e.message;
-          txStatus.style.color = "#ef4444";
+          console.error('Wallet connection error:', e);
         }
-      } else {
-        txStatus.textContent = translations[currentLang].please_install_phantom;
-        txStatus.style.color = "#ef4444";
-        gsap.fromTo(txStatus, 
-          { x: -10 }, 
-          { x: 0, duration: 0.3, ease: "elastic.out(1, 0.5)" }
-        );
       }
-    });
-
-    // Fetch balance for SOL or SPL token
-    async function getTokenBalance(pubkey, mint, decimals) {
-      if (!pubkey) return 0;
-
-      try {
-        if (mint === "So11111111111111111111111111111111111111112") {
-          // SOL balance
-          let balance = await connection.getBalance(pubkey);
-          return balance / Math.pow(10, decimals);
-        } else {
-          // SPL token balance
-          const tokenAccounts = await connection.getTokenAccountsByOwner(pubkey, { mint: new solanaWeb3.PublicKey(mint) });
-          if (tokenAccounts.value.length === 0) return 0;
-          const accountInfo = tokenAccounts.value[0].account.data;
-          const amountArray = accountInfo.slice(64, 72);
-          let amount = 0n;
-          for (let i = 0; i < 8; i++) {
-            amount += BigInt(amountArray[i]) << BigInt(8 * i);
-          }
-          return Number(amount) / Math.pow(10, decimals);
-        }
-      } catch (e) {
-        console.error("Balance error:", e);
-        return 0;
-      }
-    }
-
-    // Update balances display with animation
-    async function updateBalances() {
-      if (!wallet) return;
-      
-      const fromMint = fromTokenSelect.value;
-      const toMint = toTokenSelect.value;
-      const fromToken = TOKENS.find(t => t.mint === fromMint);
-      const toToken = TOKENS.find(t => t.mint === toMint);
-
-      // Animate balance loading
-      gsap.to([fromBalanceSpan, toBalanceSpan], {
-        textContent: "...",
-        duration: 0.2,
-        onComplete: async () => {
-          const [fromBal, toBal] = await Promise.all([
-            getTokenBalance(wallet, fromMint, fromToken.decimals),
-            getTokenBalance(wallet, toMint, toToken.decimals)
-          ]);
-          
-          gsap.to(fromBalanceSpan, {
-            textContent: fromBal.toFixed(4),
-            duration: 0.5,
-            ease: "power2.out"
-          });
-          
-          gsap.to(toBalanceSpan, {
-            textContent: toBal.toFixed(4),
-            duration: 0.5,
-            ease: "power2.out",
-            delay: 0.1
-          });
-        }
-      });
-    }
-
-    // Max button with animation
-    maxBtn.addEventListener('click', () => {
-      fromAmountInput.value = fromBalanceSpan.textContent;
-      gsap.fromTo(fromAmountInput, 
-        { scale: 1.05 }, 
-        { scale: 1, duration: 0.3 }
-      );
-      updateQuote();
-    });
-
-    // Swap direction with animation
-    swapDirBtn.addEventListener('click', () => {
-      gsap.to(swapDirBtn, {
-        rotation: "+=180",
-        duration: 0.4,
-        ease: "back.out"
-      });
-      
-      const fromVal = fromTokenSelect.value;
-      const toVal = toTokenSelect.value;
-      fromTokenSelect.value = toVal;
-      toTokenSelect.value = fromVal;
-
-      fromAmountInput.value = '';
-      toAmountInput.value = '';
-      updateBalances();
-    });
-
-    // Token select changes
-    fromTokenSelect.addEventListener('change', async () => {
-      await updateBalances();
-      updateQuote();
     });
     
-    toTokenSelect.addEventListener('change', async () => {
-      await updateBalances();
-      updateQuote();
-    });
-
-    // Amount input with debounce
-    let quoteTimeout;
-    fromAmountInput.addEventListener('input', () => {
-      clearTimeout(quoteTimeout);
-      quoteTimeout = setTimeout(updateQuote, 300);
-    });
-
-    // Improved updateQuote with loading state
-    async function updateQuote() {
-      if (!wallet) return;
+    async function initTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       
-      let amount = parseFloat(fromAmountInput.value);
-      if (!amount || amount <= 0) {
-        toAmountInput.value = '';
-        return;
+      if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
       }
       
-      // Show loading state
-      txStatus.innerHTML = `
-        <div class="flex items-center justify-center space-x-2">
-          <div class="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-          <span>${translations[currentLang].fetching_quote}</span>
-        </div>
-      `;
-      
-      // Simulate API delay with random rate
-      await new Promise(r => setTimeout(r, 800 + Math.random() * 700));
-      
-      const selectedSlippage = document.querySelector('.slippage-btn.bg-indigo-600').value;
-      const slippage = parseFloat(selectedSlippage) / 100;
-      const rate = 0.99 * (1 - slippage); // Simulate slight price impact
-      
-      // Animate the toAmount update
-      gsap.to(toAmountInput, {
-        value: (amount * rate).toFixed(6),
-        duration: 0.5,
-        onUpdate: function() {
-          toAmountInput.value = this.targets()[0].value;
-        },
-        onComplete: () => {
-          txStatus.textContent = '';
-        }
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
       });
     }
-
-    // Swap button with enhanced feedback
-    swapBtn.addEventListener('click', async () => {
-      if (!wallet) {
-        txStatus.textContent = translations[currentLang].wallet_not_connected;
-        txStatus.style.color = "#ef4444";
-        gsap.fromTo(txStatus, 
-          { x: -5 }, 
-          { x: 0, duration: 0.3, ease: "elastic.out(1, 0.3)" }
-        );
+    
+    async function initLanguage() {
+      const savedLang = localStorage.getItem('language') || navigator.language.slice(0, 2) || 'en';
+      state.language = ['en', 'fr'].includes(savedLang) ? savedLang : 'en';
+      document.getElementById('language-select').value = state.language;
+      updateLanguage(state.language);
+      
+      document.getElementById('language-select').addEventListener('change', (e) => {
+        state.language = e.target.value;
+        localStorage.setItem('language', state.language);
+        updateLanguage(state.language);
+      });
+    }
+    
+    async function initTokenList() {
+      try {
+        const provider = new TokenListProvider();
+        const tokenList = await provider.resolve();
+        state.tokens = tokenList.filterByClusterSlug('mainnet-beta').getList();
+        
+        // Add popular tokens first
+        const popularTokens = [
+          { symbol: "SOL", mint: "So11111111111111111111111111111111111111112", decimals: 9, icon: "🟣" },
+          { symbol: "USDC", mint: "EPjFWdd5AufqSSqeM2q6DQNpMQcFcSq2GmKkExN6TfK", decimals: 6, icon: "🔵" },
+          { symbol: "USDT", mint: "Es9vMFrzaCERaEfeT5gDEgCk5kL7zESg8TLEosrpT5wE", decimals: 6, icon: "🟢" }
+        ];
+        
+        state.tokens = [...popularTokens, ...state.tokens];
+        
+        // Initialize token selects
+        document.querySelectorAll('token-select').forEach(select => {
+          select.setTokens(state.tokens);
+        });
+      } catch (e) {
+        console.error('Failed to load token list:', e);
+      }
+    }
+    
+    function initEventListeners() {
+      // Wallet connection
+      document.getElementById('connect-wallet').addEventListener('click', connectWallet);
+      
+      // Swap direction
+      document.getElementById('swap-direction').addEventListener('click', () => {
+        const fromSelect = document.getElementById('from-token');
+        const toSelect = document.getElementById('to-token');
+        
+        // Start view transition
+        if (document.startViewTransition) {
+          document.startViewTransition(() => {
+            [fromSelect.selectedToken, toSelect.selectedToken] = [toSelect.selectedToken, fromSelect.selectedToken];
+            updateQuote();
+          });
+        } else {
+          [fromSelect.selectedToken, toSelect.selectedToken] = [toSelect.selectedToken, fromSelect.selectedToken];
+          updateQuote();
+        }
+      });
+      
+      // Max button
+      document.getElementById('max-btn').addEventListener('click', () => {
+        const fromAmount = document.getElementById('from-amount');
+        fromAmount.value = document.getElementById('from-balance').textContent;
+        updateQuote();
+      });
+      
+      // Amount input
+      document.getElementById('from-amount').addEventListener('input', debounce(updateQuote, 300));
+      
+      // Slippage buttons
+      document.querySelectorAll('.slippage-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.slippage = parseFloat(btn.value);
+          document.querySelectorAll('.slippage-btn').forEach(b => 
+            b.classList.toggle('bg-indigo-600', b === btn));
+          updateQuote();
+        });
+      });
+      
+      // Turbo mode toggle
+      document.getElementById('turbo-toggle').addEventListener('change', (e) => {
+        state.turboMode = e.target.checked;
+      });
+      
+      // ZK mode toggle
+      document.getElementById('zk-toggle').addEventListener('change', (e) => {
+        state.zkMode = e.target.checked;
+      });
+      
+      // Swap button
+      document.getElementById('swap-btn').addEventListener('click', prepareSwap);
+      
+      // Token select changes
+      document.getElementById('from-token').addEventListener('token-change', async (e) => {
+        await updateBalances();
+        updateQuote();
+      });
+      
+      document.getElementById('to-token').addEventListener('token-change', async (e) => {
+        await updateBalances();
+        updateQuote();
+      });
+    }
+    
+    // ======== WALLET FUNCTIONS ========
+    async function connectWallet() {
+      if (!window.wallet) {
+        showError('Please install a Solana wallet');
         return;
       }
       
-      let amount = parseFloat(fromAmountInput.value);
-      if (!amount || amount <= 0) {
-        txStatus.textContent = translations[currentLang].invalid_amount;
-        txStatus.style.color = "#ef4444";
-        gsap.fromTo(fromAmountInput, 
-          { x: -5 }, 
-          { x: 0, duration: 0.3, ease: "elastic.out(1, 0.3)" }
-        );
+      try {
+        const wallet = await window.wallet.connect();
+        state.wallet = wallet.publicKey;
+        updateWalletUI();
+        await updateBalances();
+      } catch (e) {
+        showError('Wallet connection failed');
+        console.error(e);
+      }
+    }
+    
+    function updateWalletUI() {
+      const btn = document.getElementById('connect-wallet');
+      btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+        <span>${translations[state.language].connected}</span>
+      `;
+    }
+    
+    // ======== BALANCE & QUOTE FUNCTIONS ========
+    async function updateBalances() {
+      if (!state.wallet) return;
+      
+      const fromToken = document.getElementById('from-token').selectedToken;
+      const toToken = document.getElementById('to-token').selectedToken;
+      
+      try {
+        const [fromBal, toBal] = await Promise.all([
+          getTokenBalance(state.wallet, fromToken.mint, fromToken.decimals),
+          getTokenBalance(state.wallet, toToken.mint, toToken.decimals)
+        ]);
+        
+        document.getElementById('from-balance').textContent = fromBal.toFixed(4);
+        document.getElementById('to-balance').textContent = toBal.toFixed(4);
+      } catch (e) {
+        console.error('Failed to update balances:', e);
+      }
+    }
+    
+    async function getTokenBalance(publicKey, mintAddress, decimals) {
+      if (mintAddress === "So11111111111111111111111111111111111111112") {
+        // SOL balance
+        const balance = await connection.getBalance(publicKey);
+        return balance / Math.pow(10, decimals);
+      } else {
+        // SPL token balance
+        const accounts = await connection.getTokenAccountsByOwner(publicKey, { mint: new PublicKey(mintAddress) });
+        if (accounts.value.length === 0) return 0;
+        
+        const accountInfo = accounts.value[0].account.data;
+        const amount = accountInfo.slice(64, 72).reduce((acc, val, i) => 
+          acc + (BigInt(val) << BigInt(8 * i)), 0n);
+        
+        return Number(amount) / Math.pow(10, decimals);
+      }
+    }
+    
+    async function updateQuote() {
+      const fromAmount = parseFloat(document.getElementById('from-amount').value);
+      if (!fromAmount || fromAmount <= 0) {
+        document.getElementById('to-amount').value = '';
         return;
       }
-
-      // Animate button click
-      gsap.to(swapBtn, {
-        scale: 0.95,
-        duration: 0.2,
-        onComplete: async () => {
-          try {
-            txStatus.innerHTML = `
-              <div class="flex items-center justify-center space-x-2 text-indigo-400">
-                <div class="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-                <span>Processing transaction...</span>
-              </div>
-            `;
-            
-            // Simulate transaction delay
-            await new Promise(r => setTimeout(r, 1500 + Math.random() * 1000));
-            
-            // Success animation
-            gsap.to(swapBtn, {
-              background: "linear-gradient(135deg, #10b981, #3b82f6)",
-              duration: 0.3
-            });
-            
-            const fakeTx = "FAKE_" + Math.random().toString(36).substring(2, 10).toUpperCase();
-            txStatus.innerHTML = `
-              <div class="flex items-center justify-center space-x-2 text-green-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                </svg>
-                <span>${translations[currentLang].swap_success}</span>
-                <a href="#" class="underline hover:text-green-300">${fakeTx}</a>
-              </div>
-            `;
-            
-            await updateBalances();
-            fromAmountInput.value = '';
-            toAmountInput.value = '';
-            
-            // Reset button after success
-            setTimeout(() => {
-              gsap.to(swapBtn, {
-                background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                duration: 0.5
-              });
-            }, 2000);
-          } catch (e) {
-            console.error(e);
-            txStatus.innerHTML = `
-              <div class="flex items-center justify-center space-x-2 text-red-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                </svg>
-                <span>${translations[currentLang].swap_failed}</span>
-              </div>
-            `;
-          }
+      
+      const fromToken = document.getElementById('from-token').selectedToken;
+      const toToken = document.getElementById('to-token').selectedToken;
+      
+      showLoading('fetching_quote');
+      
+      try {
+        // Use WASM for price calculation
+        const rate = window.swapCalculator.calculateRate(
+          fromToken.mint,
+          toToken.mint,
+          fromAmount,
+          state.slippage
+        );
+        
+        const toAmount = fromAmount * rate;
+        document.getElementById('to-amount').value = toAmount.toFixed(6);
+        
+        // Update transaction dialog preview
+        document.getElementById('tx-rate').textContent = `1 ${fromToken.symbol} = ${(1/rate).toFixed(4)} ${toToken.symbol}`;
+        document.getElementById('tx-min-received').textContent = `${(toAmount * (1 - state.slippage/100)).toFixed(6)} ${toToken.symbol}`;
+        
+        clearStatus();
+      } catch (e) {
+        showError('Failed to get quote');
+        console.error(e);
+      }
+    }
+    
+    // ======== SWAP EXECUTION ========
+    async function prepareSwap() {
+      if (!state.wallet) {
+        showError('wallet_not_connected');
+        return;
+      }
+      
+      const fromAmount = parseFloat(document.getElementById('from-amount').value);
+      if (!fromAmount || fromAmount <= 0) {
+        showError('invalid_amount');
+        return;
+      }
+      
+      // Show confirmation dialog
+      const dialog = document.getElementById('tx-dialog');
+      dialog.showModal();
+      
+      // Dialog event listeners
+      document.getElementById('tx-cancel').addEventListener('click', () => dialog.close(), { once: true });
+      document.getElementById('tx-confirm').addEventListener('click', () => {
+        dialog.close();
+        executeSwap();
+      }, { once: true });
+    }
+    
+    async function executeSwap() {
+      const fromToken = document.getElementById('from-token').selectedToken;
+      const toToken = document.getElementById('to-token').selectedToken;
+      const fromAmount = parseFloat(document.getElementById('from-amount').value);
+      const toAmount = parseFloat(document.getElementById('to-amount').value);
+      
+      showLoading('processing_transaction');
+      
+      try {
+        let tx;
+        
+        if (state.zkMode) {
+          // ZK Private Swap
+          const { proof, publicSignals } = await generateZKProof({
+            secret: state.wallet.toBytes(),
+            fromToken: fromToken.mint,
+            toToken: toToken.mint,
+            amount: fromAmount
+          });
+          
+          tx = new ZKTransaction(proof, publicSignals);
+        } else {
+          // Normal swap
+          tx = await createSwapTransaction(
+            state.wallet,
+            fromToken.mint,
+            toToken.mint,
+            fromAmount,
+            toAmount * (1 - state.slippage/100),
+            state.turboMode
+          );
         }
-      });
-    });
-
-    // Initial animations
-    document.addEventListener('DOMContentLoaded', () => {
-      gsap.from(".token-input", {
-        y: 10,
-        opacity: 0,
-        stagger: 0.1,
-        duration: 0.5,
-        delay: 0.3
-      });
-    });
-  </script>
-</body>
-</html>
+        
+        // Sign and send
+        const signedTx = await window.wallet.signTransaction(tx);
+        const txId = await connection.sendRawTransaction(signedTx.serialize());
+        
+        // Success
+        showSuccess(txId);
+        await updateBalances();
+        document.getElementById('from-amount').value = '';
+      } catch (e) {
+        showError('swap_failed');
+        console.error('Swap error:', e);
+      }
+    }
+    
+    // ======== UI HELPERS ========
+    function showLoading(key) {
+      const txStatus = document.getElementById('tx-status');
+      txStatus.innerHTML = `
+        <div class="flex items-center justify-center gap-2 text-indigo-400">
+          <div class="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+          <span>${translations[state.language][key]}</span>
+        </div>
+      `;
+    }
+    
+    function showError(key) {
+      const txStatus = document.getElementById('tx-status');
+      txStatus.innerHTML = `
+        <div class="flex items-center justify-center gap-2 text-red-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+          <span>${translations[state.language][key]}</span>
+        </div>
+      `;
+    }
+    
+    function showSuccess(txId) {
+      const txStatus = document.getElementById('tx-status');
+      txStatus.innerHTML = `
+        <div class="flex items-center justify-center gap-2 text-green-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          <span>${translations[state.language].swap_success}</span>
+          <a href="https://solscan.io/tx/${txId}" target="_blank" class="underline hover:text-green-300">View</a>
+        </div>
+      `;
+    }
+    
+    function clearStatus() {
+      document.getElementById('tx-status').textContent
