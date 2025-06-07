@@ -1,267 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap | Next-Gen Privacy DEX</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AetherSwap</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@solana/web3.js@latest"></script>
+  <script src="https://unpkg.com/@solana/spl-token-registry@0.2.10/dist/index.iife.js"></script>
   <style>
-    .language-selector {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      z-index: 50;
-      opacity: 0.7;
-      transition: opacity 0.2s;
-    }
-    .language-selector:hover {
-      opacity: 1;
-    }
-    .language-selector select {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+    .lang-select{position:fixed;top:1rem;right:1rem;opacity:.7;transition:.2s}.lang-select:hover{opacity:1}
+    .lang-select select{background:rgba(30,41,59,.7);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1)}
   </style>
 </head>
-<body class="min-h-screen bg-gray-900 text-white">
-  <!-- Language Selector (Fixed Top-Right) -->
-  <div class="language-selector">
-    <select id="language-select" class="px-3 py-1 rounded-lg text-sm focus:outline-none">
+<body class="bg-gray-900 text-white min-h-screen">
+  <div class="lang-select">
+    <select id="language" class="px-3 py-1 rounded-lg text-sm focus:outline-none">
       <option value="en">🇬🇧 English</option>
       <option value="fr">🇫🇷 Français</option>
       <option value="es">🇪🇸 Español</option>
-      <option value="zh">🇨🇳 中文</option>
-      <option value="ja">🇯🇵 日本語</option>
-      <option value="de">🇩🇪 Deutsch</option>
     </select>
   </div>
-
-  <!-- Main Content -->
-  <div class="container mx-auto p-4 max-w-md pt-16">
-    <!-- Logo + Title -->
-    <div class="flex flex-col items-center mb-8">
-      <img src="your-logo.png" alt="AetherSwap Logo" class="w-20 h-20 mb-4">
-      <h1 class="text-3xl font-bold">AetherSwap</h1>
-      <p class="text-gray-400">by [YourName]</p>
-    </div>
-
-    <!-- Token Search & Selection -->
-    <div class="mb-6">
-      <div class="flex justify-between items-center mb-2">
-        <h2 class="font-semibold">Select Token</h2>
-        <button id="custom-token-btn" class="text-xs text-purple-400 hover:text-purple-300">
-          + Add Custom Token
-        </button>
-      </div>
-      
-      <!-- Token Search -->
-      <input type="text" id="token-search" placeholder="Search by name or contract address" 
-             class="w-full bg-gray-700 p-3 rounded-lg mb-3 text-sm">
-      
-      <!-- Token List -->
-      <div class="max-h-60 overflow-y-auto bg-gray-800 rounded-lg">
-        <div id="token-list" class="divide-y divide-gray-700">
-          <!-- Preloaded tokens will appear here -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Swap Interface -->
-    <div class="bg-gray-800 rounded-xl p-6 shadow-2xl">
-      <!-- ... (rest of your swap interface) ... -->
-    </div>
+  <div class="container mx-auto max-w-md pt-20 p-4">
+    <button id="connectWallet" class="mb-6 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm">🔐 Connect Wallet</button>
+    <h1 class="text-3xl font-bold text-center mb-4">AetherSwap</h1>
+    <input id="search" type="text" placeholder="Search token..." class="w-full p-2 mb-4 bg-gray-700 rounded"/>
+    <div id="tokenList" class="space-y-2 max-h-96 overflow-y-auto"></div>
   </div>
-
   <script>
-    // Preloaded Tokens (Solana Mainnet)
-    const PRELOADED_TOKENS = [
-      {
-        symbol: "SOL",
-        name: "Solana",
-        mint: "So11111111111111111111111111111111111111112",
-        decimals: 9,
-        logo: "solana-logo.png"
-      },
-      {
-        symbol: "USDC",
-        name: "USD Coin",
-        mint: "EPjFWdd5AufqSSqeM2q6DQNpMQNcFcSq2GmKkExN6TfK",
-        decimals: 6,
-        logo: "usdc-logo.png"
-      },
-      {
-        symbol: "USDT",
-        name: "Tether USD",
-        mint: "Es9vMFrzaCERmJfrE4H2FYD1KZbYUsMrhPkMk81A7xKZ",
-        decimals: 6,
-        logo: "usdt-logo.png"
-      },
-      {
-        symbol: "RAY",
-        name: "Raydium",
-        mint: "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
-        decimals: 6,
-        logo: "raydium-logo.png"
-      }
-    ];
-
-    // Language Support
-    const TRANSLATIONS = {
-      en: {
-        select_token: "Select Token",
-        add_custom: "+ Add Custom Token",
-        search_placeholder: "Search by name or contract address",
-        // ... other translations
-      },
-      fr: {
-        select_token: "Sélectionner un Token",
-        add_custom: "+ Ajouter un Token",
-        search_placeholder: "Rechercher par nom ou adresse de contrat",
-        // ... other translations
-      },
-      // ... other languages
+    const langMap = {
+      en: {search:"Search token...", connect:"🔐 Connect Wallet"},
+      fr: {search:"Rechercher un token...", connect:"🔐 Connecter le portefeuille"},
+      es: {search:"Buscar token...", connect:"🔐 Conectar billetera"}
     };
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      // Load tokens
-      renderTokenList(PRELOADED_TOKENS);
-      
-      // Language selector
-      document.getElementById('language-select').addEventListener('change', (e) => {
-        updateLanguage(e.target.value);
-      });
-      
-      // Token search
-      document.getElementById('token-search').addEventListener('input', (e) => {
-        searchTokens(e.target.value);
-      });
-      
-      // Custom token button
-      document.getElementById('custom-token-btn').addEventListener('click', () => {
-        addCustomToken();
-      });
-    });
+    const langSel = document.getElementById('language');
+    langSel.addEventListener('change', () => setLang(langSel.value));
+    function setLang(l){const t=langMap[l]||langMap.en;document.getElementById("search").placeholder=t.search;document.getElementById("connectWallet").innerText=t.connect;}
+    setLang('en');
 
-    function renderTokenList(tokens) {
-      const container = document.getElementById('token-list');
-      container.innerHTML = tokens.map(token => `
-        <div class="token-item p-3 hover:bg-gray-700 cursor-pointer flex items-center" 
-             data-mint="${token.mint}">
-          <img src="${token.logo}" class="w-6 h-6 mr-3 rounded-full">
-          <div>
-            <div class="font-medium">${token.symbol}</div>
-            <div class="text-xs text-gray-400">${token.name}</div>
-          </div>
-        </div>
-      `).join('');
-      
-      // Add click handlers
-      document.querySelectorAll('.token-item').forEach(item => {
-        item.addEventListener('click', () => {
-          selectToken(item.dataset.mint);
-        });
-      });
+    document.getElementById("connectWallet").onclick = async () => {
+      if (window.solana && window.solana.isPhantom) {
+        try {
+          const res = await window.solana.connect();
+          alert("Connected: " + res.publicKey.toString());
+        } catch (err) { alert("Connection rejected."); }
+      } else alert("Phantom/Backpack not found.");
+    };
+
+    async function loadTokens(){
+      const provider = new splTokenRegistry.TokenListProvider();
+      const tokenList = await provider.resolve().then(tl => tl.filterByChainId(101).getList());
+      window.allTokens = tokenList;
+      displayTokens(tokenList);
     }
 
-    function searchTokens(query) {
-      const filtered = PRELOADED_TOKENS.filter(token => 
-        token.symbol.toLowerCase().includes(query.toLowerCase()) || 
-        token.name.toLowerCase().includes(query.toLowerCase()) ||
-        token.mint.toLowerCase().includes(query.toLowerCase())
-      );
-      renderTokenList(filtered);
+    function displayTokens(tokens){
+      const list = document.getElementById("tokenList");
+      list.innerHTML = tokens.map(t=>`
+        <div class="flex items-center p-2 bg-gray-800 rounded hover:bg-gray-700 cursor-pointer">
+          <img src="${t.logoURI}" alt="${t.symbol}" class="w-6 h-6 mr-3 rounded-full"/>
+          <div><div class="font-semibold">${t.symbol}</div><div class="text-xs text-gray-400">${t.name}</div></div>
+        </div>`).join("");
     }
 
-    function addCustomToken() {
-      const address = prompt("Enter token contract address:");
-      if (address && address.length > 0) {
-        // Validate and add token
-        console.log("Adding custom token:", address);
-        // In a real app, you would validate the address and fetch token info
-      }
-    }
+    document.getElementById("search").oninput = e => {
+      const q = e.target.value.toLowerCase();
+      displayTokens(window.allTokens.filter(t => t.symbol.toLowerCase().includes(q) || t.name.toLowerCase().includes(q)));
+    };
 
-    function updateLanguage(lang) {
-      document.documentElement.lang = lang;
-      const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
-      
-      document.getElementById('token-search').placeholder = t.search_placeholder;
-      document.getElementById('custom-token-btn').textContent = t.add_custom;
-      // Update other elements...
-    }
+    loadTokens();
   </script>
-  // Connexion au wallet Phantom ou Backpack
-async function connectWallet() {
-  if (window.solana && window.solana.isPhantom) {
-    try {
-      const resp = await window.solana.connect();
-      console.log("✅ Wallet connecté :", resp.publicKey.toString());
-      alert("Wallet connecté : " + resp.publicKey.toString());
-    } catch (err) {
-      console.error("❌ Connexion annulée :", err);
-    }
-  } else {
-    alert("Phantom ou Backpack Wallet non détecté !");
-  }
-}
-
-// Bouton de connexion à afficher dans le HTML
-const walletBtn = document.createElement("button");
-walletBtn.textContent = "🔐 Connect Wallet";
-walletBtn.className = "mb-6 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm";
-walletBtn.onclick = connectWallet;
-document.querySelector(".container").prepend(walletBtn);
-
-// Ajout d’un token personnalisé avec validation
-async function addCustomToken() {
-  const mintAddress = prompt("Entrez l’adresse du token (mint) :");
-
-  if (!mintAddress || mintAddress.length < 32) {
-    alert("Adresse invalide.");
-    return;
-  }
-
-  try {
-    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"));
-    const mintPubkey = new solanaWeb3.PublicKey(mintAddress);
-
-    const accountInfo = await connection.getParsedAccountInfo(mintPubkey);
-
-    if (!accountInfo.value) {
-      alert("❌ Token non trouvé sur la blockchain.");
-      return;
-    }
-
-    // Vérifie si c'est un token SPL valide
-    const parsed = accountInfo.value.data;
-    if (parsed?.program !== "spl-token") {
-      alert("❌ Ce n’est pas un token SPL valide.");
-      return;
-    }
-
-    const decimals = parsed.parsed.info.decimals || 0;
-    const symbol = prompt("Nom du token (ex: XYZ) :") || "CUSTOM";
-    const name = prompt("Nom complet du token :") || "Custom Token";
-    const logo = prompt("Lien vers un logo (URL) :") || "token-placeholder.png";
-
-    const newToken = {
-      symbol,
-      name,
-      mint: mintAddress,
-      decimals,
-      logo
-    };
-
-    PRELOADED_TOKENS.push(newToken);
-    renderTokenList(PRELOADED_TOKENS);
-    alert(`✅ Token ${symbol} ajouté !`);
-  } catch (err) {
-    console.error("Erreur lors de l'ajout du token :", err);
-    alert("❌ Erreur : token invalide ou réseau indisponible.");
-  }
-}
 </body>
 </html>
