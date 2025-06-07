@@ -3,58 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherSwap | Next-Gen Privacy DEX</title>
-    <!-- Ajoutez ces lignes pour la cohérence avec votre première page -->
+    <title>AetherSwap | DEX Interface</title>
+    <!-- Import des mêmes dépendances que index.html -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-        
+        /* Styles cohérents avec index.html */
         body {
-            font-family: 'Space Grotesk', sans-serif;
             background-color: #0a0a0a;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
         }
-        
-        /* Ajoutez ici tous vos styles gradient/text de la première page */
         .gradient-text {
             background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
+        .gradient-border {
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, #7e22ce, #3b82f6);
+            border-image-slice: 1;
+        }
     </style>
 </head>
-<body class="min-h-screen bg-gray-900 text-white">
-    <!-- Ajoutez la navigation comme dans votre première page -->
-    <nav class="container mx-auto px-6 py-6 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-            <div class="w-10 h-10 rounded-full gradient-border flex items-center justify-center">
-                <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-                        <defs>
-                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#7e22ce" />
-                                <stop offset="100%" stop-color="#3b82f6" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                    </svg>
+<body>
+    <!-- Barre de navigation cohérente -->
+    <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="index.html" class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-full gradient-border flex items-center justify-center">
+                <div class="w-6 h-6 bg-black rounded-full flex items-center justify-center">
+                    <i class="fas fa-arrow-left text-purple-400"></i>
                 </div>
             </div>
-            <span class="text-2xl font-bold gradient-text">AetherSwap</span>
-        </div>
-        
-        <a href="index.html" class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition">
-            Return Home
+            <span class="text-xl font-bold gradient-text">Back to Home</span>
         </a>
+        <div class="flex items-center space-x-4">
+            <button id="connect-wallet" class="gradient-border px-4 py-2 rounded-full text-sm">
+                Connect Wallet
+            </button>
+        </div>
     </nav>
 
-    <!-- Gardez votre contenu swap.html existant -->
-    <div class="container mx-auto p-4 max-w-md pt-16">
-        <!-- ... Votre code de sélection de token existant ... -->
-    </div>
+    <!-- Interface principale d'échange -->
+    <main class="container mx-auto px-4 py-8 max-w-md">
+        <div class="gradient-border rounded-xl p-1 mb-6">
+            <div class="bg-gray-900 rounded-xl p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-bold text-lg">Swap</h2>
+                    <button class="text-purple-400 hover:text-purple-300">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+                
+                <!-- Champ "From" -->
+                <div class="bg-gray-800 rounded-lg p-3 mb-3">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-400 text-sm">From</span>
+                        <span class="text-gray-400 text-sm">Balance: 0.0</span>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="number" placeholder="0.0" class="bg-transparent text-2xl w-full focus:outline-none">
+                        <button class="bg-gray-700 px-3 py-2 rounded-lg flex items-center">
+                            <span class="mr-2">SOL</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bouton d'inversion -->
+                <div class="flex justify-center my-2">
+                    <button class="bg-gray-800 p-2 rounded-full hover:bg-gray-700">
+                        <i class="fas fa-arrow-down text-purple-400"></i>
+                    </button>
+                </div>
+                
+                <!-- Champ "To" -->
+                <div class="bg-gray-800 rounded-lg p-3 mb-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-400 text-sm">To</span>
+                        <span class="text-gray-400 text-sm">Balance: 0.0</span>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="number" placeholder="0.0" class="bg-transparent text-2xl w-full focus:outline-none">
+                        <button class="bg-gray-700 px-3 py-2 rounded-lg flex items-center">
+                            <span class="mr-2">Select Token</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bouton de swap -->
+                <button id="swap-button" class="w-full bg-purple-600 hover:bg-purple-700 py-3 rounded-lg font-bold transition disabled:opacity-50" disabled>
+                    Connect Wallet to Swap
+                </button>
+            </div>
+        </div>
+        
+        <!-- Section des statistiques -->
+        <div class="bg-gray-900 rounded-xl p-4 mb-6">
+            <h3 class="font-bold mb-3">Swap Details</h3>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Exchange Rate</span>
+                    <span>-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Minimum Received</span>
+                    <span>-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Price Impact</span>
+                    <span>-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Liquidity Provider Fee</span>
+                    <span>0.05%</span>
+                </div>
+            </div>
+        </div>
+    </main>
 
-    <!-- Ajoutez le footer de votre première page si nécessaire -->
+    <!-- Scripts JavaScript -->
+    <script>
+        // Connexion wallet
+        document.getElementById('connect-wallet').addEventListener('click', async () => {
+            try {
+                if (window.solana && window.solana.isPhantom) {
+                    const response = await window.solana.connect();
+                    const publicKey = response.publicKey.toString();
+                    console.log('Connected to:', publicKey);
+                    document.getElementById('swap-button').textContent = 'Swap Now';
+                    document.getElementById('swap-button').disabled = false;
+                } else {
+                    alert('Phantom Wallet not found! Install it from https://phantom.app/');
+                }
+            } catch (error) {
+                console.error('Connection error:', error);
+            }
+        });
+
+        // Logique de swap (simplifiée)
+        document.getElementById('swap-button').addEventListener('click', () => {
+            alert('Swap functionality will be implemented here!');
+            // Ici vous ajouteriez la logique réelle de swap
+            // utilisant @solana/web3.js et les smart contracts
+        });
+    </script>
 </body>
 </html>
