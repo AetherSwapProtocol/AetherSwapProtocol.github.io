@@ -8,179 +8,238 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
   <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://s3.tradingview.com/tv.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
-    .gradient-bg {
+    .aether-gradient {
       background: linear-gradient(135deg, #7e22ce 0%, #3b82f6 100%);
     }
-    /* Enhanced Modal Styles */
-    .token-modal {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    .swap-card {
+      background: rgba(39, 51, 89, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .moopay-btn {
-      transition: transform 0.2s ease-in-out;
+    .token-input {
+      background: rgba(16, 22, 39, 0.8);
+    }
+    .language-selector {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
     }
   </style>
 </head>
 
 <body class="bg-gray-900 text-gray-100 min-h-screen">
-  <!-- Enhanced Navbar -->
-  <nav class="gradient-bg px-6 py-3 shadow-xl sticky top-0 z-50">
+  <!-- Navigation Bar -->
+  <nav class="aether-gradient px-6 py-3 shadow-xl sticky top-0 z-50">
     <div class="container mx-auto flex justify-between items-center">
-      <!-- Logo Section -->
       <div class="flex items-center space-x-4">
-        <a href="#" class="home-button flex items-center">
+        <a href="#" class="flex items-center">
           <i class="fas fa-home mr-2"></i>
           <span class="text-2xl font-bold text-white">AetherSwap</span>
         </a>
         <div class="hidden md:flex space-x-6">
-          <a href="#swap" class="nav-link hover:text-purple-300 transition" data-translate="swap_nav">Swap</a>
-          <!-- Other nav items -->
+          <a href="#swap" class="nav-link hover:text-purple-300 transition">Swap</a>
+          <a href="#rewards" class="nav-link hover:text-purple-300 transition">Rewards</a>
+          <a href="#portfolio" class="nav-link hover:text-purple-300 transition">Portfolio</a>
         </div>
       </div>
       
-      <!-- Wallet & Language -->
       <div class="flex items-center space-x-4">
-        <!-- Enhanced Wallet Button -->
-        <button id="connectWalletBtn" class="connect-wallet-btn bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded-lg transition flex items-center">
-          <i class="fas fa-wallet mr-2"></i>
-          <span id="walletText" data-translate="connect_wallet">Connect Wallet</span>
-        </button>
-        
         <!-- Language Selector -->
         <div class="relative">
-          <select id="languageSelector" class="language-selector bg-gray-800 text-sm rounded-full px-3 py-1 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none">
-            <option value="en">🇬🇧 English</option>
-            <option value="fr">🇫🇷 Français</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="zh">🇨🇳 中文</option>
+          <select id="languageSelector" class="language-selector bg-gray-800 text-sm rounded-full px-3 py-1 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="en">🌐 English</option>
+            <option value="fr">🌐 Français</option>
+            <option value="es">🌐 Español</option>
+            <option value="zh">🌐 中文</option>
           </select>
           <i class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-xs pointer-events-none"></i>
         </div>
+
+        <!-- Wallet Button -->
+        <button id="connectWalletBtn" class="connect-wallet-btn bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded-lg transition flex items-center">
+          <i class="fas fa-wallet mr-2"></i>
+          <span id="walletText">Connect Wallet</span>
+        </button>
       </div>
     </div>
   </nav>
 
+  <!-- Main Content -->
   <main class="container mx-auto px-4 py-8">
-    <!-- Swap Section with New Features -->
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Left Column -->
-      <div class="lg:col-span-2 space-y-6">
-        <!-- Enhanced Swap Card -->
-        <div id="swap" class="bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-700">
-          <!-- Header with Slippage -->
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold" data-translate="swap_title">Multi-DEX Aggregator</h2>
-            <div class="flex items-center space-x-2">
-              <!-- Enhanced Slippage Button -->
-              <div class="relative group">
-                <button id="slippageBtn" class="px-3 py-1 bg-gray-700 rounded-lg text-sm hover:bg-gray-600 transition flex items-center">
-                  <span id="slippageValue">0.5%</span>
-                  <i class="fas fa-cog ml-1 text-xs"></i>
-                </button>
-                <!-- Slippage Settings Dropdown -->
-                <div id="slippageMenu" class="hidden absolute right-0 mt-2 w-48 bg-gray-750 rounded-md shadow-lg z-10 p-2">
-                  <div class="text-xs text-gray-400 mb-1" data-translate="slippage_tolerance">Slippage tolerance</div>
-                  <div class="grid grid-cols-3 gap-2 mb-2">
-                    <button class="slippage-option px-2 py-1 rounded text-xs" data-value="0.1">0.1%</button>
-                    <button class="slippage-option px-2 py-1 rounded text-xs bg-purple-600" data-value="0.5">0.5%</button>
-                    <button class="slippage-option px-2 py-1 rounded text-xs" data-value="1.0">1.0%</button>
-                  </div>
-                  <div class="flex items-center">
-                    <input type="number" id="customSlippage" placeholder="Custom" class="flex-1 bg-gray-700 rounded-l px-2 py-1 text-xs focus:outline-none">
-                    <span class="bg-gray-600 px-2 py-1 rounded-r text-xs">%</span>
-                  </div>
+    <section class="flex justify-center">
+      <!-- Swap Card -->
+      <div class="swap-card rounded-2xl p-6 shadow-lg w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Swap</h2>
+          <div class="flex items-center space-x-2">
+            <div class="relative">
+              <button id="slippageBtn" class="px-3 py-1 bg-gray-700 rounded-lg text-sm hover:bg-gray-600 transition flex items-center">
+                <span id="slippageValue">0.5%</span>
+                <i class="fas fa-cog ml-1 text-xs"></i>
+              </button>
+              <div id="slippageMenu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-10 p-2">
+                <div class="text-xs text-gray-400 mb-1">Slippage tolerance</div>
+                <div class="grid grid-cols-3 gap-2 mb-2">
+                  <button class="slippage-option px-2 py-1 rounded text-xs" data-value="0.1">0.1%</button>
+                  <button class="slippage-option px-2 py-1 rounded text-xs bg-purple-600" data-value="0.5">0.5%</button>
+                  <button class="slippage-option px-2 py-1 rounded text-xs" data-value="1.0">1.0%</button>
+                </div>
+                <div class="flex items-center">
+                  <input type="number" id="customSlippage" placeholder="Custom" class="flex-1 bg-gray-700 rounded-l px-2 py-1 text-xs focus:outline-none">
+                  <span class="bg-gray-600 px-2 py-1 rounded-r text-xs">%</span>
                 </div>
               </div>
-              <button class="px-3 py-1 bg-gray-700 rounded-lg text-sm hover:bg-gray-600 transition" data-translate="auto_router">Auto Router</button>
             </div>
+            <button class="px-3 py-1 bg-gray-700 rounded-lg text-sm hover:bg-gray-600 transition">Auto Router</button>
           </div>
-
-          <!-- From Token with Moopay Integration -->
-          <div class="bg-gray-750 rounded-xl p-4 mb-3 relative">
-            <div class="flex justify-between mb-2">
-              <label class="text-gray-400" data-translate="from_label">From</label>
-              <div class="text-sm text-gray-400">
-                <span id="fromBalanceText" data-translate="balance">Balance: 0.0</span>
-                <button class="ml-2 text-purple-400 hover:text-purple-300 transition" data-translate="max_btn">Max</button>
-              </div>
-            </div>
-            <div class="flex items-center">
-              <input type="number" id="fromAmount" placeholder="0.0" class="bg-transparent text-2xl w-full focus:outline-none">
-              <div class="flex items-center space-x-2">
-                <!-- Enhanced Token Selector -->
-                <button id="fromTokenSelect" class="flex items-center bg-gray-700 rounded-lg px-3 py-2 hover:bg-gray-600 transition min-w-[120px] justify-between">
-                  <div class="flex items-center">
-                    <img id="fromTokenImg" src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-6 h-6 mr-2 rounded-full">
-                    <span id="fromTokenSymbol">SOL</span>
-                  </div>
-                  <i class="fas fa-chevron-down ml-2 text-xs"></i>
-                </button>
-                <!-- Moopay Buy Button -->
-                <button id="moopayButton" class="moopay-btn bg-green-600 hover:bg-green-500 px-3 py-2 rounded-lg flex items-center transition-transform transform hover:scale-105">
-                  <i class="fas fa-credit-card mr-2"></i>
-                  <span data-translate="buy_with_moopay">Buy</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Rest of the swap interface... -->
         </div>
+
+        <!-- From Token -->
+        <div class="token-input rounded-xl p-4 mb-3">
+          <div class="flex justify-between mb-2">
+            <label class="text-gray-400">From</label>
+            <div class="text-sm text-gray-400">
+              <span>Balance: 0.0</span>
+              <button class="ml-2 text-purple-400 hover:text-purple-300 transition">Max</button>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <input type="number" placeholder="0.0" class="bg-transparent text-2xl w-full focus:outline-none">
+            <button class="flex items-center bg-gray-700 rounded-lg px-3 py-2 hover:bg-gray-600 transition min-w-[120px] justify-between ml-2">
+              <div class="flex items-center">
+                <img src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-6 h-6 mr-2 rounded-full">
+                <span>SOL</span>
+              </div>
+              <i class="fas fa-chevron-down ml-2 text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Swap Button -->
+        <div class="flex justify-center my-4">
+          <button class="bg-purple-600 hover:bg-purple-500 p-2 rounded-full">
+            <i class="fas fa-arrow-down text-white"></i>
+          </button>
+        </div>
+
+        <!-- To Token -->
+        <div class="token-input rounded-xl p-4 mb-6">
+          <div class="flex justify-between mb-2">
+            <label class="text-gray-400">To</label>
+            <div class="text-sm text-gray-400">
+              <span>Balance: 0.0</span>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <input type="number" placeholder="0.0" class="bg-transparent text-2xl w-full focus:outline-none">
+            <button class="flex items-center bg-gray-700 rounded-lg px-3 py-2 hover:bg-gray-600 transition min-w-[120px] justify-between ml-2">
+              <div class="flex items-center">
+                <span>Select token</span>
+              </div>
+              <i class="fas fa-chevron-down ml-2 text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Swap Button -->
+        <button class="aether-gradient w-full py-3 rounded-xl font-bold hover:opacity-90 transition">
+          Swap
+        </button>
       </div>
     </section>
   </main>
 
-  <!-- Token Selection Modal -->
+  <!-- Token Modal -->
   <div id="tokenModal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
     <div class="bg-gray-800 rounded-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden">
-      <!-- Modal Header -->
       <div class="p-4 border-b border-gray-700">
         <div class="flex justify-between items-center mb-3">
-          <h3 class="text-lg font-bold" data-translate="select_token">Select Token</h3>
+          <h3 class="text-lg font-bold">Select Token</h3>
           <button id="closeTokenModal" class="text-gray-400 hover:text-white">
             <i class="fas fa-times"></i>
           </button>
         </div>
-        <!-- Token Search -->
         <div class="relative">
-          <input id="tokenSearchInput" type="text" placeholder="Search name or paste address" class="w-full bg-gray-700 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-purple-500">
+          <input type="text" placeholder="Search name or paste address" class="w-full bg-gray-700 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-purple-500">
           <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
         </div>
       </div>
       
-      <!-- Token Lists -->
       <div class="overflow-y-auto flex-1">
-        <!-- Popular Tokens -->
-        <div id="popularTokens" class="p-4 border-b border-gray-700">
-          <h4 class="text-sm text-gray-400 mb-2" data-translate="popular_tokens">Popular Tokens</h4>
-          <div class="grid grid-cols-4 gap-2" id="popularTokensGrid">
-            <!-- Dynamically populated -->
+        <div class="p-4 border-b border-gray-700">
+          <h4 class="text-sm text-gray-400 mb-2">Popular Tokens</h4>
+          <div class="grid grid-cols-4 gap-2">
+            <button class="token-btn flex flex-col items-center p-2 rounded hover:bg-gray-700">
+              <img src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-8 h-8 mb-1 rounded-full">
+              <span class="text-xs">SOL</span>
+            </button>
+            <!-- More popular tokens would go here -->
           </div>
         </div>
         
-        <!-- All Tokens -->
-        <div id="allTokens" class="p-4">
-          <h4 class="text-sm text-gray-400 mb-2" data-translate="all_tokens">All Tokens</h4>
-          <div id="tokensList" class="space-y-2">
-            <!-- Dynamically populated -->
+        <div class="p-4">
+          <h4 class="text-sm text-gray-400 mb-2">All Tokens</h4>
+          <div class="space-y-2">
+            <!-- Token list would be dynamically populated here -->
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- JavaScript Enhancements -->
+  <!-- JavaScript -->
   <script>
-    // Enhanced Language System
+    // Language System
     class I18n {
       constructor() {
         this.translations = {
-          en: { /* English translations */ },
-          fr: { /* French translations */ },
-          // Other languages...
+          en: {
+            swap_title: "Multi-DEX Aggregator",
+            from_label: "From",
+            to_label: "To",
+            balance: "Balance:",
+            max_btn: "Max",
+            connect_wallet: "Connect Wallet",
+            select_token: "Select Token",
+            popular_tokens: "Popular Tokens",
+            all_tokens: "All Tokens"
+          },
+          fr: {
+            swap_title: "Agrégateur Multi-DEX",
+            from_label: "De",
+            to_label: "Vers",
+            balance: "Solde:",
+            max_btn: "Max",
+            connect_wallet: "Connecter Portefeuille",
+            select_token: "Sélectionner Token",
+            popular_tokens: "Tokens Populaires",
+            all_tokens: "Tous les Tokens"
+          },
+          es: {
+            swap_title: "Agregador Multi-DEX",
+            from_label: "De",
+            to_label: "A",
+            balance: "Saldo:",
+            max_btn: "Máx",
+            connect_wallet: "Conectar Billetera",
+            select_token: "Seleccionar Token",
+            popular_tokens: "Tokens Populares",
+            all_tokens: "Todos los Tokens"
+          },
+          zh: {
+            swap_title: "多DEX聚合器",
+            from_label: "从",
+            to_label: "到",
+            balance: "余额:",
+            max_btn: "最大",
+            connect_wallet: "连接钱包",
+            select_token: "选择代币",
+            popular_tokens: "热门代币",
+            all_tokens: "所有代币"
+          }
         };
         this.currentLang = localStorage.getItem('lang') || 
                          navigator.language.split('-')[0] || 
@@ -201,40 +260,25 @@
       }
     }
 
-    // Initialize enhanced features
+    // Initialize when DOM loads
     document.addEventListener('DOMContentLoaded', () => {
       const i18n = new I18n();
-      i18n.updatePage();
       
-      // Enhanced language selector
-      document.getElementById('languageSelector').addEventListener('change', function() {
+      // Set language selector to current language
+      const langSelector = document.getElementById('languageSelector');
+      langSelector.value = i18n.currentLang;
+      
+      // Update translations when language changes
+      langSelector.addEventListener('change', function() {
         i18n.currentLang = this.value;
         localStorage.setItem('lang', this.value);
         i18n.updatePage();
       });
 
-      // Token Modal Controller
-      class TokenModal {
-        constructor() {
-          this.modal = document.getElementById('tokenModal');
-          this.init();
-        }
-        
-        init() {
-          // Setup event listeners
-          // Load tokens from Raydium/Jupiter APIs
-          // Implement search functionality
-        }
-      }
+      // Initialize translations
+      i18n.updatePage();
 
-      new TokenModal();
-      
-      // Moopay Integration
-      document.getElementById('moopayButton').addEventListener('click', () => {
-        // Implement Moopay redirect flow
-      });
-
-      // Slippage Control
+      // Slippage controls
       document.getElementById('slippageBtn').addEventListener('click', (e) => {
         e.stopPropagation();
         document.getElementById('slippageMenu').classList.toggle('hidden');
@@ -243,6 +287,28 @@
       // Close slippage menu when clicking outside
       document.addEventListener('click', () => {
         document.getElementById('slippageMenu').classList.add('hidden');
+      });
+
+      // Token modal controls
+      const tokenModal = document.getElementById('tokenModal');
+      document.querySelectorAll('[id$="TokenSelect"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          tokenModal.classList.remove('hidden');
+        });
+      });
+
+      document.getElementById('closeTokenModal').addEventListener('click', () => {
+        tokenModal.classList.add('hidden');
+      });
+
+      // Wallet connection
+      document.getElementById('connectWalletBtn').addEventListener('click', async () => {
+        try {
+          // This would connect to Phantom or other Solana wallets in a real implementation
+          document.getElementById('walletText').textContent = "Connected";
+        } catch (error) {
+          console.error("Wallet connection error:", error);
+        }
       });
     });
   </script>
