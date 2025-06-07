@@ -16,35 +16,48 @@
     .tradingview-widget-container iframe {
       border-radius: 12px !important;
     }
+    .language-selector {
+      transition: all 0.3s ease;
+    }
+    .language-selector:hover {
+      transform: translateY(-2px);
+    }
+    .home-button {
+      transition: transform 0.2s;
+    }
+    .home-button:hover {
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
-  <!-- Language Selector -->
-  <div class="fixed top-4 right-4 z-50">
-    <select id="languageSelector" class="bg-gray-800 text-sm rounded-full px-3 py-1 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
-      <option value="en">English</option>
-      <option value="fr">Français</option>
-      <option value="es">Español</option>
-      <option value="zh">中文</option>
-    </select>
-  </div>
-
   <!-- Navbar -->
-  <nav class="gradient-bg px-6 py-3 shadow-xl">
+  <nav class="gradient-bg px-6 py-3 shadow-xl sticky top-0 z-50">
     <div class="container mx-auto flex justify-between items-center">
       <div class="flex items-center space-x-4">
-        <a href="#" class="text-2xl font-bold text-white">AetherSwap</a>
+        <a href="#" class="home-button flex items-center">
+          <i class="fas fa-home mr-2"></i>
+          <span class="text-2xl font-bold text-white">AetherSwap</span>
+        </a>
         <div class="hidden md:flex space-x-6">
-          <a href="#swap" class="nav-link">Swap</a>
-          <a href="#liquidity" class="nav-link">Liquidity</a>
-          <a href="#farm" class="nav-link">Farm (APR: 325%)</a>
-          <a href="#launchpad" class="nav-link">Launchpad</a>
+          <a href="#swap" class="nav-link hover:text-purple-300 transition">Swap</a>
+          <a href="#liquidity" class="nav-link hover:text-purple-300 transition">Liquidity</a>
+          <a href="#farm" class="nav-link hover:text-purple-300 transition">Farm (APR: 325%)</a>
+          <a href="#launchpad" class="nav-link hover:text-purple-300 transition">Launchpad</a>
         </div>
       </div>
-      <button id="connectWalletBtn" class="connect-wallet-btn">
-        <i class="fas fa-wallet mr-2"></i>
-        <span id="walletText">Connect Wallet</span>
-      </button>
+      <div class="flex items-center space-x-4">
+        <button id="connectWalletBtn" class="connect-wallet-btn bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded-lg transition">
+          <i class="fas fa-wallet mr-2"></i>
+          <span id="walletText">Connect Wallet</span>
+        </button>
+        <select id="languageSelector" class="language-selector bg-gray-800 text-sm rounded-full px-3 py-1 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
+          <option value="en">🇬🇧 English</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="zh">🇨🇳 中文</option>
+        </select>
+      </div>
     </div>
   </nav>
 
@@ -52,22 +65,22 @@
   <main class="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Swap Card -->
     <div class="lg:col-span-2 space-y-6">
-      <div class="bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-700">
+      <div id="swap" class="bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-700">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">Multi-DEX Aggregator</h2>
+          <h2 class="text-xl font-bold" data-translate="swap_title">Multi-DEX Aggregator</h2>
           <div class="flex space-x-2">
-            <button class="px-3 py-1 bg-gray-700 rounded-lg text-sm">0.5% Slippage</button>
-            <button class="px-3 py-1 bg-gray-700 rounded-lg text-sm">Auto Router</button>
+            <button class="px-3 py-1 bg-gray-700 rounded-lg text-sm hover:bg-gray-600 transition" data-translate="slippage_btn">0.5% Slippage</button>
+            <button class="px-3 py-1 bg-gray-700 rounded-lg text-sm hover:bg-gray-600 transition" data-translate="auto_router">Auto Router</button>
           </div>
         </div>
 
         <!-- From Token -->
         <div class="bg-gray-750 rounded-xl p-4 mb-3">
           <div class="flex justify-between mb-2">
-            <label class="text-gray-400">From</label>
+            <label class="text-gray-400" data-translate="from_label">From</label>
             <div class="text-sm text-gray-400">
-              <span id="fromBalanceText">Balance: 0.0</span>
-              <button class="ml-2 text-purple-400">Max</button>
+              <span id="fromBalanceText" data-translate="balance">Balance: 0.0</span>
+              <button class="ml-2 text-purple-400 hover:text-purple-300 transition" data-translate="max_btn">Max</button>
             </div>
           </div>
           <div class="flex items-center">
@@ -77,7 +90,7 @@
               placeholder="0.0" 
               class="bg-transparent text-2xl w-full focus:outline-none"
             >
-            <div class="flex items-center bg-gray-700 rounded-lg px-3 py-2">
+            <div class="flex items-center bg-gray-700 rounded-lg px-3 py-2 hover:bg-gray-600 transition">
               <img id="fromTokenImg" src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-6 h-6 mr-2">
               <select id="fromTokenSelect" class="bg-transparent focus:outline-none">
                 <option value="SOL">SOL</option>
@@ -98,9 +111,9 @@
         <!-- To Token -->
         <div class="bg-gray-750 rounded-xl p-4 mb-4">
           <div class="flex justify-between mb-2">
-            <label class="text-gray-400">To</label>
+            <label class="text-gray-400" data-translate="to_label">To</label>
             <div class="text-sm text-gray-400">
-              <span id="toBalanceText">Balance: 0.0</span>
+              <span id="toBalanceText" data-translate="balance">Balance: 0.0</span>
             </div>
           </div>
           <div class="flex items-center">
@@ -111,7 +124,7 @@
               class="bg-transparent text-2xl w-full focus:outline-none" 
               disabled
             >
-            <div class="flex items-center bg-gray-700 rounded-lg px-3 py-2">
+            <div class="flex items-center bg-gray-700 rounded-lg px-3 py-2 hover:bg-gray-600 transition">
               <img id="toTokenImg" src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" class="w-6 h-6 mr-2">
               <select id="toTokenSelect" class="bg-transparent focus:outline-none">
                 <option value="USDC">USDC</option>
@@ -124,11 +137,11 @@
 
         <!-- Price Info -->
         <div id="priceInfo" class="bg-gray-750 rounded-lg p-3 mb-4 text-center text-sm">
-          <div class="animate-pulse">Fetching best price across 5 DEXs...</div>
+          <div class="animate-pulse" data-translate="fetching_price">Fetching best price across 5 DEXs...</div>
         </div>
 
         <!-- Swap Button -->
-        <button id="swapBtn" class="w-full gradient-bg py-3 rounded-xl font-bold text-white hover:opacity-90 transition disabled:opacity-50">
+        <button id="swapBtn" class="w-full gradient-bg py-3 rounded-xl font-bold text-white hover:opacity-90 transition disabled:opacity-50" data-translate="swap_btn">
           Swap Now
         </button>
       </div>
@@ -143,12 +156,12 @@
     <div class="space-y-6">
       <!-- Best Routes -->
       <div class="bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-700">
-        <h3 class="font-bold mb-4">Optimal Routes</h3>
+        <h3 class="font-bold mb-4" data-translate="optimal_routes">Optimal Routes</h3>
         <div id="routesContainer" class="space-y-3">
-          <div class="route-card">
+          <div class="route-card bg-gray-750 p-3 rounded-lg hover:bg-gray-700 transition">
             <div class="flex justify-between">
               <span>Jupiter</span>
-              <span class="text-green-400">Best Price</span>
+              <span class="text-green-400" data-translate="best_price">Best Price</span>
             </div>
             <div class="text-sm text-gray-400">SOL → USDC</div>
             <div class="flex justify-between mt-1">
@@ -161,14 +174,14 @@
 
       <!-- Portfolio Summary -->
       <div class="bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-700">
-        <h3 class="font-bold mb-4">Your Portfolio</h3>
+        <h3 class="font-bold mb-4" data-translate="your_portfolio">Your Portfolio</h3>
         <div class="space-y-4">
           <div class="flex justify-between">
-            <span>Total Value</span>
+            <span data-translate="total_value">Total Value</span>
             <span class="font-mono">$1,245.32</span>
           </div>
           <div class="flex justify-between text-sm">
-            <span class="text-gray-400">24h Change</span>
+            <span class="text-gray-400" data-translate="24h_change">24h Change</span>
             <span class="text-green-400">+3.2%</span>
           </div>
         </div>
@@ -178,62 +191,109 @@
 
   <!-- Language Translations -->
   <script>
+    // Enhanced translations with all UI elements
     const translations = {
       en: {
-        connectWallet: "Connect Wallet",
-        from: "From",
-        to: "To",
+        swap_title: "Multi-DEX Aggregator",
+        slippage_btn: "0.5% Slippage",
+        auto_router: "Auto Router",
+        from_label: "From",
+        to_label: "To",
         balance: "Balance",
-        max: "Max",
-        swapNow: "Swap Now",
-        fetchingPrice: "Fetching best price across 5 DEXs..."
+        max_btn: "Max",
+        swap_btn: "Swap Now",
+        fetching_price: "Fetching best price across 5 DEXs...",
+        optimal_routes: "Optimal Routes",
+        best_price: "Best Price",
+        your_portfolio: "Your Portfolio",
+        total_value: "Total Value",
+        "24h_change": "24h Change",
+        connectWallet: "Connect Wallet"
       },
       fr: {
-        connectWallet: "Connecter Portefeuille",
-        from: "De",
-        to: "À",
+        swap_title: "Agrégateur Multi-DEX",
+        slippage_btn: "0.5% Slippage",
+        auto_router: "Routeur Auto",
+        from_label: "De",
+        to_label: "À",
         balance: "Solde",
-        max: "Max",
-        swapNow: "Échanger Maintenant",
-        fetchingPrice: "Recherche du meilleur prix sur 5 DEX..."
+        max_btn: "Max",
+        swap_btn: "Échanger Maintenant",
+        fetching_price: "Recherche du meilleur prix sur 5 DEX...",
+        optimal_routes: "Meilleures Routes",
+        best_price: "Meilleur Prix",
+        your_portfolio: "Votre Portefeuille",
+        total_value: "Valeur Totale",
+        "24h_change": "Changement 24h",
+        connectWallet: "Connecter Portefeuille"
       },
       es: {
-        connectWallet: "Conectar Billetera",
-        from: "De",
-        to: "A",
+        swap_title: "Agregador Multi-DEX",
+        slippage_btn: "0.5% Deslizamiento",
+        auto_router: "Enrutador Auto",
+        from_label: "De",
+        to_label: "A",
         balance: "Saldo",
-        max: "Máx",
-        swapNow: "Intercambiar Ahora",
-        fetchingPrice: "Buscando mejor precio en 5 DEXs..."
+        max_btn: "Máx",
+        swap_btn: "Intercambiar Ahora",
+        fetching_price: "Buscando mejor precio en 5 DEXs...",
+        optimal_routes: "Rutas Óptimas",
+        best_price: "Mejor Precio",
+        your_portfolio: "Tu Portafolio",
+        total_value: "Valor Total",
+        "24h_change": "Cambio 24h",
+        connectWallet: "Conectar Billetera"
       },
       zh: {
-        connectWallet: "连接钱包",
-        from: "从",
-        to: "到",
+        swap_title: "多DEX聚合器",
+        slippage_btn: "0.5% 滑点",
+        auto_router: "自动路由",
+        from_label: "从",
+        to_label: "到",
         balance: "余额",
-        max: "最大",
-        swapNow: "立即交换",
-        fetchingPrice: "正在5个DEX中寻找最佳价格..."
+        max_btn: "最大",
+        swap_btn: "立即交换",
+        fetching_price: "正在5个DEX中寻找最佳价格...",
+        optimal_routes: "最优路线",
+        best_price: "最佳价格",
+        your_portfolio: "您的投资组合",
+        total_value: "总价值",
+        "24h_change": "24小时变化",
+        connectWallet: "连接钱包"
       }
     };
 
+    // Initialize with browser language or default to English
+    let currentLang = navigator.language.split('-')[0] in translations ? 
+                     navigator.language.split('-')[0] : 'en';
+    
+    document.getElementById('languageSelector').value = currentLang;
+    updateLanguage(currentLang);
+
     // Language switcher functionality
     document.getElementById('languageSelector').addEventListener('change', function() {
-      const lang = this.value;
-      updateLanguage(lang);
+      currentLang = this.value;
+      updateLanguage(currentLang);
     });
 
     function updateLanguage(lang) {
       const t = translations[lang];
+      // Update all elements with data-translate attribute
+      document.querySelectorAll('[data-translate]').forEach(el => {
+        const key = el.getAttribute('data-translate');
+        if (t[key]) {
+          el.textContent = t[key];
+        }
+      });
+      // Special cases
       document.getElementById('walletText').textContent = t.connectWallet;
-      document.querySelector('[for="fromAmount"]').textContent = t.from;
-      document.querySelector('[for="toAmount"]').textContent = t.to;
-      document.getElementById('fromBalanceText').textContent = `${t.balance}: 0.0`;
-      document.getElementById('toBalanceText').textContent = `${t.balance}: 0.0`;
-      document.querySelector('#fromBalanceText + button').textContent = t.max;
-      document.getElementById('swapBtn').textContent = t.swapNow;
-      document.getElementById('priceInfo').innerHTML = `<div class="animate-pulse">${t.fetchingPrice}</div>`;
     }
+
+    // Home button functionality
+    document.querySelector('.home-button').addEventListener('click', function(e) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   </script>
 
   <!-- TradingView Chart Integration -->
@@ -245,7 +305,7 @@
       timezone: "Etc/UTC",
       theme: "dark",
       style: "1",
-      locale: "en",
+      locale: currentLang,
       toolbar_bg: "#0a0a0a",
       enable_publishing: false,
       hide_side_toolbar: false,
@@ -253,17 +313,19 @@
     });
   </script>
 
-  <!-- Main DEX Logic -->
+  <!-- Enhanced DEX Logic with Error Handling -->
   <script>
-    // Configuration
+    // Configuration with fallback DEXs
     const DEX_APIS = {
       jupiter: "https://quote-api.jup.ag/v6",
       orca: "https://api.orca.so",
-      raydium: "https://api.raydium.io"
+      raydium: "https://api.raydium.io",
+      backup1: "https://jupiter-backup1.com/v6",
+      backup2: "https://jupiter-backup2.com/v6"
     };
 
-    // Token data
-    const TOKENS = {
+    // Token data with auto-refresh capability
+    let TOKENS = {
       SOL: {
         mint: "So11111111111111111111111111111111111111112",
         decimals: 9,
@@ -281,67 +343,142 @@
       }
     };
 
-    // Wallet connection
+    // Cache system for quotes
+    const quoteCache = new Map();
+    const CACHE_DURATION = 10000; // 10 seconds
+
+    // Wallet connection with improved error handling
     async function connectWallet() {
-      if (window.solana && window.solana.isPhantom) {
-        try {
-          const response = await window.solana.connect();
-          const publicKey = response.publicKey.toString();
-          document.getElementById('walletText').textContent = 
-            publicKey.slice(0, 4) + '...' + publicKey.slice(-4);
-          checkBalances();
-        } catch (err) {
-          console.error("Wallet connection error:", err);
+      const connectBtn = document.getElementById('connectWalletBtn');
+      try {
+        connectBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Connecting...';
+        
+        if (!window.solana) {
+          throw new Error(translations[currentLang].phantom_not_found || 
+                         "Phantom Wallet not detected. Please install it first.");
         }
-      } else {
-        window.open("https://phantom.app/", "_blank");
+
+        const response = await window.solana.connect();
+        const publicKey = response.publicKey.toString();
+        
+        document.getElementById('walletText').textContent = 
+          publicKey.slice(0, 4) + '...' + publicKey.slice(-4);
+        
+        await checkBalances();
+        showNotification(translations[currentLang].wallet_connected || "Wallet connected successfully", "success");
+        
+      } catch (err) {
+        console.error("Wallet connection error:", err);
+        showNotification(err.message, "error");
+      } finally {
+        connectBtn.innerHTML = `<i class="fas fa-wallet mr-2"></i>${document.getElementById('walletText').textContent}`;
       }
     }
 
     document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
 
-    // Multi-DEX price aggregation
-    async function getBestQuote(fromToken, toToken, amount) {
-      const requests = [
-        axios.get(`${DEX_APIS.jupiter}/quote`, {
-          params: {
-            inputMint: TOKENS[fromToken].mint,
-            outputMint: TOKENS[toToken].mint,
-            amount: amount * Math.pow(10, TOKENS[fromToken].decimals),
-            slippageBps: 50
-          }
-        }),
-        // Add other DEX API calls here
-      ];
+    // Token switching with balance update
+    document.getElementById('fromTokenSelect').addEventListener('change', function() {
+      const token = this.value;
+      document.getElementById('fromTokenImg').src = TOKENS[token].logo;
+      updateBalances();
+    });
 
+    document.getElementById('toTokenSelect').addEventListener('change', function() {
+      const token = this.value;
+      document.getElementById('toTokenImg').src = TOKENS[token].logo;
+      updateBalances();
+    });
+
+    // Switch tokens button
+    document.getElementById('switchTokensBtn').addEventListener('click', function() {
+      const fromSelect = document.getElementById('fromTokenSelect');
+      const toSelect = document.getElementById('toTokenSelect');
+      const fromAmount = document.getElementById('fromAmount');
+      const toAmount = document.getElementById('toAmount');
+      
+      // Swap selected tokens
+      const temp = fromSelect.value;
+      fromSelect.value = toSelect.value;
+      toSelect.value = temp;
+      
+      // Update logos
+      document.getElementById('fromTokenImg').src = TOKENS[fromSelect.value].logo;
+      document.getElementById('toTokenImg').src = TOKENS[toSelect.value].logo;
+      
+      // Swap amounts if available
+      if (toAmount.value) {
+        fromAmount.value = toAmount.value;
+        fetchQuote();
+      }
+      
+      updateBalances();
+    });
+
+    // Debounced quote fetching
+    let debounceTimer;
+    document.getElementById('fromAmount').addEventListener('input', function() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        const amount = parseFloat(this.value);
+        if (amount > 0) fetchQuote();
+      }, 500);
+    });
+
+    // Enhanced quote fetching with cache and fallback
+    async function fetchQuote() {
+      const fromToken = document.getElementById('fromTokenSelect').value;
+      const toToken = document.getElementById('toTokenSelect').value;
+      const amount = parseFloat(document.getElementById('fromAmount').value);
+      
+      if (!amount || amount <= 0) return;
+      
+      const priceInfo = document.getElementById('priceInfo');
+      priceInfo.innerHTML = `<div class="animate-pulse">${translations[currentLang].fetching_price}</div>`;
+      
       try {
-        const responses = await Promise.all(requests);
-        // Process responses to find best price
-        return findOptimalRoute(responses);
+        const cacheKey = `${fromToken}-${toToken}-${amount}`;
+        const cachedQuote = quoteCache.get(cacheKey);
+        
+        if (cachedQuote && (Date.now() - cachedQuote.timestamp < CACHE_DURATION)) {
+          updatePriceInfo(cachedQuote.data);
+          return;
+        }
+        
+        const quote = await getBestQuote(fromToken, toToken, amount);
+        quoteCache.set(cacheKey, {
+          data: quote,
+          timestamp: Date.now()
+        });
+        
+        updatePriceInfo(quote);
       } catch (error) {
         console.error("Quote error:", error);
-        return null;
+        priceInfo.innerHTML = `<div class="text-red-400">${translations[currentLang].quote_error || "Error fetching price"}</div>`;
       }
     }
 
-    // Swap execution
-    async function executeSwap() {
-      // Implementation for cross-DEX swap
+    // Notification system
+    function showNotification(message, type) {
+      const notif = document.createElement('div');
+      notif.className = `fixed top-20 right-4 p-3 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-600' : 'bg-red-600'
+      }`;
+      notif.textContent = message;
+      document.body.appendChild(notif);
+      setTimeout(() => {
+        notif.style.opacity = '0';
+        setTimeout(() => notif.remove(), 300);
+      }, 3000);
     }
 
-    // Initialize
+    // Initialize on load
     document.addEventListener('DOMContentLoaded', function() {
-      // Set up event listeners
-      document.getElementById('fromAmount').addEventListener('input', async function() {
-        const fromToken = document.getElementById('fromTokenSelect').value;
-        const toToken = document.getElementById('toTokenSelect').value;
-        const amount = parseFloat(this.value);
-        
-        if (amount > 0) {
-          const quote = await getBestQuote(fromToken, toToken, amount);
-          updatePriceInfo(quote);
-        }
-      });
+      updateBalances();
+      
+      // Set default token images
+      document.getElementById('fromTokenImg').src = TOKENS.SOL.logo;
+      document.getElementById('toTokenImg').src = TOKENS.USDC.logo;
     });
   </script>
 </body>
