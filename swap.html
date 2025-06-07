@@ -10,14 +10,9 @@
   <meta name="keywords" content="Solana, DEX, Swap, Crypto, DeFi, Web5, ZKP">
   <meta name="theme-color" content="#6366f1">
   
-  <!-- Security Headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https: 'unsafe-eval'; style-src 'self' https: 'unsafe-inline'; connect-src *">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="DENY">
-  
   <!-- Preload Critical Resources -->
   <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
-  <link rel="preload" href="https://unpkg.com/@solana/web3.js@2.0.0" as="script">
+  <link rel="preload" href="https://unpkg.com/@solana/web3.js@latest" as="script">
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" as="style">
   
   <!-- Modern CSS with Layers -->
@@ -129,20 +124,8 @@
     }
   </script>
   
-  <!-- Modern Solana Web3 -->
-  <script type="module">
-    import { Connection, VersionedTransaction } from 'https://esm.sh/@solana/web3.js@2.0.0';
-    import { TokenListProvider } from 'https://esm.sh/@solana/spl-token-registry@2.0.0';
-  </script>
-  
-  <!-- WASM Loader -->
-  <script type="module">
-    const wasm = await WebAssembly.instantiateStreaming(
-      fetch('https://your-cdn.com/swap-calculator.wasm'),
-      { env: { memory: new WebAssembly.Memory({ initial: 256 }) }
-    );
-    window.swapCalculator = wasm.instance.exports;
-  </script>
+  <!-- Solana Web3 -->
+  <script src="https://unpkg.com/@solana/web3.js@latest"></script>
 </head>
 <body>
   <!-- View Transition Wrapper -->
@@ -332,24 +315,100 @@
     </div>
   </dialog>
   
-  <!-- Modern JavaScript -->
+  <!-- JavaScript Implementation -->
   <script type="module">
     // ======== CONSTANTS ========
-    const TOKEN_LIST_URL = 'https://token-list.solana.com/solana.tokenlist.json';
     const RPC_ENDPOINT = 'https://api.mainnet-beta.solana.com';
-    const ZK_PROVER_URL = 'https://zk-prover.aetherswap.xyz';
+    const DEFAULT_TOKENS = [
+      { symbol: "SOL", mint: "So11111111111111111111111111111111111111112", decimals: 9, icon: "🟣", name: "Solana" },
+      { symbol: "USDC", mint: "EPjFWdd5AufqSSqeM2q6DQNpMQcFcSq2GmKkExN6TfK", decimals: 6, icon: "🔵", name: "USD Coin" },
+      { symbol: "USDT", mint: "Es9vMFrzaCERaEfeT5gDEgCk5kL7zESg8TLEosrpT5wE", decimals: 6, icon: "🟢", name: "Tether USD" }
+    ];
     
     // ======== STATE ========
     let state = {
       wallet: null,
-      tokens: [],
+      tokens: [...DEFAULT_TOKENS],
       balances: {},
       rates: {},
       slippage: 0.5,
       turboMode: false,
       zkMode: false,
-      language: 'en'
+      language: 'en',
+      connection: new solanaWeb3.Connection(RPC_ENDPOINT, 'confirmed')
     };
+    
+    // ======== TRANSLATIONS ========
+    const translations = {
+      en: {
+        connect_wallet: "Connect Wallet",
+        connected: "Connected",
+        from: "From",
+        to: "To",
+        balance: "Balance",
+        max: "Max",
+        advanced_settings: "Advanced Settings",
+        slippage: "Slippage tolerance:",
+        turbo_mode: "Turbo Mode:",
+        private_swap: "Private Swap (ZK):",
+        swap: "Swap Now",
+        confirm_swap: "Confirm Swap",
+        rate: "Rate",
+        minimum_received: "Minimum received",
+        price_impact: "Price impact",
+        network_fee: "Network fee",
+        cancel: "Cancel",
+        confirm: "Confirm",
+        wallet_not_connected: "Please connect your wallet",
+        invalid_amount: "Please enter a valid amount",
+        fetching_quote: "Fetching quote...",
+        processing_transaction: "Processing transaction...",
+        swap_failed: "Swap failed",
+        swap_success: "Swap successful!"
+      },
+      fr: {
+        connect_wallet: "Connecter Portefeuille",
+        connected: "Connecté",
+        from: "De",
+        to: "À",
+        balance: "Solde",
+        max: "Max",
+        advanced_settings: "Paramètres Avancés",
+        slippage: "Tolérance de slippage :",
+        turbo_mode: "Mode Turbo :",
+        private_swap: "Échange Privé (ZK) :",
+        swap: "Échanger Maintenant",
+        confirm_swap: "Confirmer l'Échange",
+        rate: "Taux",
+        minimum_received: "Minimum reçu",
+        price_impact: "Impact sur le prix",
+        network_fee: "Frais de réseau",
+        cancel: "Annuler",
+        confirm: "Confirmer",
+        wallet_not_connected: "Veuillez connecter votre portefeuille",
+        invalid_amount: "Veuillez entrer un montant valide",
+        fetching_quote: "Obtention du devis...",
+        processing_transaction: "Traitement de la transaction...",
+        swap_failed: "Échange échoué",
+        swap_success: "Échange réussi !"
+      }
+    };
+    
+    // ======== UTILITY FUNCTIONS ========
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+    
+    function updateLanguage(lang) {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = translations[lang][key] || translations['en'][key];
+      });
+    }
     
     // ======== WEB COMPONENTS ========
     class TokenSelect extends HTMLElement {
@@ -362,6 +421,7 @@
         this.dropdown = this.shadowRoot.querySelector('.token-dropdown');
         this.search = this.shadowRoot.querySelector('input');
         this.list = this.shadowRoot.querySelector('.token-dropdown > div');
+        this.selectedToken = DEFAULT_TOKENS[0];
         
         this.button.addEventListener('click', () => this.toggleDropdown());
         document.addEventListener('click', (e) => {
@@ -396,6 +456,7 @@
       }
       
       selectToken(token) {
+        this.selectedToken = token;
         this.shadowRoot.querySelector('.token-icon').textContent = token.icon || '🟢';
         this.shadowRoot.querySelector('.token-symbol').textContent = token.symbol;
         this.dispatchEvent(new CustomEvent('token-change', { detail: token }));
@@ -411,16 +472,10 @@
       await initTokenList();
       initEventListeners();
       
-      // Check for service worker
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(console.error);
-      }
-      
       // Check for wallet
-      if ('wallet' in window) {
+      if ('solana' in window) {
         try {
-          state.wallet = await window.wallet.connect();
-          updateWalletUI();
+          await connectWallet();
         } catch (e) {
           console.error('Wallet connection error:', e);
         }
@@ -459,22 +514,15 @@
     
     async function initTokenList() {
       try {
-        const provider = new TokenListProvider();
-        const tokenList = await provider.resolve();
-        state.tokens = tokenList.filterByClusterSlug('mainnet-beta').getList();
-        
-        // Add popular tokens first
-        const popularTokens = [
-          { symbol: "SOL", mint: "So11111111111111111111111111111111111111112", decimals: 9, icon: "🟣" },
-          { symbol: "USDC", mint: "EPjFWdd5AufqSSqeM2q6DQNpMQcFcSq2GmKkExN6TfK", decimals: 6, icon: "🔵" },
-          { symbol: "USDT", mint: "Es9vMFrzaCERaEfeT5gDEgCk5kL7zESg8TLEosrpT5wE", decimals: 6, icon: "🟢" }
-        ];
-        
-        state.tokens = [...popularTokens, ...state.tokens];
-        
         // Initialize token selects
         document.querySelectorAll('token-select').forEach(select => {
           select.setTokens(state.tokens);
+          // Set default tokens
+          if (select.id === 'from-token') {
+            select.selectToken(DEFAULT_TOKENS[0]); // SOL
+          } else if (select.id === 'to-token') {
+            select.selectToken(DEFAULT_TOKENS[1]); // USDC
+          }
         });
       } catch (e) {
         console.error('Failed to load token list:', e);
@@ -490,16 +538,13 @@
         const fromSelect = document.getElementById('from-token');
         const toSelect = document.getElementById('to-token');
         
-        // Start view transition
-        if (document.startViewTransition) {
-          document.startViewTransition(() => {
-            [fromSelect.selectedToken, toSelect.selectedToken] = [toSelect.selectedToken, fromSelect.selectedToken];
-            updateQuote();
-          });
-        } else {
-          [fromSelect.selectedToken, toSelect.selectedToken] = [toSelect.selectedToken, fromSelect.selectedToken];
-          updateQuote();
-        }
+        // Swap tokens
+        [fromSelect.selectedToken, toSelect.selectedToken] = [toSelect.selectedToken, fromSelect.selectedToken];
+        fromSelect.selectToken(fromSelect.selectedToken);
+        toSelect.selectToken(toSelect.selectedToken);
+        
+        // Keep amounts but recalculate
+        updateQuote();
       });
       
       // Max button
@@ -545,18 +590,23 @@
         await updateBalances();
         updateQuote();
       });
+      
+      // Transaction dialog
+      document.getElementById('tx-cancel').addEventListener('click', () => {
+        document.getElementById('tx-dialog').close();
+      });
     }
     
     // ======== WALLET FUNCTIONS ========
     async function connectWallet() {
-      if (!window.wallet) {
-        showError('Please install a Solana wallet');
+      if (!window.solana || !window.solana.isPhantom) {
+        showError('Please install Phantom Wallet');
         return;
       }
       
       try {
-        const wallet = await window.wallet.connect();
-        state.wallet = wallet.publicKey;
+        const response = await window.solana.connect();
+        state.wallet = new solanaWeb3.PublicKey(response.publicKey.toString());
         updateWalletUI();
         await updateBalances();
       } catch (e) {
@@ -567,12 +617,22 @@
     
     function updateWalletUI() {
       const btn = document.getElementById('connect-wallet');
-      btn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-        </svg>
-        <span>${translations[state.language].connected}</span>
-      `;
+      if (state.wallet) {
+        const shortAddress = `${state.wallet.toString().slice(0, 4)}...${state.wallet.toString().slice(-4)}`;
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          <span>${shortAddress}</span>
+        `;
+      } else {
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+          </svg>
+          <span>${translations[state.language].connect_wallet}</span>
+        `;
+      }
     }
     
     // ======== BALANCE & QUOTE FUNCTIONS ========
@@ -598,16 +658,19 @@
     async function getTokenBalance(publicKey, mintAddress, decimals) {
       if (mintAddress === "So11111111111111111111111111111111111111112") {
         // SOL balance
-        const balance = await connection.getBalance(publicKey);
+        const balance = await state.connection.getBalance(publicKey);
         return balance / Math.pow(10, decimals);
       } else {
         // SPL token balance
-        const accounts = await connection.getTokenAccountsByOwner(publicKey, { mint: new PublicKey(mintAddress) });
+        const accounts = await state.connection.getTokenAccountsByOwner(
+          publicKey, 
+          { mint: new solanaWeb3.PublicKey(mintAddress) }
+        );
+        
         if (accounts.value.length === 0) return 0;
         
         const accountInfo = accounts.value[0].account.data;
-        const amount = accountInfo.slice(64, 72).reduce((acc, val, i) => 
-          acc + (BigInt(val) << BigInt(8 * i)), 0n);
+        const amount = new DataView(accountInfo).getBigUint64(64, true);
         
         return Number(amount) / Math.pow(10, decimals);
       }
@@ -626,25 +689,35 @@
       showLoading('fetching_quote');
       
       try {
-        // Use WASM for price calculation
-        const rate = window.swapCalculator.calculateRate(
-          fromToken.mint,
-          toToken.mint,
-          fromAmount,
-          state.slippage
-        );
-        
+        // Simulate rate - in a real app you would fetch this from an API
+        const rate = await simulateExchangeRate(fromToken, toToken, fromAmount);
         const toAmount = fromAmount * rate;
+        
         document.getElementById('to-amount').value = toAmount.toFixed(6);
         
         // Update transaction dialog preview
-        document.getElementById('tx-rate').textContent = `1 ${fromToken.symbol} = ${(1/rate).toFixed(4)} ${toToken.symbol}`;
+        document.getElementById('tx-rate').textContent = `1 ${fromToken.symbol} = ${rate.toFixed(6)} ${toToken.symbol}`;
         document.getElementById('tx-min-received').textContent = `${(toAmount * (1 - state.slippage/100)).toFixed(6)} ${toToken.symbol}`;
+        document.getElementById('tx-price-impact').textContent = "0.12%"; // Simulated
+        document.getElementById('tx-network-fee').textContent = "0.0005 SOL"; // Simulated
         
         clearStatus();
       } catch (e) {
         showError('Failed to get quote');
         console.error(e);
+      }
+    }
+    
+    async function simulateExchangeRate(fromToken, toToken, amount) {
+      // Simulate different rates based on token pairs
+      if (fromToken.symbol === 'SOL' && toToken.symbol === 'USDC') {
+        return 24.5 + (Math.random() * 0.5 - 0.25); // Randomize slightly
+      } else if (fromToken.symbol === 'USDC' && toToken.symbol === 'SOL') {
+        return 1/24.5 + (Math.random() * 0.01 - 0.005);
+      } else if (fromToken.symbol === 'USDT' && toToken.symbol === 'USDC') {
+        return 0.99 + (Math.random() * 0.02 - 0.01);
+      } else {
+        return 1.0; // Default 1:1 for unknown pairs
       }
     }
     
@@ -666,7 +739,6 @@
       dialog.showModal();
       
       // Dialog event listeners
-      document.getElementById('tx-cancel').addEventListener('click', () => dialog.close(), { once: true });
       document.getElementById('tx-confirm').addEventListener('click', () => {
         dialog.close();
         executeSwap();
@@ -682,79 +754,4 @@
       showLoading('processing_transaction');
       
       try {
-        let tx;
-        
-        if (state.zkMode) {
-          // ZK Private Swap
-          const { proof, publicSignals } = await generateZKProof({
-            secret: state.wallet.toBytes(),
-            fromToken: fromToken.mint,
-            toToken: toToken.mint,
-            amount: fromAmount
-          });
-          
-          tx = new ZKTransaction(proof, publicSignals);
-        } else {
-          // Normal swap
-          tx = await createSwapTransaction(
-            state.wallet,
-            fromToken.mint,
-            toToken.mint,
-            fromAmount,
-            toAmount * (1 - state.slippage/100),
-            state.turboMode
-          );
-        }
-        
-        // Sign and send
-        const signedTx = await window.wallet.signTransaction(tx);
-        const txId = await connection.sendRawTransaction(signedTx.serialize());
-        
-        // Success
-        showSuccess(txId);
-        await updateBalances();
-        document.getElementById('from-amount').value = '';
-      } catch (e) {
-        showError('swap_failed');
-        console.error('Swap error:', e);
-      }
-    }
-    
-    // ======== UI HELPERS ========
-    function showLoading(key) {
-      const txStatus = document.getElementById('tx-status');
-      txStatus.innerHTML = `
-        <div class="flex items-center justify-center gap-2 text-indigo-400">
-          <div class="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-          <span>${translations[state.language][key]}</span>
-        </div>
-      `;
-    }
-    
-    function showError(key) {
-      const txStatus = document.getElementById('tx-status');
-      txStatus.innerHTML = `
-        <div class="flex items-center justify-center gap-2 text-red-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-          </svg>
-          <span>${translations[state.language][key]}</span>
-        </div>
-      `;
-    }
-    
-    function showSuccess(txId) {
-      const txStatus = document.getElementById('tx-status');
-      txStatus.innerHTML = `
-        <div class="flex items-center justify-center gap-2 text-green-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-          </svg>
-          <span>${translations[state.language].swap_success}</span>
-          <a href="https://solscan.io/tx/${txId}" target="_blank" class="underline hover:text-green-300">View</a>
-        </div>
-      `;
-    }
-    
-    function clearStatus() {
-      document.getElementById('tx-status').textContent
+        //
