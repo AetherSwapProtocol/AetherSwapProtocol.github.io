@@ -3,38 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherSwap | DEX on Solana</title>
+    <title>AetherSwap | Swap Interface</title>
     <style>
-        /* Police Space Grotesk - intégrée via @font-face */
+        /* Police et styles de base */
         @font-face {
             font-family: 'Space Grotesk';
+            src: url(data:font/woff2;base64,d09GMgAB...) format('woff2');
+            font-weight: normal;
             font-style: normal;
-            font-weight: 400;
-            src: url(data:font/woff2;base64,d09GMgABAAAA...) format('woff2');
         }
-        
-        /* Styles de base */
         body {
             font-family: 'Space Grotesk', sans-serif;
             background-color: #0a0a0a;
-            color: #ffffff;
+            color: white;
             margin: 0;
             padding: 0;
         }
         
-        /* Gradients et animations */
+        /* Styles graphiques */
         .gradient-text {
-            background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
+            background: linear-gradient(90deg, #7e22ce, #3b82f6);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        
         .gradient-border {
             position: relative;
             border-radius: 1rem;
         }
-        
         .gradient-border::before {
             content: "";
             position: absolute;
@@ -44,151 +40,155 @@
             bottom: -2px;
             border-radius: 1rem;
             background: linear-gradient(45deg, #7e22ce, #3b82f6, #7e22ce);
-            background-size: 200% 200%;
             z-index: -1;
             animation: gradient 3s ease infinite;
         }
-        
         @keyframes gradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
         
-        /* Icônes Font Awesome intégrées */
-        .fa {
-            display: inline-block;
-            font-style: normal;
-            font-variant: normal;
-            text-rendering: auto;
-            line-height: 1;
-        }
-        
-        .fa-arrow-left:before { content: "←"; }
-        .fa-wallet:before { content: "💰"; }
-        .fa-spinner:before { 
-            content: "↻";
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Layout principal */
+        /* Structure layout */
         .container {
-            width: 100%;
-            max-width: 1200px;
+            max-width: 450px;
             margin: 0 auto;
             padding: 0 1rem;
         }
         
-        /* Menu Wallet */
-        .wallet-menu {
-            display: none;
-            position: absolute;
-            right: 0;
+        /* Composants swap */
+        .swap-box {
             background: #111;
-            border: 1px solid #333;
-            border-radius: 0.5rem;
-            padding: 0.5rem 0;
-            z-index: 100;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
         }
-        
-        .wallet-option {
-            display: flex;
-            align-items: center;
+        .token-input {
+            background: #1e1e1e;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .token-selector {
+            background: #2d2d2d;
+            border-radius: 0.5rem;
             padding: 0.5rem 1rem;
             cursor: pointer;
-        }
-        
-        .wallet-option:hover {
-            background: rgba(126, 34, 206, 0.1);
-        }
-        
-        .wallet-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 0.5rem;
         }
     </style>
 </head>
 <body>
     <!-- Barre de navigation -->
-    <nav class="container" style="padding: 1.5rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+    <nav style="padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
         <a href="index.html" style="display: flex; align-items: center; text-decoration: none;">
             <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(45deg, #7e22ce, #3b82f6); display: flex; justify-content: center; align-items: center;">
-                <div style="width: 32px; height: 32px; background: #000; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                    <span class="fa fa-arrow-left" style="color: #7e22ce;"></span>
+                <div style="width: 32px; height: 32px; background: black; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+                    ←
                 </div>
             </div>
             <span style="font-size: 1.5rem; font-weight: bold; margin-left: 0.5rem;" class="gradient-text">AetherSwap</span>
         </a>
         
-        <!-- Bouton Connect Wallet amélioré -->
-        <div style="position: relative;">
-            <button id="connect-wallet" style="background: linear-gradient(45deg, #7e22ce, #3b82f6); color: white; border: none; border-radius: 9999px; padding: 0.5rem 1.5rem; font-weight: 500; cursor: pointer; display: flex; align-items: center;">
-                <span id="wallet-text">Connect Wallet</span>
-                <span style="margin-left: 0.5rem; font-size: 0.75rem;">▼</span>
-            </button>
+        <button id="connect-wallet" class="gradient-border" style="border: none; padding: 0.5rem 1.5rem; border-radius: 9999px; color: white; font-weight: 500; cursor: pointer;">
+            Connect Wallet
+        </button>
+    </nav>
+
+    <!-- Interface de Swap -->
+    <main class="container">
+        <div class="swap-box gradient-border">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem;">
+                <h2 style="font-weight: bold;">Swap</h2>
+                <button style="background: none; border: none; color: #7e22ce; cursor: pointer;">⚙️</button>
+            </div>
             
-            <div id="wallet-menu" class="wallet-menu">
-                <div class="wallet-option" data-wallet="phantom">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMjJDMTcuNTIyOCAyMiAyMiAxNy41MjI4IDIyIDEyQzIyIDYuNDc3MTUgMTcuNTIyOCAyIDEyIDJDNi40NzcxNSAyIDIgNi40NzcxNSAyIDEyQzIgMTcuNTIyOCA2LjQ3NzE1IDIyIDEyIDIyWiIgZmlsbD0iIzQyQzVCOSIvPjxwYXRoIGQ9Ik0xMiAxMy41VjE2LjVMMTQuNSAxNUwxMiAxMy41WiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMTIgNy41VjEzLjVMMTAgMTJMMTIgMTAuNVY3LjVaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik03LjUgMTBMMTIgMTMuNVYxNi41TDcuNSAxM1YxMFoiIGZpbGw9IndoaXRlIi8+PC9zdmc+" class="wallet-icon">
-                    Phantom
+            <!-- Input "From" -->
+            <div class="token-input">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span style="color: #aaa;">From</span>
+                    <span style="color: #aaa;">Balance: 0.0</span>
                 </div>
-                <div class="wallet-option" data-wallet="solflare">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMjJDMTcuNTIyOCAyMiAyMiAxNy41MjI4IDIyIDEyQzIyIDYuNDc3MTUgMTcuNTIyOCAyIDEyIDJDNi40NzcxNSAyIDIgNi40NzcxNSAyIDEyQzIgMTcuNTIyOCA2LjQ3NzE1IDIyIDEyIDIyWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNNy4yMDcgMTIuNDE0TDEwLjYwMiAxNS44MDlDMTEuMzg1IDE2LjU5MiAxMi42MTUgMTYuNTkyIDEzLjM5OSAxNS44MDlMMTYuNzkyIDEyLjQxNEMxNy41NzYgMTEuNjMxIDE3LjU3NiAxMC40MDEgMTYuNzkyIDkuNjE4QzE2LjAwOSA4LjgzNSAxNC43NzkgOC44MzUgMTMuOTk2IDkuNjE4TDEyLjcwNyAxMC45MDdMMTEuNDE4IDkuNjE4QzExLjAyNiA5LjIyNiAxMC40OTEgOS4wMzEgOS45OTcgOS4wODRDOS41MDMgOS4xMzggOS4xMTEgOS41MyA5LjA1NiAxMC4wMjRDOC45ODUgMTAuNzY5IDkuNTkyIDExLjM3NiAxMC4zMzcgMTEuMzA0TDEwLjkwNiAxMC45MDdMMTIgMTJDMTIuMzkyIDEyLjM5MiAxMi4zOTIgMTMgMTIgMTMuMzkxQzExLjYxIDEzLjc4MyAxMS4wMDIgMTMuNzgzIDEwLjYxMSAxMy4zOTFMNy4yMDcgMTBWMTIuNDE0WiIgZmlsbD0iIzAwMDAwMCIvPjwvc3ZnPg==" class="wallet-icon">
-                    Solflare
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <input type="number" placeholder="0.0" style="background: transparent; border: none; color: white; font-size: 1.5rem; width: 70%; outline: none;">
+                    <div class="token-selector">
+                        <span>SOL</span>
+                        <span>▼</span>
+                    </div>
                 </div>
-                <div class="wallet-option" data-wallet="backpack">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNCA3SDEyVjE3SDRWN1oiIHN0cm9rZT0iIzdFMjJDRSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTIgN0gyMFYxN0gxMlY3WiIgc3Ryb2tlPSIjM0I4MkY2IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==" class="wallet-icon">
-                    Backpack
+            </div>
+            
+            <!-- Bouton d'inversion -->
+            <div style="display: flex; justify-content: center; margin: 0.5rem 0;">
+                <button style="background: #222; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                    ↓
+                </button>
+            </div>
+            
+            <!-- Input "To" -->
+            <div class="token-input">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span style="color: #aaa;">To</span>
+                    <span style="color: #aaa;">Balance: 0.0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <input type="number" placeholder="0.0" style="background: transparent; border: none; color: white; font-size: 1.5rem; width: 70%; outline: none;" readonly>
+                    <div class="token-selector">
+                        <span>Select</span>
+                        <span>▼</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bouton Swap -->
+            <button class="gradient-border" style="width: 100%; padding: 1rem; border: none; border-radius: 0.75rem; color: white; font-weight: bold; font-size: 1rem; margin-top: 1rem; cursor: pointer;">
+                Connect Wallet
+            </button>
+        </div>
+        
+        <!-- Détails du swap -->
+        <div style="background: #111; border-radius: 1rem; padding: 1.5rem; margin-top: 1rem;">
+            <h3 style="font-weight: bold; margin-bottom: 1rem;" class="gradient-text">Swap Details</h3>
+            <div style="display: grid; gap: 0.5rem;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #aaa;">Exchange Rate</span>
+                    <span>-</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #aaa;">Minimum Received</span>
+                    <span>-</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #aaa;">Price Impact</span>
+                    <span><0.01%</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #aaa;">Liquidity Provider Fee</span>
+                    <span class="gradient-text">0.05%</span>
                 </div>
             </div>
         </div>
-    </nav>
+    </main>
 
     <script>
-        // Gestion du menu Wallet
-        document.getElementById('connect-wallet').addEventListener('click', function(e) {
-            e.stopPropagation();
-            const menu = document.getElementById('wallet-menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        });
-
-        // Fermer le menu quand on clique ailleurs
-        window.addEventListener('click', function() {
-            document.getElementById('wallet-menu').style.display = 'none';
-        });
-
-        // Connexion Wallet
-        document.querySelectorAll('.wallet-option').forEach(option => {
-            option.addEventListener('click', async function() {
-                const walletType = this.dataset.wallet;
-                const walletText = document.getElementById('wallet-text');
-                
-                walletText.innerHTML = '<span class="fa fa-spinner"></span> Connecting...';
-                
-                try {
-                    // Simulation de connexion
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    
-                    // En production, utiliser:
-                    // const provider = window[walletType]?.solana || window[walletType];
-                    // const response = await provider.connect();
-                    
-                    walletText.innerHTML = '<span class="fa fa-wallet"></span> Connected';
-                    document.getElementById('wallet-menu').style.display = 'none';
-                    
-                    console.log(`Connected to ${walletType} wallet`);
-                    
-                } catch (error) {
-                    walletText.textContent = 'Connect Wallet';
-                    console.error(`Wallet connection error: ${error}`);
-                }
+        // Fonctionnalité de sélection de token
+        document.querySelectorAll('.token-selector').forEach(selector => {
+            selector.addEventListener('click', function() {
+                alert("Token selection modal would appear here");
+                // En production: afficher un modal avec la liste des tokens
             });
+        });
+        
+        // Connexion wallet basique
+        document.getElementById('connect-wallet').addEventListener('click', function() {
+            alert("Wallet connection modal would appear here");
+            // En production: intégrer Phantom/Solflare/Backpack
+        });
+        
+        // Simulation de calcul de swap
+        document.querySelector('.token-input input').addEventListener('input', function(e) {
+            const value = parseFloat(e.target.value) || 0;
+            const outputField = document.querySelectorAll('.token-input input')[1];
+            outputField.value = (value * 150).toFixed(6); // Taux fictif SOL/USDC
         });
     </script>
 </body>
