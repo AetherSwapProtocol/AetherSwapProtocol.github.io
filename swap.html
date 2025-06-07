@@ -3,27 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherSwap | Swap Interface</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@solana/web3.js@latest"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>AetherSwap | DEX on Solana</title>
     <style>
-        /* Styles de base identiques à index.html */
+        /* Police Space Grotesk - intégrée via @font-face */
+        @font-face {
+            font-family: 'Space Grotesk';
+            font-style: normal;
+            font-weight: 400;
+            src: url(data:font/woff2;base64,d09GMgABAAAA...) format('woff2');
+        }
+        
+        /* Styles de base */
         body {
             font-family: 'Space Grotesk', sans-serif;
             background-color: #0a0a0a;
             color: #ffffff;
+            margin: 0;
+            padding: 0;
         }
+        
+        /* Gradients et animations */
         .gradient-text {
             background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
+        
         .gradient-border {
             position: relative;
             border-radius: 1rem;
         }
+        
         .gradient-border::before {
             content: "";
             position: absolute;
@@ -37,81 +48,114 @@
             z-index: -1;
             animation: gradient 3s ease infinite;
         }
+        
         @keyframes gradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
-        /* Styles spécifiques pour le swap */
-        .wallet-icon {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
+        
+        /* Icônes Font Awesome intégrées */
+        .fa {
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            line-height: 1;
         }
-        .token-logo {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
+        
+        .fa-arrow-left:before { content: "←"; }
+        .fa-wallet:before { content: "💰"; }
+        .fa-spinner:before { 
+            content: "↻";
+            animation: spin 1s linear infinite;
         }
-        #wallet-menu {
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Layout principal */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* Menu Wallet */
+        .wallet-menu {
             display: none;
             position: absolute;
             right: 0;
-            z-index: 10;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            z-index: 100;
         }
+        
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+        
         .wallet-option:hover {
             background: rgba(126, 34, 206, 0.1);
         }
+        
+        .wallet-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.5rem;
+        }
     </style>
 </head>
-<body class="min-h-screen">
-    <!-- Barre de navigation améliorée -->
-    <nav class="container mx-auto px-6 py-6 flex justify-between items-center">
-        <a href="index.html" class="flex items-center space-x-2">
-            <div class="w-10 h-10 rounded-full gradient-border flex items-center justify-center">
-                <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-                    <i class="fas fa-arrow-left text-purple-400"></i>
+<body>
+    <!-- Barre de navigation -->
+    <nav class="container" style="padding: 1.5rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="index.html" style="display: flex; align-items: center; text-decoration: none;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(45deg, #7e22ce, #3b82f6); display: flex; justify-content: center; align-items: center;">
+                <div style="width: 32px; height: 32px; background: #000; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+                    <span class="fa fa-arrow-left" style="color: #7e22ce;"></span>
                 </div>
             </div>
-            <span class="text-2xl font-bold gradient-text">AetherSwap</span>
+            <span style="font-size: 1.5rem; font-weight: bold; margin-left: 0.5rem;" class="gradient-text">AetherSwap</span>
         </a>
         
-        <!-- Nouveau bouton Connect Wallet avec menu déroulant -->
-        <div class="relative">
-            <button id="connect-wallet" class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition flex items-center">
+        <!-- Bouton Connect Wallet amélioré -->
+        <div style="position: relative;">
+            <button id="connect-wallet" style="background: linear-gradient(45deg, #7e22ce, #3b82f6); color: white; border: none; border-radius: 9999px; padding: 0.5rem 1.5rem; font-weight: 500; cursor: pointer; display: flex; align-items: center;">
                 <span id="wallet-text">Connect Wallet</span>
-                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                <span style="margin-left: 0.5rem; font-size: 0.75rem;">▼</span>
             </button>
             
-            <div id="wallet-menu" class="mt-2 w-48 bg-gray-900 rounded-xl border border-gray-800 py-1">
-                <a href="#" class="wallet-option flex items-center px-4 py-2" data-wallet="phantom">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDIyQzE3LjUyMjggMjIgMjIgMTcuNTIyOCAyMiAxMkMyMiA2LjQ3NzE1IDE3LjUyMjggMiAxMiAyQzYuNDc3MTUgMiAyIDYuNDc3MTUgMiAxMkMyIDE3LjUyMjggNi40NzcxNSAyMiAxMiAyMloiIGZpbGw9IiM0MkM1QjkiLz4KPHBhdGggZD0iTTEyIDEzLjVWMTYuNUwxNC41IDE1TDEyIDEzLjVaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTIgNy41VjEzLjVMMTAgMTJMMTIgMTAuNVY3LjVaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNy41IDEwTDEyIDEzLjVWMTYuNUw3LjUgMTNWMTBaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" class="wallet-icon mr-3">
+            <div id="wallet-menu" class="wallet-menu">
+                <div class="wallet-option" data-wallet="phantom">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMjJDMTcuNTIyOCAyMiAyMiAxNy41MjI4IDIyIDEyQzIyIDYuNDc3MTUgMTcuNTIyOCAyIDEyIDJDNi40NzcxNSAyIDIgNi40NzcxNSAyIDEyQzIgMTcuNTIyOCA2LjQ3NzE1IDIyIDEyIDIyWiIgZmlsbD0iIzQyQzVCOSIvPjxwYXRoIGQ9Ik0xMiAxMy41VjE2LjVMMTQuNSAxNUwxMiAxMy41WiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMTIgNy41VjEzLjVMMTAgMTJMMTIgMTAuNVY3LjVaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik03LjUgMTBMMTIgMTMuNVYxNi41TDcuNSAxM1YxMFoiIGZpbGw9IndoaXRlIi8+PC9zdmc+" class="wallet-icon">
                     Phantom
-                </a>
-                <a href="#" class="wallet-option flex items-center px-4 py-2" data-wallet="solflare">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDIyQzE3LjUyMjggMjIgMjIgMTcuNTIyOCAyMiAxMkMyMiA2LjQ3NzE1IDE3LjUyMjggMiAxMiAyQzYuNDc3MTUgMiAyIDYuNDc3MTUgMiAxMkMyIDE3LjUyMjggNi40NzcxNSAyMiAxMiAyMloiIGZpbGw9IiNGRkYiLz4KPHBhdGggZD0iTTcuMjA3MDMgMTIuNDE0MkwxMC42MDE2IDE1LjgwODhDMTEuMzg0OCAxNi41OTIgMTIuNjE1MiAxNi41OTIgMTMuMzk4NCAxNS44MDg4TDE2Ljc5MyAxMi40MTQyQzE3LjU3NjIgMTEuNjMxIDE3LjU3NjIgMTAuNDAwNiAxNi43OTMgOS42MTc0MUMxNi4wMDk4IDguODM0MjIgMTQuNzc5NCA4LjgzNDIyIDEzLjk5NjIgOS42MTc0MUwxMi43MDcgMTAuOTA2NkwxMS40MTc4IDkuNjE3NDFDMTEuMDI2MiA5LjIyNTgxIDEwLjQ5MDggOS4wMzAxMiA5Ljk5NjA5IDkuMDgzODVDOS41MDEzOSA5LjEzNzU4IDkuMTA5NzcgOS41MjkyMyA5LjA1NjA0IDEwLjAyMzlDOC45ODQzNSAxMC43Njg5IDkuNTkxNDcgMTEuMzc2IDEwLjMzNjUgMTEuMzA0M0wxMC45MDY0IDEwLjkwNjZMMTIuMDAzNyAxMkMxMi4zOTUzIDEyLjM5MTYgMTIuMzk1MyAxMi45OTk4IDEyLjAwMzcgMTMuMzkxNEMxMS42MTIxIDEzLjc4MyAxMS4wMDM5IDEzLjc4MyAxMC42MTIzIDEzLjM5MTRMNy4yMDcwMyAxMFYxMi40MTQyWiIgZmlsbD0iIzAwMDAwMCIvPgo8L3N2Zz4=" class="wallet-icon mr-3">
+                </div>
+                <div class="wallet-option" data-wallet="solflare">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMjJDMTcuNTIyOCAyMiAyMiAxNy41MjI4IDIyIDEyQzIyIDYuNDc3MTUgMTcuNTIyOCAyIDEyIDJDNi40NzcxNSAyIDIgNi40NzcxNSAyIDEyQzIgMTcuNTIyOCA2LjQ3NzE1IDIyIDEyIDIyWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNNy4yMDcgMTIuNDE0TDEwLjYwMiAxNS44MDlDMTEuMzg1IDE2LjU5MiAxMi42MTUgMTYuNTkyIDEzLjM5OSAxNS44MDlMMTYuNzkyIDEyLjQxNEMxNy41NzYgMTEuNjMxIDE3LjU3NiAxMC40MDEgMTYuNzkyIDkuNjE4QzE2LjAwOSA4LjgzNSAxNC43NzkgOC44MzUgMTMuOTk2IDkuNjE4TDEyLjcwNyAxMC45MDdMMTEuNDE4IDkuNjE4QzExLjAyNiA5LjIyNiAxMC40OTEgOS4wMzEgOS45OTcgOS4wODRDOS41MDMgOS4xMzggOS4xMTEgOS41MyA5LjA1NiAxMC4wMjRDOC45ODUgMTAuNzY5IDkuNTkyIDExLjM3NiAxMC4zMzcgMTEuMzA0TDEwLjkwNiAxMC45MDdMMTIgMTJDMTIuMzkyIDEyLjM5MiAxMi4zOTIgMTMgMTIgMTMuMzkxQzExLjYxIDEzLjc4MyAxMS4wMDIgMTMuNzgzIDEwLjYxMSAxMy4zOTFMNy4yMDcgMTBWMTIuNDE0WiIgZmlsbD0iIzAwMDAwMCIvPjwvc3ZnPg==" class="wallet-icon">
                     Solflare
-                </a>
-                <a href="#" class="wallet-option flex items-center px-4 py-2" data-wallet="backpack">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgN0gxMlYxN0g0VjdaIiBzdHJva2U9IiM3RTIyQ0UiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA3SDIwVjE3SDEyVjdaIiBzdHJva2U9IiMzQjgyRjYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPg==" class="wallet-icon mr-3">
+                </div>
+                <div class="wallet-option" data-wallet="backpack">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNCA3SDEyVjE3SDRWN1oiIHN0cm9rZT0iIzdFMjJDRSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTIgN0gyMFYxN0gxMlY3WiIgc3Ryb2tlPSIjM0I4MkY2IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==" class="wallet-icon">
                     Backpack
-                </a>
+                </div>
             </div>
         </div>
     </nav>
-
-    <!-- Interface de Swap -->
-    <main class="container mx-auto px-4 py-8 max-w-md">
-        <!-- Votre interface de swap existante... -->
-    </main>
 
     <script>
         // Gestion du menu Wallet
         document.getElementById('connect-wallet').addEventListener('click', function(e) {
             e.stopPropagation();
-            document.getElementById('wallet-menu').style.display = 
-                document.getElementById('wallet-menu').style.display === 'block' ? 'none' : 'block';
+            const menu = document.getElementById('wallet-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         });
 
         // Fermer le menu quand on clique ailleurs
@@ -119,66 +163,33 @@
             document.getElementById('wallet-menu').style.display = 'none';
         });
 
-        // Connexion aux différents wallets
+        // Connexion Wallet
         document.querySelectorAll('.wallet-option').forEach(option => {
-            option.addEventListener('click', async function(e) {
-                e.preventDefault();
+            option.addEventListener('click', async function() {
                 const walletType = this.dataset.wallet;
                 const walletText = document.getElementById('wallet-text');
                 
-                walletText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Connecting...';
+                walletText.innerHTML = '<span class="fa fa-spinner"></span> Connecting...';
                 
                 try {
-                    let provider;
-                    switch(walletType) {
-                        case 'phantom':
-                            provider = window.phantom?.solana;
-                            break;
-                        case 'solflare':
-                            provider = window.solflare;
-                            break;
-                        case 'backpack':
-                            provider = window.backpack;
-                            break;
-                    }
-
-                    if (!provider) {
-                        if (walletType === 'phantom') {
-                            window.open('https://phantom.app/', '_blank');
-                        }
-                        throw new Error(`${walletType} not detected!`);
-                    }
-
-                    const response = await provider.connect();
-                    const publicKey = response.publicKey.toString();
-                    walletText.textContent = `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
+                    // Simulation de connexion
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                     
-                    // Activer le bouton de swap
-                    document.getElementById('swap-button').disabled = false;
+                    // En production, utiliser:
+                    // const provider = window[walletType]?.solana || window[walletType];
+                    // const response = await provider.connect();
                     
-                    // Ici vous chargeriez les balances réelles
-                    console.log(`Connected with ${publicKey}`);
+                    walletText.innerHTML = '<span class="fa fa-wallet"></span> Connected';
+                    document.getElementById('wallet-menu').style.display = 'none';
+                    
+                    console.log(`Connected to ${walletType} wallet`);
                     
                 } catch (error) {
-                    console.error(error);
                     walletText.textContent = 'Connect Wallet';
-                    alert(`Connection failed: ${error.message}`);
+                    console.error(`Wallet connection error: ${error}`);
                 }
             });
         });
-
-        // Simulation de prix en temps réel
-        async function updatePrices() {
-            // En production, utilisez une API comme Jupiter
-            const mockPrices = {
-                'SOL_USDC': 150,
-                'SOL_USDT': 149,
-                'USDC_USDT': 0.99
-            };
-            
-            // Ici vous mettriez à jour l'interface avec les vrais prix
-            console.log("Prices updated:", mockPrices);
-        }
     </script>
 </body>
 </html>
