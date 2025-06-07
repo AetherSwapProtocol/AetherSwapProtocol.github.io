@@ -193,5 +193,75 @@
       // Update other elements...
     }
   </script>
+  // Connexion au wallet Phantom ou Backpack
+async function connectWallet() {
+  if (window.solana && window.solana.isPhantom) {
+    try {
+      const resp = await window.solana.connect();
+      console.log("✅ Wallet connecté :", resp.publicKey.toString());
+      alert("Wallet connecté : " + resp.publicKey.toString());
+    } catch (err) {
+      console.error("❌ Connexion annulée :", err);
+    }
+  } else {
+    alert("Phantom ou Backpack Wallet non détecté !");
+  }
+}
+
+// Bouton de connexion à afficher dans le HTML
+const walletBtn = document.createElement("button");
+walletBtn.textContent = "🔐 Connect Wallet";
+walletBtn.className = "mb-6 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm";
+walletBtn.onclick = connectWallet;
+document.querySelector(".container").prepend(walletBtn);
+
+// Ajout d’un token personnalisé avec validation
+async function addCustomToken() {
+  const mintAddress = prompt("Entrez l’adresse du token (mint) :");
+
+  if (!mintAddress || mintAddress.length < 32) {
+    alert("Adresse invalide.");
+    return;
+  }
+
+  try {
+    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"));
+    const mintPubkey = new solanaWeb3.PublicKey(mintAddress);
+
+    const accountInfo = await connection.getParsedAccountInfo(mintPubkey);
+
+    if (!accountInfo.value) {
+      alert("❌ Token non trouvé sur la blockchain.");
+      return;
+    }
+
+    // Vérifie si c'est un token SPL valide
+    const parsed = accountInfo.value.data;
+    if (parsed?.program !== "spl-token") {
+      alert("❌ Ce n’est pas un token SPL valide.");
+      return;
+    }
+
+    const decimals = parsed.parsed.info.decimals || 0;
+    const symbol = prompt("Nom du token (ex: XYZ) :") || "CUSTOM";
+    const name = prompt("Nom complet du token :") || "Custom Token";
+    const logo = prompt("Lien vers un logo (URL) :") || "token-placeholder.png";
+
+    const newToken = {
+      symbol,
+      name,
+      mint: mintAddress,
+      decimals,
+      logo
+    };
+
+    PRELOADED_TOKENS.push(newToken);
+    renderTokenList(PRELOADED_TOKENS);
+    alert(`✅ Token ${symbol} ajouté !`);
+  } catch (err) {
+    console.error("Erreur lors de l'ajout du token :", err);
+    alert("❌ Erreur : token invalide ou réseau indisponible.");
+  }
+}
 </body>
 </html>
