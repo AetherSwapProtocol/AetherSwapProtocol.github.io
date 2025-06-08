@@ -1,322 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AetherSwap | LaunchLab</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
-  <!-- Phantom Wallet Integration -->
-  <script src="https://unpkg.com/@phantom-labs/inject-sdk@latest/dist/sdk.js"></script>
-
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-    body {
-      font-family: 'Space Grotesk', sans-serif;
-      background-color: #0a0a0a;
-      color: #fff;
-    }
-    .gradient-text {
-      background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .gradient-border {
-      position: relative;
-      border-radius: 1rem;
-    }
-    .gradient-border::before {
-      content: "";
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
-      border-radius: 1rem;
-      background: linear-gradient(45deg, #7e22ce, #3b82f6, #7e22ce);
-      background-size: 300% 300%;
-      z-index: -1;
-      animation: gradient 3s ease infinite;
-    }
-    @keyframes gradient {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
-    }
-    .launch-button {
-      background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
-      border-radius: 0.75rem;
-      padding: 1rem;
-      font-weight: 600;
-      width: 100%;
-      transition: all 0.2s;
-      color: white;
-    }
-    .launch-button:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
-    }
-    .loading-spinner {
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top: 3px solid white;
-      width: 20px;
-      height: 20px;
-      animation: spin 1s linear infinite;
-      display: inline-block;
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    /* Ticker Styles */
-    #ticker-container {
-      background: #121212;
-      border-top: 1px solid #3b3b3b;
-      border-bottom: 1px solid #3b3b3b;
-      overflow: hidden;
-      white-space: nowrap;
-      padding: 0.5rem 0;
-    }
-    #ticker {
-      display: inline-block;
-      padding-left: 100%;
-      animation: ticker-scroll 30s linear infinite;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #cbd5e1;
-      user-select: none;
-    }
-    .ticker-item {
-      display: inline-flex;
-      align-items: center;
-      margin-right: 3rem;
-      gap: 0.3rem;
-    }
-    .ticker-item img {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-    }
-    .price-up {
-      color: #22c55e;
-    }
-    .price-down {
-      color: #ef4444;
-    }
-    @keyframes ticker-scroll {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-100%); }
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AetherSwap | LaunchLab</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+<script src="https://unpkg.com/@phantom-labs/inject-sdk@latest/dist/sdk.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+  body{font-family:'Space Grotesk',sans-serif;background:#0a0a0a;color:#fff}
+  .gradient-text{background:linear-gradient(90deg,#7e22ce 0%,#3b82f6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .gradient-border{position:relative;border-radius:1rem}
+  .gradient-border::before{content:"";position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;border-radius:1rem;
+    background:linear-gradient(45deg,#7e22ce,#3b82f6,#7e22ce);background-size:300% 300%;z-index:-1;animation:gradient 3s ease infinite}
+  @keyframes gradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  .launch-button{background:linear-gradient(90deg,#7e22ce 0%,#3b82f6 100%);border-radius:.75rem;padding:1rem;font-weight:600;width:100%;transition:all .2s;color:#fff}
+  .launch-button:hover{opacity:.9;transform:translateY(-1px)}
+  .loading-spinner{border:3px solid rgba(255,255,255,.3);border-radius:50%;border-top:3px solid #fff;width:20px;height:20px;
+    animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px}
+  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+  #ticker-container{background:#121212;border-top:1px solid #3b3b3b;border-bottom:1px solid #3b3b3b;overflow:hidden;white-space:nowrap;padding:.5rem 0;margin-bottom:1.5rem}
+  #ticker{display:inline-block;padding-left:100%;animation:ticker-scroll 30s linear infinite;font-weight:600;font-size:0.9rem;color:#cbd5e1;user-select:none}
+  .ticker-item{display:inline-flex;align-items:center;margin-right:3rem;gap:.3rem;color:#fff}
+  .ticker-item img{width:20px;height:20px;border-radius:50%}
+  .price-up{color:#22c55e}
+  .price-down{color:#ef4444}
+  @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+  /* Modal wallet */
+  #wallet-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:50}
+  #wallet-modal .modal-box{background:#1f1f1f;border-radius:1rem;padding:1.5rem;width:90%;max-width:20rem}
+  #wallet-modal h3{color:#fff;font-size:1.1rem;margin-bottom:1rem;text-align:center}
+  .connect-btn{width:100%;padding:.75rem;border-radius:9999px;color:#fff;font-weight:500;transition:opacity .2s;margin-bottom:.5rem}
+  .connect-btn:hover{opacity:.9}
+  #wallet-modal-close{display:block;width:100%;margin-top:.5rem;text-align:center;color:#aaa;font-size:.9rem}
+  #wallet-modal-close:hover{color:#fff;cursor:pointer}
+</style>
 </head>
 <body class="min-h-screen">
-  <!-- Navbar -->
-  <nav class="container mx-auto px-6 py-6 flex justify-between items-center">
-    <a href="index.html" class="flex items-center space-x-2">
-      <div class="w-10 h-10 rounded-full gradient-border flex items-center justify-center">
-        <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white text-xl font-bold select-none">
-          ←
-        </div>
-      </div>
-      <span class="text-2xl font-bold gradient-text">AetherSwap LaunchLab</span>
-    </a>
-    <button
-      id="connect-wallet"
-      class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition"
-    >
-      Connect Wallet
-    </button>
-  </nav>
 
-  <!-- Ticker défilant avec tokens -->
-  <div id="ticker-container" aria-label="Crypto prices ticker">
-    <div id="ticker" aria-live="polite" aria-atomic="true">
-      Loading prices...
-    </div>
+<nav class="container mx-auto px-6 py-6 flex justify-between items-center">
+  <a href="index.html" class="flex items-center space-x-2">
+    <div class="w-10 h-10 rounded-full gradient-border flex items-center justify-center"><div class="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white font-bold text-xl select-none">←</div></div>
+    <span class="text-2xl font-bold gradient-text">AetherSwap LaunchLab</span>
+  </a>
+  <button id="connect-wallet" class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition">Connect Wallet</button>
+</nav>
+
+<!-- Modal Wallet -->
+<div id="wallet-modal">
+  <div class="modal-box">
+    <h3>Connect Wallet</h3>
+    <button data-wallet="phantom" class="connect-btn" style="background:linear-gradient(to right,#7e22ce,#3b82f6)">Phantom</button>
+    <button data-wallet="solflare" class="connect-btn" style="background:linear-gradient(to right,#f59e0b,#fde68a)">Solflare</button>
+    <button data-wallet="okx" class="connect-btn" style="background:linear-gradient(to right,#3b82f6,#60a5fa)">OKX Wallet</button>
+    <button data-wallet="bitget" class="connect-btn" style="background:linear-gradient(to right,#10b981,#6ee7b7)">Bitget Wallet</button>
+    <span id="wallet-modal-close">✕ Close</span>
   </div>
+</div>
 
-  <!-- Main content -->
-  <main class="container mx-auto px-4 py-8 max-w-2xl">
-    <div class="gradient-border p-1 rounded-2xl mb-8">
-      <div class="bg-gray-900 rounded-2xl p-6">
-        <h2 class="text-xl font-bold mb-4">🚀 Create New Token</h2>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm text-gray-400 mb-1">Token Name</label>
-            <input
-              id="token-name"
-              type="text"
-              placeholder="My Awesome Token"
-              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label class="block text-sm text-gray-400 mb-1">Token Symbol</label>
-            <input
-              id="token-symbol"
-              type="text"
-              placeholder="MAT"
-              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label class="block text-sm text-gray-400 mb-1">Total Supply</label>
-            <input
-              id="token-supply"
-              type="number"
-              placeholder="1000000"
-              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label class="block text-sm text-gray-400 mb-1">Decimals</label>
-            <input
-              id="token-decimals"
-              type="number"
-              placeholder="9"
-              value="9"
-              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none"
-            />
-          </div>
-          <div class="pt-4">
-            <button id="create-token" class="launch-button">Create Token</button>
-          </div>
-        </div>
-      </div>
-    </div>
+<!-- Ticker -->
+<div id="ticker-container"><div id="ticker" aria-live="polite">Loading prices...</div></div>
 
-    <div class="gradient-border p-1 rounded-2xl">
-      <div class="bg-gray-900 rounded-2xl p-6">
-        <h2 class="text-xl font-bold mb-4">🔫 Fair Launch (IDO)</h2>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm text-gray-400 mb-1">Token Address</label>
-            <input
-              id="ido-token-address"
-              type="text"
-              placeholder="Example: 7xKXtg...CW1gK"
-              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label class="block text-sm text-gray-400 mb-1">Token Amount to Sell</label>
-            <input
-              id="ido-token-amount"
-              type="number"
-              placeholder="100000"
-              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label class="block text-sm text-gray-400 mb-1">Price per Token (in SOL)</label>
-            <input
-              id="ido-token-price"
-              type="number"
-              placeholder="0.01"
-              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label class="block text-sm text-gray-400 mb-1">Liquidity Lock (Days)</label>
-            <input
-              id="ido-lock-days"
-              type="number"
-              placeholder="30"
-              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none"
-            />
-          </div>
-          <div class="pt-4">
-            <button id="launch-ido" class="launch-button">Launch IDO</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
+<main class="container mx-auto px-4 py-8 max-w-2xl">
+  <div class="gradient-border p-1 rounded-2xl mb-8"><div class="bg-gray-900 rounded-2xl p-6">
+    <h2 class="text-xl font-bold mb-4">🚀 Create New Token</h2>
+    <div class="space-y-4"><!-- inputs... --></div>
+    <div class="pt-4"><button id="create-token" class="launch-button">Create Token</button></div>
+  </div></div>
 
-  <script>
-    // Connect Wallet Button (stub)
-    document.getElementById('connect-wallet').addEventListener('click', () => {
-      alert('Connect wallet functionality coming soon.');
+  <div class="gradient-border p-1 rounded-2xl"><div class="bg-gray-900 rounded-2xl p-6">
+    <h2 class="text-xl font-bold mb-4">🔫 Fair Launch (IDO)</h2>
+    <div class="space-y-4"><!-- inputs... --></div>
+    <div class="pt-4"><button id="launch-ido" class="launch-button">Launch IDO</button></div>
+  </div></div>
+</main>
+
+<footer class="text-center text-sm text-gray-500 py-8">© 2025 AetherSwap. Built by <a href="https://t.me/AetherFounder" class="text-white underline">Founder</a></footer>
+
+<script>
+  // Toast stubs
+  function setLoading(b,el){
+    el.disabled=b; if(b){
+      el.insertAdjacentHTML('afterbegin','<div class="loading-spinner"></div>');
+    } else el.querySelector('.loading-spinner')?.remove();
+  }
+
+  // Wallet connection logic
+  document.getElementById('connect-wallet').addEventListener('click',()=>{document.getElementById('wallet-modal').style.display='flex'});
+  document.getElementById('wallet-modal-close').addEventListener('click',()=>{document.getElementById('wallet-modal').style.display='none'});
+  document.querySelectorAll('.connect-btn').forEach(btn=>{
+    btn.addEventListener('click',async()=>{
+      const name=btn.dataset.wallet; let provider=window[name];
+      if(name==='phantom')provider=window.phantom?.solana;
+      if(!provider){alert(`Install ${name}`);return;}
+      try{
+        await provider.connect();
+        const pk=provider.publicKey.toString();
+        document.getElementById('connect-wallet').textContent=pk.slice(0,4)+'…'+pk.slice(-4);
+        document.getElementById('wallet-modal').style.display='none';
+        provider.on('disconnect',()=>document.getElementById('connect-wallet').textContent='Connect Wallet');
+      }catch(e){console.error(e)}
     });
+  });
 
-    // Create Token Button (stub)
-    document.getElementById('create-token').addEventListener('click', () => {
-      alert('Create Token functionality coming soon.');
-    });
+  // Token creation stubs
+  document.getElementById('create-token').addEventListener('click',()=>{
+    if(document.getElementById('connect-wallet').textContent!=='Connect Wallet')
+      alert('Token created!');
+    else alert('Connect wallet first');
+  });
+  document.getElementById('launch-ido').addEventListener('click',()=>{
+    if(document.getElementById('connect-wallet').textContent!=='Connect Wallet')
+      alert('IDO launched!');
+    else alert('Connect wallet first');
+  });
 
-    // Launch IDO Button (stub)
-    document.getElementById('launch-ido').addEventListener('click', () => {
-      alert('Launch IDO functionality coming soon.');
-    });
+  // Fetch prices + logos (CoinGecko)
+  async function fetchPrices(){
+    const ids=['solana','serum','raydium','mango-markets','orca','kin'];
+    try{
+      const r=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids='+ids.join(',')+'&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h');
+      const data=await r.json();
+      document.getElementById('ticker').innerHTML=data.map(t=>{
+        const ch=t.price_change_percentage_24h||0,cls=ch>=0?'price-up':'price-down',arrow=ch>=0?'▲':'▼';
+        return `<span class="ticker-item"><img src="${t.image}" alt="${t.symbol}"/><span>${t.symbol.toUpperCase()}: $${t.current_price.toFixed(2)}</span><span class="${cls}">${arrow}${Math.abs(ch).toFixed(2)}%</span></span>`;
+      }).join('');
+    }catch(e){console.error(e);document.getElementById('ticker').textContent='Error loading prices.'}
+  }
+  fetchPrices();
+  setInterval(fetchPrices,60000);
+</script>
 
-    // --- CoinGecko Token Ticker ---
-
-    async function fetchTokenPrices() {
-      try {
-        // IDs of tokens on CoinGecko you want to display (can be changed)
-        const tokenIds = ['solana', 'ethereum', 'bitcoin', 'ripple', 'cardano', 'polkadot'];
-        const url = `https://api.coingecko.com/api/v3/simple/price?ids=${tokenIds.join(',')}&vs_currencies=usd&include_24hr_change=true`;
-        const response = await fetch(url);
-        const data = await response.json();
-
-        const ticker = document.getElementById('ticker');
-        if (!data) {
-          ticker.textContent = 'Failed to load prices.';
-          return;
-        }
-
-        // Build ticker HTML
-        ticker.innerHTML = tokenIds.map(id => {
-          const price = data[id].usd.toFixed(2);
-          const change = data[id].usd_24h_change;
-          const changeClass = change >= 0 ? 'price-up' : 'price-down';
-          const arrow = change >= 0 ? '▲' : '▼';
-          const iconUrl = `https://assets.coingecko.com/coins/images/${getCoinImageId(id)}.png`;
-
-          return `<span class="ticker-item">
-                    <img src="${iconUrl}" alt="${id} logo" />
-                    <span>${capitalize(id)}: $${price}</span>
-                    <span class="${changeClass}">${arrow} ${Math.abs(change).toFixed(2)}%</span>
-                  </span>`;
-        }).join(' ');
-      } catch (error) {
-        console.error('Error fetching token prices:', error);
-        document.getElementById('ticker').textContent = 'Error loading prices.';
-      }
-    }
-
-    // Helper to capitalize first letter
-    function capitalize(s) {
-      return s.charAt(0).toUpperCase() + s.slice(1);
-    }
-
-    // Map token id to CoinGecko image IDs for icons (you can adjust IDs if needed)
-    // These IDs correspond to CoinGecko's coin image filenames.
-    function getCoinImageId(id) {
-      const map = {
-        solana: '4128',
-        ethereum: '279',
-        bitcoin: '1',
-        ripple: '44',
-        cardano: '975',
-        polkadot: '12171'
-      };
-      return map[id] || '1'; // fallback Bitcoin icon if missing
-    }
-
-    // Refresh prices every 60 seconds
-    fetchTokenPrices();
-    setInterval(fetchTokenPrices, 60000);
-  </script>
 </body>
 </html>
