@@ -6,6 +6,7 @@
     <title>AetherSwap | Production Ready DEX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+    <script src="https://unpkg.com/@project-serum/anchor@0.29.0/dist/anchor.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
         
@@ -45,6 +46,37 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+        
+        .token-selector {
+            background-color: #1f2937;
+            border-radius: 0.75rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .token-selector:hover {
+            background-color: #374151;
+        }
+        
+        .swap-button {
+            background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        
+        .swap-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .swap-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -66,33 +98,119 @@
     <main class="container mx-auto px-4 py-8 max-w-md">
         <div class="gradient-border p-1 rounded-2xl">
             <div class="bg-gray-900 rounded-2xl p-6">
-                <!-- Interface de swap... -->
+                <div class="flex flex-col space-y-4">
+                    <div class="bg-gray-800 rounded-xl p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-400">From</span>
+                            <span id="from-balance" class="text-sm text-gray-400">Balance: 0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <input id="from-amount" type="number" placeholder="0.0" class="bg-transparent text-2xl w-full outline-none">
+                            <div class="flex items-center space-x-2 token-selector" id="from-token-selector">
+                                <img src="https://cryptologos.cc/logos/solana-sol-logo.png" alt="SOL" class="w-6 h-6">
+                                <span>SOL</span>
+                                <span>▼</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center">
+                        <button id="switch-tokens" class="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition">
+                            ↓↑
+                        </button>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-400">To</span>
+                            <span id="to-balance" class="text-sm text-gray-400">Balance: 0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <input id="to-amount" type="number" placeholder="0.0" class="bg-transparent text-2xl w-full outline-none" disabled>
+                            <div class="flex items-center space-x-2 token-selector" id="to-token-selector">
+                                <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" class="w-6 h-6">
+                                <span>USDC</span>
+                                <span>▼</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button id="swap-button" class="swap-button" disabled>
+                            Swap
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
     <script>
-        // 1. Initialisation Solana
+        // Configuration
+        const TOKENS = {
+            SOL: {
+                name: "SOL",
+                mint: "So11111111111111111111111111111111111111112",
+                decimals: 9,
+                logo: "https://cryptologos.cc/logos/solana-sol-logo.png"
+            },
+            USDC: {
+                name: "USDC",
+                mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                decimals: 6,
+                logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png"
+            }
+        };
+
+        // État de l'application
+        let state = {
+            fromToken: TOKENS.SOL,
+            toToken: TOKENS.USDC,
+            fromAmount: 0,
+            toAmount: 0,
+            walletConnected: false,
+            walletPublicKey: null
+        };
+
+        // Initialisation Solana
         const connection = new solanaWeb3.Connection(
             solanaWeb3.clusterApiUrl('mainnet-beta'), 
             'confirmed'
         );
 
-        // 2. Connexion Wallet Réelle
-        document.getElementById('connect-wallet').addEventListener('click', async () => {
+        // Éléments UI
+        const connectWalletBtn = document.getElementById('connect-wallet');
+        const fromAmountInput = document.getElementById('from-amount');
+        const toAmountInput = document.getElementById('to-amount');
+        const fromBalance = document.getElementById('from-balance');
+        const toBalance = document.getElementById('to-balance');
+        const fromTokenSelector = document.getElementById('from-token-selector');
+        const toTokenSelector = document.getElementById('to-token-selector');
+        const switchTokensBtn = document.getElementById('switch-tokens');
+        const swapButton = document.getElementById('swap-button');
+
+        // Événements
+        connectWalletBtn.addEventListener('click', connectWallet);
+        fromAmountInput.addEventListener('input', updateToAmount);
+        switchTokensBtn.addEventListener('click', switchTokens);
+        swapButton.addEventListener('click', executeSwap);
+
+        // Connexion Wallet
+        async function connectWallet() {
             try {
                 if (window.phantom?.solana) {
                     const provider = window.phantom.solana;
                     const response = await provider.connect();
-                    const publicKey = response.publicKey.toString();
-                    console.log('Connected:', publicKey);
+                    state.walletPublicKey = response.publicKey.toString();
+                    state.walletConnected = true;
                     
                     // Mettre à jour l'UI
-                    document.getElementById('connect-wallet').textContent = 
-                        `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
+                    connectWalletBtn.textContent = 
+                        `${state.walletPublicKey.slice(0, 4)}...${state.walletPublicKey.slice(-4)}`;
                     
                     // Charger les balances
-                    await loadBalances(publicKey);
+                    await loadBalances();
+                    updateSwapButton();
                 } else {
                     window.open('https://phantom.app/', '_blank');
                     throw new Error('Phantom Wallet not installed');
@@ -101,56 +219,107 @@
                 console.error('Connection error:', error);
                 alert(`Error: ${error.message}`);
             }
-        });
+        }
 
-        // 3. Chargement des Balances Réelles
-        async function loadBalances(publicKey) {
+        // Chargement des balances
+        async function loadBalances() {
             try {
                 // SOL Balance
                 const solBalance = await connection.getBalance(
-                    new solanaWeb3.PublicKey(publicKey)
+                    new solanaWeb3.PublicKey(state.walletPublicKey)
                 );
-                document.getElementById('from-balance').textContent = 
-                    (solBalance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(2);
+                fromBalance.textContent = `Balance: ${(solBalance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(2)}`;
                 
-                // Token Balances (exemple pour USDC)
-                const usdcPublicKey = new solanaWeb3.PublicKey(
-                    'EPjFWdd5AufqSSqeM2q6DQNpMQNcFcSq2GmKkExN6TfK'
-                );
-                const tokenAccounts = await connection.getTokenAccountsByOwner(
-                    new solanaWeb3.PublicKey(publicKey),
-                    { mint: usdcPublicKey }
+                // USDC Balance
+                const usdcAccounts = await connection.getTokenAccountsByOwner(
+                    new solanaWeb3.PublicKey(state.walletPublicKey),
+                    { mint: new solanaWeb3.PublicKey(TOKENS.USDC.mint) }
                 );
                 
-                if (tokenAccounts.value.length > 0) {
+                if (usdcAccounts.value.length > 0) {
                     const balance = await connection.getTokenAccountBalance(
-                        tokenAccounts.value[0].pubkey
+                        usdcAccounts.value[0].pubkey
                     );
-                    document.getElementById('to-balance').textContent = 
-                        (balance.value.uiAmount || 0).toFixed(2);
+                    toBalance.textContent = `Balance: ${(balance.value.uiAmount || 0).toFixed(2)}`;
                 }
             } catch (error) {
                 console.error('Balance load error:', error);
             }
         }
 
-        // 4. Récupération des Prix Réels (Jupiter API)
-        async function getMarketPrice(fromMint, toMint, amount) {
+        // Mise à jour du montant de sortie
+        async function updateToAmount() {
+            state.fromAmount = parseFloat(fromAmountInput.value) || 0;
+            
+            if (state.fromAmount > 0) {
+                try {
+                    const price = await getMarketPrice();
+                    state.toAmount = state.fromAmount * price;
+                    toAmountInput.value = state.toAmount.toFixed(6);
+                } catch (error) {
+                    console.error('Price fetch error:', error);
+                }
+            } else {
+                toAmountInput.value = '';
+                state.toAmount = 0;
+            }
+            
+            updateSwapButton();
+        }
+
+        // Récupération du prix du marché
+        async function getMarketPrice() {
             try {
                 const response = await fetch(
-                    `https://price.jup.ag/v4/price?ids=${fromMint}&vsToken=${toMint}`
+                    `https://price.jup.ag/v4/price?ids=${state.fromToken.mint}&vsToken=${state.toToken.mint}`
                 );
                 const data = await response.json();
-                return data.data[fromMint].price * amount;
+                return data.data[state.fromToken.mint].price;
             } catch (error) {
                 console.error('Price fetch error:', error);
-                return null;
+                throw error;
             }
         }
 
-        // 5. Execution Réelle d'un Swap
-        async function executeSwap(fromMint, toMint, amount, publicKey) {
+        // Échange des tokens
+        function switchTokens() {
+            [state.fromToken, state.toToken] = [state.toToken, state.fromToken];
+            updateTokenSelectors();
+            fromAmountInput.value = '';
+            toAmountInput.value = '';
+            state.fromAmount = 0;
+            state.toAmount = 0;
+            updateSwapButton();
+        }
+
+        // Mise à jour des sélecteurs de tokens
+        function updateTokenSelectors() {
+            fromTokenSelector.innerHTML = `
+                <img src="${state.fromToken.logo}" alt="${state.fromToken.name}" class="w-6 h-6">
+                <span>${state.fromToken.name}</span>
+                <span>▼</span>
+            `;
+            
+            toTokenSelector.innerHTML = `
+                <img src="${state.toToken.logo}" alt="${state.toToken.name}" class="w-6 h-6">
+                <span>${state.toToken.name}</span>
+                <span>▼</span>
+            `;
+        }
+
+        // Mise à jour du bouton de swap
+        function updateSwapButton() {
+            swapButton.disabled = !(state.walletConnected && state.fromAmount > 0 && state.toAmount > 0);
+        }
+
+        // Exécution du swap
+        async function executeSwap() {
+            if (!state.walletConnected || state.fromAmount <= 0) return;
+            
             try {
+                swapButton.disabled = true;
+                swapButton.textContent = 'Processing...';
+                
                 const { swapTransaction } = await (
                     await fetch('https://quote-api.jup.ag/v4/swap', {
                         method: 'POST',
@@ -158,8 +327,8 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            route: await getRoute(fromMint, toMint, amount),
-                            userPublicKey: publicKey,
+                            route: await getRoute(),
+                            userPublicKey: state.walletPublicKey,
                             wrapUnwrapSOL: true
                         })
                     })
@@ -170,11 +339,27 @@
                     new Uint8Array(Object.values(swapTransaction))
                 );
                 
-                return signedTx.signature;
+                alert(`Swap successful! Transaction: ${signedTx.signature}`);
+                
+                // Recharger les balances
+                await loadBalances();
+                
             } catch (error) {
                 console.error('Swap error:', error);
-                throw error;
+                alert(`Swap failed: ${error.message}`);
+            } finally {
+                swapButton.disabled = false;
+                swapButton.textContent = 'Swap';
             }
+        }
+
+        // Récupération de la route de swap
+        async function getRoute() {
+            const response = await fetch(
+                `https://quote-api.jup.ag/v4/quote?inputMint=${state.fromToken.mint}&outputMint=${state.toToken.mint}&amount=${state.fromAmount * Math.pow(10, state.fromToken.decimals)}&slippage=0.5`
+            );
+            const data = await response.json();
+            return data.data[0];
         }
     </script>
 </body>
