@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
     <script src="https://unpkg.com/@project-serum/anchor@0.29.0/dist/anchor.min.js"></script>
+    <!-- Phantom Wallet Integration -->
+    <script src="https://unpkg.com/@phantom-labs/inject-sdk@latest/dist/sdk.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
         
@@ -77,6 +79,23 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -134,6 +153,10 @@
                             </div>
                         </div>
                     </div>
+
+                    <div id="price-info" class="text-center text-sm text-gray-400">
+                        Loading price...
+                    </div>
                     
                     <div class="pt-4">
                         <button id="swap-button" class="swap-button" disabled>
@@ -159,6 +182,12 @@
                 mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
                 decimals: 6,
                 logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png"
+            },
+            BONK: {
+                name: "BONK",
+                mint: "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+                decimals: 5,
+                logo: "https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I"
             }
         };
 
@@ -169,7 +198,9 @@
             fromAmount: 0,
             toAmount: 0,
             walletConnected: false,
-            walletPublicKey: null
+            walletPublicKey: null,
+            currentPrice: 0,
+            loading: false
         };
 
         // Initialisation Solana
@@ -188,6 +219,7 @@
         const toTokenSelector = document.getElementById('to-token-selector');
         const switchTokensBtn = document.getElementById('switch-tokens');
         const swapButton = document.getElementById('swap-button');
+        const priceInfo = document.getElementById('price-info');
 
         // Événements
         connectWalletBtn.addEventListener('click', connectWallet);
@@ -195,10 +227,18 @@
         switchTokensBtn.addEventListener('click', switchTokens);
         swapButton.addEventListener('click', executeSwap);
 
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTokenSelectors();
+            fetchPrice();
+        });
+
         // Connexion Wallet
         async function connectWallet() {
             try {
-                if (window.phantom?.solana) {
+                if (window.phantom?.solana?.isPhantom) {
+                    setLoading(true, connectWalletBtn);
+                    
                     const provider = window.phantom.solana;
                     const response = await provider.connect();
                     state.walletPublicKey = response.publicKey.toString();
@@ -211,39 +251,75 @@
                     // Charger les balances
                     await loadBalances();
                     updateSwapButton();
+                    
+                    setLoading(false, connectWalletBtn);
                 } else {
                     window.open('https://phantom.app/', '_blank');
                     throw new Error('Phantom Wallet not installed');
                 }
             } catch (error) {
                 console.error('Connection error:', error);
-                alert(`Error: ${error.message}`);
+                setLoading(false, connectWalletBtn);
+                connectWalletBtn.textContent = 'Connect Wallet';
+                showError(`Error: ${error.message}`);
             }
         }
 
         // Chargement des balances
         async function loadBalances() {
             try {
+                setLoading(true);
+                
                 // SOL Balance
-                const solBalance = await connection.getBalance(
-                    new solanaWeb3.PublicKey(state.walletPublicKey)
-                );
-                fromBalance.textContent = `Balance: ${(solBalance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(2)}`;
+                if (state.fromToken.name === 'SOL' || state.toToken.name === 'SOL') {
+                    const solBalance = await connection.getBalance(
+                        new solanaWeb3.PublicKey(state.walletPublicKey)
+                    );
+                    const solBalanceElement = state.fromToken.name === 'SOL' ? fromBalance : toBalance;
+                    solBalanceElement.textContent = `Balance: ${(solBalance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(2)}`;
+                }
                 
                 // USDC Balance
-                const usdcAccounts = await connection.getTokenAccountsByOwner(
-                    new solanaWeb3.PublicKey(state.walletPublicKey),
-                    { mint: new solanaWeb3.PublicKey(TOKENS.USDC.mint) }
-                );
-                
-                if (usdcAccounts.value.length > 0) {
-                    const balance = await connection.getTokenAccountBalance(
-                        usdcAccounts.value[0].pubkey
+                if (state.fromToken.name === 'USDC' || state.toToken.name === 'USDC') {
+                    const usdcAccounts = await connection.getTokenAccountsByOwner(
+                        new solanaWeb3.PublicKey(state.walletPublicKey),
+                        { mint: new solanaWeb3.PublicKey(TOKENS.USDC.mint) }
                     );
-                    toBalance.textContent = `Balance: ${(balance.value.uiAmount || 0).toFixed(2)}`;
+                    
+                    const usdcBalanceElement = state.fromToken.name === 'USDC' ? fromBalance : toBalance;
+                    if (usdcAccounts.value.length > 0) {
+                        const balance = await connection.getTokenAccountBalance(
+                            usdcAccounts.value[0].pubkey
+                        );
+                        usdcBalanceElement.textContent = `Balance: ${(balance.value.uiAmount || 0).toFixed(2)}`;
+                    } else {
+                        usdcBalanceElement.textContent = `Balance: 0`;
+                    }
                 }
+
+                // BONK Balance
+                if (state.fromToken.name === 'BONK' || state.toToken.name === 'BONK') {
+                    const bonkAccounts = await connection.getTokenAccountsByOwner(
+                        new solanaWeb3.PublicKey(state.walletPublicKey),
+                        { mint: new solanaWeb3.PublicKey(TOKENS.BONK.mint) }
+                    );
+                    
+                    const bonkBalanceElement = state.fromToken.name === 'BONK' ? fromBalance : toBalance;
+                    if (bonkAccounts.value.length > 0) {
+                        const balance = await connection.getTokenAccountBalance(
+                            bonkAccounts.value[0].pubkey
+                        );
+                        bonkBalanceElement.textContent = `Balance: ${(balance.value.uiAmount || 0).toFixed(0)}`;
+                    } else {
+                        bonkBalanceElement.textContent = `Balance: 0`;
+                    }
+                }
+                
+                setLoading(false);
             } catch (error) {
                 console.error('Balance load error:', error);
+                setLoading(false);
+                showError('Failed to load balances');
             }
         }
 
@@ -253,31 +329,60 @@
             
             if (state.fromAmount > 0) {
                 try {
-                    const price = await getMarketPrice();
-                    state.toAmount = state.fromAmount * price;
+                    setLoading(true, toAmountInput);
+                    
+                    if (state.currentPrice === 0) {
+                        await fetchPrice();
+                    }
+                    
+                    state.toAmount = state.fromAmount * state.currentPrice;
                     toAmountInput.value = state.toAmount.toFixed(6);
+                    updatePriceInfo();
+                    
+                    setLoading(false, toAmountInput);
                 } catch (error) {
                     console.error('Price fetch error:', error);
+                    setLoading(false, toAmountInput);
+                    showError('Failed to calculate amount');
                 }
             } else {
                 toAmountInput.value = '';
                 state.toAmount = 0;
+                updatePriceInfo();
             }
             
             updateSwapButton();
         }
 
         // Récupération du prix du marché
-        async function getMarketPrice() {
+        async function fetchPrice() {
             try {
+                setLoading(true, priceInfo);
+                
                 const response = await fetch(
                     `https://price.jup.ag/v4/price?ids=${state.fromToken.mint}&vsToken=${state.toToken.mint}`
                 );
                 const data = await response.json();
-                return data.data[state.fromToken.mint].price;
+                state.currentPrice = data.data[state.fromToken.mint].price;
+                
+                updatePriceInfo();
+                setLoading(false, priceInfo);
             } catch (error) {
                 console.error('Price fetch error:', error);
+                setLoading(false, priceInfo);
+                priceInfo.textContent = 'Price unavailable';
                 throw error;
+            }
+        }
+
+        // Met à jour l'affichage du prix
+        function updatePriceInfo() {
+            if (state.fromAmount > 0 && state.currentPrice > 0) {
+                priceInfo.textContent = 
+                    `1 ${state.fromToken.name} = ${state.currentPrice.toFixed(4)} ${state.toToken.name}`;
+            } else if (state.currentPrice > 0) {
+                priceInfo.textContent = 
+                    `1 ${state.fromToken.name} = ${state.currentPrice.toFixed(4)} ${state.toToken.name}`;
             }
         }
 
@@ -289,6 +394,10 @@
             toAmountInput.value = '';
             state.fromAmount = 0;
             state.toAmount = 0;
+            fetchPrice();
+            if (state.walletConnected) {
+                loadBalances();
+            }
             updateSwapButton();
         }
 
@@ -317,49 +426,100 @@
             if (!state.walletConnected || state.fromAmount <= 0) return;
             
             try {
-                swapButton.disabled = true;
+                setLoading(true, swapButton);
                 swapButton.textContent = 'Processing...';
+                swapButton.disabled = true;
                 
-                const { swapTransaction } = await (
-                    await fetch('https://quote-api.jup.ag/v4/swap', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            route: await getRoute(),
-                            userPublicKey: state.walletPublicKey,
-                            wrapUnwrapSOL: true
-                        })
+                // Get quote
+                const amountInLamports = state.fromAmount * Math.pow(10, state.fromToken.decimals);
+                const quoteResponse = await fetch(
+                    `https://quote-api.jup.ag/v4/quote?inputMint=${state.fromToken.mint}&outputMint=${state.toToken.mint}&amount=${amountInLamports}&slippage=0.5`
+                );
+                const quoteData = await quoteResponse.json();
+                
+                if (!quoteData.data || quoteData.data.length === 0) {
+                    throw new Error('No route found for this swap');
+                }
+                
+                const bestRoute = quoteData.data[0];
+                
+                // Get swap transaction
+                const swapResponse = await fetch('https://quote-api.jup.ag/v4/swap', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        route: bestRoute,
+                        userPublicKey: state.walletPublicKey,
+                        wrapUnwrapSOL: true
                     })
-                ).json();
-
+                });
+                
+                const swapData = await swapResponse.json();
+                
+                // Execute swap
                 const provider = window.phantom.solana;
-                const signedTx = await provider.signAndSendTransaction(
-                    new Uint8Array(Object.values(swapTransaction))
+                const { signature } = await provider.signAndSendTransaction(
+                    new Uint8Array(Object.values(swapData.swapTransaction))
                 );
                 
-                alert(`Swap successful! Transaction: ${signedTx.signature}`);
+                // Show success
+                swapButton.textContent = 'Swap Successful!';
+                setTimeout(() => {
+                    swapButton.textContent = 'Swap';
+                    updateSwapButton();
+                }, 2000);
                 
-                // Recharger les balances
+                // Update balances
+                await new Promise(resolve => setTimeout(resolve, 3000)); // Wait for confirmation
                 await loadBalances();
                 
             } catch (error) {
                 console.error('Swap error:', error);
-                alert(`Swap failed: ${error.message}`);
+                swapButton.textContent = 'Swap Failed';
+                setTimeout(() => {
+                    swapButton.textContent = 'Swap';
+                    updateSwapButton();
+                }, 2000);
+                showError(`Swap failed: ${error.message}`);
             } finally {
-                swapButton.disabled = false;
-                swapButton.textContent = 'Swap';
+                setLoading(false, swapButton);
             }
         }
 
-        // Récupération de la route de swap
-        async function getRoute() {
-            const response = await fetch(
-                `https://quote-api.jup.ag/v4/quote?inputMint=${state.fromToken.mint}&outputMint=${state.toToken.mint}&amount=${state.fromAmount * Math.pow(10, state.fromToken.decimals)}&slippage=0.5`
-            );
-            const data = await response.json();
-            return data.data[0];
+        // Affiche une erreur
+        function showError(message) {
+            const errorElement = document.createElement('div');
+            errorElement.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg';
+            errorElement.textContent = message;
+            document.body.appendChild(errorElement);
+            
+            setTimeout(() => {
+                errorElement.remove();
+            }, 5000);
+        }
+
+        // Gestion du loading state
+        function setLoading(isLoading, element = null) {
+            state.loading = isLoading;
+            
+            if (element) {
+                if (isLoading) {
+                    element.disabled = true;
+                    if (!element.querySelector('.loading-spinner')) {
+                        const spinner = document.createElement('div');
+                        spinner.className = 'loading-spinner';
+                        element.insertBefore(spinner, element.firstChild);
+                    }
+                } else {
+                    element.disabled = false;
+                    const spinner = element.querySelector('.loading-spinner');
+                    if (spinner) {
+                        spinner.remove();
+                    }
+                }
+            }
         }
     </script>
 </body>
