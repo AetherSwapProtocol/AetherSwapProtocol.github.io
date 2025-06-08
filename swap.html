@@ -6,66 +6,57 @@
     <title>AetherSwap | Production Ready DEX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
-    <script src="https://unpkg.com/@project-serum/anchor@0.29.0/dist/anchor.min.js"></script>
     <!-- Phantom Wallet Integration -->
     <script src="https://unpkg.com/@phantom-labs/inject-sdk@latest/dist/sdk.js"></script>
-    <style>.token-chip {
-    background-color: #1f2937;
-    border-radius: 0.75rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    transition: all 0.2s;
-}
-
-.token-chip:hover {
-    background-color: #374151;
-}
-
-.token-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.token-item:hover {
-    background-color: #1f2937;
-}
-
-.token-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.token-logo {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-}
+    <style>
+        .token-chip {
+            background-color: #1f2937;
+            border-radius: 0.75rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        .token-chip:hover {
+            background-color: #374151;
+        }
+        .token-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .token-item:hover {
+            background-color: #1f2937;
+        }
+        .token-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .token-logo {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-        
         body {
             font-family: 'Space Grotesk', sans-serif;
             background-color: #0a0a0a;
             color: #ffffff;
         }
-        
         .gradient-text {
             background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        
         .gradient-border {
             position: relative;
             border-radius: 1rem;
         }
-        
         .gradient-border::before {
             content: "";
             position: absolute;
@@ -78,13 +69,11 @@
             z-index: -1;
             animation: gradient 3s ease infinite;
         }
-        
         @keyframes gradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        
         .token-selector {
             background-color: #1f2937;
             border-radius: 0.75rem;
@@ -92,11 +81,9 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
         .token-selector:hover {
             background-color: #374151;
         }
-        
         .swap-button {
             background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
             border-radius: 0.75rem;
@@ -105,17 +92,14 @@
             width: 100%;
             transition: all 0.2s;
         }
-        
         .swap-button:hover {
             opacity: 0.9;
             transform: translateY(-1px);
         }
-        
         .swap-button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-
         .loading-spinner {
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -127,7 +111,6 @@
             vertical-align: middle;
             margin-right: 8px;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -144,7 +127,6 @@
             </div>
             <span class="text-2xl font-bold gradient-text">AetherSwap</span>
         </a>
-        
         <button id="connect-wallet" class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition">
             Connect Wallet
         </button>
@@ -193,8 +175,20 @@
                     <div id="price-info" class="text-center text-sm text-gray-400">
                         Loading price...
                     </div>
+
+                    <div class="pt-2">
+                        <div class="flex justify-between text-xs text-gray-400 mb-1">
+                            <span>Slippage</span>
+                            <span id="slippage-value">0.5%</span>
+                        </div>
+                        <input type="range" id="slippage" min="0.1" max="5" step="0.1" value="0.5" class="w-full">
+                    </div>
+
+                    <div id="swap-fees" class="text-center text-xs text-gray-400">
+                        Fees: -
+                    </div>
                     
-                    <div class="pt-4">
+                    <div class="pt-2">
                         <button id="swap-button" class="swap-button" disabled>
                             Swap
                         </button>
@@ -203,6 +197,44 @@
             </div>
         </div>
     </main>
+
+    <!-- Token Selector Modal -->
+    <div id="token-selector-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-xl max-w-md w-full max-h-[80vh] overflow-hidden gradient-border">
+            <div class="bg-gray-900 rounded-xl p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">Select a token</h3>
+                    <button id="close-token-selector" class="text-2xl">&times;</button>
+                </div>
+                
+                <div class="relative mb-4">
+                    <input type="text" id="token-search" placeholder="Search by token or paste address" 
+                           class="w-full bg-gray-800 rounded-lg px-4 py-3 text-sm focus:outline-none">
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="text-sm font-medium mb-2">Popular tokens</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="token-chip" data-token="SOL">SOL</button>
+                        <button class="token-chip" data-token="USDC">USDC</button>
+                        <button class="token-chip" data-token="BONK">BONK</button>
+                        <button class="token-chip" data-token="USDT">USDT</button>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-800 pt-4">
+                    <div class="flex justify-between text-xs text-gray-400 mb-2">
+                        <span>Token</span>
+                        <span>Balance</span>
+                    </div>
+                    
+                    <div id="token-list" class="overflow-y-auto max-h-[40vh]">
+                        <!-- Tokens will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Configuration
@@ -224,6 +256,12 @@
                 mint: "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
                 decimals: 5,
                 logo: "https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I"
+            },
+            USDT: {
+                name: "USDT",
+                mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+                decimals: 6,
+                logo: "https://cryptologos.cc/logos/tether-usdt-logo.png"
             }
         };
 
@@ -236,7 +274,9 @@
             walletConnected: false,
             walletPublicKey: null,
             currentPrice: 0,
-            loading: false
+            loading: false,
+            slippage: 0.5, // Default slippage (0.5%)
+            currentSelectorTarget: null // 'from' or 'to'
         };
 
         // Initialisation Solana
@@ -244,6 +284,9 @@
             solanaWeb3.clusterApiUrl('mainnet-beta'), 
             'confirmed'
         );
+
+        // Cache pour les prix
+        const PRICE_CACHE = {};
 
         // Éléments UI
         const connectWalletBtn = document.getElementById('connect-wallet');
@@ -256,18 +299,45 @@
         const switchTokensBtn = document.getElementById('switch-tokens');
         const swapButton = document.getElementById('swap-button');
         const priceInfo = document.getElementById('price-info');
+        const slippageInput = document.getElementById('slippage');
+        const slippageValue = document.getElementById('slippage-value');
+        const swapFees = document.getElementById('swap-fees');
+        const tokenSelectorModal = document.getElementById('token-selector-modal');
+        const closeTokenSelector = document.getElementById('close-token-selector');
+        const tokenSearch = document.getElementById('token-search');
+        const tokenList = document.getElementById('token-list');
 
         // Événements
         connectWalletBtn.addEventListener('click', connectWallet);
-        fromAmountInput.addEventListener('input', updateToAmount);
+        fromAmountInput.addEventListener('input', () => {
+            debounce(updateToAmount, 500);
+        });
         switchTokensBtn.addEventListener('click', switchTokens);
         swapButton.addEventListener('click', executeSwap);
+        slippageInput.addEventListener('input', updateSlippage);
+        fromTokenSelector.addEventListener('click', () => openTokenSelector('from'));
+        toTokenSelector.addEventListener('click', () => openTokenSelector('to'));
+        closeTokenSelector.addEventListener('click', closeModal);
+        document.querySelectorAll('.token-chip').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const tokenName = e.target.dataset.token;
+                selectToken(tokenName);
+            });
+        });
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', () => {
             updateTokenSelectors();
             fetchPrice();
+            updateSlippage();
         });
+
+        // Debounce function pour éviter les appels API excessifs
+        let debounceTimer;
+        function debounce(func, delay) {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(func, delay);
+        }
 
         // Connexion Wallet
         async function connectWallet() {
@@ -280,11 +350,9 @@
                     state.walletPublicKey = response.publicKey.toString();
                     state.walletConnected = true;
                     
-                    // Mettre à jour l'UI
                     connectWalletBtn.textContent = 
                         `${state.walletPublicKey.slice(0, 4)}...${state.walletPublicKey.slice(-4)}`;
                     
-                    // Charger les balances
                     await loadBalances();
                     updateSwapButton();
                     
@@ -303,6 +371,8 @@
 
         // Chargement des balances
         async function loadBalances() {
+            if (!state.walletConnected) return;
+            
             try {
                 setLoading(true);
                 
@@ -324,9 +394,7 @@
                     
                     const usdcBalanceElement = state.fromToken.name === 'USDC' ? fromBalance : toBalance;
                     if (usdcAccounts.value.length > 0) {
-                        const balance = await connection.getTokenAccountBalance(
-                            usdcAccounts.value[0].pubkey
-                        );
+                        const balance = await connection.getTokenAccountBalance(usdcAccounts.value[0].pubkey);
                         usdcBalanceElement.textContent = `Balance: ${(balance.value.uiAmount || 0).toFixed(2)}`;
                     } else {
                         usdcBalanceElement.textContent = `Balance: 0`;
@@ -342,9 +410,7 @@
                     
                     const bonkBalanceElement = state.fromToken.name === 'BONK' ? fromBalance : toBalance;
                     if (bonkAccounts.value.length > 0) {
-                        const balance = await connection.getTokenAccountBalance(
-                            bonkAccounts.value[0].pubkey
-                        );
+                        const balance = await connection.getTokenAccountBalance(bonkAccounts.value[0].pubkey);
                         bonkBalanceElement.textContent = `Balance: ${(balance.value.uiAmount || 0).toFixed(0)}`;
                     } else {
                         bonkBalanceElement.textContent = `Balance: 0`;
@@ -372,8 +438,9 @@
                     }
                     
                     state.toAmount = state.fromAmount * state.currentPrice;
-                    toAmountInput.value = state.toAmount.toFixed(6);
+                    toAmountInput.value = state.toAmount.toFixed(state.toToken.decimals);
                     updatePriceInfo();
+                    await estimateFees();
                     
                     setLoading(false, toAmountInput);
                 } catch (error) {
@@ -385,13 +452,21 @@
                 toAmountInput.value = '';
                 state.toAmount = 0;
                 updatePriceInfo();
+                swapFees.textContent = 'Fees: -';
             }
             
             updateSwapButton();
         }
 
-        // Récupération du prix du marché
+        // Récupération du prix
         async function fetchPrice() {
+            const cacheKey = `${state.fromToken.mint}-${state.toToken.mint}`;
+            if (PRICE_CACHE[cacheKey]) {
+                state.currentPrice = PRICE_CACHE[cacheKey];
+                updatePriceInfo();
+                return;
+            }
+            
             try {
                 setLoading(true, priceInfo);
                 
@@ -400,6 +475,7 @@
                 );
                 const data = await response.json();
                 state.currentPrice = data.data[state.fromToken.mint].price;
+                PRICE_CACHE[cacheKey] = state.currentPrice;
                 
                 updatePriceInfo();
                 setLoading(false, priceInfo);
@@ -411,14 +487,35 @@
             }
         }
 
+        // Estimation des frais
+        async function estimateFees() {
+            if (!state.fromAmount || state.fromAmount <= 0) return;
+            
+            try {
+                const amountInLamports = state.fromAmount * Math.pow(10, state.fromToken.decimals);
+                const quoteResponse = await fetch(
+                    `https://quote-api.jup.ag/v4/quote?inputMint=${state.fromToken.mint}&outputMint=${state.toToken.mint}&amount=${amountInLamports}&slippage=${state.slippage}`
+                );
+                const quoteData = await quoteResponse.json();
+                
+                if (quoteData.data && quoteData.data.length > 0) {
+                    const fees = quoteData.data[0].feeAmount / Math.pow(10, state.toToken.decimals);
+                    swapFees.textContent = `Fees: ~${fees.toFixed(6)} ${state.toToken.name}`;
+                }
+            } catch (error) {
+                console.error('Fee estimation error:', error);
+                swapFees.textContent = 'Fees: -';
+            }
+        }
+
         // Met à jour l'affichage du prix
         function updatePriceInfo() {
             if (state.fromAmount > 0 && state.currentPrice > 0) {
                 priceInfo.textContent = 
-                    `1 ${state.fromToken.name} = ${state.currentPrice.toFixed(4)} ${state.toToken.name}`;
+                    `1 ${state.fromToken.name} = ${state.currentPrice.toFixed(6)} ${state.toToken.name}`;
             } else if (state.currentPrice > 0) {
                 priceInfo.textContent = 
-                    `1 ${state.fromToken.name} = ${state.currentPrice.toFixed(4)} ${state.toToken.name}`;
+                    `1 ${state.fromToken.name} = ${state.currentPrice.toFixed(6)} ${state.toToken.name}`;
             }
         }
 
@@ -452,6 +549,15 @@
             `;
         }
 
+        // Mise à jour du slippage
+        function updateSlippage() {
+            state.slippage = parseFloat(slippageInput.value);
+            slippageValue.textContent = `${state.slippage}%`;
+            if (state.fromAmount > 0) {
+                estimateFees();
+            }
+        }
+
         // Mise à jour du bouton de swap
         function updateSwapButton() {
             swapButton.disabled = !(state.walletConnected && state.fromAmount > 0 && state.toAmount > 0);
@@ -469,7 +575,7 @@
                 // Get quote
                 const amountInLamports = state.fromAmount * Math.pow(10, state.fromToken.decimals);
                 const quoteResponse = await fetch(
-                    `https://quote-api.jup.ag/v4/quote?inputMint=${state.fromToken.mint}&outputMint=${state.toToken.mint}&amount=${amountInLamports}&slippage=0.5`
+                    `https://quote-api.jup.ag/v4/quote?inputMint=${state.fromToken.mint}&outputMint=${state.toToken.mint}&amount=${amountInLamports}&slippage=${state.slippage}`
                 );
                 const quoteData = await quoteResponse.json();
                 
@@ -507,7 +613,13 @@
                     updateSwapButton();
                 }, 2000);
                 
-                // Update balances
+                // Reset form and update balances
+                fromAmountInput.value = '';
+                toAmountInput.value = '';
+                state.fromAmount = 0;
+                state.toAmount = 0;
+                swapFees.textContent = 'Fees: -';
+                
                 await new Promise(resolve => setTimeout(resolve, 3000)); // Wait for confirmation
                 await loadBalances();
                 
@@ -522,6 +634,30 @@
             } finally {
                 setLoading(false, swapButton);
             }
+        }
+
+        // Token Selector Modal
+        function openTokenSelector(target) {
+            state.currentSelectorTarget = target;
+            tokenSelectorModal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            tokenSelectorModal.classList.add('hidden');
+        }
+
+        function selectToken(tokenName) {
+            if (state.currentSelectorTarget === 'from') {
+                state.fromToken = TOKENS[tokenName];
+            } else {
+                state.toToken = TOKENS[tokenName];
+            }
+            updateTokenSelectors();
+            fetchPrice();
+            if (state.walletConnected) {
+                loadBalances();
+            }
+            closeModal();
         }
 
         // Affiche une erreur
@@ -558,42 +694,5 @@
             }
         }
     </script>
-<!-- Token Selector Modal -->
-<div id="token-selector-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-gray-900 rounded-xl max-w-md w-full max-h-[80vh] overflow-hidden gradient-border">
-        <div class="bg-gray-900 rounded-xl p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">Select a token</h3>
-                <button id="close-token-selector" class="text-2xl">&times;</button>
-            </div>
-            
-            <div class="relative mb-4">
-                <input type="text" id="token-search" placeholder="Search by token or paste address" 
-                       class="w-full bg-gray-800 rounded-lg px-4 py-3 text-sm focus:outline-none">
-            </div>
-            
-            <div class="mb-4">
-                <h4 class="text-sm font-medium mb-2">Popular tokens</h4>
-                <div class="flex flex-wrap gap-2">
-                    <button class="token-chip" data-token="USDC">USDC</button>
-                    <button class="token-chip" data-token="SOL">SOL</button>
-                    <button class="token-chip" data-token="RAY">RAY</button>
-                    <button class="token-chip" data-token="USDT">USDT</button>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-800 pt-4">
-                <div class="flex justify-between text-xs text-gray-400 mb-2">
-                    <span>Token</span>
-                    <span>Balance</span>
-                </div>
-                
-                <div id="token-list" class="overflow-y-auto max-h-[40vh]">
-                    <!-- Tokens will be dynamically inserted here -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 </body>
 </html>
