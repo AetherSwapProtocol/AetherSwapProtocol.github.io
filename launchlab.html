@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherSwap | LaunchLab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+    <!-- Phantom Wallet Integration -->
+    <script src="https://unpkg.com/@phantom-labs/inject-sdk@latest/dist/sdk.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .gradient-border {
+            position: relative;
+            border-radius: 1rem;
+        }
+        .gradient-border::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 1rem;
+            background: linear-gradient(45deg, #7e22ce, #3b82f6, #7e22ce);
+            z-index: -1;
+            animation: gradient 3s ease infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .launch-button {
+            background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .launch-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="container mx-auto px-6 py-6 flex justify-between items-center">
+        <a href="index.html" class="flex items-center space-x-2">
+            <div class="w-10 h-10 rounded-full gradient-border flex items-center justify-center">
+                <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                    ←
+                </div>
+            </div>
+            <span class="text-2xl font-bold gradient-text">AetherSwap LaunchLab</span>
+        </a>
+        <button id="connect-wallet" class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition">
+            Connect Wallet
+        </button>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 max-w-2xl">
+        <div class="gradient-border p-1 rounded-2xl mb-8">
+            <div class="bg-gray-900 rounded-2xl p-6">
+                <h2 class="text-xl font-bold mb-4">🚀 Create New Token</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Token Name</label>
+                        <input id="token-name" type="text" placeholder="My Awesome Token" class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Token Symbol</label>
+                        <input id="token-symbol" type="text" placeholder="MAT" class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Total Supply</label>
+                        <input id="token-supply" type="number" placeholder="1000000" class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Decimals</label>
+                        <input id="token-decimals" type="number" placeholder="9" value="9" class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none">
+                    </div>
+                    <div class="pt-4">
+                        <button id="create-token" class="launch-button">
+                            Create Token
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gradient-border p-1 rounded-2xl">
+            <div class="bg-gray-900 rounded-2xl p-6">
+                <h2 class="text-xl font-bold mb-4">🔫 Fair Launch (IDO)</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Token Address</label>
+                        <input id="ido-token-address" type="text" placeholder="Ejemplo: 7xKXtg...CW1gK" class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Token Amount to Sell</label>
+                        <input id="ido-token-amount" type="number" placeholder="100000" class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Price per Token (in SOL)</label>
+                        <input id="ido-token-price" type="number" placeholder="0.01" class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Liquidity Lock (Days)</label>
+                        <input id="ido-lock-days" type="number" placeholder="30" class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none">
+                    </div>
+                    <div class="pt-4">
+                        <button id="launch-ido" class="launch-button">
+                            Launch IDO
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Configuration
+        const connection = new solanaWeb3.Connection(
+            solanaWeb3.clusterApiUrl('mainnet-beta'), 
+            'confirmed'
+        );
+
+        // État de l'application
+        let state = {
+            walletConnected: false,
+            walletPublicKey: null,
+            loading: false
+        };
+
+        // Éléments UI
+        const connectWalletBtn = document.getElementById('connect-wallet');
+        const createTokenBtn = document.getElementById('create-token');
+        const launchIdoBtn = document.getElementById('launch-ido');
+
+        // Événements
+        connectWalletBtn.addEventListener('click', connectWallet);
+        createTokenBtn.addEventListener('click', createToken);
+        launchIdoBtn.addEventListener('click', launchIDO);
+
+        // Connexion Wallet
+        async function connectWallet() {
+            try {
+                if (window.phantom?.solana?.isPhantom) {
+                    setLoading(true, connectWalletBtn);
+                    
+                    const provider = window.phantom.solana;
+                    const response = await provider.connect();
+                    state.walletPublicKey = response.publicKey.toString();
+                    state.walletConnected = true;
+                    
+                    connectWalletBtn.textContent = 
+                        `${state.walletPublicKey.slice(0, 4)}...${state.walletPublicKey.slice(-4)}`;
+                    
+                    setLoading(false, connectWalletBtn);
+                } else {
+                    window.open('https://phantom.app/', '_blank');
+                    throw new Error('Phantom Wallet not installed');
+                }
+            } catch (error) {
+                console.error('Connection error:', error);
+                setLoading(false, connectWalletBtn);
+                connectWalletBtn.textContent = 'Connect Wallet';
+                showError(`Error: ${error.message}`);
+            }
+        }
+
+        // Création d'un token (simplifié)
+        async function createToken() {
+            if (!state.walletConnected) {
+                showError("Connect your wallet first");
+                return;
+            }
+
+            const name = document.getElementById('token-name').value;
+            const symbol = document.getElementById('token-symbol').value;
+            const supply = document.getElementById('token-supply').value;
+            const decimals = document.getElementById('token-decimals').value;
+
+            if (!name || !symbol || !supply || !decimals) {
+                showError("Please fill all fields");
+                return;
+            }
+
+            try {
+                setLoading(true, createTokenBtn);
+                createTokenBtn.textContent = "Creating...";
+
+                // Ici, tu devrais utiliser un programme Anchor ou une API backend pour créer le token
+                // Ceci est une simulation pour l'exemple
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                showSuccess(`Token ${symbol} created successfully!`);
+                createTokenBtn.textContent = "Create Token";
+            } catch (error) {
+                console.error('Token creation error:', error);
+                showError(`Failed: ${error.message}`);
+                createTokenBtn.textContent = "Create Token";
+            } finally {
+                setLoading(false, createTokenBtn);
+            }
+        }
+
+        // Lancement d'un IDO (simplifié)
+        async function launchIDO() {
+            if (!state.walletConnected) {
+                showError("Connect your wallet first");
+                return;
+            }
+
+            const tokenAddress = document.getElementById('ido-token-address').value;
+            const tokenAmount = document.getElementById('ido-token-amount').value;
+            const tokenPrice = document.getElementById('ido-token-price').value;
+            const lockDays = document.getElementById('ido-lock-days').value;
+
+            if (!tokenAddress || !tokenAmount || !tokenPrice || !lockDays) {
+                showError("Please fill all fields");
+                return;
+            }
+
+            try {
+                setLoading(true, launchIdoBtn);
+                launchIdoBtn.textContent = "Launching...";
+
+                // Ici, tu devrais utiliser un programme Anchor ou une API backend pour lancer l'IDO
+                // Ceci est une simulation pour l'exemple
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                showSuccess(`IDO launched successfully! Liquidity locked for ${lockDays} days.`);
+                launchIdoBtn.textContent = "Launch IDO";
+            } catch (error) {
+                console.error('IDO launch error:', error);
+                showError(`Failed: ${error.message}`);
+                launchIdoBtn.textContent = "Launch IDO";
+            } finally {
+                setLoading(false, launchIdoBtn);
+            }
+        }
+
+        // Affiche un message de succès
+        function showSuccess(message) {
+            const successElement = document.createElement('div');
+            successElement.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg';
+            successElement.textContent = message;
+            document.body.appendChild(successElement);
+            
+            setTimeout(() => {
+                successElement.remove();
+            }, 5000);
+        }
+
+        // Affiche une erreur
+        function showError(message) {
+            const errorElement = document.createElement('div');
+            errorElement.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg';
+            errorElement.textContent = message;
+            document.body.appendChild(errorElement);
+            
+            setTimeout(() => {
+                errorElement.remove();
+            }, 5000);
+        }
+
+        // Gestion du loading state
+        function setLoading(isLoading, element = null) {
+            state.loading = isLoading;
+            
+            if (element) {
+                if (isLoading) {
+                    element.disabled = true;
+                    if (!element.querySelector('.loading-spinner')) {
+                        const spinner = document.createElement('div');
+                        spinner.className = 'loading-spinner';
+                        element.insertBefore(spinner, element.firstChild);
+                    }
+                } else {
+                    element.disabled = false;
+                    const spinner = element.querySelector('.loading-spinner');
+                    if (spinner) {
+                        spinner.remove();
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
