@@ -522,5 +522,42 @@
             }
         }
     </script>
+<!-- Token Selector Modal -->
+<div id="token-selector-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-gray-900 rounded-xl max-w-md w-full max-h-[80vh] overflow-hidden gradient-border">
+        <div class="bg-gray-900 rounded-xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Select a token</h3>
+                <button id="close-token-selector" class="text-2xl">&times;</button>
+            </div>
+            
+            <div class="relative mb-4">
+                <input type="text" id="token-search" placeholder="Search by token or paste address" 
+                       class="w-full bg-gray-800 rounded-lg px-4 py-3 text-sm focus:outline-none">
+            </div>
+            
+            <div class="mb-4">
+                <h4 class="text-sm font-medium mb-2">Popular tokens</h4>
+                <div class="flex flex-wrap gap-2">
+                    <button class="token-chip" data-token="USDC">USDC</button>
+                    <button class="token-chip" data-token="SOL">SOL</button>
+                    <button class="token-chip" data-token="RAY">RAY</button>
+                    <button class="token-chip" data-token="USDT">USDT</button>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-4">
+                <div class="flex justify-between text-xs text-gray-400 mb-2">
+                    <span>Token</span>
+                    <span>Balance</span>
+                </div>
+                
+                <div id="token-list" class="overflow-y-auto max-h-[40vh]">
+                    <!-- Tokens will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
