@@ -132,15 +132,16 @@
             <a href="#community" class="nav-link text-white hover:text-purple-400 transition">Community</a>
         </div>
         
-        <nav class="container mx-auto px-6 py-6 flex justify-between items-center">
-    <!-- ... (logo et liens existants) ... -->
-    <div id="navbar-actions">
-        <button class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition" onclick="openModal()">
-            Créer un profil
-        </button>
-    </div>
-    <!-- ... (bouton mobile existant) ... -->
-</nav>
+        <div id="navbar-actions">
+  <button onclick="openModal()" class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition flex items-center gap-2">
+    <!-- Icône utilisateur -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M5.121 17.804A11.955 11.955 0 0112 15c2.5 0 4.847.764 6.879 2.067M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+    Profile
+  </button>
+</div>
         
         <button class="md:hidden text-white">
             <i class="fas fa-bars text-2xl"></i>
