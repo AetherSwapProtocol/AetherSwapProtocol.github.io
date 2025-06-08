@@ -132,9 +132,15 @@
             <a href="#community" class="nav-link text-white hover:text-purple-400 transition">Community</a>
         </div>
         
-        <a href="swap.html" class="inline-block gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition">
-    Launch App
-</a>
+        <nav class="container mx-auto px-6 py-6 flex justify-between items-center">
+    <!-- ... (logo et liens existants) ... -->
+    <div id="navbar-actions">
+        <button class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition" onclick="openModal()">
+            Créer un profil
+        </button>
+    </div>
+    <!-- ... (bouton mobile existant) ... -->
+</nav>
         
         <button class="md:hidden text-white">
             <i class="fas fa-bars text-2xl"></i>
