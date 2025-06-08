@@ -705,10 +705,30 @@
                     </a>
                 </div>
                 
-                <div class="text-gray-400 text-sm">
-                    © 2025 AetherSwap. All rights reserved. 
-                                @AetherFounder
-                </div>
+                <div class="text-gray-400 text-sm flex items-center justify-center space-x-2">
+  <span>© 2025 AetherSwap. All rights reserved.</span>
+  <a href="https://t.me/AetherFounder" target="_blank" rel="noopener noreferrer"
+     class="gradient-text font-semibold hover:brightness-110 transition duration-300">
+    @AetherFounder
+  </a>
+</div>
+
+<style>
+  .gradient-text {
+    background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradientShift 3s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+</style>
             </div>
             
             <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between">
