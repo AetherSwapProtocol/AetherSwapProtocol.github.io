@@ -47,4 +47,4 @@ We welcome contributors, builders, and community feedback. Open issues, submit P
 
 ## License
 
-MIT License © 2025 AetherSwap Protocol
+This project is licensed under the [MIT License](./LICENSE) © 2025 AetherSwap Protocol
