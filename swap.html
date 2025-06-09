@@ -4,13 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AetherSwap | Production Ready DEX</title>
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Solana Web3.js (version figée) -->
     <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
-    <script src="https://unpkg.com/@phantom-labs/inject-sdk@latest/dist/sdk.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Phantom Inject SDK (version figée pour stabilité) -->
+    <script src="https://unpkg.com/@phantom-labs/inject-sdk@1.0.0/dist/sdk.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papLFy+dIw7pz8T+pGRjtxuS8NXk5sBoEULjZkk+RV8P0Qr6YdC1+xOh6Ba7D08F9+nH1cc0GbvZDrsWkF3MpA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Google Fonts: Space Grotesk (via <link> au lieu de @import pour les performances) -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+    </style>
+</head>
         :root {
             --primary: #7e22ce;
             --secondary: #3b82f6;
