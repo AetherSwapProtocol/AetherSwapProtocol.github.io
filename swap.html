@@ -1,25 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap | Production Ready DEX</title>
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Solana Web3.js -->
-  <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
-
-  <!-- Phantom Inject SDK (version latest pour garder le comportement initial) -->
-  <script src="https://unpkg.com/@phantom-labs/inject-sdk@latest/dist/sdk.js"></script>
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Google Font: Space Grotesk -->
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherSwap | Professional Solana DEX</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <script src="https://unpkg.com/@solana/web3.js@1.84.0/lib/index.iife.min.js"></script>
+    <script src="https://unpkg.com/@phantom-labs/inject-sdk@2.3.1/dist/sdk.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        
         :root {
             --primary: #7e22ce;
             --secondary: #3b82f6;
@@ -33,7 +24,7 @@
             background-color: var(--dark);
             color: white;
             min-height: 100vh;
-            padding-bottom: 80px; /* Space for mobile nav */
+            padding-bottom: 80px;
         }
         
         .gradient-text {
@@ -125,6 +116,23 @@
             visibility: visible;
             opacity: 1;
         }
+        
+        .token-img {
+            background-color: #1f2937;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23374151"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .token-img-fallback {
+            background-color: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: #6b7280;
+        }
     </style>
 </head>
 <body>
@@ -158,17 +166,26 @@
                             <input id="from-amount" type="number" placeholder="0.0" 
                                    class="bg-transparent text-2xl w-full outline-none">
                             <div class="flex items-center space-x-2 token-selector px-3 py-2 rounded-lg" id="from-token-selector">
-                                <img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" alt="SOL" class="w-6 h-6">
+                                <div class="w-6 h-6 rounded-full token-img flex items-center justify-center overflow-hidden">
+                                    <img src="https://cryptologos.cc/logos/solana-sol-logo.png" alt="SOL" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.classList.add('token-img-fallback')">
+                                </div>
                                 <span>SOL</span>
                                 <span>▼</span>
                             </div>
                         </div>
+                        <div class="flex justify-end mt-1">
+                            <button id="max-from" class="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-0.5 rounded">
+                                MAX
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- Switch Tokens Button -->
-                    <div class="flex justify-center">
-                        <button id="switch-tokens" class="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition">
-                            ↓↑
+                    <div class="flex justify-center -my-2">
+                        <button id="switch-tokens" class="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition transform hover:rotate-180">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                            </svg>
                         </button>
                     </div>
                     
@@ -182,7 +199,9 @@
                             <input id="to-amount" type="number" placeholder="0.0" 
                                    class="bg-transparent text-2xl w-full outline-none" disabled>
                             <div class="flex items-center space-x-2 token-selector px-3 py-2 rounded-lg" id="to-token-selector">
-                                <img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/A1B2C3.../logo.png" alt="USDC" class="w-6 h-6">
+                                <div class="w-6 h-6 rounded-full token-img flex items-center justify-center overflow-hidden">
+                                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.classList.add('token-img-fallback')">
+                                </div>
                                 <span>USDC</span>
                                 <span>▼</span>
                             </div>
@@ -191,7 +210,10 @@
 
                     <!-- Price Info -->
                     <div id="price-info" class="text-center text-sm text-gray-400">
-                        Loading price...
+                        <div class="inline-flex items-center">
+                            <div class="h-3 w-3 mr-2 rounded-full bg-gray-600 animate-pulse"></div>
+                            Loading price...
+                        </div>
                     </div>
 
                     <!-- Slippage Settings -->
@@ -206,18 +228,24 @@
                             </div>
                             <span id="slippage-value">0.5%</span>
                         </div>
-                        <input type="range" id="slippage" min="0.1" max="5" step="0.1" value="0.5" class="w-full">
+                        <div class="flex items-center space-x-2">
+                            <input type="range" id="slippage" min="0.1" max="5" step="0.1" value="0.5" class="w-full">
+                            <span class="text-xs w-10 text-center bg-gray-800 py-1 rounded">0.5%</span>
+                        </div>
                     </div>
 
                     <!-- Fees Info -->
                     <div id="swap-fees" class="text-center text-xs text-gray-400">
-                        Fees: -
+                        <div class="inline-flex items-center">
+                            <div class="h-2 w-2 mr-2 rounded-full bg-gray-600 animate-pulse"></div>
+                            Loading fees...
+                        </div>
                     </div>
                     
                     <!-- Swap Button -->
                     <div class="pt-2">
-                        <button id="swap-button" class="swap-button rounded-lg py-3 font-semibold w-full" disabled>
-                            Swap
+                        <button id="swap-button" class="swap-button rounded-lg py-3 font-semibold w-full flex items-center justify-center" disabled>
+                            <span id="swap-button-text">Swap</span>
                         </button>
                     </div>
                 </div>
@@ -246,11 +274,8 @@
                 <!-- Popular Tokens -->
                 <div class="mb-4">
                     <h4 class="text-sm font-medium mb-2">Popular Tokens</h4>
-                    <div class="flex flex-wrap gap-2">
-                        <button class="px-3 py-1 bg-gray-800 rounded-lg hover:bg-gray-700 transition" data-token="SOL">SOL</button>
-                        <button class="px-3 py-1 bg-gray-800 rounded-lg hover:bg-gray-700 transition" data-token="USDC">USDC</button>
-                        <button class="px-3 py-1 bg-gray-800 rounded-lg hover:bg-gray-700 transition" data-token="BONK">BONK</button>
-                        <button class="px-3 py-1 bg-gray-800 rounded-lg hover:bg-gray-700 transition" data-token="USDT">USDT</button>
+                    <div class="flex flex-wrap gap-2" id="popular-tokens">
+                        <!-- Populated dynamically -->
                     </div>
                 </div>
                 
@@ -269,27 +294,103 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="w-full mt-6 mb-4 select-none">
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-center gap-4 text-sm text-gray-400 text-center">
-            <span class="w-full md:w-auto">
-                © 2025 AetherSwap Protocol. All rights reserved.
-                <a href="https://github.com/aetherswapprotocol/AetherSwapProtocol/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" class="underline hover:text-white ml-1">
+    <!-- Swap Confirmation Modal -->
+    <div id="confirm-swap-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-xl max-w-md w-full gradient-border">
+            <div class="bg-gray-900 rounded-xl p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">Confirm Swap</h3>
+                    <button id="close-confirm-modal" class="text-2xl hover:text-purple-400">&times;</button>
+                </div>
                 
-                </a>
-            </span>
-
-            <a href="https://t.me/AetherFounder" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               class="gradient-border flex items-center gap-1 px-3 py-1 font-medium hover:opacity-80 transition rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M21.5 3.5l-19 7.5 5.5 2.5 1.5 6 2.5-7 4 3.5 5-14z"/>
-                </svg>
-                <span>Founder</span>
-            </a>
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-full token-img flex items-center justify-center overflow-hidden">
+                                <img id="confirm-from-token-img" src="" class="w-full h-full object-cover" loading="lazy">
+                            </div>
+                            <span id="confirm-from-amount" class="font-medium">0</span>
+                            <span id="confirm-from-token" class="text-gray-400"></span>
+                        </div>
+                        <span>→</span>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-full token-img flex items-center justify-center overflow-hidden">
+                                <img id="confirm-to-token-img" src="" class="w-full h-full object-cover" loading="lazy">
+                            </div>
+                            <span id="confirm-to-amount" class="font-medium">0</span>
+                            <span id="confirm-to-token" class="text-gray-400"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2 text-sm text-gray-400 pt-2 border-t border-gray-700">
+                        <div class="flex justify-between">
+                            <span>Exchange Rate</span>
+                            <span id="confirm-exchange-rate">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Price Impact</span>
+                            <span id="confirm-price-impact" class="text-green-400">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Network Fees</span>
+                            <span id="confirm-network-fees">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Minimum Received</span>
+                            <span id="confirm-min-received">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button id="cancel-swap" class="flex-1 py-3 rounded-lg border border-gray-600 hover:bg-gray-800 transition">
+                        Cancel
+                    </button>
+                    <button id="confirm-swap" class="flex-1 py-3 rounded-lg swap-button font-semibold flex items-center justify-center">
+                        <span>Confirm Swap</span>
+                    </button>
+                </div>
+            </div>
         </div>
-    </footer>
+    </div>
+
+    <!-- Transaction Status Modal -->
+    <div id="tx-status-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-xl max-w-md w-full gradient-border">
+            <div class="bg-gray-900 rounded-xl p-6 text-center">
+                <div id="tx-success" class="hidden">
+                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Swap Successful!</h3>
+                    <p class="text-gray-400 mb-6">Your transaction has been confirmed on the Solana blockchain.</p>
+                    <a id="view-explorer" href="#" target="_blank" class="swap-button rounded-lg py-3 font-semibold w-full block">
+                        View on Explorer
+                    </a>
+                </div>
+                
+                <div id="tx-loading" class="hidden">
+                    <div class="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <h3 class="text-xl font-bold mb-2">Processing Swap</h3>
+                    <p class="text-gray-400 mb-6">Waiting for transaction confirmation...</p>
+                    <div class="text-xs text-gray-500" id="tx-status-message">
+                        Sending transaction to network
+                    </div>
+                </div>
+                
+                <div id="tx-error" class="hidden">
+                    <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-times text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Swap Failed</h3>
+                    <p class="text-gray-400 mb-4" id="tx-error-message"></p>
+                    <button id="tx-error-close" class="swap-button rounded-lg py-3 font-semibold w-full">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Mobile Navigation -->
     <div id="mobile-navbar" class="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900/75 backdrop-blur-md border-t border-gray-800 z-50 shadow-lg">
@@ -304,7 +405,7 @@
             
             <!-- Menu Button -->
             <button id="menu-btn" class="flex flex-col items-center text-xs px-4 py-1 rounded-lg transition">
-                <div class="w-10 h-10 mb-1 -mt-4 flex items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-blue-500 shadow-lg transition">
+                <div class="w-12 h-12 mb-1 -mt-4 flex items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-blue-500 shadow-lg transition">
                     <i class="fas fa-bars text-xl"></i>
                 </div>
                 <span>Menu</span>
@@ -334,29 +435,40 @@
         const TOKENS = {
             SOL: {
                 name: "SOL",
+                symbol: "SOL",
                 mint: "So11111111111111111111111111111111111111112",
                 decimals: 9,
-                logo: "https://cryptologos.cc/logos/solana-sol-logo.png"
+                logo: "https://cryptologos.cc/logos/solana-sol-logo.png",
+                verified: true
             },
             USDC: {
-                name: "USDC",
+                name: "USD Coin",
+                symbol: "USDC",
                 mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
                 decimals: 6,
-                logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png"
-            },
-            BONK: {
-                name: "BONK",
-                mint: "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
-                decimals: 5,
-                logo: "https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I"
+                logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png",
+                verified: true
             },
             USDT: {
-                name: "USDT",
+                name: "Tether",
+                symbol: "USDT",
                 mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
                 decimals: 6,
-                logo: "https://cryptologos.cc/logos/tether-usdt-logo.png"
+                logo: "https://cryptologos.cc/logos/tether-usdt-logo.png",
+                verified: true
+            },
+            BONK: {
+                name: "Bonk",
+                symbol: "BONK",
+                mint: "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+                decimals: 5,
+                logo: "https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I",
+                verified: true
             }
         };
+
+        // Popular tokens to show first
+        const POPULAR_TOKENS = ['SOL', 'USDC', 'USDT', 'BONK', 'RAY', 'ORCA', 'JUP', 'PYTH'];
 
         // Application State
         const state = {
@@ -369,7 +481,9 @@
             currentPrice: 0,
             loading: false,
             slippage: 0.5,
-            currentSelectorTarget: null
+            currentSelectorTarget: null,
+            tokenList: [],
+            tokenImages: {}
         };
 
         // Price Cache
@@ -401,6 +515,30 @@
             closeTokenSelector: document.getElementById('close-token-selector'),
             tokenSearchInput: document.getElementById('token-search-input'),
             tokenList: document.getElementById('token-list'),
+            popularTokens: document.getElementById('popular-tokens'),
+            maxFromBtn: document.getElementById('max-from'),
+            confirmSwapModal: document.getElementById('confirm-swap-modal'),
+            closeConfirmModal: document.getElementById('close-confirm-modal'),
+            confirmFromTokenImg: document.getElementById('confirm-from-token-img'),
+            confirmFromAmount: document.getElementById('confirm-from-amount'),
+            confirmFromToken: document.getElementById('confirm-from-token'),
+            confirmToTokenImg: document.getElementById('confirm-to-token-img'),
+            confirmToAmount: document.getElementById('confirm-to-amount'),
+            confirmToToken: document.getElementById('confirm-to-token'),
+            confirmExchangeRate: document.getElementById('confirm-exchange-rate'),
+            confirmPriceImpact: document.getElementById('confirm-price-impact'),
+            confirmNetworkFees: document.getElementById('confirm-network-fees'),
+            confirmMinReceived: document.getElementById('confirm-min-received'),
+            cancelSwap: document.getElementById('cancel-swap'),
+            confirmSwap: document.getElementById('confirm-swap'),
+            txStatusModal: document.getElementById('tx-status-modal'),
+            txSuccess: document.getElementById('tx-success'),
+            txLoading: document.getElementById('tx-loading'),
+            txError: document.getElementById('tx-error'),
+            txErrorMessage: document.getElementById('tx-error-message'),
+            txErrorClose: document.getElementById('tx-error-close'),
+            txStatusMessage: document.getElementById('tx-status-message'),
+            viewExplorer: document.getElementById('view-explorer'),
             mobileNavbar: document.getElementById('mobile-navbar'),
             menuBtn: document.getElementById('menu-btn'),
             menuPopup: document.getElementById('menu-popup'),
@@ -411,9 +549,22 @@
         function init() {
             setupEventListeners();
             updateTokenSelectors();
+            fetchTokenList();
             fetchPrice();
             updateSlippage();
             highlightActiveNavLink();
+            preloadTokenImages();
+        }
+
+        // Preload token images for better UX
+        function preloadTokenImages() {
+            Object.values(TOKENS).forEach(token => {
+                if (token.logo) {
+                    const img = new Image();
+                    img.src = token.logo;
+                    state.tokenImages[token.symbol] = img;
+                }
+            });
         }
 
         // Set Up Event Listeners
@@ -421,26 +572,29 @@
             elements.connectWalletBtn.addEventListener('click', connectWallet);
             elements.fromAmountInput.addEventListener('input', () => debounce(updateToAmount, 500));
             elements.switchTokensBtn.addEventListener('click', switchTokens);
-            elements.swapButton.addEventListener('click', executeSwap);
+            elements.swapButton.addEventListener('click', showConfirmModal);
             elements.slippageInput.addEventListener('input', updateSlippage);
             elements.fromTokenSelector.addEventListener('click', () => openTokenSelector('from'));
             elements.toTokenSelector.addEventListener('click', () => openTokenSelector('to'));
             elements.closeTokenSelector.addEventListener('click', closeModal);
             elements.tokenSearchInput.addEventListener('input', searchTokens);
+            elements.maxFromBtn.addEventListener('click', setMaxAmount);
+            
+            // Confirm modal events
+            elements.closeConfirmModal.addEventListener('click', closeConfirmModal);
+            elements.cancelSwap.addEventListener('click', closeConfirmModal);
+            elements.confirmSwap.addEventListener('click', executeSwap);
+            
+            // Transaction status events
+            elements.txErrorClose.addEventListener('click', () => {
+                elements.txStatusModal.classList.add('hidden');
+            });
             
             // Mobile menu events
             elements.menuBtn.addEventListener('click', openMenu);
             elements.closeMenuBtn.addEventListener('click', closeMenu);
             elements.menuPopup.addEventListener('click', (e) => {
                 if (e.target === elements.menuPopup) closeMenu();
-            });
-            
-            // Add click handlers for token chips
-            document.querySelectorAll('[data-token]').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const tokenName = e.target.dataset.token;
-                    selectToken(tokenName);
-                });
             });
         }
 
@@ -493,6 +647,56 @@
             }
         }
 
+        // Fetch token list from CoinGecko
+        async function fetchTokenList() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=solana-ecosystem&order=market_cap_desc');
+                const data = await response.json();
+                
+                // Process token data
+                state.tokenList = data.map(token => ({
+                    id: token.id,
+                    symbol: token.symbol.toUpperCase(),
+                    name: token.name,
+                    logo: token.image,
+                    marketCap: token.market_cap,
+                    currentPrice: token.current_price
+                }));
+                
+                // Sort by market cap
+                state.tokenList.sort((a, b) => b.marketCap - a.marketCap);
+                
+                // Populate popular tokens
+                populatePopularTokens();
+                
+            } catch (error) {
+                console.error('Error fetching token list:', error);
+                // Fallback to our default tokens
+                state.tokenList = Object.values(TOKENS);
+            }
+        }
+
+        // Populate popular tokens section
+        function populatePopularTokens() {
+            elements.popularTokens.innerHTML = '';
+            
+            // Get top 8 tokens by market cap
+            const popular = state.tokenList.slice(0, 8);
+            
+            popular.forEach(token => {
+                const button = document.createElement('button');
+                button.className = 'px-3 py-1 bg-gray-800 rounded-lg hover:bg-gray-700 transition flex items-center';
+                button.innerHTML = `
+                    <div class="w-4 h-4 mr-1 rounded-full overflow-hidden">
+                        <img src="${token.logo}" alt="${token.symbol}" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.classList.add('token-img-fallback')">
+                    </div>
+                    <span>${token.symbol}</span>
+                `;
+                button.addEventListener('click', () => selectToken(token.symbol));
+                elements.popularTokens.appendChild(button);
+            });
+        }
+
         // Load Token Balances
         async function loadBalances() {
             if (!state.walletConnected) return;
@@ -501,17 +705,17 @@
                 setLoading(true);
                 
                 // Load SOL balance
-                if (state.fromToken.name === 'SOL' || state.toToken.name === 'SOL') {
+                if (state.fromToken.symbol === 'SOL' || state.toToken.symbol === 'SOL') {
                     const solBalance = await connection.getBalance(
                         new solanaWeb3.PublicKey(state.walletPublicKey)
                     );
-                    const solBalanceElement = state.fromToken.name === 'SOL' ? elements.fromBalance : elements.toBalance;
+                    const solBalanceElement = state.fromToken.symbol === 'SOL' ? elements.fromBalance : elements.toBalance;
                     solBalanceElement.textContent = `Balance: ${(solBalance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(2)}`;
                 }
                 
                 // Load token balances
                 for (const token of [state.fromToken, state.toToken]) {
-                    if (token.name === 'SOL') continue;
+                    if (token.symbol === 'SOL') continue;
                     
                     const balanceElement = token === state.fromToken ? elements.fromBalance : elements.toBalance;
                     const accounts = await connection.getTokenAccountsByOwner(
@@ -535,13 +739,39 @@
             }
         }
 
+        // Set max amount from balance
+        function setMaxAmount() {
+            if (!state.walletConnected) {
+                showError('Connect your wallet first', false);
+                return;
+            }
+            
+            const balanceText = elements.fromBalance.textContent;
+            const balance = parseFloat(balanceText.replace('Balance: ', ''));
+            
+            if (isNaN(balance) || balance <= 0) {
+                showError('No balance available', false);
+                return;
+            }
+            
+            // Leave a little for fees if it's SOL
+            let maxAmount = balance;
+            if (state.fromToken.symbol === 'SOL') {
+                maxAmount = Math.max(0, balance - 0.05); // Leave 0.05 SOL for fees
+            }
+            
+            elements.fromAmountInput.value = maxAmount.toFixed(state.fromToken.decimals);
+            state.fromAmount = maxAmount;
+            updateToAmount();
+        }
+
         // Validate Swap Amounts
         function validateAmounts() {
             if (state.fromAmount <= 0) {
                 showError("Amount must be greater than 0", false);
                 return false;
             }
-            if (state.fromToken.name === state.toToken.name) {
+            if (state.fromToken.symbol === state.toToken.symbol) {
                 showError("Cannot swap identical tokens", false);
                 return false;
             }
@@ -600,6 +830,10 @@
                 );
                 const data = await response.json();
                 
+                if (!data.data || !data.data[state.fromToken.mint]) {
+                    throw new Error('Price data not available');
+                }
+                
                 PRICE_CACHE[cacheKey] = {
                     price: data.data[state.fromToken.mint].price,
                     timestamp: Date.now()
@@ -629,7 +863,7 @@
                 
                 if (quoteData.data && quoteData.data.length > 0) {
                     const fees = quoteData.data[0].feeAmount / Math.pow(10, state.toToken.decimals);
-                    elements.swapFees.textContent = `Fees: ~${fees.toFixed(6)} ${state.toToken.name}`;
+                    elements.swapFees.textContent = `Fees: ~${fees.toFixed(6)} ${state.toToken.symbol}`;
                 }
             } catch (error) {
                 console.error('Fee estimation error:', error);
@@ -640,11 +874,11 @@
         // Update Price Display
         function updatePriceInfo() {
             if (state.fromAmount > 0 && state.currentPrice > 0) {
-                elements.priceInfo.textContent = 
-                    `1 ${state.fromToken.name} = ${state.currentPrice.toFixed(6)} ${state.toToken.name}`;
+                elements.priceInfo.innerHTML = 
+                    `1 ${state.fromToken.symbol} = ${state.currentPrice.toFixed(6)} ${state.toToken.symbol}`;
             } else if (state.currentPrice > 0) {
-                elements.priceInfo.textContent = 
-                    `1 ${state.fromToken.name} = ${state.currentPrice.toFixed(6)} ${state.toToken.name}`;
+                elements.priceInfo.innerHTML = 
+                    `1 ${state.fromToken.symbol} = ${state.currentPrice.toFixed(6)} ${state.toToken.symbol}`;
             }
         }
 
@@ -666,14 +900,18 @@
         // Update Token Selectors
         function updateTokenSelectors() {
             elements.fromTokenSelector.innerHTML = `
-                <img src="${state.fromToken.logo}" alt="${state.fromToken.name}" class="w-6 h-6">
-                <span>${state.fromToken.name}</span>
+                <div class="w-6 h-6 rounded-full token-img flex items-center justify-center overflow-hidden">
+                    <img src="${state.fromToken.logo}" alt="${state.fromToken.symbol}" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.classList.add('token-img-fallback')">
+                </div>
+                <span>${state.fromToken.symbol}</span>
                 <span>▼</span>
             `;
             
             elements.toTokenSelector.innerHTML = `
-                <img src="${state.toToken.logo}" alt="${state.toToken.name}" class="w-6 h-6">
-                <span>${state.toToken.name}</span>
+                <div class="w-6 h-6 rounded-full token-img flex items-center justify-center overflow-hidden">
+                    <img src="${state.toToken.logo}" alt="${state.toToken.symbol}" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.classList.add('token-img-fallback')">
+                </div>
+                <span>${state.toToken.symbol}</span>
                 <span>▼</span>
             `;
         }
@@ -682,6 +920,7 @@
         function updateSlippage() {
             state.slippage = parseFloat(elements.slippageInput.value);
             elements.slippageValue.textContent = `${state.slippage}%`;
+            document.querySelector('.rounded.w-10').textContent = `${state.slippage}%`;
             if (state.fromAmount > 0) {
                 estimateFees();
             }
@@ -692,16 +931,14 @@
             elements.swapButton.disabled = !(state.walletConnected && state.fromAmount > 0 && state.toAmount > 0);
         }
 
-        // Execute Swap
-        async function executeSwap() {
+        // Show Confirm Swap Modal
+        async function showConfirmModal() {
             if (!validateAmounts()) return;
             
             try {
                 setLoading(true, elements.swapButton);
-                elements.swapButton.textContent = 'Processing...';
-                elements.swapButton.disabled = true;
                 
-                // Get quote
+                // Get quote with all details
                 const amountInLamports = state.fromAmount * Math.pow(10, state.fromToken.decimals);
                 const quoteResponse = await fetch(
                     `https://quote-api.jup.ag/v4/quote?inputMint=${state.fromToken.mint}&outputMint=${state.toToken.mint}&amount=${amountInLamports}&slippage=${state.slippage}`
@@ -714,6 +951,53 @@
                 
                 const bestRoute = quoteData.data[0];
                 
+                // Update confirm modal with details
+                elements.confirmFromTokenImg.src = state.fromToken.logo;
+                elements.confirmFromAmount.textContent = state.fromAmount.toFixed(state.fromToken.decimals);
+                elements.confirmFromToken.textContent = state.fromToken.symbol;
+                elements.confirmToTokenImg.src = state.toToken.logo;
+                elements.confirmToAmount.textContent = state.toAmount.toFixed(state.toToken.decimals);
+                elements.confirmToToken.textContent = state.toToken.symbol;
+                
+                elements.confirmExchangeRate.textContent = `1 ${state.fromToken.symbol} = ${state.currentPrice.toFixed(6)} ${state.toToken.symbol}`;
+                elements.confirmPriceImpact.textContent = '<0.01%';
+                elements.confirmNetworkFees.textContent = `${(bestRoute.feeAmount / Math.pow(10, state.toToken.decimals)).toFixed(6)} ${state.toToken.symbol}`;
+                
+                const minReceived = state.toAmount * (1 - (state.slippage / 100));
+                elements.confirmMinReceived.textContent = `${minReceived.toFixed(state.toToken.decimals)} ${state.toToken.symbol}`;
+                
+                // Store route for execution
+                state.currentRoute = bestRoute;
+                
+                // Show modal
+                elements.confirmSwapModal.classList.remove('hidden');
+                
+                setLoading(false, elements.swapButton);
+            } catch (error) {
+                console.error('Confirm swap error:', error);
+                setLoading(false, elements.swapButton);
+                showError(`Failed to prepare swap: ${error.message}`, false);
+            }
+        }
+
+        // Close Confirm Modal
+        function closeConfirmModal() {
+            elements.confirmSwapModal.classList.add('hidden');
+        }
+
+        // Execute Swap
+        async function executeSwap() {
+            if (!state.currentRoute) return;
+            
+            try {
+                // Show loading state
+                closeConfirmModal();
+                elements.txStatusModal.classList.remove('hidden');
+                elements.txLoading.classList.remove('hidden');
+                elements.txSuccess.classList.add('hidden');
+                elements.txError.classList.add('hidden');
+                elements.txStatusMessage.textContent = 'Preparing transaction...';
+                
                 // Get swap transaction
                 const swapResponse = await fetch('https://quote-api.jup.ag/v4/swap', {
                     method: 'POST',
@@ -721,7 +1005,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        route: bestRoute,
+                        route: state.currentRoute,
                         userPublicKey: state.walletPublicKey,
                         wrapUnwrapSOL: true
                     })
@@ -729,18 +1013,27 @@
                 
                 const swapData = await swapResponse.json();
                 
+                if (!swapData.swapTransaction) {
+                    throw new Error('Failed to prepare swap transaction');
+                }
+                
                 // Execute swap
                 const provider = window.phantom.solana;
+                elements.txStatusMessage.textContent = 'Waiting for wallet approval...';
+                
                 const { signature } = await provider.signAndSendTransaction(
                     new Uint8Array(Object.values(swapData.swapTransaction))
                 );
                 
+                elements.txStatusMessage.textContent = 'Waiting for confirmation...';
+                
+                // Wait for confirmation
+                await connection.confirmTransaction(signature, 'confirmed');
+                
                 // Show success
-                elements.swapButton.textContent = 'Swap Successful!';
-                setTimeout(() => {
-                    elements.swapButton.textContent = 'Swap';
-                    updateSwapButton();
-                }, 2000);
+                elements.txLoading.classList.add('hidden');
+                elements.txSuccess.classList.remove('hidden');
+                elements.viewExplorer.href = `https://solscan.io/tx/${signature}`;
                 
                 // Reset form
                 elements.fromAmountInput.value = '';
@@ -756,14 +1049,9 @@
                 
             } catch (error) {
                 console.error('Swap error:', error);
-                elements.swapButton.textContent = 'Swap Failed';
-                setTimeout(() => {
-                    elements.swapButton.textContent = 'Swap';
-                    updateSwapButton();
-                }, 2000);
-                showError(`Swap failed: ${error.message}`, true);
-            } finally {
-                setLoading(false, elements.swapButton);
+                elements.txLoading.classList.add('hidden');
+                elements.txError.classList.remove('hidden');
+                elements.txErrorMessage.textContent = error.message;
             }
         }
 
@@ -776,27 +1064,60 @@
 
         function closeModal() {
             elements.tokenSelectorModal.classList.add('hidden');
+            elements.tokenSearchInput.value = '';
         }
 
         function populateTokenList() {
             elements.tokenList.innerHTML = '';
             
-            Object.values(TOKENS).forEach(token => {
-                const tokenElement = document.createElement('div');
-                tokenElement.className = 'token-item hover:bg-gray-800 p-3 rounded-lg cursor-pointer';
-                tokenElement.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <img src="${token.logo}" alt="${token.name}" class="w-8 h-8 rounded-full">
-                        <div>
-                            <div class="font-medium">${token.name}</div>
-                        </div>
-                    </div>
-                    <div class="text-gray-400 text-sm">0</div>
-                `;
+            // Show verified tokens first
+            const verifiedTokens = state.tokenList.filter(t => t.verified || TOKENS[t.symbol]);
+            const otherTokens = state.tokenList.filter(t => !verifiedTokens.includes(t));
+            
+            if (verifiedTokens.length > 0) {
+                const verifiedHeader = document.createElement('div');
+                verifiedHeader.className = 'text-xs text-gray-500 mb-2 mt-4';
+                verifiedHeader.textContent = 'Verified Tokens';
+                elements.tokenList.appendChild(verifiedHeader);
                 
-                tokenElement.addEventListener('click', () => selectToken(token.name));
-                elements.tokenList.appendChild(tokenElement);
-            });
+                verifiedTokens.forEach(token => {
+                    addTokenToList(token);
+                });
+            }
+            
+            if (otherTokens.length > 0) {
+                const otherHeader = document.createElement('div');
+                otherHeader.className = 'text-xs text-gray-500 mb-2 mt-4';
+                otherHeader.textContent = 'Other Tokens';
+                elements.tokenList.appendChild(otherHeader);
+                
+                otherTokens.forEach(token => {
+                    addTokenToList(token);
+                });
+            }
+        }
+
+        function addTokenToList(token) {
+            const tokenElement = document.createElement('div');
+            tokenElement.className = 'token-item hover:bg-gray-800 p-3 rounded-lg cursor-pointer flex justify-between items-center';
+            
+            const tokenData = TOKENS[token.symbol] || token;
+            
+            tokenElement.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-full token-img flex items-center justify-center overflow-hidden">
+                        <img src="${tokenData.logo}" alt="${tokenData.symbol}" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.classList.add('token-img-fallback')">
+                    </div>
+                    <div>
+                        <div class="font-medium">${tokenData.symbol}</div>
+                        <div class="text-xs text-gray-400">${tokenData.name}</div>
+                    </div>
+                </div>
+                <div class="text-gray-400 text-sm">0</div>
+            `;
+            
+            tokenElement.addEventListener('click', () => selectToken(tokenData.symbol));
+            elements.tokenList.appendChild(tokenElement);
         }
 
         function searchTokens() {
@@ -805,21 +1126,38 @@
             
             tokenItems.forEach(item => {
                 const tokenName = item.querySelector('.font-medium').textContent.toLowerCase();
-                item.style.display = tokenName.includes(searchTerm) ? 'flex' : 'none';
+                const tokenFullName = item.querySelector('.text-xs').textContent.toLowerCase();
+                item.style.display = (tokenName.includes(searchTerm) || tokenFullName.includes(searchTerm)) 
+                    ? 'flex' 
+                    : 'none';
             });
         }
 
-        function selectToken(tokenName) {
-            if (state.currentSelectorTarget === 'from') {
-                state.fromToken = TOKENS[tokenName];
-            } else {
-                state.toToken = TOKENS[tokenName];
+        function selectToken(tokenSymbol) {
+            const token = TOKENS[tokenSymbol] || state.tokenList.find(t => t.symbol === tokenSymbol);
+            
+            if (!token) {
+                showError('Token not supported yet', false);
+                return;
             }
+            
+            if (state.currentSelectorTarget === 'from') {
+                state.fromToken = token;
+            } else {
+                state.toToken = token;
+            }
+            
             updateTokenSelectors();
             fetchPrice();
             if (state.walletConnected) {
                 loadBalances();
             }
+            
+            // If both tokens are set and from amount is entered, update the quote
+            if (state.fromAmount > 0) {
+                updateToAmount();
+            }
+            
             closeModal();
         }
 
