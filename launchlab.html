@@ -680,5 +680,24 @@
     }
   });
 </script>
+<script>
+  // Patch couleur nav pour swap et launchlab
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentPage = new URL(window.location.href).pathname.split('/').pop();
+
+    if (currentPage === 'swap.html' || currentPage === 'launchlab.html') {
+      const activeLink = document.querySelector(`a[href="${currentPage}"]`);
+      if (activeLink) {
+        activeLink.classList.remove('text-gray-400');
+        activeLink.classList.add('text-purple-400');
+        const icon = activeLink.querySelector('i');
+        if (icon) {
+          icon.classList.remove('text-gray-400');
+          icon.classList.add('text-purple-400');
+        }
+      }
+    }
+  });
+</script>
 </body>
 </html>
