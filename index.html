@@ -843,82 +843,74 @@
             });
         });
     </script>
-<!-- Navbar Mobile Fixe avec popup et glassmorphism -->
+<!-- Mobile Navbar with Styled Buttons -->
 <div id="mobile-navbar" class="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900/75 backdrop-blur-md border-t border-gray-800 z-50 shadow-lg">
   <div class="flex items-center justify-between py-3 px-5">
-    
-    <!-- Lien Swap -->
-    <a href="swap.html" aria-label="Swap" class="nav-link flex flex-col items-center text-xs text-gray-400 hover:text-purple-400 transition px-4">
-      <div class="w-7 h-7 mb-1 flex items-center justify-center">
-        <i class="fas fa-exchange-alt transition-colors duration-300"></i>
+
+    <!-- Swap Button -->
+    <a href="swap.html" aria-label="Swap" class="nav-link flex flex-col items-center text-xs text-white hover:text-purple-400 transition px-4">
+      <div class="w-10 h-10 mb-1 flex items-center justify-center rounded-full bg-gray-800 hover:bg-purple-700 shadow-md transition duration-300">
+        <i class="fas fa-exchange-alt text-lg"></i>
       </div>
       <span>Swap</span>
     </a>
 
-    <!-- Bouton Menu principal -->
-    <button id="menu-btn" aria-label="Ouvrir menu principal" class="flex flex-col items-center text-xs text-gray-400 hover:text-purple-400 transition px-4 focus:outline-none">
-      <div class="w-10 h-10 mb-1 flex items-center justify-center rounded-full bg-gray-800 hover:bg-purple-700 shadow-md shadow-purple-700/50 transition duration-300">
+    <!-- Menu Button (center) -->
+    <button id="menu-btn" aria-label="Open main menu" class="flex flex-col items-center text-xs text-white hover:text-purple-400 transition px-4 focus:outline-none">
+      <div class="w-12 h-12 mb-1 flex items-center justify-center rounded-full bg-purple-700 hover:bg-purple-600 shadow-lg transition duration-300">
         <i class="fas fa-bars text-xl"></i>
       </div>
       <span>Menu</span>
     </button>
 
-    <!-- Lien LaunchLab -->
-    <a href="launchlab.html" aria-label="LaunchLab" class="nav-link flex flex-col items-center text-xs text-gray-400 hover:text-purple-400 transition px-4">
-      <div class="w-7 h-7 mb-1 flex items-center justify-center">
-        <i class="fas fa-rocket transition-colors duration-300"></i>
+    <!-- LaunchLab Button -->
+    <a href="launchlab.html" aria-label="LaunchLab" class="nav-link flex flex-col items-center text-xs text-white hover:text-purple-400 transition px-4">
+      <div class="w-10 h-10 mb-1 flex items-center justify-center rounded-full bg-gray-800 hover:bg-purple-700 shadow-md transition duration-300">
+        <i class="fas fa-rocket text-lg"></i>
       </div>
       <span>LaunchLab</span>
     </a>
+
   </div>
 </div>
 
 <!-- Popup Menu -->
 <div id="menu-popup" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden z-60 flex flex-col items-center justify-center p-6">
   <div class="bg-gray-900 rounded-lg shadow-lg w-11/12 max-w-sm p-6 space-y-6 text-center">
-    <h2 class="text-purple-400 text-xl font-semibold mb-4">Menu principal</h2>
-    <a href="index.html" class="block py-3 px-6 rounded-md bg-purple-700 hover:bg-purple-600 text-white font-semibold transition">Retour à l’accueil</a>
-    <!-- Tu peux ajouter ici d’autres liens si besoin -->
-    <button id="close-menu" class="mt-6 px-5 py-2 rounded-md border border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-gray-900 transition">Fermer</button>
+    <h2 class="text-purple-400 text-xl font-semibold mb-4">Main Menu</h2>
+    <a href="index.html" class="block py-3 px-6 rounded-md bg-purple-700 hover:bg-purple-600 text-white font-semibold transition">Back to Home</a>
+    <button id="close-menu" class="mt-6 px-5 py-2 rounded-md border border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-gray-900 transition">Close</button>
   </div>
 </div>
 
 <script>
-  // Récupération page active
   const currentPage = new URL(window.location.href).pathname.split('/').pop();
-
-  // Surbrillance des liens nav principaux
   document.querySelectorAll('.nav-link').forEach(link => {
     const href = link.getAttribute('href');
     if (href === currentPage) {
-      link.classList.remove('text-gray-400');
+      link.classList.remove('text-white');
       link.classList.add('text-purple-400');
       const icon = link.querySelector('i');
-      if (icon) {
-        icon.classList.remove('text-gray-400');
-        icon.classList.add('text-purple-400');
-      }
+      if (icon) icon.classList.add('text-purple-400');
     }
   });
 
-  // Gestion du bouton menu popup
   const menuBtn = document.getElementById('menu-btn');
   const menuPopup = document.getElementById('menu-popup');
   const closeMenuBtn = document.getElementById('close-menu');
 
   menuBtn.addEventListener('click', () => {
     menuPopup.classList.remove('hidden');
-    document.body.style.overflow = 'hidden'; // Empêche scroll en arrière-plan
+    document.body.style.overflow = 'hidden';
   });
 
   closeMenuBtn.addEventListener('click', () => {
     menuPopup.classList.add('hidden');
-    document.body.style.overflow = ''; // Restaure scroll
+    document.body.style.overflow = '';
   });
 
-  // Fermer popup si clic hors du menu
   menuPopup.addEventListener('click', (e) => {
-    if(e.target === menuPopup) {
+    if (e.target === menuPopup) {
       menuPopup.classList.add('hidden');
       document.body.style.overflow = '';
     }
