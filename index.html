@@ -843,5 +843,80 @@
             });
         });
     </script>
+<!-- Navbar Mobile Fixe améliorée sans sous-menu -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-50">
+  <div class="flex items-center justify-between py-3 px-3">
+    
+    <!-- Bouton Menu principal -->
+    <a href="index.html" aria-label="Menu principal" class="flex flex-col items-center text-xs text-gray-400 hover:text-purple-400 transition">
+      <div class="w-6 h-6 mb-1 flex items-center justify-center">
+        <i class="fas fa-bars"></i>
+      </div>
+      <span>Menu</span>
+    </a>
+
+    <!-- Liens principaux -->
+    <div class="flex justify-around flex-grow ml-4">
+      
+      <!-- Swap -->
+      <a href="swap.html" aria-label="Swap" class="nav-link flex flex-col items-center text-xs text-gray-400 hover:text-purple-400 transition px-4">
+        <div class="w-6 h-6 mb-1 flex items-center justify-center">
+          <i class="fas fa-exchange-alt"></i>
+        </div>
+        <span>Swap</span>
+      </a>
+
+      <!-- Liquidity -->
+      <a href="liquidity.html" aria-label="Liquidity" class="nav-link flex flex-col items-center text-xs text-gray-400 hover:text-purple-400 transition px-4">
+        <div class="w-6 h-6 mb-1 flex items-center justify-center">
+          <i class="fas fa-water"></i>
+        </div>
+        <span>Liquidity</span>
+      </a>
+
+      <!-- LaunchLab simple -->
+      <a href="launchlab.html" aria-label="LaunchLab" class="nav-link flex flex-col items-center text-xs text-gray-400 hover:text-purple-400 transition px-4">
+        <div class="w-6 h-6 mb-1 flex items-center justify-center">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <span>LaunchLab</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Récupération de la page active (nom de fichier)
+  const currentPage = new URL(window.location.href).pathname.split('/').pop();
+
+  // Surbrillance des liens principaux
+  document.querySelectorAll('.nav-link').forEach(link => {
+    const href = link.getAttribute('href');
+    if (href === currentPage) {
+      link.classList.remove('text-gray-400');
+      link.classList.add('text-purple-400');
+      const icon = link.querySelector('i');
+      if (icon) {
+        icon.classList.remove('text-gray-400');
+        icon.classList.add('text-purple-400');
+      }
+    }
+  });
+
+  // Surbrillance bouton Menu principal si on est sur index.html
+  if (currentPage === 'index.html' || currentPage === '') {
+    const menuBtn = document.querySelector('a[aria-label="Menu principal"]');
+    if (menuBtn) {
+      menuBtn.classList.remove('text-gray-400');
+      menuBtn.classList.add('text-purple-400');
+      const icon = menuBtn.querySelector('i');
+      if (icon) {
+        icon.classList.remove('text-gray-400');
+        icon.classList.add('text-purple-400');
+      }
+    }
+  }
+</script>
 </body>
 </html>
