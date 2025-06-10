@@ -1,387 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AetherSwap | LaunchLab</title>
-
-  <!-- Preload critical resources -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" as="style">
-  <link rel="preload" href="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js" as="script">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AetherSwap LaunchLab</title>
   
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Solana & Wallet Adapter SDKs -->
-  <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js" defer></script>
-  <script src="https://unpkg.com/@phantom-labs/inject-sdk@latest/dist/sdk.js" defer></script>
-  <script src="https://unpkg.com/@solana/wallet-adapter-base@0.9.16/lib/index.iife.min.js" defer></script>
-  <script src="https://unpkg.com/@solana/wallet-adapter-react-ui@0.19.13/dist/index.iife.min.js" defer></script>
-
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  <!-- CSS Inline Critique -->
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-    
     :root {
-      --primary-purple: #7e22ce;
-      --primary-blue: #3b82f6;
-      --bg-dark: #0a0a0a;
-      --bg-darker: #121212;
-      --text-light: #fff;
-      --text-gray: #cbd5e1;
+      --gradient: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
     }
-    
+    /* Styles optimisés avec nesting */
     body {
-      font-family: 'Space Grotesk', sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text-light);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .gradient-text {
-      background: linear-gradient(90deg, var(--primary-purple) 0%, var(--primary-blue) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    
-    .gradient-border {
-      position: relative;
-      border-radius: 1rem;
-    }
-    
-    .gradient-border::before {
-      content: "";
-      position: absolute;
-      inset: -2px;
-      border-radius: 1rem;
-      background: linear-gradient(45deg, var(--primary-purple), var(--primary-blue), var(--primary-purple));
-      background-size: 300% 300%;
-      z-index: -1;
-      animation: gradient 3s ease infinite;
-      will-change: background-position;
-    }
-    
-    @keyframes gradient {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-    
-    /* Form elements */
-    input, button, textarea, select {
-      transition: all 0.2s ease;
-      outline: none;
-    }
-    
-    input:focus-visible,
-    button:focus-visible,
-    textarea:focus-visible,
-    select:focus-visible {
-      outline: 2px solid var(--primary-blue);
-      outline-offset: 2px;
-    }
-    
-    .launch-button {
-      background: linear-gradient(90deg, var(--primary-purple) 0%, var(--primary-blue) 100%);
-      border-radius: 0.75rem;
-      padding: 1rem;
-      font-weight: 600;
-      width: 100%;
-      transition: all 0.2s;
-      color: white;
-      cursor: pointer;
-    }
-    
-    /* Ticker styles */
-    .ticker-container {
-      background: var(--bg-darker);
-      border-top: 1px solid #3b3b3b;
-      border-bottom: 1px solid #3b3b3b;
-      overflow: hidden;
-      white-space: nowrap;
-      padding: 0.5rem 0;
-      user-select: none;
-    }
-    
-    /* Modal styles */
-    .modal-bg {
-      background: rgba(0,0,0,0.8);
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      backdrop-filter: blur(5px);
-    }
-    
-    /* Mobile navigation */
-    .mobile-navbar {
-      backdrop-filter: blur(10px);
-    }
-    
-    /* Utility classes */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border-width: 0;
+      @apply bg-gray-900 text-white;
+      font-family: 'Space Grotesk', system-ui;
     }
   </style>
+  
+  <!-- Chargement différé -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700" media="print" onload="this.media='all'">
 </head>
+
 <body>
-
-  <!-- Navbar -->
-  <nav class="container mx-auto px-6 py-6 flex justify-between items-center">
-    <a href="index.html" class="flex items-center space-x-2" aria-label="Return to homepage">
-      <div class="w-10 h-10 rounded-full gradient-border flex items-center justify-center">
-        <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white text-xl font-bold select-none">
-          ←
-        </div>
-      </div>
-      <span class="text-2xl font-bold gradient-text">AetherSwap LaunchLab</span>
-    </a>
-    <button
-      id="connect-wallet"
-      class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition"
-      aria-label="Connect wallet"
-    >
-      Connect Wallet
-    </button>
-  </nav>
-
-  <!-- Ticker -->
-  <div id="ticker-container" class="ticker-container" aria-label="Cryptocurrency prices ticker">
-    <div id="ticker" aria-live="polite"></div>
-  </div>
-
-  <!-- Main Content -->
-  <main class="container mx-auto px-4 py-8 max-w-3xl flex-grow">
-    <section aria-labelledby="token-creation-heading">
-      <div class="gradient-border p-1 rounded-2xl mb-8">
-        <div class="bg-gray-900 rounded-2xl p-6">
-          <h2 id="token-creation-heading" class="text-xl font-bold mb-4 flex items-center gap-2">
-            <i class="fas fa-rocket"></i> Create New Token
-          </h2>
-          
-          <form id="token-form" class="space-y-6" novalidate>
-            <!-- Form fields remain the same but with proper aria-labels -->
-            <!-- ... -->
-            
-            <button
-              type="submit"
-              id="launch-btn"
-              class="launch-button mt-6"
-              aria-label="Launch token"
-            >
-              Launch Token
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Wallet Modal -->
-  <div id="wallet-modal" class="modal-bg hidden" role="dialog" aria-modal="true" aria-labelledby="wallet-modal-title">
-    <div class="modal-content">
-      <h2 id="wallet-modal-title" class="text-xl font-bold mb-4">Connect your Wallet</h2>
-      <!-- Wallet buttons with proper aria-labels -->
-      <button class="wallet-btn" data-wallet="phantom" aria-label="Connect Phantom wallet">
-        <img src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/phantom/src/logo.svg" alt="" class="wallet-logo" />
-        Phantom
+  <!-- App Shell -->
+  <div id="app">
+    <!-- Top Navigation -->
+    <nav class="app-bar">
+      <a href="/" class="logo">AetherSwap</a>
+      <button id="connect-btn" class="wallet-btn">
+        <span class="loader hidden"></span>
+        Connect Wallet
       </button>
-      <!-- ... other wallet buttons ... -->
-    </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="token-creator">
+      <form id="token-form" class="grid gap-4">
+        <!-- Champs de formulaire optimisés -->
+        <input 
+          type="text" 
+          name="tokenName" 
+          required
+          data-validation="length:3,32"
+          aria-label="Token name"
+        >
+        
+        <!-- Section Tokenomics -->
+        <fieldset class="tokenomics-grid">
+          <!-- Inputs optimisés -->
+        </fieldset>
+        
+        <button type="submit" class="cta-button">
+          Create Token
+        </button>
+      </form>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-bar">
+      <a href="/swap" class="nav-item">
+        <i class="icon-swap"></i>
+        Swap
+      </a>
+      <a href="/launch" class="nav-item active">
+        <i class="icon-launch"></i>
+        Launch
+      </a>
+    </nav>
   </div>
 
-  <!-- Footer -->
-  <footer class="w-full mt-6 mb-4 select-none">
-    <!-- ... footer content ... -->
-  </footer>
-
-  <!-- Mobile Navigation -->
-  <div id="mobile-navbar" class="mobile-navbar md:hidden fixed bottom-0 left-0 right-0 bg-gray-900/75 border-t border-gray-800 z-50 shadow-lg">
-    <!-- ... mobile nav content ... -->
-  </div>
-
-  <script>
-    // Modern JavaScript with better organization
+  <!-- Chargement intelligent des scripts -->
+  <script type="module">
+    // Import dynamique des SDK
+    const { initWallet } = await import('/js/wallet.js');
+    const { setupForm } = await import('/js/tokenCreator.js');
+    
     document.addEventListener('DOMContentLoaded', () => {
-      // Wallet connection module
-      const walletModule = (() => {
-        const connectBtn = document.getElementById('connect-wallet');
-        const walletModal = document.getElementById('wallet-modal');
-        const walletButtons = walletModal.querySelectorAll('.wallet-btn');
-        const walletClose = document.getElementById('wallet-modal-close');
-        
-        let connectedWallet = null;
-        
-        const init = () => {
-          connectBtn.addEventListener('click', toggleWalletModal);
-          walletClose.addEventListener('click', toggleWalletModal);
-          
-          walletButtons.forEach(btn => {
-            btn.addEventListener('click', () => handleWalletConnect(btn.dataset.wallet));
-          });
-        };
-        
-        const toggleWalletModal = () => {
-          walletModal.classList.toggle('hidden');
-          document.body.style.overflow = walletModal.classList.contains('hidden') ? '' : 'hidden';
-        };
-        
-        const handleWalletConnect = async (walletName) => {
-          try {
-            if(walletName === 'phantom' && window.solana?.isPhantom) {
-              const response = await window.solana.connect();
-              connectedWallet = 'Phantom';
-              updateWalletButton(response.publicKey);
-            } else {
-              alert(`${walletName} wallet connection not implemented yet.`);
-            }
-            toggleWalletModal();
-          } catch(error) {
-            console.error('Wallet connection error:', error);
-            alert(`Failed to connect ${walletName}: ${error.message}`);
-          }
-        };
-        
-        const updateWalletButton = (publicKey) => {
-          const shortAddress = `${publicKey.toString().slice(0, 4)}...${publicKey.toString().slice(-4)}`;
-          connectBtn.textContent = `Wallet: ${shortAddress}`;
-          connectBtn.setAttribute('aria-label', `Connected wallet: ${shortAddress}`);
-        };
-        
-        return { init };
-      })();
-      
-      // Form validation module
-      const formModule = (() => {
-        const form = document.getElementById('token-form');
-        const logoInput = document.getElementById('token-logo');
-        const logoPreview = document.getElementById('logo-preview');
-        
-        const init = () => {
-          form.addEventListener('submit', handleFormSubmit);
-          logoInput.addEventListener('change', handleLogoUpload);
-        };
-        
-        const handleLogoUpload = () => {
-          const file = logoInput.files[0];
-          const errorElement = document.getElementById('error-logo');
-          
-          if(!file) {
-            logoPreview.classList.add('hidden');
-            return;
-          }
-          
-          if(!['image/png','image/jpeg'].includes(file.type)) {
-            errorElement.textContent = 'Invalid file type. Use PNG or JPG.';
-            return;
-          }
-          
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            logoPreview.src = e.target.result;
-            logoPreview.classList.remove('hidden');
-            errorElement.textContent = '';
-          };
-          reader.readAsDataURL(file);
-        };
-        
-        const handleFormSubmit = (e) => {
-          e.preventDefault();
-          clearErrors();
-          
-          if(validateForm()) {
-            // Submit form data
-            alert('Token creation submitted! (Blockchain interaction would happen here)');
-            form.reset();
-            logoPreview.classList.add('hidden');
-          }
-        };
-        
-        const validateForm = () => {
-          let isValid = true;
-          const fields = {
-            name: form.tokenName.value.trim(),
-            symbol: form.tokenSymbol.value.trim(),
-            supply: form.tokenSupply.value,
-            decimals: form.tokenDecimals.value,
-            mode: form.tokenMode.value
-          };
-          
-          // Validation checks...
-          
-          return isValid;
-        };
-        
-        const clearErrors = () => {
-          document.querySelectorAll('.input-error').forEach(el => {
-            el.textContent = '';
-          });
-        };
-        
-        return { init };
-      })();
-      
-      // Ticker module
-      const tickerModule = (() => {
-        const tickerEl = document.getElementById('ticker');
-        const tickerData = [
-          // ... ticker data ...
-        ];
-        
-        const init = () => {
-          renderTicker();
-          setInterval(updateTickerPrices, 60000); // Update every minute
-        };
-        
-        const renderTicker = () => {
-          tickerEl.innerHTML = tickerData.map(token => `
-            <span class="ticker-item" aria-label="${token.name} price">
-              <img src="${token.logo}" alt="" />
-              <strong>${token.symbol}</strong> 
-              <span>$${token.price.toFixed(2)}</span> 
-              <span class="${token.change > 0 ? 'price-up' : 'price-down'}">
-                ${token.change > 0 ? '▲' : '▼'} ${Math.abs(token.change).toFixed(2)}%
-              </span>
-            </span>
-          `).join('');
-        };
-        
-        const updateTickerPrices = () => {
-          // Simulate price changes
-          tickerData.forEach(token => {
-            token.price = +(token.price * (1 + (Math.random() * 0.02 - 0.01))).toFixed(2);
-            token.change = +(token.change + (Math.random() * 0.2 - 0.1)).toFixed(2);
-          });
-          renderTicker();
-        };
-        
-        return { init };
-      })();
-      
-      // Mobile menu module
-      const mobileMenuModule = (() => {
-        // ... mobile menu logic ...
-      })();
-      
-      // Initialize all modules
-      walletModule.init();
-      formModule.init();
-      tickerModule.init();
-      mobileMenuModule.init();
+      initWallet();
+      setupForm();
     });
   </script>
 </body>
