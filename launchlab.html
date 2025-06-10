@@ -1,116 +1,776 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AetherSwap LaunchLab</title>
-  <meta name="description" content="Create and mint your token on Solana or EVM chains instantly." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AetherSwap | LaunchLab</title>
 
-  <!-- Fonts & Tailwind -->
+  <!-- Preload critical resources -->
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" as="style">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              500: '#7e22ce',
+              600: '#6b21a8'
+            },
+            secondary: {
+              500: '#3b82f6',
+              600: '#2563eb'
+            }
+          }
+        }
+      }
+    }
+  </script>
 
-  <!-- Solana & Phantom SDK -->
-  <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js" defer></script>
+  <!-- Solana & Wallet Adapter SDKs -->
+  <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-base@0.9.16/lib/index.iife.min.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-wallets@0.19.13/lib/index.iife.min.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-react-ui@0.19.13/dist/index.iife.min.js"></script>
 
-  <!-- EVM multi-chain via Web3Modal v2 -->
-  <script src="https://unpkg.com/@web3modal/core@2.2.1/dist/index.umd.js" defer></script>
-  <script src="https://unpkg.com/@web3modal/ethereum@1.0.30/dist/index.umd.js" defer></script>
-  <script src="https://unpkg.com/@walletconnect/ethereum-provider@2.6.5/dist/ethereum-provider.umd.min.js" defer></script>
-  <script src="https://cdn.ethers.io/lib/ethers-5.6.umd.min.js" defer></script>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* same gradient, modal, loader, ticker, etc. */
-    :root { /* ... */ }
-    /* styles omitted for brevity, identical to previous design */
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background-color: #0a0a0a;
+      color: #fff;
+    }
+    .gradient-text {
+      background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .gradient-border {
+      position: relative;
+      border-radius: 1rem;
+    }
+    .gradient-border::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 1rem;
+      background: linear-gradient(45deg, #7e22ce, #3b82f6, #7e22ce);
+      background-size: 300% 300%;
+      z-index: -1;
+      animation: gradient 3s ease infinite;
+    }
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .launch-button {
+      background: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.2s;
+      color: white;
+      cursor: pointer;
+    }
+    .launch-button:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .launch-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .loading-spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 3px solid white;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    /* Ticker Styles */
+    #ticker-container {
+      background: #121212;
+      border-top: 1px solid #3b3b3b;
+      border-bottom: 1px solid #3b3b3b;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0.5rem 0;
+      user-select: none;
+    }
+    #ticker {
+      display: inline-block;
+      padding-left: 100%;
+      animation: ticker-scroll 30s linear infinite;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 3rem;
+      gap: 0.3rem;
+    }
+    .ticker-item img {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+    }
+    .price-up {
+      color: #22c55e;
+    }
+    .price-down {
+      color: #ef4444;
+    }
+    @keyframes ticker-scroll {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-100%); }
+    }
+    /* Modal styles */
+    .modal-bg {
+      background: rgba(0,0,0,0.8);
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-bg.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-content {
+      background: #121212;
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 320px;
+      max-width: 90vw;
+      color: #fff;
+      box-shadow: 0 0 20px #7e22ce;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    .modal-bg.active .modal-content {
+      transform: translateY(0);
+    }
+    .wallet-btn {
+      background: #222222;
+      padding: 0.8rem 1rem;
+      border-radius: 0.75rem;
+      width: 100%;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .wallet-btn:hover {
+      background: #3b82f6;
+      transform: translateY(-2px);
+    }
+    .wallet-logo {
+      width: 28px;
+      height: 28px;
+    }
+    .upload-preview {
+      max-width: 100px;
+      max-height: 100px;
+      margin-top: 0.5rem;
+      border-radius: 0.5rem;
+      object-fit: contain;
+      border: 1px solid #555;
+      background: #1f1f1f;
+    }
+    .input-error {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+    }
+    /* Footer */
+    footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #888;
+      padding: 1.5rem 0;
+      user-select: none;
+    }
+    /* Mobile Nav */
+    #mobile-navbar {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      #mobile-navbar {
+        display: block;
+      }
+    }
   </style>
 </head>
-<body>
-  <!-- Navbar, Ticker, Form, Wallet Modal same as above, all in English labels -->
+<body class="min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="container mx-auto px-6 py-6 flex justify-between items-center">
+    <a href="index.html" class="flex items-center space-x-2">
+      <div class="w-10 h-10 rounded-full gradient-border flex items-center justify-center">
+        <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white text-xl font-bold select-none">
+          ←
+        </div>
+      </div>
+      <span class="text-2xl font-bold gradient-text">AetherSwap LaunchLab</span>
+    </a>
+    <button
+      id="connect-wallet"
+      class="gradient-border px-6 py-2 rounded-full font-medium text-white hover:opacity-90 transition"
+    >
+      Connect Wallet
+    </button>
+  </nav>
+
+  <!-- Ticker -->
+  <div id="ticker-container" aria-label="Crypto prices ticker">
+    <div id="ticker" aria-live="polite" aria-atomic="true">
+      Loading prices...
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <main class="container mx-auto px-4 py-8 max-w-3xl flex-grow">
+    <!-- Token Creation Form -->
+    <div class="gradient-border p-1 rounded-2xl mb-8">
+      <div class="bg-gray-900 rounded-2xl p-6">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2">🚀 Create New Token</h2>
+        <form id="token-form" class="space-y-6" novalidate>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1" for="token-name">Token Name *</label>
+            <input
+              id="token-name"
+              name="tokenName"
+              type="text"
+              placeholder="My Awesome Token"
+              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              required
+              maxlength="32"
+            />
+            <p class="input-error" id="error-name"></p>
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-400 mb-1" for="token-symbol">Token Symbol *</label>
+            <input
+              id="token-symbol"
+              name="tokenSymbol"
+              type="text"
+              placeholder="MAT"
+              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 uppercase"
+              required
+              maxlength="10"
+              pattern="^[A-Z0-9]+$"
+              title="Uppercase letters and numbers only"
+            />
+            <p class="input-error" id="error-symbol"></p>
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-400 mb-1" for="token-description">Description</label>
+            <textarea
+              id="token-description"
+              name="tokenDescription"
+              placeholder="Describe your token (optional)"
+              rows="3"
+              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+              maxlength="200"
+            ></textarea>
+            <p class="input-error" id="error-description"></p>
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-400 mb-1" for="token-logo">Upload Token Logo (PNG/JPG)</label>
+            <input
+              id="token-logo"
+              name="tokenLogo"
+              type="file"
+              accept="image/png, image/jpeg"
+              class="text-gray-300"
+            />
+            <img id="logo-preview" class="upload-preview hidden" alt="Logo preview" />
+            <p class="input-error" id="error-logo"></p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm text-gray-400 mb-1" for="token-supply">Total Supply *</label>
+              <input
+                id="token-supply"
+                name="tokenSupply"
+                type="number"
+                placeholder="1000000"
+                min="1"
+                step="1"
+                class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                required
+              />
+              <p class="input-error" id="error-supply"></p>
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1" for="token-decimals">Decimals *</label>
+              <input
+                id="token-decimals"
+                name="tokenDecimals"
+                type="number"
+                placeholder="9"
+                value="9"
+                min="0"
+                max="18"
+                class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                required
+              />
+              <p class="input-error" id="error-decimals"></p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Tokenomics Mode *</label>
+            <select
+              id="token-mode"
+              name="tokenMode"
+              class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              required
+            >
+              <option value="">Select mode...</option>
+              <option value="justsendit">JustSendit (Simple)</option>
+              <option value="launchlab">LaunchLab (Full control)</option>
+            </select>
+            <p class="input-error" id="error-mode"></p>
+          </div>
+
+          <hr class="border-gray-700" />
+
+          <h3 class="font-semibold text-lg mb-3">Launch Configuration (Optional)</h3>
+
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm text-gray-400 mb-1" for="sol-invest">SOL to Invest</label>
+              <input
+                id="sol-invest"
+                name="solInvest"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.5"
+                class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1" for="vesting-period">Vesting Period (days)</label>
+              <input
+                id="vesting-period"
+                name="vestingPeriod"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="30"
+                class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6 mt-4">
+            <div>
+              <label class="block text-sm text-gray-400 mb-1" for="lock-period">Liquidity Lock (days)</label>
+              <input
+                id="lock-period"
+                name="lockPeriod"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="30"
+                class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1" for="token-price">Price per Token (in SOL)</label>
+              <input
+                id="token-price"
+                name="tokenPrice"
+                type="number"
+                min="0"
+                step="0.0001"
+                placeholder="0.01"
+                class="w-full bg-gray-800 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            id="launch-btn"
+            class="launch-button mt-6"
+          >
+            <span id="button-text">Launch Token</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Wallet Modal -->
+  <div id="wallet-modal" class="modal-bg" role="dialog" aria-modal="true" aria-labelledby="wallet-modal-title">
+    <div class="modal-content">
+      <h2 id="wallet-modal-title" class="text-xl font-bold mb-4">Connect your Wallet</h2>
+      <button class="wallet-btn" data-wallet="phantom">
+        <img src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/phantom/src/logo.svg" alt="Phantom Logo" class="wallet-logo" />
+        Phantom
+      </button>
+      <button class="wallet-btn" data-wallet="solflare">
+        <img src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/solflare/src/logo.svg" alt="Solflare Logo" class="wallet-logo" />
+        Solflare
+      </button>
+      <button class="wallet-btn" data-wallet="okx">
+        <img src="https://cryptologos.cc/logos/okx-okx-logo.svg?v=024" alt="OKX Logo" class="wallet-logo" />
+        OKX Wallet
+      </button>
+      <button class="wallet-btn" data-wallet="bitget">
+        <img src="https://cryptologos.cc/logos/bitget-bitget-logo.svg?v=024" alt="Bitget Logo" class="wallet-logo" />
+        Bitget Wallet
+      </button>
+      <button id="wallet-modal-close" class="mt-4 w-full px-4 py-2 bg-red-600 rounded-lg font-semibold hover:bg-red-700 transition">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w-full mt-6 mb-4 select-none">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-center gap-4 text-sm text-gray-400 text-center">
+      <span class="w-full md:w-auto">
+        © 2025 AetherSwap Protocol. All rights reserved.
+        <a href="https://github.com/aetherswapprotocol/AetherSwapProtocol/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" class="underline hover:text-white ml-1">
+          MIT License
+        </a>
+      </span>
+
+      <a href="https://t.me/AetherFounder" 
+         target="_blank" 
+         rel="noopener noreferrer"
+         class="gradient-border flex items-center gap-1 px-3 py-1 text-white font-medium hover:opacity-80 transition rounded-full">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M21.5 3.5l-19 7.5 5.5 2.5 1.5 6 2.5-7 4 3.5 5-14z"/>
+        </svg>
+        <span>Founder</span>
+      </a>
+    </div>
+  </footer>
+
+  <!-- Mobile Navbar -->
+  <div id="mobile-navbar" class="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900/75 backdrop-blur-md border-t border-gray-800 z-50 shadow-lg">
+    <div class="flex items-center justify-between py-3 px-5">
+      <a href="swap.html" aria-label="Swap" class="nav-link flex flex-col items-center text-xs text-white hover:text-purple-400 transition px-4">
+        <div class="w-10 h-10 mb-1 flex items-center justify-center rounded-full bg-gray-800 hover:bg-purple-700 shadow-md transition duration-300">
+          <i class="fas fa-exchange-alt text-lg"></i>
+        </div>
+        <span>Swap</span>
+      </a>
+
+      <button id="menu-btn" aria-label="Open main menu" class="flex flex-col items-center text-xs text-white hover:text-purple-400 transition px-4 focus:outline-none">
+        <div class="w-12 h-12 mb-1 flex items-center justify-center rounded-full bg-purple-700 hover:bg-purple-600 shadow-lg transition duration-300">
+          <i class="fas fa-bars text-xl"></i>
+        </div>
+        <span>Menu</span>
+      </button>
+
+      <a href="launchlab.html" aria-label="LaunchLab" class="nav-link flex flex-col items-center text-xs text-white hover:text-purple-400 transition px-4">
+        <div class="w-10 h-10 mb-1 flex items-center justify-center rounded-full bg-gray-800 hover:bg-purple-700 shadow-md transition duration-300">
+          <i class="fas fa-rocket text-lg"></i>
+        </div>
+        <span>LaunchLab</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Popup Menu -->
+  <div id="menu-popup" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden z-60 flex flex-col items-center justify-center p-6">
+    <div class="bg-gray-900 rounded-lg shadow-lg w-11/12 max-w-sm p-6 space-y-6 text-center">
+      <h2 class="text-purple-400 text-xl font-semibold mb-4">Main Menu</h2>
+      <a href="index.html" class="block py-3 px-6 rounded-md bg-purple-700 hover:bg-purple-600 text-white font-semibold transition">Back to Home</a>
+      <button id="close-menu" class="mt-6 px-5 py-2 rounded-md border border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-gray-900 transition">Close</button>
+    </div>
+  </div>
 
   <script>
-  document.addEventListener('DOMContentLoaded', async () => {
-    // ------ Wallet Connection Modules ------
+    // Enhanced Wallet Connection
+    const connectBtn = document.getElementById('connect-wallet');
+    const walletModal = document.getElementById('wallet-modal');
+    const walletButtons = walletModal.querySelectorAll('.wallet-btn');
+    const walletClose = document.getElementById('wallet-modal-close');
+    let connectedWallet = null;
+    let publicKey = null;
+    let connection = null;
 
-    // Phantom (Solana)
-    phantomBtn.onclick = async () => {
-      if (window.solana?.isPhantom) {
-        const res = await window.solana.connect();
-        const pk = res.publicKey.toString();
-        connectBtn.textContent = `Phantom: ${pk.slice(0,4)}…${pk.slice(-4)}`;
-      }
-      toggleModal();
-    };
-
-    // EVM via Web3Modal
-    evmBtn.onclick = async () => {
-      const { Web3ModalCore } = window.W3MCore;
-      const { EthereumClient } = window.W3MEthereum;
-      const projectId = 'YOUR_PROJECT_ID'; // required
-      const chains = [{ id: 1, name: 'Ethereum' }, { id: 137, name: 'Polygon' }];
-      const w3m = Web3ModalCore({ projectId, theme: 'dark' });
-      const ethClient = new EthereumClient({ projectId, chains }, w3m);
-      const provider = await w3m.openModal({ modalConnectors: ethClient.connector });
-      const ethersProvider = new ethers.providers.Web3Provider(provider);
-      const signer = ethersProvider.getSigner();
-      const addr = await signer.getAddress();
-      const chain = await provider.request({ method: 'eth_chainId' });
-      connectBtn.textContent = `EVM: ${addr.slice(0,6)}… (${parseInt(chain,16)})`;
-      toggleModal();
-
-      // EVM mint function
-      window.evmSigner = signer;
-    };
-
-    // ------ Minting Logic ------
-
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const name = form.tokenName.value.trim(), symbol = form.tokenSymbol.value.trim();
-      const supply = form.tokenSupply.value, decimals = form.tokenDecimals.value;
-
-      if (connectBtn.textContent.startsWith('Phantom')) {
-        // SOLANA: create mint using @solana/web3.js & spl-token
-        const connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
-        const mintAccount = solanaWeb3.Keypair.generate();
-        const lamports = await connection.getMinimumBalanceForRentExemption(82);
-        let tx = new solanaWeb3.Transaction();
-        tx.add(
-          solanaWeb3.SystemProgram.createAccount({ 
-            fromPubkey: window.solana.publicKey, 
-            newAccountPubkey: mintAccount.publicKey, 
-            space: 82, lamports, programId: solanaWeb3.TOKEN_PROGRAM_ID
-          }),
-          solanaWeb3.Token.createInitMintInstruction(
-            solanaWeb3.TOKEN_PROGRAM_ID,
-            mintAccount.publicKey, Number(decimals),
-            window.solana.publicKey, window.solana.publicKey
-          )
+    // Initialize Solana connection
+    function initSolana() {
+      if (window.solana) {
+        connection = new solanaWeb3.Connection(
+          'https://api.mainnet-beta.solana.com',
+          'confirmed'
         );
-        const sig = await window.solana.signAndSendTransaction(tx);
-        alert(`Solana mint created: ${sig.signature}`);
-      } else if (connectBtn.textContent.startsWith('EVM')) {
-        // EVM: create ERC20 using ethers
-        const abi = [
-          "function name() view returns (string)", "function symbol() view returns (string)",
-          "function decimals() view returns (uint8)", "function totalSupply() view returns (uint256)",
-          "function mint(address to, uint256 amount)"
-        ];
-        const bytecode = "0x..."; // precompiled ERC20 bytecode
-        const factory = new ethers.ContractFactory(abi, bytecode, window.evmSigner);
-        const contract = await factory.deploy(name, symbol, decimals, supply);
-        await contract.deployed();
-        alert(`EVM ERC20 deployed at ${contract.address}`);
-      } else {
-        alert('Please connect a wallet first.');
+        
+        // Auto-connect if previously connected
+        window.solana.connect({ onlyIfTrusted: true })
+          .then(() => {
+            updateWalletUI(window.solana.publicKey.toString());
+          })
+          .catch(() => {});
       }
-    };
+    }
 
-    // ------ Ticker Logic (same as before) ------
-  });
+    // Update UI when wallet is connected
+    function updateWalletUI(pubKey) {
+      publicKey = pubKey;
+      connectedWallet = 'Phantom';
+      connectBtn.textContent = 'Wallet: ' + pubKey.slice(0, 4) + '...' + pubKey.slice(-4);
+      connectBtn.classList.add('connected');
+    }
+
+    // Toggle wallet modal
+    function toggleModal() {
+      walletModal.classList.toggle('active');
+    }
+
+    connectBtn.addEventListener('click', toggleModal);
+    walletClose.addEventListener('click', toggleModal);
+
+    walletButtons.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const walletName = btn.getAttribute('data-wallet');
+        
+        try {
+          if(walletName === 'phantom') {
+            if(window.solana && window.solana.isPhantom) {
+              const response = await window.solana.connect();
+              updateWalletUI(response.publicKey.toString());
+            } else {
+              window.open('https://phantom.app/', '_blank');
+              throw new Error('Phantom wallet not detected');
+            }
+          } else {
+            alert(walletName + ' wallet connection not implemented yet.');
+          }
+          toggleModal();
+        } catch(e) {
+          console.error('Wallet connection error:', e);
+          alert('Failed to connect ' + walletName + ': ' + e.message);
+        }
+      });
+    });
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initSolana);
+
+    // Logo preview
+    const logoInput = document.getElementById('token-logo');
+    const logoPreview = document.getElementById('logo-preview');
+    logoInput.addEventListener('change', () => {
+      const file = logoInput.files[0];
+      if(file) {
+        if(['image/png','image/jpeg'].includes(file.type)) {
+          const reader = new FileReader();
+          reader.onload = e => {
+            logoPreview.src = e.target.result;
+            logoPreview.classList.remove('hidden');
+          }
+          reader.readAsDataURL(file);
+          document.getElementById('error-logo').textContent = '';
+        } else {
+          logoPreview.classList.add('hidden');
+          document.getElementById('error-logo').textContent = 'Invalid file type. Use PNG or JPG.';
+        }
+      } else {
+        logoPreview.classList.add('hidden');
+        document.getElementById('error-logo').textContent = '';
+      }
+    });
+
+    // Form validation & submission
+    const form = document.getElementById('token-form');
+    const launchBtn = document.getElementById('launch-btn');
+    const buttonText = document.getElementById('button-text');
+    
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+
+      // Clear errors
+      ['name','symbol','description','logo','supply','decimals','mode'].forEach(field => {
+        document.getElementById('error-' + field).textContent = '';
+      });
+
+      let valid = true;
+      const name = form.tokenName.value.trim();
+      const symbol = form.tokenSymbol.value.trim();
+      const supply = form.tokenSupply.value;
+      const decimals = form.tokenDecimals.value;
+      const mode = form.tokenMode.value;
+
+      if(name.length < 3) {
+        document.getElementById('error-name').textContent = 'Token name must be at least 3 characters.';
+        valid = false;
+      }
+      if(!/^[A-Z0-9]+$/.test(symbol)) {
+        document.getElementById('error-symbol').textContent = 'Symbol must be uppercase letters/numbers only.';
+        valid = false;
+      }
+      if(!supply || supply < 1) {
+        document.getElementById('error-supply').textContent = 'Supply must be a positive number.';
+        valid = false;
+      }
+      if(decimals === '' || decimals < 0 || decimals > 18) {
+        document.getElementById('error-decimals').textContent = 'Decimals must be between 0 and 18.';
+        valid = false;
+      }
+      if(!mode) {
+        document.getElementById('error-mode').textContent = 'Please select a tokenomics mode.';
+        valid = false;
+      }
+
+      if(valid) {
+        try {
+          // Show loading state
+          launchBtn.disabled = true;
+          buttonText.innerHTML = '<span class="loading-spinner"></span> Creating Token...';
+          
+          if(connectedWallet === 'Phantom' && publicKey) {
+            // Create SPL token on Solana
+            const mintAccount = solanaWeb3.Keypair.generate();
+            const lamports = await connection.getMinimumBalanceForRentExemption(
+              solanaWeb3.MINT_SIZE
+            );
+            
+            let transaction = new solanaWeb3.Transaction().add(
+              solanaWeb3.SystemProgram.createAccount({
+                fromPubkey: new solanaWeb3.PublicKey(publicKey),
+                newAccountPubkey: mintAccount.publicKey,
+                lamports,
+                space: solanaWeb3.MINT_SIZE,
+                programId: solanaWeb3.TOKEN_PROGRAM_ID,
+              }),
+              solanaWeb3.Token.createInitMintInstruction(
+                solanaWeb3.TOKEN_PROGRAM_ID,
+                mintAccount.publicKey,
+                Number(decimals),
+                new solanaWeb3.PublicKey(publicKey),
+                new solanaWeb3.PublicKey(publicKey)
+              )
+            );
+
+            const { blockhash } = await connection.getRecentBlockhash();
+            transaction.recentBlockhash = blockhash;
+            transaction.feePayer = new solanaWeb3.PublicKey(publicKey);
+            
+            // Sign and send transaction
+            const signed = await window.solana.signTransaction(transaction);
+            const signature = await connection.sendRawTransaction(signed.serialize());
+            
+            // Confirm transaction
+            await connection.confirmTransaction(signature, 'confirmed');
+            
+            alert(`Token created successfully!\nMint Address: ${mintAccount.publicKey.toString()}\nTransaction: https://solscan.io/tx/${signature}`);
+          } else {
+            alert('Please connect a Solana wallet first.');
+          }
+        } catch (error) {
+          console.error('Token creation failed:', error);
+          alert('Token creation failed: ' + error.message);
+        } finally {
+          // Reset button state
+          launchBtn.disabled = false;
+          buttonText.textContent = 'Launch Token';
+        }
+      }
+    });
+
+    // Ticker data
+    const tickerData = [
+      {symbol: 'SOL', name:'Solana', price: 153.54, change: +1.25, logo: 'https://cryptologos.cc/logos/solana-sol-logo.svg?v=024'},
+      {symbol: 'SRM', name:'Serum', price: 2.10, change: -0.04, logo: 'https://cryptologos.cc/logos/serum-srm-logo.svg?v=024'},
+      {symbol: 'RAY', name:'Raydium', price: 1.87, change: +0.12, logo: 'https://cryptologos.cc/logos/raydium-ray-logo.svg?v=024'},
+      {symbol: 'FTT', name:'FTX Token', price: 28.90, change: -0.89, logo: 'https://cryptologos.cc/logos/ftx-token-ftt-logo.svg?v=024'},
+      {symbol: 'APT', name:'Aptos', price: 4.33, change: +0.33, logo: 'https://cryptologos.cc/logos/aptos-apt-logo.svg?v=024'}
+    ];
+
+    const tickerEl = document.getElementById('ticker');
+    function renderTicker() {
+      tickerEl.innerHTML = '';
+      tickerData.forEach(token => {
+        const item = document.createElement('span');
+        item.className = 'ticker-item';
+        item.innerHTML = `
+          <img src="${token.logo}" alt="${token.name} logo" loading="lazy" />
+          <strong>${token.symbol}</strong> 
+          <span>$${token.price.toFixed(2)}</span> 
+          <span class="${token.change > 0 ? 'price-up' : 'price-down'}">
+            ${token.change > 0 ? '▲' : '▼'} ${Math.abs(token.change).toFixed(2)}%
+          </span>
+        `;
+        tickerEl.appendChild(item);
+      });
+    }
+    renderTicker();
+
+    // Mobile menu handling
+    const currentPage = new URL(window.location.href).pathname.split('/').pop();
+    document.querySelectorAll('.nav-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href === currentPage) {
+        link.classList.remove('text-white');
+        link.classList.add('text-purple-400');
+        const icon = link.querySelector('i');
+        if (icon) icon.classList.add('text-purple-400');
+      }
+    });
+
+    const menuBtn = document.getElementById('menu-btn');
+    const menuPopup = document.getElementById('menu-popup');
+    const closeMenuBtn = document.getElementById('close-menu');
+
+    menuBtn.addEventListener('click', () => {
+      menuPopup.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    });
+
+    closeMenuBtn.addEventListener('click', () => {
+      menuPopup.classList.add('hidden');
+      document.body.style.overflow = '';
+    });
+
+    menuPopup.addEventListener('click', (e) => {
+      if (e.target === menuPopup) {
+        menuPopup.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    });
   </script>
 </body>
 </html>
