@@ -1,455 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AetherSwap - DEX on Solana</title>
-    <meta name="description" content="AetherSwap - Swap tokens on Solana with real-time charts, Phantom integration and custom UI." />
-    <link rel="icon" href="https://cryptologos.cc/logos/solana-sol-logo.png?v=032" />
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.73.2/lib/index.iife.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@project-serum/anchor@0.24.2/dist/umd/index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jup-ag/core@4.1.3/dist/index.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/lib/index.iife.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AetherSwap</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/@solana/web3.js@1.76.1/lib/index.iife.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@project-serum/anchor@0.24.2/dist/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.7/dist/index.iife.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-wallets@0.9.10/dist/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-base@0.9.11/dist/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-phantom@0.9.11/dist/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://s3.tradingview.com/tv.js"></script>
+</head>
+<body class="bg-gray-900 text-white">
 
-    <style>
-      body {
-        background-color: #0d1117;
-        color: #f0f6fc;
-        font-family: 'Inter', sans-serif;
-      }
-      .glass {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        border-radius: 1rem;
-      }
-      .nav-icon {
-        width: 24px;
-        height: 24px;
-      }
-      .fade {
-        transition: all 0.3s ease-in-out;
-      }
-    </style>
-  </head>
-  <body class="relative">
-    <!-- Header -->
-    <div class="w-full text-center py-4 text-2xl font-bold text-white">
-      AetherSwap
+<!-- NAVIGATION -->
+<div class="fixed bottom-0 left-0 right-0 bg-gray-800 text-white flex justify-around py-2 border-t border-gray-700 z-50">
+  <a href="index.html" class="flex flex-col items-center text-sm">
+    <span>ð </span><span>Home</span>
+  </a>
+  <a href="LaunchLab" class="flex flex-col items-center text-sm">
+    <span>ð</span><span>LaunchLab</span>
+  </a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="max-w-md mx-auto pt-10 px-4 pb-32">
+  <h1 class="text-3xl font-bold mb-6 text-center">AetherSwap</h1>
+
+  <!-- Swap UI -->
+  <div class="bg-gray-800 p-4 rounded-lg shadow-md">
+    <div class="mb-4">
+      <label class="block mb-1 text-sm">From</label>
+      <input id="fromInput" type="text" placeholder="Token Mint Address" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600"/>
+    </div>
+    <div class="mb-4">
+      <label class="block mb-1 text-sm">To</label>
+      <input id="toInput" type="text" placeholder="Token Mint Address" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600"/>
+    </div>
+    <div class="mb-4">
+      <label class="block mb-1 text-sm">Amount</label>
+      <input id="amountInput" type="number" placeholder="0.0" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600"/>
     </div>
 
-    <!-- Swap Card -->
-    <div class="max-w-md mx-auto mt-6 px-4">
-      <div class="glass p-6 shadow-lg">
-        <div class="text-lg font-semibold mb-4">Swap Tokens</div>
+    <button id="swapBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 transition-colors py-2 rounded mt-2">Swap</button>
+  </div>
 
-        <!-- From Token -->
-        <div class="mb-4">
-          <label class="block mb-1 text-sm">From</label>
-          <div class="flex items-center bg-gray-800 rounded-lg px-3 py-2">
-            <select id="fromToken" class="bg-transparent text-white flex-1 outline-none">
-              <option value="">Loading...</option>
-            </select>
-            <button id="maxBtn" class="ml-2 px-2 py-1 bg-blue-600 text-xs rounded">MAX</button>
-          </div>
-          <input type="text" id="fromAmount" placeholder="0.00" class="mt-2 w-full bg-gray-900 px-3 py-2 rounded-lg text-white outline-none" />
-        </div>
+  <!-- Chart Toggle -->
+  <button id="chartToggle" class="mt-6 w-full bg-gray-700 py-2 rounded text-center">ð Show Chart</button>
+  <div id="miniChart" class="w-full h-60 mt-4 rounded overflow-hidden transition-all duration-300 ease-in-out"></div>
+</div>
 
-        <!-- To Token -->
-        <div class="mb-4">
-          <label class="block mb-1 text-sm">To</label>
-          <div class="flex items-center bg-gray-800 rounded-lg px-3 py-2">
-            <select id="toToken" class="bg-transparent text-white flex-1 outline-none">
-              <option value="">Loading...</option>
-            </select>
-          </div>
-          <input type="text" id="toAmount" placeholder="0.00" class="mt-2 w-full bg-gray-900 px-3 py-2 rounded-lg text-white outline-none" readonly />
-        </div>
+<!-- MODALS -->
+<div id="menuPopup" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
+  <div class="bg-gray-800 p-6 rounded-lg w-80 text-center">
+    <p>Menu</p>
+    <button onclick="closeMenu()" class="mt-4 bg-red-500 px-4 py-2 rounded">Close</button>
+  </div>
+</div>
 
-        <!-- Slippage Settings -->
-        <div class="mb-4">
-          <label class="block mb-1 text-sm">Slippage</label>
-          <div class="flex space-x-2">
-            <button data-slippage="0.1" class="slippage-btn px-2 py-1 bg-gray-700 rounded">0.1%</button>
-            <button data-slippage="0.5" class="slippage-btn px-2 py-1 bg-gray-700 rounded">0.5%</button>
-            <button data-slippage="1" class="slippage-btn px-2 py-1 bg-gray-700 rounded">1%</button>
-            <input type="text" id="customSlippage" placeholder="Custom" class="w-16 text-sm text-white bg-gray-900 px-2 py-1 rounded outline-none" />
-          </div>
-        </div>
+<script>
+  // Mobile navigation
+  function openMenu() {
+    document.getElementById("menuPopup").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
 
-        <!-- Price Info -->
-        <div class="mb-4 text-sm text-gray-400" id="priceInfo">
-          Estimated price, impact, and minimum received will appear here.
-        </div>
+  function closeMenu() {
+    document.getElementById("menuPopup").classList.add("hidden");
+    document.body.style.overflow = "";
+  }
 
-        <!-- Swap Button -->
-        <button id="swapBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold mt-2">
-          Swap
-        </button>
-      </div>
-    </div>
+  // Chart toggle
+  const chartToggle = document.getElementById("chartToggle");
+  const miniChart = document.getElementById("miniChart");
 
-    <!-- Chart Section -->
-    <div class="max-w-md mx-auto px-4 mt-4">
-      <div class="glass p-4">
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-sm font-semibold">Price Chart</span>
-          <button id="expandChart" class="text-blue-500 text-xs">Expand</button>
-        </div>
-        <canvas id="miniChart" class="w-full h-32"></canvas>
-      </div>
-    </div>
+  chartToggle.addEventListener("click", () => {
+    miniChart.classList.toggle("h-60");
+    miniChart.classList.toggle("h-[400px]");
+  });
 
-    <!-- Phantom Button -->
-    <div class="fixed top-4 right-4">
-      <button id="connectBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
-        Connect Wallet
-      </button>
-    </div>
+  // Load TradingView mini chart
+  function loadMiniChart(symbol) {
+    miniChart.innerHTML = '';
+    new TradingView.MediumWidget({
+      "container_id": "miniChart",
+      "symbols": [[symbol]],
+      "greyText": "Quotes by TradingView",
+      "gridLineColor": "#444",
+      "fontColor": "#fff",
+      "underLineColor": "#444",
+      "trendLineColor": "#0f0",
+      "width": "100%",
+      "height": 400,
+      "locale": "en"
+    });
+  }
 
-    <!-- Bottom Navigation -->
-    <div class="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 flex justify-around py-3">
-      <a href="index.html" class="text-white text-sm flex flex-col items-center">
-        <img src="https://img.icons8.com/ios-filled/50/home.png" class="nav-icon" />
-        Home
-      </a>
-      <a href="LaunchLab" class="text-white text-sm flex flex-col items-center">
-        <img src="https://img.icons8.com/ios-filled/50/rocket.png" class="nav-icon" />
-        LaunchLab
-      </a>
-    </div>
-        <!-- Swap Confirmation Modal -->
-    <div id="confirmModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <div class="bg-gray-900 rounded-lg p-6 w-11/12 max-w-md text-white">
-        <h2 class="text-lg font-bold mb-4">Confirm Swap</h2>
-        <div class="mb-4 text-sm" id="confirmDetails">Loading preview...</div>
-        <div class="flex justify-end space-x-2">
-          <button id="cancelSwap" class="px-4 py-2 bg-gray-700 rounded">Cancel</button>
-          <button id="confirmSwap" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">Confirm</button>
-        </div>
-      </div>
-    </div>
+  // When tokens change, reload chart
+  const observer = new MutationObserver(() => {
+    const symbol = document.getElementById('toSymbol')?.textContent;
+    if (symbol && symbol !== '---') {
+      loadMiniChart(`SOLANA:${symbol}/USDC`);
+    }
+  });
 
-    <!-- Status Modal -->
-    <div id="statusModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <div class="bg-gray-900 rounded-lg p-6 w-11/12 max-w-md text-white text-center">
-        <div id="statusIcon" class="mb-4"></div>
-        <div id="statusText" class="mb-4 text-sm">Processing...</div>
-        <button onclick="closeStatusModal()" class="bg-blue-600 px-4 py-2 rounded">Close</button>
-      </div>
-    </div>
+  observer.observe(document.body, { childList: true, subtree: true });
 
-    <!-- Expanded Chart -->
-    <div id="expandedChartModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-      <div class="bg-gray-900 rounded-lg p-4 w-11/12 max-w-3xl">
-        <div class="flex justify-between items-center mb-2">
-          <h2 class="text-white text-lg font-semibold">Expanded Token Chart</h2>
-          <button onclick="closeExpandedChart()" class="text-red-400 text-sm">Close</button>
-        </div>
-        <canvas id="expandedChart" class="w-full h-64"></canvas>
-      </div>
-    </div>
-
-    <!-- Scripts -->
-    <script>
-      const elements = {
-        connectBtn: document.getElementById("connectBtn"),
-        swapBtn: document.getElementById("swapBtn"),
-        fromToken: document.getElementById("fromToken"),
-        toToken: document.getElementById("toToken"),
-        fromAmount: document.getElementById("fromAmount"),
-        toAmount: document.getElementById("toAmount"),
-        maxBtn: document.getElementById("maxBtn"),
-        slippageBtns: document.querySelectorAll(".slippage-btn"),
-        customSlippage: document.getElementById("customSlippage"),
-        confirmModal: document.getElementById("confirmModal"),
-        confirmDetails: document.getElementById("confirmDetails"),
-        cancelSwap: document.getElementById("cancelSwap"),
-        confirmSwap: document.getElementById("confirmSwap"),
-        statusModal: document.getElementById("statusModal"),
-        statusIcon: document.getElementById("statusIcon"),
-        statusText: document.getElementById("statusText"),
-        miniChart: document.getElementById("miniChart"),
-        expandedChart: document.getElementById("expandedChart"),
-        expandChart: document.getElementById("expandChart"),
-        expandedChartModal: document.getElementById("expandedChartModal"),
-      };
-
-      let wallet = null;
-      let connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
-      let tokenList = [];
-      let currentSlippage = 0.5;
-
-      async function connectWallet() {
-        try {
-          const provider = window.solana;
-          if (provider && provider.isPhantom) {
-            const resp = await provider.connect();
-            wallet = provider;
-            elements.connectBtn.innerText = "Connected";
-            console.log("Wallet address:", resp.publicKey.toString());
-          } else {
-            alert("Phantom Wallet not detected!");
-          }
-        } catch (err) {
-          console.error("Connection error:", err);
-        }
-      }
-
-      async function loadTokenList() {
-        const response = await fetch("https://cache.jup.ag/tokens");
-        tokenList = await response.json();
-        populateTokenSelects();
-      }
-
-      function populateTokenSelects() {
-        [elements.fromToken, elements.toToken].forEach(select => {
-          select.innerHTML = '';
-          tokenList.forEach(token => {
-            const opt = document.createElement("option");
-            opt.value = token.address;
-            opt.innerText = `${token.symbol} (${token.name})`;
-            select.appendChild(opt);
-          });
-        });
-      }
-
-      elements.slippageBtns.forEach(btn =>
-        btn.addEventListener("click", () => {
-          currentSlippage = parseFloat(btn.dataset.slippage);
-          elements.customSlippage.value = '';
-        })
-      );
-
-      elements.customSlippage.addEventListener("input", e => {
-        const val = parseFloat(e.target.value);
-        if (!isNaN(val)) {
-          currentSlippage = val;
-        }
-      });
-
-      elements.maxBtn.addEventListener("click", async () => {
-        if (!wallet || !elements.fromToken.value) return;
-        const pubkey = wallet.publicKey;
-        const mint = elements.fromToken.value;
-        const token = new solanaWeb3.PublicKey(mint);
-        const accounts = await connection.getParsedTokenAccountsByOwner(pubkey, {
-          mint: token,
-          programId: new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
-        });
-        if (accounts.value.length > 0) {
-          const balance = accounts.value[0].account.data.parsed.info.tokenAmount.uiAmount;
-          elements.fromAmount.value = balance;
-          estimateSwap();
-        }
-      });
-
-      elements.fromAmount.addEventListener("input", estimateSwap);
-      elements.fromToken.addEventListener("change", estimateSwap);
-      elements.toToken.addEventListener("change", estimateSwap);
-            async function estimateSwap() {
-        const inputAmount = parseFloat(elements.fromAmount.value);
-        if (isNaN(inputAmount) || inputAmount <= 0) {
-          elements.toAmount.value = '';
-          return;
-        }
-        const fromMint = elements.fromToken.value;
-        const toMint = elements.toToken.value;
-        if (!fromMint || !toMint || fromMint === toMint) {
-          elements.toAmount.value = '';
-          return;
-        }
-
-        const url = `https://quote-api.jup.ag/v6/quote?inputMint=${fromMint}&outputMint=${toMint}&amount=${Math.floor(inputAmount * 10 ** 6)}&slippageBps=${Math.floor(currentSlippage * 100)}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data && data.data && data.data[0]) {
-          const outAmount = data.data[0].outAmount / 10 ** 6;
-          elements.toAmount.value = outAmount.toFixed(6);
-        } else {
-          elements.toAmount.value = '';
-        }
-      }
-
-      elements.swapBtn.addEventListener("click", async () => {
-        const fromMint = elements.fromToken.value;
-        const toMint = elements.toToken.value;
-        const fromAmount = elements.fromAmount.value;
-        const toAmount = elements.toAmount.value;
-        if (!fromMint || !toMint || !fromAmount || !toAmount) {
-          alert("Please fill out all fields");
-          return;
-        }
-
-        elements.confirmDetails.innerHTML = `
-          <p><strong>From:</strong> ${fromAmount} ${getTokenSymbol(fromMint)}</p>
-          <p><strong>To:</strong> ≈ ${toAmount} ${getTokenSymbol(toMint)}</p>
-          <p><strong>Slippage:</strong> ${currentSlippage}%</p>
-        `;
-        elements.confirmModal.classList.remove("hidden");
-      });
-
-      elements.cancelSwap.addEventListener("click", () => {
-        elements.confirmModal.classList.add("hidden");
-      });
-
-      elements.confirmSwap.addEventListener("click", async () => {
-        elements.confirmModal.classList.add("hidden");
-        elements.statusModal.classList.remove("hidden");
-        elements.statusText.innerText = "Swapping...";
-        elements.statusIcon.innerHTML = '<div class="animate-spin h-8 w-8 border-4 border-blue-400 rounded-full border-t-transparent mx-auto"></div>';
-
-        try {
-          const fromMint = elements.fromToken.value;
-          const toMint = elements.toToken.value;
-          const amount = parseFloat(elements.fromAmount.value) * 10 ** 6;
-
-          const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${fromMint}&outputMint=${toMint}&amount=${Math.floor(amount)}&slippageBps=${Math.floor(currentSlippage * 100)}`;
-          const quoteRes = await fetch(quoteUrl);
-          const quoteData = await quoteRes.json();
-          const route = quoteData.data[0];
-
-          const txUrl = `https://quote-api.jup.ag/v6/swap`;
-          const txBody = {
-            route,
-            userPublicKey: wallet.publicKey.toString(),
-            wrapUnwrapSOL: true,
-            feeAccount: null
-          };
-
-          const txRes = await fetch(txUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(txBody),
-          });
-
-          const txJson = await txRes.json();
-          const signedTx = await wallet.signTransaction(solanaWeb3.Transaction.from(Buffer.from(txJson.swapTransaction, 'base64')));
-          const txid = await connection.sendRawTransaction(signedTx.serialize(), { skipPreflight: true });
-
-          elements.statusIcon.innerHTML = '✅';
-          elements.statusText.innerHTML = `Success!<br><a href="https://solscan.io/tx/${txid}" target="_blank" class="underline text-green-400">View on Solscan</a>`;
-        } catch (e) {
-          console.error(e);
-          elements.statusIcon.innerHTML = '❌';
-          elements.statusText.innerText = 'Swap failed.';
-        }
-      });
-
-      function closeStatusModal() {
-        elements.statusModal.classList.add("hidden");
-      }
-
-      function getTokenSymbol(mint) {
-        const token = tokenList.find(t => t.address === mint);
-        return token ? token.symbol : "Unknown";
-      }
-
-      // Mini chart logic (using fake data as placeholder)
-      function renderMiniChart() {
-        const ctx = elements.miniChart.getContext("2d");
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: ["", "", "", "", "", ""],
-            datasets: [{
-              label: 'Price',
-              data: [1, 1.5, 1.2, 1.7, 1.6, 1.9],
-              borderColor: '#10B981',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              fill: true,
-              tension: 0.4
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: { x: { display: false }, y: { display: false } }
-          }
-        });
-      }
-
-      elements.expandChart.addEventListener("click", () => {
-        elements.expandedChartModal.classList.remove("hidden");
-        renderExpandedChart();
-      });
-
-      function closeExpandedChart() {
-        elements.expandedChartModal.classList.add("hidden");
-      }
-
-      function renderExpandedChart() {
-        const ctx = elements.expandedChart.getContext("2d");
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: Array.from({ length: 20 }, (_, i) => i + 1),
-            datasets: [{
-              label: 'Token Price (USD)',
-              data: Array.from({ length: 20 }, () => (Math.random() * 2 + 1).toFixed(2)),
-              borderColor: '#3B82F6',
-              backgroundColor: 'rgba(59, 130, 246, 0.2)',
-              fill: true,
-              tension: 0.3
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-              x: { ticks: { color: '#ccc' } },
-              y: { ticks: { color: '#ccc' } }
-            }
-          }
-        });
-      }
-
-      // Init app
-      async function init() {
-        await loadTokenList();
-        renderMiniChart();
-      }
-
-      elements.connectBtn.addEventListener("click", connectWallet);
-      document.addEventListener("DOMContentLoaded", init);
-    </script>
-      <!-- Modals -->
-    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-40 flex items-center justify-center">
-      <div class="bg-gray-800 rounded-lg p-6 w-[90%] max-w-md text-white">
-        <h3 class="text-lg font-bold mb-4">Confirm Swap</h3>
-        <div id="confirmDetails" class="text-sm space-y-1 mb-4"></div>
-        <div class="flex justify-between">
-          <button id="cancelSwap" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded">Cancel</button>
-          <button id="confirmSwap" class="px-4 py-2 bg-green-500 hover:bg-green-600 rounded">Confirm</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="statusModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-40 flex items-center justify-center">
-      <div class="bg-gray-800 rounded-lg p-6 w-[90%] max-w-md text-white text-center">
-        <div id="statusIcon" class="text-4xl mb-2">⌛</div>
-        <div id="statusText" class="text-sm">Processing...</div>
-        <button onclick="closeStatusModal()" class="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded">Close</button>
-      </div>
-    </div>
-
-    <!-- Expanded Chart -->
-    <div id="expandedChartModal" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex items-center justify-center p-4">
-      <div class="bg-gray-900 rounded-lg p-6 w-full max-w-3xl relative">
-        <button onclick="closeExpandedChart()" class="absolute top-2 right-2 text-white text-xl">&times;</button>
-        <canvas id="expandedChart" height="200"></canvas>
-      </div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700 z-40">
-      <div class="flex justify-around text-white text-sm">
-        <a href="index.html" class="w-full text-center py-3 hover:bg-gray-800">Home</a>
-        <a href="swap.html" class="w-full text-center py-3 bg-gray-800 font-bold">Swap</a>
-        <a href="launchlab.html" class="w-full text-center py-3 hover:bg-gray-800">LaunchLab</a>
-      </div>
-    </nav>
-  </body>
+  // Dummy swap logic
+  document.getElementById('swapBtn').addEventListener('click', () => {
+    alert("Swap initiated (mock). Add backend integration.");
+  });
+</script>
+</body>
 </html>
