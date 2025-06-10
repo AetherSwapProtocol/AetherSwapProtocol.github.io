@@ -4,92 +4,105 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AetherSwap</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@project-serum/anchor@0.24.2/dist/anchor.iife.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.2.0/lib/index.iife.js"></script>
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@project-serum/anchor@0.24.2/dist/umd/anchor.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@jup-ag/core@4.0.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: #0e0e0e;
+      font-family: 'Inter', sans-serif;
+      color: white;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #2c2fcd, #7f00ff);
+    }
+    .card {
+      background-color: #1c1c1c;
+      border-radius: 1rem;
+      padding: 1rem;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #111;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.5rem 0;
+      border-top: 1px solid #333;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-b from-black to-blue-900 text-white min-h-screen flex flex-col justify-between">
+<body class="gradient-bg min-h-screen flex flex-col justify-between">
 
-  <!-- Header -->
   <header class="p-4 flex justify-between items-center">
-    <div class="flex items-center space-x-2">
-      <div class="w-6 h-6 rounded-full border-2 border-blue-500"></div>
-      <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">AetherSwap</h1>
-    </div>
-    <button id="connectWalletBtn" class="bg-blue-600 px-4 py-1 rounded-full hover:bg-blue-700 text-sm">Connect Wallet</button>
+    <h1 class="text-xl font-bold text-violet-300">AetherSwap</h1>
+    <button id="connectButton" class="bg-violet-600 px-4 py-2 rounded">Connect Wallet</button>
   </header>
 
-  <!-- Swap Box -->
-  <main class="px-4 flex-grow flex flex-col items-center">
-    <div class="bg-gray-900 p-6 rounded-xl w-full max-w-md space-y-4 shadow-lg">
-      <div>
-        <label class="block mb-1">From</label>
-        <div class="bg-gray-800 p-3 rounded flex items-center justify-between">
-          <input type="text" id="fromAmount" placeholder="0.0" class="bg-transparent text-white w-full outline-none">
-          <button class="ml-2 text-sm text-blue-400 hover:text-blue-600">MAX</button>
-        </div>
+  <main class="flex-1 p-4">
+    <div class="card">
+      <label class="block text-gray-300">From</label>
+      <input type="text" id="fromToken" class="w-full p-2 rounded bg-black text-white mt-1 mb-2" placeholder="Enter amount" />
+      <div class="flex justify-between mb-4">
+        <button class="bg-gray-700 px-2 py-1 rounded">MAX</button>
+        <button class="bg-gray-700 px-2 py-1 rounded">50%</button>
       </div>
-      <div class="flex justify-center">
-        <button id="reverseTokens" class="text-white">ð</button>
+
+      <label class="block text-gray-300">To</label>
+      <input type="text" id="toToken" class="w-full p-2 rounded bg-black text-white mt-1" placeholder="Select token" />
+
+      <div class="mt-4">
+        <label class="text-sm text-gray-400">Slippage</label>
+        <input type="range" min="0.1" max="5" step="0.1" value="0.5" id="slippageSlider" class="w-full" />
+        <p id="slippageValue" class="text-xs text-gray-400">0.5%</p>
       </div>
-      <div>
-        <label class="block mb-1">To</label>
-        <div class="bg-gray-800 p-3 rounded flex items-center justify-between">
-          <input type="text" id="toAmount" placeholder="0.0" class="bg-transparent text-white w-full outline-none">
-        </div>
+
+      <div class="mt-2">
+        <p class="text-xs text-gray-500">Estimated fees: <span id="feeEstimate">-</span></p>
+        <p class="text-xs text-gray-500">Minimum received: <span id="minReceived">-</span></p>
       </div>
-      <div>
-        <label class="block text-sm mb-1">Slippage</label>
-        <input type="range" min="0.1" max="5" step="0.1" value="0.5" id="slippage" class="w-full">
-      </div>
-      <div class="text-sm text-gray-400">Fees: ~0.25%</div>
-      <button id="swapBtn" class="w-full bg-purple-600 hover:bg-purple-700 py-2 rounded-lg mt-2">Swap</button>
+
+      <button id="swapButton" class="mt-4 bg-violet-700 w-full py-2 rounded">Swap</button>
+    </div>
+
+    <div class="card mt-6">
+      <button id="toggleChart" class="w-full bg-gray-800 text-sm py-1 mb-2 rounded">Toggle Chart ð</button>
+      <canvas id="tokenChart" class="w-full hidden"></canvas>
     </div>
   </main>
 
-  <!-- Footer Navigation -->
-  <footer class="bg-gray-900 p-4 fixed bottom-0 left-0 right-0 flex justify-around text-xs">
-    <a href="swap.html" class="text-blue-400">Swap</a>
-    <a href="index.html" class="text-gray-300">Home</a>
-    <a href="launchlab.html" class="text-gray-300">LaunchLab</a>
-  </footer>
-
-  <!-- Modal Placeholder -->
-  <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-    <div class="bg-gray-800 p-6 rounded-lg max-w-sm w-full text-center">
-      <h2 class="text-lg font-semibold mb-2">Confirm Swap</h2>
-      <p class="text-sm text-gray-400 mb-4">Swapping <span id="confirmFromAmount"></span> to <span id="confirmToAmount"></span></p>
-      <div class="flex justify-between">
-        <button id="cancelBtn" class="px-4 py-2 bg-gray-600 rounded hover:bg-gray-500">Cancel</button>
-        <button id="confirmBtn" class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700">Confirm</button>
-      </div>
-    </div>
-  </div>
+  <nav class="bottom-nav">
+    <a href="swap.html" class="text-white text-sm">Swap</a>
+    <a href="index.html" class="text-white text-sm">Home</a>
+    <a href="launchlab.html" class="text-white text-sm">LaunchLab</a>
+  </nav>
 
   <script>
-    // Placeholder connect wallet script
-    document.getElementById('connectWalletBtn').addEventListener('click', async () => {
-      alert("Wallet connect logic goes here");
-    });
+    document.getElementById('connectButton').onclick = async () => {
+      if ('solana' in window) {
+        const provider = window.solana;
+        if (provider.isPhantom) {
+          await provider.connect();
+        }
+      }
+    };
 
-    // Modal logic
-    document.getElementById('swapBtn').addEventListener('click', () => {
-      document.getElementById('confirmFromAmount').textContent = document.getElementById('fromAmount').value;
-      document.getElementById('confirmToAmount').textContent = document.getElementById('toAmount').value;
-      document.getElementById('modal').classList.remove('hidden');
-    });
+    document.getElementById('slippageSlider').oninput = (e) => {
+      document.getElementById('slippageValue').innerText = e.target.value + '%';
+    };
 
-    document.getElementById('cancelBtn').addEventListener('click', () => {
-      document.getElementById('modal').classList.add('hidden');
-    });
+    document.getElementById('toggleChart').onclick = () => {
+      const chart = document.getElementById('tokenChart');
+      chart.classList.toggle('hidden');
+    };
 
-    document.getElementById('confirmBtn').addEventListener('click', () => {
-      alert("Swap confirmed!");
-      document.getElementById('modal').classList.add('hidden');
-    });
+    document.getElementById('swapButton').onclick = () => {
+      alert('Swap functionality is not fully implemented in this demo.');
+    };
   </script>
-
 </body>
 </html>
