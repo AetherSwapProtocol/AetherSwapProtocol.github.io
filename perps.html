@@ -1,271 +1,165 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-[#0c0c16] text-white">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>AetherSwap Perpetuals</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AetherSwap | Perps</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <script src="https://unpkg.com/@solana/web3.js@1.88.0/lib/index.iife.js"></script>
+  <script src="https://unpkg.com/@project-serum/anchor@0.24.2/dist/umd/index.js"></script>
+  <script src="https://unpkg.com/@solana/spl-token@0.3.5/lib/index.iife.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/@wallet-standard/solana"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-wallets@0.9.1/lib/umd/index.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-base@0.9.1/lib/umd/index.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-react-ui/styles.css"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-react@0.18.1/lib/umd/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://s3.tradingview.com/tv.js"></script>
-  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
-  <script src="https://unpkg.com/@solana/wallet-adapter-base@latest/lib/index.iife.js"></script>
-  <script src="https://unpkg.com/@solana/wallet-adapter-wallets@latest/lib/index.iife.js"></script>
-  <script src="https://unpkg.com/@solana/wallet-adapter-phantom@latest/lib/index.iife.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token-registry@latest/lib/index.cjs.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-    body { font-family:'Space Grotesk',sans-serif; background:#0a0a0a; color:#fff; margin:0 }
-    .gradient-text { background:linear-gradient(90deg,#7e22ce,#3b82f6); -webkit-background-clip:text; color:transparent }
-    .modal-bg { background:rgba(0,0,0,0.7) }
-    .stats-card { backdrop-filter:blur(10px); background:rgba(15,15,15,0.7) }
-    .interval-btn { padding:4px 8px; border-radius:4px; margin-right:4px; font-size:12px; color:#aaa }
-    .interval-btn.active { background:#3b82f6; color:white }
-  </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="bg-[#0c0c16] text-white">
+  <header class="w-full flex justify-between items-center p-4 border-b border-[#1f1f2e]">
+    <h1 class="text-xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">AetherSwap Perps</h1>
+    <button id="connectBtn" class="px-4 py-2 rounded bg-purple-600 hover:bg-purple-700 transition">Connect Wallet</button>
+  </header>
 
-<!-- HEADER -->
-<header class="flex items-center justify-between p-4 border-b border-gray-800">
-  <h1 class="text-xl font-bold gradient-text">Perpetuals</h1>
-  <div class="flex space-x-2">
-    <button id="settingsBtn" class="text-gray-400 hover:text-white"><i class="fas fa-cog"></i></button>
-    <button id="connectBtn" class="px-4 py-2 bg-teal-500 rounded font-semibold text-black hover:opacity-90">Connect Wallet</button>
-  </div>
-</header>
-
-<!-- MAIN AREA -->
-<main class="flex-1 flex flex-col overflow-hidden p-4 pb-24">
-
-  <!-- Market Selector -->
-  <div class="mb-4 relative">
-    <button id="selMarketBtn" class="w-full p-3 bg-[#1a1a1a] rounded flex justify-between items-center">
-      <span id="selMarketText">Loading...</span>
-      <i class="fas fa-chevron-down text-gray-400"></i>
-    </button>
-  </div>
-
-  <!-- Tabs -->
-  <div class="flex border-b border-gray-800">
-    <button id="tabChart" class="flex-1 py-2 text-center bg-gray-900">Charts</button>
-    <button id="tabTrade" class="flex-1 py-2 text-center">Trade</button>
-  </div>
-
-  <!-- Chart Pane -->
-  <div id="chartContainer" class="mt-2 flex-1">
-    <div class="bg-[#1a1a1a] p-2 rounded">
-      <div id="intervals" class="flex mb-2">
-        <button data-interval="5" class="interval-btn">5m</button>
-        <button data-interval="15" class="interval-btn active">15m</button>
-        <button data-interval="60" class="interval-btn">1h</button>
-        <button data-interval="240" class="interval-btn">4h</button>
-        <button data-interval="1440" class="interval-btn">24h</button>
+  <main class="flex flex-col md:flex-row gap-4 p-4">
+    <!-- LEFT PANEL -->
+    <section class="md:w-1/4 space-y-4">
+      <!-- Market Selector -->
+      <div class="bg-[#1c1c2c] p-4 rounded">
+        <label class="block mb-2 font-medium">Select Market</label>
+        <select id="pairSelector" class="w-full bg-[#0c0c16] text-white p-2 rounded border border-[#2c2c40]">
+          <option value="SOL/USDC">SOL/USDC</option>
+          <option value="BTC/USDC">BTC/USDC</option>
+          <option value="ETH/USDC">ETH/USDC</option>
+        </select>
       </div>
-      <div id="tvchart" class="w-full h-[300px] bg-black rounded overflow-hidden"></div>
-    </div>
-  </div>
 
-  <!-- Trade Pane -->
-  <div id="tradeContainer" class="mt-4 space-y-4 hidden">
-    <div class="text-3xl font-bold" id="priceDisplay">–</div>
-    <div class="text-sm text-gray-400">24h Change <span id="change24h">–</span></div>
-
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <label class="block mb-1">Leverage</label>
-        <input id="leverageRange" type="range" min="1" max="25" value="5" class="w-full">
-        <p id="leverageVal" class="text-center">5x</p>
+      <!-- Long/Short Form -->
+      <div class="bg-[#1c1c2c] p-4 rounded space-y-4">
+        <div class="flex justify-between">
+          <button id="longBtn" class="w-1/2 bg-green-600 hover:bg-green-700 p-2 rounded">Long</button>
+          <button id="shortBtn" class="w-1/2 bg-red-600 hover:bg-red-700 p-2 rounded">Short</button>
+        </div>
+        <div>
+          <label class="block mb-1">Leverage</label>
+          <input type="range" min="1" max="20" value="5" class="w-full" id="leverageRange" />
+          <p id="leverageDisplay" class="text-sm text-center mt-1">Leverage: 5x</p>
+        </div>
+        <div>
+          <label class="block mb-1">Amount (USDC)</label>
+          <input id="tradeAmount" type="number" class="w-full p-2 rounded bg-[#0c0c16] border border-[#2c2c40]" />
+        </div>
+        <div class="text-sm text-gray-300 space-y-1">
+          <p id="priceEstimation">Est. Entry Price: --</p>
+          <p id="feeEstimation">Fee: --</p>
+          <p id="liqEstimation">Est. Liquidation Price: --</p>
+        </div>
+        <button class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded">Open Position</button>
       </div>
-      <div>
-        <label class="block mb-1">Amount (USDC)</label>
-        <input id="amountInput" type="number" placeholder="0.00" class="w-full p-2 bg-[#1a1a1a] rounded">
-      </div>
-    </div>
+    </section>
 
-    <div class="flex items-center space-x-4">
-      <label><input type="checkbox" id="enableTPSL"> TP/SL</label>
-      <label><input type="checkbox" id="reduceOnly"> Reduce only</label>
-    </div>
-    <div id="tpslFields" class="grid grid-cols-2 gap-4 hidden">
-      <input id="tpPrice" type="number" placeholder="TP price" class="p-2 bg-[#1a1a1a] rounded">
-      <input id="slPrice" type="number" placeholder="SL price" class="p-2 bg-[#1a1a1a] rounded">
-    </div>
+    <!-- CENTER PANEL -->
+    <section class="md:w-2/4 bg-[#1c1c2c] p-2 rounded">
+      <div id="tvchart" class="w-full h-[400px]"></div>
+    </section>
 
-    <div class="grid grid-cols-2 gap-4">
-      <button id="btnLong" class="py-3 bg-green-600 rounded hover:bg-green-700">Long</button>
-      <button id="btnShort" class="py-3 bg-red-600 rounded hover:bg-red-700">Short</button>
-    </div>
+    <!-- RIGHT PANEL -->
+    <section class="md:w-1/4 bg-[#1c1c2c] p-4 rounded">
+      <h2 class="text-lg font-semibold mb-2">Positions</h2>
+      <ul id="positionsList" class="space-y-2 text-sm">
+        <li class="text-gray-400">No open positions.</li>
+      </ul>
+    </section>
+  </main>
 
-    <div class="stats-card p-4 rounded-xl">
-      <p class="text-sm text-gray-400">Estimated Entry: <span id="estEntry" class="text-white">–</span></p>
-      <p class="text-sm text-gray-400">Estimated Liquidation: <span id="estLiq" class="text-white">–</span></p>
-      <p class="text-sm text-gray-400">Fees: <span id="estFees" class="text-white">–</span></p>
-    </div>
-  </div>
+  <script>
+    // Phantom Wallet Connection
+    const connectBtn = document.getElementById('connectBtn');
+    let provider = window.phantom?.solana;
 
-  <!-- Open Positions -->
-  <div class="mt-8">
-    <h2 class="text-xl font-semibold">Open Positions</h2>
-    <div id="positionsList" class="space-y-2 mt-2"></div>
-  </div>
-
-</main>
-
-<!-- Bottom Nav -->
-<nav class="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 flex justify-around py-2">
-  <a href="swap.html" class="text-xs text-gray-400 hover:text-white">Swap</a>
-  <a href="limit.html" class="text-xs text-gray-400 hover:text-white">Limit</a>
-  <a href="perps.html" class="text-xs text-teal-400 font-bold">Perps</a>
-  <a href="launchlab.html" class="text-xs text-gray-400 hover:text-white">LaunchLab</a>
-  <a href="index.html" class="text-xs text-gray-400 hover:text-white">Home</a>
-</nav>
-
-<!-- Modals -->
-<div id="walletModal" class="modal-bg hidden fixed inset-0 flex items-center justify-center z-50">
-  <div class="bg-[#1a1a1a] p-6 rounded-xl max-w-sm w-full">
-    <h3 class="text-lg font-semibold mb-4 text-center">Connect Wallet</h3>
-    <button id="connPhantom" class="w-full mb-2 py-2 bg-[#333] rounded hover:bg-[#444]">Phantom</button>
-    <button id="connSolflare" class="w-full mb-2 py-2 bg-[#333] rounded hover:bg-[#444]">Solflare</button>
-    <button onclick="toggle('walletModal')" class="mt-4 w-full py-2 text-gray-400 underline">Cancel</button>
-  </div>
-</div>
-
-<div id="tokenModal" class="modal-bg hidden fixed inset-0 flex items-center justify-center z-50">
-  <div class="bg-[#1a1a1a] p-6 rounded-xl max-w-md w-full">
-    <h3 class="text-lg font-semibold mb-4 text-center">Select Perp Market</h3>
-    <input id="tokenSearch" type="text" placeholder="Search symbol or paste mint address" class="w-full mb-3 p-2 bg-[#0f0f0f] rounded text-white">
-    <div id="tokenList" class="max-h-60 overflow-y-auto space-y-2"></div>
-    <button onclick="toggle('tokenModal')" class="mt-4 w-full py-2 bg-red-600 rounded hover:bg-red-700">Close</button>
-  </div>
-</div>
-
-<div id="settingsModal" class="modal-bg hidden fixed inset-0 flex items-center justify-center z-50">
-  <div class="bg-[#1a1a1a] p-6 rounded-xl max-w-sm w-full text-white">
-    <h3 class="text-lg font-semibold mb-4 text-center">Settings</h3>
-    <label class="block mb-1 text-sm">Slippage (%)</label>
-    <input id="slippageInput" type="number" step="0.1" value="0.5" class="w-full mb-4 p-2 bg-[#0f0f0f] rounded">
-    <label class="block mb-1 text-sm">Default Reduce Only</label>
-    <input id="defaultReduce" type="checkbox">
-    <button onclick="toggle('settingsModal')" class="mt-4 w-full py-2 text-gray-400 underline">Close</button>
-  </div>
-</div>
-
-<script>
-  // Modal toggle
-  function toggle(id) { document.getElementById(id).classList.toggle('hidden'); }
-
-  // Wallet connect
-  const phantom = new window.WalletAdapterWallets.PhantomWalletAdapter();
-  const solflare = new window.WalletAdapterWallets.SolflareWalletAdapter();
-  let wallet = null;
-  document.getElementById('connectBtn').onclick = ()=>toggle('walletModal');
-  document.getElementById('connPhantom').onclick = async ()=>{
-    await phantom.connect(); wallet=phantom;
-    alert('Connected: '+wallet.publicKey.toString());
-    toggle('walletModal');
-  }
-  document.getElementById('connSolflare').onclick = async ()=>{
-    await solflare.connect(); wallet=solflare;
-    alert('Connected: '+wallet.publicKey.toString());
-    toggle('walletModal');
-  }
-  
-  // Pane tabs
-  document.getElementById('tabChart').onclick = ()=>{
-    document.getElementById('chartContainer').classList.remove('hidden');
-    document.getElementById('tradeContainer').classList.add('hidden');
-  };
-  document.getElementById('tabTrade').onclick = ()=>{
-    document.getElementById('tradeContainer').classList.remove('hidden');
-    document.getElementById('chartContainer').classList.add('hidden');
-  };
-  document.getElementById('tabChart').click();
-
-  // Market data
-  let markets=[], current="BTC/USDC";
-  let tokenRegMap=new Map();
-  new TokenListProvider().resolve().then(prov=>{
-    const list=prov.filterByChainId(101).getList();
-    tokenRegMap=new Map(list.map(t=>[t.address,t]));
-  });
-
-  async function loadMarkets(){
-    const res=await fetch('https://api.orderly.network/market/perps');
-    markets=await res.json();
-    renderTokenList(markets);
-    selectMarket(current);
-  }
-
-  function renderTokenList(list){
-    const div=document.getElementById('tokenList');
-    div.innerHTML='';
-    list.forEach(m=>{
-      const b=document.createElement('button');
-      b.className='w-full p-2 bg-[#333] hover:bg-[#444] rounded flex justify-between';
-      b.innerHTML=`<span>${m.symbol}</span><span>${m.leverage_max}x</span>`;
-      b.onclick=()=>{ selectMarket(m.symbol); toggle('tokenModal'); };
-      div.appendChild(b);
+    connectBtn.addEventListener('click', async () => {
+      try {
+        const resp = await provider.connect();
+        connectBtn.textContent = "Connected: " + resp.publicKey.toString().slice(0, 6) + "..." + resp.publicKey.toString().slice(-4);
+      } catch (err) {
+        alert("Wallet connection failed.");
+      }
     });
-  }
 
-  document.getElementById('selMarketBtn').onclick = ()=>toggle('tokenModal');
-  document.getElementById('tokenSearch').oninput=(e)=>{
-    const f=e.target.value.toUpperCase();
-    let arr=markets.filter(m=>m.symbol.includes(f));
-    if(f.length===44 && tokenRegMap.has(f)){
-      const tk=tokenRegMap.get(f);
-      arr.unshift({symbol:`${tk.symbol}/USDC`, leverage_max:10});
-    }
-    renderTokenList(arr);
-  };
-
-  function selectMarket(sym){
-    current=sym;
-    document.getElementById('selMarketText').innerText=sym;
-    loadStats(sym);
-    loadChart(sym);
-  }
-
-  async function loadStats(sym){
-    const r=await fetch(`https://api.orderly.network/market/perps/${sym}/stats`);
-    if(!r.ok)return;
-    const s=await r.json();
-    document.getElementById('priceDisplay').innerText=s.last_price.toFixed(2);
-    document.getElementById('change24h').innerText=s.change_24h.toFixed(2)+'%';
-  }
-
-  function loadChart(sym){
-    const container=document.getElementById('tvchart');
-    container.innerHTML='';
-    new TradingView.widget({
-      autosize:true,
-      symbol:'BINANCE:' + sym.replace('/',''),
-      interval: document.querySelector('.interval-btn.active').dataset.interval,
-      container_id:'tvchart',
-      theme:'dark', style:'1', toolbar_bg:'#0a0a0a',
-      locale:'en', enable_publishing:false
-    });
-  }
-
-  document.querySelectorAll('.interval-btn').forEach(b=>{
-    b.onclick=()=>{
-      document.querySelectorAll('.interval-btn').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      loadChart(current);
+    // Leverage Slider Display
+    const leverageRange = document.getElementById('leverageRange');
+    const leverageDisplay = document.getElementById('leverageDisplay');
+    leverageRange.oninput = () => {
+      leverageDisplay.textContent = "Leverage: " + leverageRange.value + "x";
     };
-  });
 
-  // Trade UI
-  document.getElementById('leverageRange').oninput=(e)=>{
-    document.getElementById('leverageVal').innerText=e.target.value+'x';
-  };
-  document.getElementById('enableTPSL').onchange=(e)=>{
-    document.getElementById('tpslFields').classList.toggle('hidden',!e.target.checked);
-  };
-  document.getElementById('btnLong').onclick = ()=> alert(`Long ${current}`);
-  document.getElementById('btnShort').onclick= ()=> alert(`Short ${current}`);
+    // Update Price via Birdeye
+    const priceEstimation = document.getElementById('priceEstimation');
+    const feeEstimation = document.getElementById('feeEstimation');
+    const liqEstimation = document.getElementById('liqEstimation');
 
-  // Init
-  loadMarkets();
-</script>
+    async function fetchPrice(symbol = 'SOL/USDC') {
+      try {
+        const token = symbol.split('/')[0];
+        const res = await fetch(`https://public-api.birdeye.so/public/price?address=${getTokenAddress(token)}`, {
+          headers: { "X-API-KEY": "demo" }
+        });
+        const data = await res.json();
+        const price = data?.data?.value || 0;
+        priceEstimation.textContent = `Est. Entry Price: $${price.toFixed(2)}`;
+        const amount = parseFloat(document.getElementById('tradeAmount').value) || 0;
+        const fee = amount * 0.001;
+        feeEstimation.textContent = `Fee: ~$${fee.toFixed(3)}`;
+        const liq = price - price / leverageRange.value;
+        liqEstimation.textContent = `Est. Liquidation Price: $${liq.toFixed(2)}`;
+      } catch {
+        priceEstimation.textContent = "Est. Entry Price: --";
+      }
+    }
 
-</body></html>
+    document.getElementById('tradeAmount').addEventListener('input', () => fetchPrice(document.getElementById('pairSelector').value));
+    leverageRange.addEventListener('input', () => fetchPrice(document.getElementById('pairSelector').value));
+    document.getElementById('pairSelector').addEventListener('change', e => {
+      fetchPrice(e.target.value);
+      loadTradingView(e.target.value);
+    });
+
+    // Mapping for token symbols to Birdeye address (partial for demo)
+    function getTokenAddress(symbol) {
+      const map = {
+        'SOL': 'So11111111111111111111111111111111111111112',
+        'BTC': '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E',
+        'ETH': '2ndTPdQduVdp3Vv4YBPGdGcMYcXWqDPUDrocxCz6sJdt'
+      };
+      return map[symbol] || map['SOL'];
+    }
+
+    // TradingView Integration
+    function loadTradingView(pair = "SOL/USDC") {
+      new TradingView.widget({
+        container_id: "tvchart",
+        autosize: true,
+        symbol: "BINANCE:" + pair.replace("/", ""),
+        interval: "15",
+        timezone: "Etc/UTC",
+        theme: "dark",
+        style: "1",
+        locale: "en",
+        toolbar_bg: "#1c1c2c",
+        enable_publishing: false,
+        allow_symbol_change: true,
+        hide_top_toolbar: false,
+        save_image: false,
+        hide_legend: false
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadTradingView("SOL/USDC");
+      fetchPrice("SOL/USDC");
+    });
+  </script>
+</body>
+</html>
