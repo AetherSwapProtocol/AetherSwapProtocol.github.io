@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AetherSwap | Limit Orders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background-color: #0a0a0a;
+      color: #fff;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #7e22ce, #3b82f6);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .gradient-border {
+      position: relative;
+      border-radius: 1rem;
+    }
+
+    .gradient-border::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 1rem;
+      background: linear-gradient(45deg, #7e22ce, #3b82f6, #7e22ce);
+      z-index: -1;
+      animation: gradient 3s ease infinite;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .stats-card {
+      backdrop-filter: blur(10px);
+      background: rgba(15, 15, 15, 0.7);
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0a0a0a;
+      border-top: 1px solid #2d2d2d;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 50;
+    }
+
+    .bottom-nav a {
+      text-align: center;
+      color: #aaa;
+      font-size: 12px;
+    }
+
+    .bottom-nav a.active {
+      color: #fff;
+    }
+
+    .bottom-nav i {
+      font-size: 18px;
+    }
+  </style>
+</head>
+
+<body class="pb-20">
+  <div class="max-w-md mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4 gradient-text">Place a Limit Order</h1>
+
+    <!-- Token Select -->
+    <div class="mb-4">
+      <label class="block text-sm mb-1">From</label>
+      <input type="text" placeholder="Select Token or paste address" class="w-full px-4 py-2 rounded-md bg-[#1a1a1a] border border-[#333] text-white"/>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-sm mb-1">To</label>
+      <input type="text" placeholder="Select Token or paste address" class="w-full px-4 py-2 rounded-md bg-[#1a1a1a] border border-[#333] text-white"/>
+    </div>
+
+    <!-- Price + Amount -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div>
+        <label class="block text-sm mb-1">Limit Price</label>
+        <input type="number" placeholder="0.00" class="w-full px-4 py-2 rounded-md bg-[#1a1a1a] border border-[#333] text-white"/>
+      </div>
+      <div>
+        <label class="block text-sm mb-1">Amount</label>
+        <input type="number" placeholder="0.00" class="w-full px-4 py-2 rounded-md bg-[#1a1a1a] border border-[#333] text-white"/>
+      </div>
+    </div>
+
+    <!-- Estimated USD -->
+    <div class="text-sm text-gray-400 mb-4">Estimated Value: ~$0.00</div>
+
+    <!-- Place Order -->
+    <button class="w-full bg-gradient-to-r from-purple-700 to-blue-500 text-white py-3 rounded-lg font-bold hover:opacity-90">
+      Place Limit Order
+    </button>
+
+    <!-- Open Orders -->
+    <h2 class="text-xl mt-8 mb-2 font-semibold">Open Orders</h2>
+    <div class="bg-[#1a1a1a] rounded-lg p-4 text-sm text-gray-300 space-y-2">
+      <p>No open orders found.</p>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <a href="swap.html"><i class="fas fa-arrow-right-arrow-left"></i><div>Swap</div></a>
+    <a href="limit.html" class="active"><i class="fas fa-sliders-h"></i><div>Limit</div></a>
+    <a href="perps.html"><i class="fas fa-chart-line"></i><div>Perps</div></a>
+    <a href="#"><i class="fas fa-cog"></i><div>Settings</div></a>
+  </div>
+</body>
+</html>
