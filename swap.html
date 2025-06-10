@@ -1,186 +1,837 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AetherSwap</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherSwap | Ultimate Solana DEX</title>
+  <!-- Wallet Adapter Styles -->
+  <link href="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-react-ui@latest/styles.css" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+  <!-- Solana Web3 -->
+  <script src="https://unpkg.com/@solana/web3.js@1.84.0/lib/index.iife.min.js"></script>
+  <!-- Wallet Adapter -->
+  <script src="https://unpkg.com/@solana/wallet-adapter-base@0.9.23/lib/index.iife.min.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-phantom@0.9.23/lib/index.iife.min.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-backpack@0.9.23/lib/index.iife.min.js"></script>
+  <!-- Jupiter Client -->
+  <script src="https://unpkg.com/@jup-ag/core@3.6.0/dist/index.iife.js"></script>
+  <!-- Charting Library -->
+  <script src="https://unpkg.com/lightweight-charts@4.0.1/dist/lightweight-charts.standalone.production.js"></script>
+  <!-- Axios for API calls -->
+  <script src="https://unpkg.com/axios@1.5.0/dist/axios.min.js"></script>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0a0a0a;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+    .token-item:hover {
+      background: rgba(255, 255, 255, 0.05);
     }
-    header, footer {
-      background-color: #111;
-      padding: 1rem;
-      text-align: center;
-    }
-    .swap-container {
-      flex: 1;
-      padding: 1rem;
-      max-width: 600px;
-      margin: auto;
-    }
-    .token-input {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1rem;
-      background: #222;
-      padding: 0.5rem;
-      border-radius: 8px;
-    }
-    .token-input img {
-      width: 24px;
-      height: 24px;
-      margin-right: 0.5rem;
-    }
-    .token-input input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: white;
-      font-size: 1rem;
-    }
-    .swap-button {
-      width: 100%;
-      padding: 1rem;
-      background-color: #4caf50;
-      border: none;
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 8px;
-    }
-    .mini-chart {
-      position: relative;
-      margin-top: 1rem;
-    }
-    .mini-chart iframe {
-      width: 100%;
-      height: 200px;
-      border: none;
-      border-radius: 8px;
-    }
-    .toggle-chart {
-      position: absolute;
-      top: 5px;
-      right: 10px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-    footer.navbar {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      background: #111;
-      border-top: 1px solid #333;
-    }
-    footer.navbar a {
-      color: #fff;
-      text-decoration: none;
-      padding: 1rem;
-      flex: 1;
-      text-align: center;
+    .wallet-adapter-button:not([disabled]):hover {
+      background-color: #4f46e5;
     }
   </style>
 </head>
-<body>
-  <header>
-    <h1>AetherSwap</h1>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="p-4 border-b border-gray-800">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <svg class="w-8 h-8 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+        </svg>
+        <h1 class="text-xl font-bold">AetherSwap</h1>
+      </div>
+      <div id="wallet-button" class="wallet-adapter-button wallet-adapter-button-trigger"></div>
+    </div>
   </header>
-  <div class="swap-container">
-    <div class="token-input">
-      <img id="fromTokenLogo" src="" alt="From Token" />
-      <input id="fromToken" placeholder="From token address..." />
+
+  <!-- Main Content -->
+  <main class="flex-1 p-4 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
+    <!-- Swap Card -->
+    <div class="lg:col-span-2 bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800">
+      <div class="flex space-x-4 mb-6">
+        <button class="px-4 py-2 bg-indigo-900 rounded-lg font-medium">Swap</button>
+        <button class="px-4 py-2 text-gray-500 hover:text-white transition">Limit</button>
+        <button class="px-4 py-2 text-gray-500 hover:text-white transition">Perps</button>
+      </div>
+
+      <!-- From Token -->
+      <div class="bg-gray-800 rounded-xl p-4 mb-4">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm text-gray-400">From</span>
+          <span class="text-xs text-gray-400">Balance: <span id="from-balance">0</span></span>
+        </div>
+        <div class="flex items-center">
+          <input 
+            type="number" 
+            id="from-amount" 
+            placeholder="0.0" 
+            class="bg-transparent text-3xl w-full outline-none"
+            value="0"
+          >
+          <div class="flex items-center space-x-2 ml-4">
+            <button class="bg-gray-700 text-xs px-2 py-1 rounded hover:bg-gray-600 transition" id="from-max">Max</button>
+            <button class="bg-gray-700 text-xs px-2 py-1 rounded hover:bg-gray-600 transition" id="from-half">50%</button>
+            <button id="from-token-select" class="flex items-center space-x-2 bg-gray-700 px-3 py-2 rounded-lg hover:bg-gray-600 transition">
+              <img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" class="w-6 h-6 rounded-full">
+              <span>SOL</span>
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="text-sm text-gray-400 mt-2">≈ $<span id="from-amount-usd">0.00</span></div>
+      </div>
+
+      <!-- Swap Direction Button -->
+      <div class="flex justify-center my-2">
+        <button id="switch-tokens" class="bg-gray-800 p-2 rounded-full border-2 border-gray-900 hover:bg-gray-700 transition transform hover:rotate-180 duration-300">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- To Token -->
+      <div class="bg-gray-800 rounded-xl p-4 mb-6">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm text-gray-400">To</span>
+          <span class="text-xs text-gray-400">Balance: <span id="to-balance">0</span></span>
+        </div>
+        <div class="flex items-center">
+          <input 
+            type="number" 
+            id="to-amount" 
+            placeholder="0.0" 
+            class="bg-transparent text-3xl w-full outline-none"
+            readonly
+          >
+          <button id="to-token-select" class="flex items-center space-x-2 bg-gray-700 px-3 py-2 rounded-lg hover:bg-gray-600 transition ml-4">
+            <div class="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+            </div>
+            <span>Select</span>
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="text-sm text-gray-400 mt-2">≈ $<span id="to-amount-usd">0.00</span></div>
+      </div>
+
+      <!-- Swap Details -->
+      <div class="bg-gray-800 rounded-xl p-4 mb-6">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-sm text-gray-400">Price</span>
+          <span class="text-sm" id="price-ratio">-</span>
+        </div>
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-sm text-gray-400">Minimum Received</span>
+          <span class="text-sm" id="min-received">-</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-sm text-gray-400">Slippage Tolerance</span>
+          <div class="flex items-center space-x-2">
+            <button class="text-xs bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 transition" data-slippage="0.5">0.5%</button>
+            <button class="text-xs bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 transition" data-slippage="1.0">1.0%</button>
+            <button class="text-xs bg-indigo-900 px-2 py-1 rounded" data-slippage="0.1">Custom</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Swap Button -->
+      <button id="swap-button" class="w-full bg-indigo-600 hover:bg-indigo-700 py-4 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+        Connect Wallet
+      </button>
     </div>
-    <div class="token-input">
-      <img id="toTokenLogo" src="" alt="To Token" />
-      <input id="toToken" placeholder="To token address..." />
+
+    <!-- Chart Section -->
+    <div class="bg-gray-900 rounded-xl shadow-lg border border-gray-800 overflow-hidden">
+      <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+        <h3 class="font-medium" id="chart-pair">-/-</h3>
+        <div class="flex space-x-2">
+          <button class="text-xs bg-gray-800 px-3 py-1 rounded hover:bg-gray-700 transition" data-interval="15m">15m</button>
+          <button class="text-xs bg-gray-800 px-3 py-1 rounded hover:bg-gray-700 transition" data-interval="1h">1h</button>
+          <button class="text-xs bg-indigo-900 px-3 py-1 rounded" data-interval="1d">1D</button>
+          <button class="text-xs bg-gray-800 px-3 py-1 rounded hover:bg-gray-700 transition" data-interval="1w">1W</button>
+        </div>
+      </div>
+      <div id="price-chart" class="h-96 w-full"></div>
     </div>
-    <button class="swap-button" id="swapButton">Swap</button>
-    <div class="mini-chart" id="chartSection">
-      <div class="toggle-chart" onclick="toggleChart()">Expand</div>
-      <iframe id="chartFrame" src="https://dexscreener.com" loading="lazy"></iframe>
+  </main>
+
+  <!-- Token Select Modal -->
+  <div id="token-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center hidden">
+    <div class="bg-gray-900 rounded-xl w-full max-w-md max-h-[80vh] mx-4 overflow-hidden border border-gray-800">
+      <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+        <h3 class="font-medium">Select Token</h3>
+        <div class="relative w-1/2">
+          <input 
+            type="text" 
+            id="token-search" 
+            placeholder="Search name or paste address" 
+            class="w-full bg-gray-800 rounded-lg px-4 py-2 text-sm outline-none pl-10"
+          >
+          <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <button id="close-token-modal" class="text-gray-400 hover:text-white">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="p-4">
+        <div id="token-list" class="max-h-[60vh] overflow-y-auto space-y-2">
+          <!-- Tokens will be loaded here dynamically -->
+        </div>
+      </div>
     </div>
   </div>
-  <footer class="navbar">
-    <a href="swap.html">Swap</a>
-    <a href="launchlab.html">LaunchLab</a>
-  </footer>
+
+  <!-- Transaction Confirmation Modal -->
+  <div id="tx-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center hidden">
+    <div class="bg-gray-900 rounded-xl w-full max-w-md mx-4 overflow-hidden border border-gray-800">
+      <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+        <h3 class="font-medium">Transaction Submitted</h3>
+        <button id="close-tx-modal" class="text-gray-400 hover:text-white">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="p-6 text-center">
+        <div class="w-16 h-16 bg-indigo-900 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h4 class="text-lg font-medium mb-2">Swap Completed</h4>
+        <p class="text-gray-400 mb-4" id="tx-summary">Swapped 0 SOL for 0 USDC</p>
+        <a id="tx-explorer-link" href="#" target="_blank" class="text-indigo-500 hover:text-indigo-400 text-sm">View on Solana Explorer</a>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const elements = {
-      fromToken: document.getElementById("fromToken"),
-      toToken: document.getElementById("toToken"),
-      fromTokenLogo: document.getElementById("fromTokenLogo"),
-      toTokenLogo: document.getElementById("toTokenLogo"),
-      chartFrame: document.getElementById("chartFrame"),
-      chartSection: document.getElementById("chartSection")
+    // Global state
+    const state = {
+      wallet: null,
+      connection: null,
+      jupiter: null,
+      tokens: [],
+      fromToken: {
+        mint: 'So11111111111111111111111111111111111111112', // SOL
+        symbol: 'SOL',
+        decimals: 9,
+        balance: 0,
+        price: 0
+      },
+      toToken: {
+        mint: null,
+        symbol: null,
+        decimals: null,
+        balance: 0,
+        price: null
+      },
+      slippage: 0.5, // 0.5%
+      chart: null,
+      candleSeries: null
     };
 
-    function isValidSolanaAddress(address) {
-      return address.length >= 32 && address.length <= 44;
-    }
+    // Initialize application
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Initialize Solana connection
+      state.connection = new solanaWeb3.Connection(
+        solanaWeb3.clusterApiUrl('mainnet-beta'),
+        'confirmed'
+      );
 
-    async function fetchDynamicToken(address) {
+      // Initialize wallets
+      const phantomWallet = new solanaWallets.PhantomWalletAdapter();
+      const backpackWallet = new solanaWallets.BackpackWalletAdapter();
+      
+      // Wallet button setup
+      const walletButton = document.getElementById('wallet-button');
+      walletButton.addEventListener('click', async () => {
+        if (!state.wallet) {
+          try {
+            await phantomWallet.connect();
+            state.wallet = phantomWallet;
+            setupWallet();
+          } catch (err) {
+            console.error('Phantom connection failed, trying Backpack:', err);
+            try {
+              await backpackWallet.connect();
+              state.wallet = backpackWallet;
+              setupWallet();
+            } catch (err) {
+              console.error('Wallet connection failed:', err);
+              alert('Wallet connection failed. Please try again.');
+            }
+          }
+        } else {
+          await state.wallet.disconnect();
+          state.wallet = null;
+          walletButton.textContent = 'Connect Wallet';
+          document.getElementById('swap-button').textContent = 'Connect Wallet';
+        }
+      });
+
+      // Initialize Jupiter
       try {
-        const res = await fetch(`https://token-list-api.solana.cloud/v1/token/${address}`);
-        if (!res.ok) return null;
-        const data = await res.json();
-        return {
-          address,
-          symbol: data?.token?.symbol || '???',
-          name: data?.token?.name || 'Unknown Token',
-          decimals: data?.token?.decimals || 6,
-          logoURI: data?.token?.logoURI || ''
-        };
-      } catch (e) {
-        return null;
+        state.jupiter = await Jupiter.load({
+          connection: state.connection,
+          cluster: 'mainnet-beta'
+        });
+      } catch (err) {
+        console.error('Jupiter initialization failed:', err);
+        alert('Failed to initialize swap functionality. Please refresh the page.');
       }
-    }
 
-    elements.fromToken.addEventListener('input', async (e) => {
-      const address = e.target.value.trim();
-      if (isValidSolanaAddress(address)) {
-        const token = await fetchDynamicToken(address);
-        if (token) {
-          elements.fromTokenLogo.src = token.logoURI || '';
-          updateChart(token.address);
-        }
-      }
-    });
+      // Load token list
+      await loadTokenList();
 
-    elements.toToken.addEventListener('input', async (e) => {
-      const address = e.target.value.trim();
-      if (isValidSolanaAddress(address)) {
-        const token = await fetchDynamicToken(address);
-        if (token) {
-          elements.toTokenLogo.src = token.logoURI || '';
-        }
+      // Initialize chart
+      initChart();
+
+      // Set up event listeners
+      setupEventListeners();
+
+      // Set default to token to USDC if available
+      const usdcToken = state.tokens.find(t => t.symbol === 'USDC');
+      if (usdcToken) {
+        updateToToken(usdcToken);
       }
     });
 
-    function updateChart(address) {
-      elements.chartFrame.src = `https://dexscreener.com/solana/${address}`;
+    // Load token list from Jupiter API
+    async function loadTokenList() {
+      try {
+        const response = await axios.get('https://token.jup.ag/strict');
+        state.tokens = response.data.map(token => ({
+          ...token,
+          // Add common tokens first
+          priority: ['SOL', 'USDC', 'USDT', 'RAY'].includes(token.symbol) ? 1 : 0
+        })).sort((a, b) => b.priority - a.priority);
+        
+        // Add SOL manually if not present
+        if (!state.tokens.some(t => t.symbol === 'SOL')) {
+          state.tokens.unshift({
+            address: 'So11111111111111111111111111111111111111112',
+            chainId: 101,
+            decimals: 9,
+            name: 'Solana',
+            symbol: 'SOL',
+            logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+            priority: 1
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load token list:', err);
+        // Fallback to a basic list
+        state.tokens = [
+          {
+            address: 'So11111111111111111111111111111111111111112',
+            chainId: 101,
+            decimals: 9,
+            name: 'Solana',
+            symbol: 'SOL',
+            logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+            priority: 1
+          },
+          {
+            address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+            chainId: 101,
+            decimals: 6,
+            name: 'USD Coin',
+            symbol: 'USDC',
+            logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
+            priority: 1
+          }
+        ];
+      }
     }
 
-    function toggleChart() {
-      const iframe = elements.chartFrame;
-      const toggle = document.querySelector('.toggle-chart');
-      if (iframe.style.height === "200px") {
-        iframe.style.height = "600px";
-        toggle.textContent = "Collapse";
-      } else {
-        iframe.style.height = "200px";
-        toggle.textContent = "Expand";
+    // Initialize price chart
+    function initChart() {
+      state.chart = LightweightCharts.createChart(document.getElementById('price-chart'), {
+        width: document.getElementById('price-chart').clientWidth,
+        height: 384,
+        layout: {
+          backgroundColor: '#111827',
+          textColor: '#9CA3AF',
+        },
+        grid: {
+          vertLines: {
+            color: '#1F2937',
+          },
+          horzLines: {
+            color: '#1F2937',
+          },
+        },
+        crosshair: {
+          mode: LightweightCharts.CrosshairMode.Normal,
+        },
+        rightPriceScale: {
+          borderColor: '#1F2937',
+        },
+        timeScale: {
+          borderColor: '#1F2937',
+          timeVisible: true,
+        },
+      });
+
+      state.candleSeries = state.chart.addCandlestickSeries({
+        upColor: '#10B981',
+        downColor: '#EF4444',
+        borderDownColor: '#EF4444',
+        borderUpColor: '#10B981',
+        wickDownColor: '#EF4444',
+        wickUpColor: '#10B981',
+      });
+
+      // Load initial chart data
+      updateChartData();
+    }
+
+    // Update chart data based on selected tokens
+    async function updateChartData() {
+      if (!state.fromToken.symbol || !state.toToken.symbol) return;
+
+      document.getElementById('chart-pair').textContent = `${state.fromToken.symbol}/${state.toToken.symbol}`;
+
+      // In a real app, you would fetch historical data from an API
+      // This is mock data for demonstration
+      const mockData = generateMockChartData();
+      state.candleSeries.setData(mockData);
+    }
+
+    // Generate mock chart data
+    function generateMockChartData() {
+      const data = [];
+      const now = Math.floor(Date.now() / 1000);
+      let price = 30 + Math.random() * 5;
+      
+      for (let i = 30; i >= 0; i--) {
+        const time = now - i * 86400; // 1 day interval
+        const open = price;
+        const close = open + (Math.random() - 0.5) * 2;
+        const high = Math.max(open, close) + Math.random() * 1.5;
+        const low = Math.min(open, close) - Math.random() * 1.5;
+        
+        data.push({
+          time,
+          open,
+          high,
+          low,
+          close
+        });
+
+        price = close;
+      }
+
+      return data;
+    }
+
+    // Set up wallet after connection
+    function setupWallet() {
+      const walletButton = document.getElementById('wallet-button');
+      const swapButton = document.getElementById('swap-button');
+      
+      walletButton.textContent = `${state.wallet.publicKey.toString().slice(0, 4)}...${state.wallet.publicKey.toString().slice(-4)}`;
+      swapButton.textContent = 'Swap';
+      swapButton.disabled = false;
+
+      // Update Jupiter with user's public key
+      state.jupiter.setUser(state.wallet.publicKey);
+
+      // Load token balances
+      updateTokenBalances();
+    }
+
+    // Update token balances
+    async function updateTokenBalances() {
+      if (!state.wallet?.publicKey) return;
+
+      try {
+        // SOL balance
+        const solBalance = await state.connection.getBalance(state.wallet.publicKey);
+        state.fromToken.balance = solBalance / Math.pow(10, state.fromToken.decimals);
+        document.getElementById('from-balance').textContent = state.fromToken.balance.toFixed(4);
+
+        // Token balance (if toToken is set)
+        if (state.toToken.mint) {
+          try {
+            const tokenAccounts = await state.connection.getTokenAccountsByOwner(state.wallet.publicKey, {
+              mint: new solanaWeb3.PublicKey(state.toToken.mint)
+            });
+
+            if (tokenAccounts.value.length > 0) {
+              const balance = await state.connection.getTokenAccountBalance(tokenAccounts.value[0].pubkey);
+              state.toToken.balance = parseFloat(balance.value.amount) / Math.pow(10, state.toToken.decimals);
+            } else {
+              state.toToken.balance = 0;
+            }
+            document.getElementById('to-balance').textContent = state.toToken.balance.toFixed(4);
+          } catch (err) {
+            console.error('Error fetching token balance:', err);
+            state.toToken.balance = 0;
+            document.getElementById('to-balance').textContent = '0';
+          }
+        }
+      } catch (err) {
+        console.error('Error updating balances:', err);
+      }
+    }
+
+    // Set up event listeners
+    function setupEventListeners() {
+      // From amount input
+      document.getElementById('from-amount').addEventListener('input', async (e) => {
+        const amount = parseFloat(e.target.value);
+        if (amount > 0 && state.fromToken.mint && state.toToken.mint) {
+          await updateQuote(amount);
+        } else {
+          document.getElementById('to-amount').value = '';
+          document.getElementById('to-amount-usd').textContent = '0.00';
+        }
+      });
+
+      // Max button
+      document.getElementById('from-max').addEventListener('click', () => {
+        if (state.fromToken.balance > 0) {
+          document.getElementById('from-amount').value = state.fromToken.balance;
+          document.getElementById('from-amount').dispatchEvent(new Event('input'));
+        }
+      });
+
+      // 50% button
+      document.getElementById('from-half').addEventListener('click', () => {
+        if (state.fromToken.balance > 0) {
+          document.getElementById('from-amount').value = (state.fromToken.balance / 2).toFixed(4);
+          document.getElementById('from-amount').dispatchEvent(new Event('input'));
+        }
+      });
+
+      // Switch tokens
+      document.getElementById('switch-tokens').addEventListener('click', () => {
+        const fromAmount = document.getElementById('from-amount').value;
+        const toAmount = document.getElementById('to-amount').value;
+        
+        // Swap token selections
+        const tempToken = {...state.fromToken};
+        state.fromToken = {...state.toToken};
+        state.toToken = {...tempToken};
+        
+        // Update UI
+        updateTokenSelectors();
+        
+        // Set amounts
+        document.getElementById('from-amount').value = toAmount;
+        document.getElementById('to-amount').value = fromAmount;
+        
+        // Update quote
+        document.getElementById('from-amount').dispatchEvent(new Event('input'));
+        
+        // Update chart
+        updateChartData();
+      });
+
+      // Token select buttons
+      document.getElementById('from-token-select').addEventListener('click', () => {
+        openTokenModal('from');
+      });
+
+      document.getElementById('to-token-select').addEventListener('click', () => {
+        openTokenModal('to');
+      });
+
+      // Close token modal
+      document.getElementById('close-token-modal').addEventListener('click', () => {
+        document.getElementById('token-modal').classList.add('hidden');
+      });
+
+      // Token search
+      document.getElementById('token-search').addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const tokenList = document.getElementById('token-list');
+        tokenList.innerHTML = '';
+        
+        const filteredTokens = searchTerm 
+          ? state.tokens.filter(token => 
+              token.symbol.toLowerCase().includes(searchTerm) || 
+              token.name.toLowerCase().includes(searchTerm) || 
+              token.address.toLowerCase().includes(searchTerm)
+            )
+          : state.tokens.slice(0, 100); // Limit to top 100 tokens when no search
+        
+        filteredTokens.forEach(token => {
+          const tokenItem = document.createElement('div');
+          tokenItem.className = 'token-item flex items-center p-3 hover:bg-gray-800 rounded-lg cursor-pointer';
+          tokenItem.innerHTML = `
+            <img src="${token.logoURI || 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'}" 
+                 class="w-8 h-8 rounded-full ${!token.logoURI ? 'opacity-50' : ''}">
+            <div class="ml-3">
+              <div class="font-medium">${token.symbol}</div>
+              <div class="text-xs text-gray-400">${token.name}</div>
+            </div>
+          `;
+          tokenItem.addEventListener('click', () => {
+            if (window.currentTokenModal === 'from') {
+              updateFromToken(token);
+            } else {
+              updateToToken(token);
+            }
+            document.getElementById('token-modal').classList.add('hidden');
+          });
+          tokenList.appendChild(tokenItem);
+        });
+      });
+
+      // Slippage buttons
+      document.querySelectorAll('[data-slippage]').forEach(button => {
+        button.addEventListener('click', () => {
+          state.slippage = parseFloat(button.dataset.slippage);
+          document.querySelectorAll('[data-slippage]').forEach(btn => {
+            btn.classList.toggle('bg-indigo-900', btn === button);
+            btn.classList.toggle('bg-gray-700', btn !== button);
+          });
+          
+          // Update quote if we have an amount
+          const amount = parseFloat(document.getElementById('from-amount').value);
+          if (amount > 0) {
+            updateQuote(amount);
+          }
+        });
+      });
+
+      // Chart interval buttons
+      document.querySelectorAll('[data-interval]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-interval]').forEach(btn => {
+            btn.classList.toggle('bg-indigo-900', btn === button);
+            btn.classList.toggle('bg-gray-800', btn !== button);
+          });
+          // In a real app, you would update the chart data here
+        });
+      });
+
+      // Swap button
+      document.getElementById('swap-button').addEventListener('click', async () => {
+        if (!state.wallet) {
+          document.getElementById('wallet-button').click();
+          return;
+        }
+
+        const amount = parseFloat(document.getElementById('from-amount').value);
+        if (!amount || amount <= 0) {
+          alert('Please enter a valid amount');
+          return;
+        }
+
+        if (!state.toToken.mint) {
+          alert('Please select a token to swap to');
+          return;
+        }
+
+        await executeSwap(amount);
+      });
+
+      // Close TX modal
+      document.getElementById('close-tx-modal').addEventListener('click', () => {
+        document.getElementById('tx-modal').classList.add('hidden');
+      });
+    }
+
+    // Open token selection modal
+    function openTokenModal(type) {
+      window.currentTokenModal = type;
+      document.getElementById('token-modal').classList.remove('hidden');
+      document.getElementById('token-search').value = '';
+      document.getElementById('token-search').dispatchEvent(new Event('input'));
+      document.getElementById('token-search').focus();
+    }
+
+    // Update from token
+    function updateFromToken(token) {
+      state.fromToken = {
+        mint: token.address,
+        symbol: token.symbol,
+        decimals: token.decimals,
+        balance: 0,
+        price: 0
+      };
+
+      // Update UI
+      const fromTokenSelect = document.getElementById('from-token-select');
+      fromTokenSelect.innerHTML = `
+        <img src="${token.logoURI || 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'}" 
+             class="w-6 h-6 rounded-full ${!token.logoURI ? 'opacity-50' : ''}">
+        <span>${token.symbol}</span>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      `;
+
+      // Update balance
+      updateTokenBalances();
+
+      // Update chart if toToken is set
+      if (state.toToken.symbol) {
+        updateChartData();
+      }
+    }
+
+    // Update to token
+    function updateToToken(token) {
+      state.toToken = {
+        mint: token.address,
+        symbol: token.symbol,
+        decimals: token.decimals,
+        balance: 0,
+        price: 0
+      };
+
+      // Update UI
+      const toTokenSelect = document.getElementById('to-token-select');
+      toTokenSelect.innerHTML = `
+        <img src="${token.logoURI || 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'}" 
+             class="w-6 h-6 rounded-full ${!token.logoURI ? 'opacity-50' : ''}">
+        <span>${token.symbol}</span>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      `;
+
+      // Update balance
+      updateTokenBalances();
+
+      // Update chart if fromToken is set
+      if (state.fromToken.symbol) {
+        updateChartData();
+      }
+
+      // Trigger quote update if we have an amount
+      const amount = parseFloat(document.getElementById('from-amount').value);
+      if (amount > 0) {
+        updateQuote(amount);
+      }
+    }
+
+    // Update token selectors UI
+    function updateTokenSelectors() {
+      // From token
+      const fromTokenSelect = document.getElementById('from-token-select');
+      fromTokenSelect.innerHTML = `
+        <img src="${state.fromToken.symbol === 'SOL' ? 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png' : ''}" 
+             class="w-6 h-6 rounded-full">
+        <span>${state.fromToken.symbol}</span>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      `;
+
+      // To token
+      const toTokenSelect = document.getElementById('to-token-select');
+      toTokenSelect.innerHTML = `
+        <img src="${state.toToken.symbol === 'SOL' ? 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png' : ''}" 
+             class="w-6 h-6 rounded-full">
+        <span>${state.toToken.symbol}</span>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      `;
+    }
+
+    // Get quote from Jupiter
+    async function updateQuote(amount) {
+      if (!state.fromToken.mint || !state.toToken.mint) return;
+
+      const swapButton = document.getElementById('swap-button');
+      swapButton.disabled = true;
+      swapButton.textContent = 'Fetching quote...';
+
+      try {
+        const amountInLamports = Math.floor(amount * Math.pow(10, state.fromToken.decimals));
+        
+        const quote = await state.jupiter.computeRoutes({
+          inputMint: new solanaWeb3.PublicKey(state.fromToken.mint),
+          outputMint: new solanaWeb3.PublicKey(state.toToken.mint),
+          amount: amountInLamports,
+          slippageBps: state.slippage * 100, // 0.5% = 50 bps
+        });
+
+        if (quote.routesInfos.length > 0) {
+          const bestRoute = quote.routesInfos[0];
+          const outAmount = bestRoute.outAmount / Math.pow(10, state.toToken.decimals);
+          
+          document.getElementById('to-amount').value = outAmount.toFixed(6);
+          document.getElementById('price-ratio').textContent = `1 ${state.fromToken.symbol} = ${(outAmount / amount).toFixed(6)} ${state.toToken.symbol}`;
+          document.getElementById('min-received').textContent = `${(outAmount * (1 - (state.slippage / 100))).toFixed(6)} ${state.toToken.symbol}`;
+          
+          // Update USD values (mock - in real app you'd get prices from an API)
+          document.getElementById('from-amount-usd').textContent = (amount * 20).toFixed(2); // Mock $20 SOL price
+          document.getElementById('to-amount-usd').textContent = (outAmount * 1).toFixed(2); // Mock $1 token price
+        } else {
+          document.getElementById('to-amount').value = '';
+          document.getElementById('price-ratio').textContent = 'No route found';
+          document.getElementById('min-received').textContent = '-';
+        }
+      } catch (err) {
+        console.error('Error fetching quote:', err);
+        document.getElementById('to-amount').value = '';
+        document.getElementById('price-ratio').textContent = 'Error fetching quote';
+        document.getElementById('min-received').textContent = '-';
+      } finally {
+        swapButton.disabled = false;
+        swapButton.textContent = 'Swap';
+      }
+    }
+
+    // Execute swap
+    async function executeSwap(amount) {
+      const swapButton = document.getElementById('swap-button');
+      swapButton.disabled = true;
+      swapButton.textContent = 'Confirm in Wallet...';
+
+      try {
+        const amountInLamports = Math.floor(amount * Math.pow(10, state.fromToken.decimals));
+        
+        // Get quote
+        const quote = await state.jupiter.computeRoutes({
+          inputMint: new solanaWeb3.PublicKey(state.fromToken.mint),
+          outputMint: new solanaWeb3.PublicKey(state.toToken.mint),
+          amount: amountInLamports,
+          slippageBps: state.slippage * 100,
+        });
+
+        if (quote.routesInfos.length === 0) {
+          throw new Error('No swap route found');
+        }
+
+        // Execute swap
+        const { execute } = await state.jupiter.exchange({
+          routeInfo: quote.routesInfos[0]
+        });
+
+        const swapResult = await execute();
+
+        // Show success modal
+        document.getElementById('tx-summary').textContent = `Swapped ${amount} ${state.fromToken.symbol} for ${document.getElementById('to-amount').value} ${state.toToken.symbol}`;
+        document.getElementById('tx-explorer-link').href = `https://solscan.io/tx/${swapResult.txid}`;
+        document.getElementById('tx-modal').classList.remove('hidden');
+
+        // Update balances
+        updateTokenBalances();
+      } catch (err) {
+        console.error('Swap failed:', err);
+        alert(`Swap failed: ${err.message}`);
+      } finally {
+        swapButton.disabled = false;
+        swapButton.textContent = 'Swap';
       }
     }
   </script>
