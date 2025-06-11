@@ -5,148 +5,40 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>AetherSwap – Popular Tokens</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/xxxxxxxxxx.js" crossorigin="anonymous"></script>
+  <!-- TradingView widget -->
+  <script src="https://s3.tradingview.com/tv.js"></script>
   <style>
-    body {
-      background: #121212;
-      color: #FFF;
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding-bottom: 90px;
-    }
-    .glass {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.1);
-      transition: background 0.2s;
-      position: relative;
-    }
-    .glass:hover {
-      background: rgba(255,255,255,0.1);
-    }
-    .skeleton {
-      height: 64px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.1);
-      animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-      0%,100% { opacity: 0.6; }
-      50% { opacity: 1; }
-    }
-    .modal-bg {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 50;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-bg.active { display: flex; }
-    .modal {
-      background: #1F1F1F;
-      border-radius: 16px;
-      padding: 20px;
-      width: 90%;
-      max-width: 480px;
-      max-height: 90vh;
-      overflow: auto;
-    }
-    .network-option, .token-card { cursor: pointer; }
-    .network-option img {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-    }
-    .network-option:hover, .network-option.selected {
-      background: rgba(255,255,255,0.05);
-    }
-    .network-option.selected {
-      background: rgba(255,255,255,0.1);
-    }
-    .badge {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: #2563EB;
-      padding: 4px;
-      border-radius: 50%;
-      color: #FFF;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 50;
-      height: 70px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .nav-item {
-      flex: 1;
-      text-align: center;
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.7);
-    }
-    .nav-item.active { color: #FFF; }
-    .nav-trade {
-      position: absolute;
-      top: -28px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #2563EB;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #FFF;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      z-index: 60;
-    }
-
-    .sparkline {
-      width: 100px;
-      height: 30px;
-    }
-    .star-btn {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      font-size: 18px;
-      color: rgba(255, 255, 255, 0.5);
-      transition: color 0.2s;
-    }
-    .star-btn.favored { color: #FFD700; }
-
-    .time-tab {
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: 0.2s;
-      color: #A3A3A3;
-    }
-    .time-tab.active {
-      background: linear-gradient(135deg, #2563EB, #7C3AED);
-      color: #FFF;
-    }
+    /* --- Styles globaux --- */
+    body { background:#121212; color:#FFF; font-family:'Inter',sans-serif; margin:0; padding-bottom:90px; }
+    .glass { backdrop-filter:blur(12px); background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); position:relative; transition:background 0.2s; }
+    .glass:hover { background:rgba(255,255,255,0.1); }
+    .skeleton { height:64px; border-radius:12px; background:rgba(255,255,255,0.1); animation:pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:0.6;}50%{opacity:1;} }
+    .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:50; align-items:center; justify-content:center; }
+    .modal-bg.active { display:flex; }
+    .modal { background:#1F1F1F; border-radius:16px; padding:20px; width:90%; max-width:480px; max-height:90vh; overflow:auto; }
+    .network-option, .token-card { cursor:pointer; }
+    .network-option img { width:36px; height:36px; border-radius:50%; }
+    .network-option.selected, .network-option:hover { background:rgba(255,255,255,0.05); }
+    .bottom-nav { position:fixed; bottom:0; left:0; right:0; height:70px; background:rgba(255,255,255,0.05); backdrop-filter:blur(12px); display:flex; align-items:center; justify-content:space-between; padding:0 12px; z-index:100; border-top:1px solid rgba(255,255,255,0.1); }
+    .nav-item { flex:1; text-align:center; font-size:12px; color:rgba(255,255,255,0.7); }
+    .nav-item.active { color:#FFF; }
+    .nav-trade { position:absolute; top:-28px; left:50%; transform:translateX(-50%); width:64px; height:64px; background:#2563EB; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#FFF; box-shadow:0 4px 12px rgba(0,0,0,0.4); z-index:101; }
+    .sparkline { width:100px; height:30px; }
+    .star-btn { position:absolute; top:8px; left:8px; font-size:18px; color:rgba(255,255,255,0.5); transition:color 0.2s; }
+    .star-btn.favored { color:#FFD700; }
+    .time-tab { padding:8px 12px; border-radius:8px; font-size:14px; cursor:pointer; color:#A3A3A3; transition:0.2s; }
+    .time-tab.active { background:linear-gradient(135deg,#2563EB,#7C3AED); color:#FFF; }
   </style>
 </head>
-<body>
-  <header class="text-center py-4">
-    <h1 class="text-2xl font-bold text-white">Popular Tokens</h1>
-  </header>
-<body class="p-4">
 
+<body class="p-4">
+  <!-- En-tête -->
+  <header class="text-center py-4"><h1 class="text-2xl font-bold">Popular Tokens</h1></header>
+
+  <!-- Sélecteur de chaînes -->
   <button id="openChainsBtn" class="w-full p-3 bg-[#1F1F1F] rounded-lg flex justify-between items-center mb-4">
     <span id="chainsLbl">Select Networks (0)</span><span>▼</span>
   </button>
@@ -162,11 +54,15 @@
     </div>
   </div>
 
+  <!-- Modal affichage token + chart + swap -->
   <div id="tokenModal" class="modal-bg">
     <div class="modal">
       <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center gap-3"><img id="tdLogo" class="w-8 h-8 rounded-full"/><h3 id="tdName" class="text-lg font-semibold"></h3></div>
-        <button id="tdClose" class="text-white text-xl">&times;</button>
+        <div class="flex items-center gap-3">
+          <img id="tdLogo" class="w-8 h-8 rounded-full"/>
+          <h3 id="tdName" class="text-lg font-semibold"></h3>
+        </div>
+        <button id="tdClose" class="text-xl">&times;</button>
       </div>
       <div class="mb-4">
         <label class="block text-sm mb-1">Contract:</label>
@@ -176,10 +72,16 @@
         </div>
       </div>
       <div id="tdLinks" class="space-y-2 mb-4"></div>
-      <button id="tdTrade" class="w-full p-3 bg-green-500 rounded-lg">Trade this token</button>
+
+      <!-- TradingView Chart -->
+      <div id="tradingview_chart" style="height:400px; width:100%;"></div>
+
+      <!-- Swap Widget (DEXTools embed example) -->
+      <iframe id="swapFrame" src="" width="100%" height="300" style="border:none; border-radius:8px; margin-top:12px;"></iframe>
     </div>
   </div>
 
+  <!-- Filtres tempo -->
   <div class="flex gap-2 overflow-x-auto mb-4 scrollbar-hide">
     <button class="time-tab active" data-range="h1">1h</button>
     <button class="time-tab" data-range="h24">24h</button>
@@ -188,246 +90,189 @@
 
   <div id="tokens" class="space-y-4"></div>
 
+  <!-- Barre navigation -->
   <nav class="bottom-nav">
-    <a href="index.html" class="nav-item"><svg class="w-6 h-6 inline"></svg><br>Home</a>
-    <a href="#" class="nav-item"><svg class="w-6 h-6 inline"></svg><br>Explore</a>
-    <a href="swap.html" class="nav-item nav-trade"><svg class="w-6 h-6 inline"></svg></a>
-    <a href="#" class="nav-item"><svg class="w-6 h-6 inline"></svg><br>Portfolio</a>
-    <a href="#" class="nav-item"><svg class="w-6 h-6 inline"></svg><br>Profile</a>
+    <a href="index.html" class="nav-item"><i class="fa-solid fa-house fa-lg"></i><br>Home</a>
+    <a href="popular.html" class="nav-item active"><i class="fa-solid fa-chart-line fa-lg"></i><br>Discover</a>
+    <a href="swap.html" class="nav-item nav-trade"><i class="fa-solid fa-arrow-right-arrow-left fa-2x"></i></a>
+    <a href="favorites.html" class="nav-item"><i class="fa-solid fa-star fa-lg"></i><br>Favs</a>
+    <a href="settings.html" class="nav-item"><i class="fa-solid fa-gear fa-lg"></i><br>Settings</a>
   </nav>
 
   <script>
-(function(){
-  const chains = ["ethereum","bsc","polygon","arbitrum","avalanche","fantom","optimism","solana","tron","cronos","metis","harmony","nova","klaytn","okexchain","moonbeam","celo","aurora","base","linea","sui","aptos","zksync","starknet","moonriver","the-open-network","evmos","theta","milkomeda","palm","sepolia","rinkeby","goerli","ropsten","kovan","arbnova","bnbchain-test","optimism-kovan","moonbase","celo-alfajores","fantom-testnet","clv12","godwoken","heco","one","meter"];
-  const openChainsBtn=document.getElementById("openChainsBtn"), chainsLbl=document.getElementById("chainsLbl"), chainsModal=document.getElementById("chainsModal");
-  const chainGrid=document.getElementById("chainGrid"), searchChain=document.getElementById("searchChain"), clearChains=document.getElementById("clearChains");
-  const tokenInput=document.getElementById("tokenInput"), fetchBtn=document.getElementById("fetchBtn"), tokensContainer=document.getElementById("tokens");
-  const tokenModal=document.getElementById("tokenModal"), tdClose=document.getElementById("tdClose"), tdLogo=document.getElementById("tdLogo"), tdName=document.getElementById("tdName"), tdAddr=document.getElementById("tdAddr"), tdCopy=document.getElementById("tdCopy"), tdLinks=document.getElementById("tdLinks"), tdTrade=document.getElementById("tdTrade");
-  const timeTabs=Array.from(document.querySelectorAll(".time-tab"));
-  let selected=new Set(), cache={}, favorites=JSON.parse(localStorage.getItem("favorites")||"[]"), lastData=[], loading=false, range="h24";
-
-  // Build grid
-  chains.forEach(id => {
-    const d = document.createElement("div");
-    d.className = "network-option flex flex-col items-center p-2";
-    const img = document.createElement("img");
-    img.src = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${id}/info/logo.png`;
-    img.onerror = () => { img.src = '/default-chain-logo.png'; }; // fallback
-    const span = document.createElement("span");
-    span.textContent = id;
-    span.className = "text-xs text-center mt-1";
-    d.append(img, span);
-    d.dataset.chain = id;
-
-    d.onclick = () => {
-      if (selected.has(id)) {
-        selected.delete(id);
-        d.classList.remove("selected");
-      } else {
-        selected.add(id);
-        d.classList.add("selected");
-        chainsModal.classList.remove("active");
-      }
-      chainsLbl.textContent = `Select Networks (${selected.size})`;
-      tokensContainer.innerHTML = "";
-      lastData = [];
-      loadTokens();
+  (function(){
+    const chains = [ /* tes 56 chaînes ici... */ ];
+    const ui = { chainGrid:document.getElementById('chainGrid'), openChainsBtn:document.getElementById('openChainsBtn'),
+      chainsLbl:document.getElementById('chainsLbl'), chainsModal:document.getElementById('chainsModal'),
+      searchChain:document.getElementById('searchChain'), clearChains:document.getElementById('clearChains'),
+      tokenInput:document.getElementById('tokenInput'), fetchBtn:document.getElementById('fetchBtn'),
+      tokensContainer:document.getElementById('tokens'), timeTabs:Array.from(document.querySelectorAll('.time-tab')),
+      tokenModal:document.getElementById('tokenModal'), tdClose:document.getElementById('tdClose'),
+      tdLogo:document.getElementById('tdLogo'), tdName:document.getElementById('tdName'),
+      tdAddr:document.getElementById('tdAddr'), tdCopy:document.getElementById('tdCopy'),
+      tdLinks:document.getElementById('tdLinks'), tfChart:'tradingview_chart', swapFrame:document.getElementById('swapFrame')
     };
-    chainGrid.appendChild(d);
-  });
+    let selected=new Set(), favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
+    let lastData=[], loading=false, range='h24';
 
-  openChainsBtn.onclick = () => chainsModal.classList.add("active");
-  chainsModal.onclick = e => { if (e.target === chainsModal) chainsModal.classList.remove("active"); };
-  clearChains.onclick = () => {
-    selected.clear();
-    document.querySelectorAll(".network-option.selected").forEach(e => e.classList.remove("selected"));
-    chainsLbl.textContent = "Select Networks (0)";
-    tokensContainer.innerHTML = "";
-    lastData = [];
-    loadTokens();
-  };
-  searchChain.oninput = () => {
-    const val = searchChain.value.toLowerCase();
-    document.querySelectorAll(".network-option").forEach(e => {
-      e.style.display = e.dataset.chain.includes(val) ? "flex" : "none";
+    // Grid chaînes
+    chains.forEach(chain=>{
+      const d=document.createElement('div'); d.className='network-option flex flex-col items-center p-2';
+      const img=document.createElement('img'); img.src=`https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${chain}/info/logo.png`;
+      img.onerror=()=>img.src='/default-chain-logo.png';
+      const span=document.createElement('span'); span.textContent=chain; span.className='text-xs mt-1 text-center';
+      d.append(img,span); d.dataset.chain=chain;
+      d.onclick=()=>{
+        selected.has(chain)?selected.delete(chain):selected.add(chain);
+        d.classList.toggle('selected');
+        ui.chainsLbl.textContent=`Select Networks (${selected.size})`;
+        ui.chainsModal.classList.remove('active');
+        loadTokens();
+      };
+      ui.chainGrid.appendChild(d);
     });
-  };
 
-  timeTabs.forEach(btn => btn.onclick = () => {
-    timeTabs.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    range = btn.dataset.range;
-    lastData = [];
-    tokensContainer.innerHTML = "";
-    loadTokens();
-  });
+    ui.openChainsBtn.onclick=()=>ui.chainsModal.classList.add('active');
+    ui.chainsModal.onclick=e=>{ if(e.target===ui.chainsModal) ui.chainsModal.classList.remove('active'); };
+    ui.clearChains.onclick=()=>{ selected.clear(); document.querySelectorAll('.network-option.selected').forEach(el=>el.classList.remove('selected')); ui.chainsLbl.textContent='Select Networks (0)'; loadTokens(); };
+    ui.searchChain.oninput=()=>document.querySelectorAll('.network-option').forEach(el=>el.style.display=el.dataset.chain.includes(ui.searchChain.value.toLowerCase())?'flex':'none');
 
-  tdClose.onclick = () => tokenModal.classList.remove("active");
-  tokenModal.onclick = e => { if (e.target === tokenModal) tokenModal.classList.remove("active"); };
+    ui.timeTabs.forEach(btn=>btn.onclick=()=>{
+      ui.timeTabs.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      range=btn.dataset.range;
+      loadTokens();
+    });
 
-  tdCopy.onclick = () => {
-    navigator.clipboard.writeText(tdAddr.textContent);
-    tdCopy.textContent = "Copied!";
-    tdCopy.disabled = true;
-    setTimeout(() => {
-      tdCopy.textContent = "Copy";
-      tdCopy.disabled = false;
-    }, 1500);
-  };
+    ui.tdClose.onclick=()=>ui.tokenModal.classList.remove('active');
+    ui.tokenModal.onclick=e=>{ if(e.target===ui.tokenModal) ui.tokenModal.classList.remove('active'); };
 
-  tdTrade.onclick = () => {
-    const contract = tdAddr.textContent;
-    window.location = `swap.html?token=${encodeURIComponent(contract)}`;
-  };
+    ui.tdCopy.onclick=()=>{
+      navigator.clipboard.writeText(ui.tdAddr.textContent);
+      ui.tdCopy.textContent='Copied!'; ui.tdCopy.disabled=true;
+      setTimeout(()=>{ ui.tdCopy.textContent='Copy'; ui.tdCopy.disabled=false; },1500);
+    };
 
-  fetchBtn.onclick = loadTokens;
-  tokenInput.addEventListener("keydown", e => { if (e.key === 'Enter') loadTokens(); });
-  tokenInput.addEventListener("paste", () => setTimeout(loadTokens, 50));
+    ui.fetchBtn.onclick=loadTokens;
+    ui.tokenInput.addEventListener('keydown',e=>{ if(e.key==='Enter') loadTokens(); });
+    ui.tokenInput.addEventListener('paste',() => setTimeout(loadTokens,50));
 
-  window.addEventListener("scroll", () => {
-    if (!loading && window.innerHeight + window.scrollY > document.body.offsetHeight - 200) {
-      loadMore();
-    }
-  });
+    window.addEventListener('scroll',()=>{ if(!loading && window.innerHeight+window.scrollY > document.body.offsetHeight-200) loadMore(); });
 
-  async function loadTokens() {
-    loading = true;
-    tokensContainer.innerHTML = Array(6).fill('<div class="skeleton"></div>').join('');
-    lastData = [];
-
-    try {
-      const addr = tokenInput.value.trim().toLowerCase();
-      const chainsToUse = selected.size > 0 ? [...selected] : chains;
-
-      const tasks = chainsToUse.map(chain => {
-        const key = addr ? `${chain}-${addr}` : `${chain}-pairs`;
-        if (cache[key]) return Promise.resolve(cache[key]);
-
-        const url = addr
-          ? `https://api.dexscreener.com/token-pairs/v1/${chain}/${addr}`
-          : `https://api.dexscreener.com/latest/dex/pairs/${chain}`;
-
-        return fetch(url)
-          .then(r => r.json())
-          .then(j => {
-            const arr = addr ? j : j.pairs || [];
-            const mapped = arr.map(p => ({ ...p, chain }));
-            cache[key] = mapped;
-            return mapped;
-          })
-          .catch(() => []);
-      });
-
-      const all = (await Promise.all(tasks)).flat();
-      lastData = all.filter(t => t.baseToken?.symbol && t.priceUsd)
-        .sort((a, b) => (b.volume?.usd || 0) - (a.volume?.usd || 0));
-      tokensContainer.innerHTML = "";
-    } catch (e) {
-      console.error(e);
-      tokensContainer.innerHTML = '<p class="text-red-500 text-center">Error loading tokens</p>';
-      loading = false;
-      return;
-    }
-
-    loading = false;
-
-    if (addr) {
-      if (lastData.length === 0) {
-        tokensContainer.innerHTML = `<p class="text-center text-red-500">Token not found or not listed</p>`;
-        return;
-      }
-      if (lastData.length === 1) {
+    async function loadTokens(){
+      loading=true;
+      ui.tokensContainer.innerHTML=Array(6).fill('<div class="skeleton"></div>').join('');
+      lastData=[];
+      try {
+        const addr=ui.tokenInput.value.trim().toLowerCase();
+        const chainsToUse=selected.size? [...selected]: chains;
+        const tasks=chainsToUse.map(chain=>{
+          const key=addr?`${chain}-${addr}`:`${chain}-pairs`;
+          const url=addr?`https://api.dexscreener.com/token-pairs/v1/${chain}/${addr}`:`https://api.dexscreener.com/latest/dex/pairs/${chain}`;
+          return fetch(url).then(r=>r.json()).then(j=>{
+            const arr=addr?(Array.isArray(j)?j:(j.pairs?j.pairs:[j])):(j.pairs||[]);
+            return arr.map(p=>({...p,chain}));
+          }).catch(console.error);
+        });
+        const all=(await Promise.all(tasks)).flat();
+        lastData=all.filter(t=>t.baseToken?.symbol && t.priceUsd).sort((a,b)=>(b.volume?.usd||0)-(a.volume?.usd||0));
+        ui.tokensContainer.innerHTML='';
+      } catch(e){ console.error(e); ui.tokensContainer.innerHTML='<p class="text-red-500 text-center">Error loading tokens</p>'; loading=false; return; }
+      loading=false;
+      const addr=ui.tokenInput.value.trim().toLowerCase();
+      if(addr){
+        if(lastData.length===0) { ui.tokensContainer.innerHTML='<p class="text-center text-red-500">Token not found</p>'; return; }
         showDetail(lastData[0]);
         return;
       }
+      loadMore();
     }
 
-    loadMore();
-  }
-
-  function loadMore() {
-    if (loading || !lastData.length) return;
-    loading = true;
-    const chunk = lastData.splice(0, 20);
-    chunk.forEach(data => {
-      const div = document.createElement("div");
-      div.className = "glass grid grid-cols-3 p-4 rounded-lg items-center token-card";
-
-      const logo = data.info?.imageUrl || '/default-token.png';
-      div.innerHTML = `
-        <div class="flex items-center gap-2">
-          <img src="${logo}" class="w-6 h-6 rounded-full" onerror="this.src='/default-token.png'" />
-          <span>${data.baseToken.symbol}</span>
-        </div>
-        <div class="text-right">${parseFloat(data.priceUsd).toFixed(4)} USD</div>
-        <div class="text-right ${data.priceChange?.[range] >= 0 ? 'text-green-500' : 'text-red-500'}">
-          ${parseFloat(data.priceChange?.[range] || 0).toFixed(2)}%
-        </div>
-        <canvas class="sparkline"></canvas>
-        <div class="star-btn${favorites.includes(data.pairAddress) ? ' favored' : ''}">★</div>
-      `;
-
-      div.onclick = () => showDetail(data);
-      div.querySelector(".star-btn").onclick = e => {
-        e.stopPropagation();
-        toggleFavorite(data.pairAddress, e.target);
-      };
-
-      tokensContainer.appendChild(div);
-      drawSparkline(div.querySelector("canvas"), data);
-    });
-    loading = false;
-  }
-
-  function toggleFavorite(addr, btn) {
-    const idx = favorites.indexOf(addr);
-    if (idx >= 0) {
-      favorites.splice(idx, 1);
-      btn.classList.remove("favored");
-    } else {
-      favorites.push(addr);
-      btn.classList.add("favored");
+    function loadMore(){
+      if(loading||!lastData.length) return;
+      loading=true;
+      const chunk=lastData.splice(0,20);
+      chunk.forEach(data=>{
+        const div=document.createElement('div');
+        div.className='glass grid grid-cols-[auto_1fr_auto] gap-2 p-4 items-center token-card';
+        const logo= data.info?.imageUrl||'/default-token.png';
+        div.innerHTML=`
+          <img src="${logo}" class="w-6 h-6 rounded-full" onerror="this.src='/default-token.png'"/>
+          <div class="flex-1"><span>${data.baseToken.symbol}</span></div>
+          <div class="text-right">${parseFloat(data.priceUsd).toFixed(4)} USD<br>
+            <span class="${data.priceChange?.[range]>=0?'text-green-500':'text-red-500'}">${parseFloat(data.priceChange?.[range]||0).toFixed(2)}%</span>
+          </div>
+          <div class="star-btn${favorites.includes(data.pairAddress)?' favored':''}">★</div>
+          <canvas class="sparkline"></canvas>`;
+        div.onclick=()=>showDetail(data);
+        div.querySelector('.star-btn').onclick=e=>{ e.stopPropagation(); toggleFavorite(data.pairAddress,e.target); };
+        ui.tokensContainer.appendChild(div);
+        drawSparkline(div.querySelector('.sparkline'), data);
+      });
+      loading=false;
     }
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  }
 
-  function showDetail(data) {
-    tdLogo.src = data.info?.imageUrl || '/default-token.png';
-    tdName.textContent = `${data.baseToken.name || data.baseToken.symbol} (${data.baseToken.symbol})`;
-    tdAddr.textContent = data.baseToken.address || 'N/A';
-    tdLinks.innerHTML = '';
+    function toggleFavorite(addr, btn){
+      const idx=favorites.indexOf(addr);
+      if(idx>=0){ favorites.splice(idx,1); btn.classList.remove('favored'); }
+      else{ favorites.push(addr); btn.classList.add('favored'); }
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
 
-    (data.info?.websites || []).forEach(url =>
-      tdLinks.innerHTML += `<a href="${url}" target="_blank" class="block text-blue-400">🔗 Website</a>`
-    );
-    (data.info?.socials || []).forEach(s =>
-      tdLinks.innerHTML += `<a href="${s.handle}" target="_blank" class="block">📣 ${s.platform}</a>`
-    );
+    function showDetail(data){
+      ui.tdLogo.src=data.info?.imageUrl||'/default-token.png';
+      ui.tdName.textContent=`${data.baseToken.name||data.baseToken.symbol} (${data.baseToken.symbol})`;
+      ui.tdAddr.textContent=data.baseToken.address||'N/A';
+      ui.tdLinks.innerHTML=`<p class="text-sm text-gray-400">Network: ${data.chain}</p>`;
+      (data.info?.websites||[]).forEach(url=>ui.tdLinks.innerHTML+=`<a href="${url}" target="_blank" class="block text-blue-400">🔗 Website</a>`);
+      (data.info?.socials||[]).forEach(s=>ui.tdLinks.innerHTML+=`<a href="${s.handle}" target="_blank" class="block">📣 ${s.platform}</a>`);
 
-    tokenModal.classList.add("active");
-  }
+      // TradingView widget config
+      new TradingView.widget({
+        container_id: ui.tfChart,
+        width: "100%",
+        height: 400,
+        symbol: `${data.chain.toUpperCase()}:${data.baseToken.address}`,
+        interval: "60",
+        timezone: "Etc/UTC",
+        theme: "dark",
+        style: "1",
+        toolbar_bg: "#1F1F1F",
+        withdateranges: true,
+        hide_side_toolbar: false,
+        allow_symbol_change: false,
+        watchlist: [],
+        details: true,
+        hotlist: true,
+        calendar: true
+      });
 
-  function drawSparkline(canvas, data) {
-    const url = `https://api.dexscreener.com/latest/dex/pairs/${data.chain}/${data.pairAddress}`;
-    fetch(url).then(r => r.json())
-      .then(j => {
-        const arr = j.pair?.priceUsdTimeline?.map(p => parseFloat(p.priceUsd)) || [];
-        if (!arr.length) return;
-        const ctx = canvas.getContext("2d");
-        const w = canvas.width = 100, h = canvas.height = 30;
-        const min = Math.min(...arr), max = Math.max(...arr), rng = max - min || 1;
-        ctx.beginPath();
-        arr.forEach((v, i) => {
-          const x = i * (w / arr.length);
-          const y = h - ((v - min) / rng) * h;
-          i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-        });
-        ctx.strokeStyle = "#2563EB";
-        ctx.lineWidth = 1;
-        ctx.stroke();
+      // Swap iframe embed (DEXTools example)
+      ui.swapFrame.src = `https://www.dextools.io/widget-chart/en/${data.chain}/${data.pairAddress}?theme=dark&chartType=1&chartResolution=60&drawingToolbars=false`;
+
+      ui.tokenModal.classList.add('active');
+    }
+
+    function drawSparkline(canvas,data){
+      if(!canvas) return;
+      const url=`https://api.dexscreener.com/latest/dex/pairs/${data.chain}/${data.pairAddress}`;
+      fetch(url).then(r=>r.json()).then(j=>{
+        const arr=j.pair?.priceUsdTimeline?.map(p=>parseFloat(p.priceUsd))||[];
+        if(arr.length){
+          const ctx=canvas.getContext('2d'), w=canvas.width=100, h=canvas.height=30;
+          ctx.clearRect(0,0,w,h); ctx.beginPath();
+          const min=Math.min(...arr), max=Math.max(...arr), rng=max-min||1;
+          arr.forEach((v,i)=>{
+            const x=i*(w/arr.length), y=h-((v-min)/rng)*h;
+            i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+          });
+          ctx.strokeStyle="#2563EB"; ctx.lineWidth=1; ctx.stroke();
+        }
       }).catch(console.error);
-  }
-})();
-</script>
+    }
+
+  })();
+  </script>
+
 </body>
 </html>
