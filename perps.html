@@ -803,3 +803,377 @@
           side: 'long',
           entryPrice: 108500.25,
           amount: 0.05,
+          markPrice: 109823.40,
+          liqPrice: 102340.50,
+          pnl: 66.16,
+          pnlPercent: 1.22,
+          leverage: 5,
+          collateral: 1085.00
+        },
+        {
+          id: '2',
+          symbol: 'ETH-PERP',
+          side: 'short',
+          entryPrice: 2810.75,
+          amount: 0.5,
+          markPrice: 2763.15,
+          liqPrice: 2910.25,
+          pnl: 23.80,
+          pnlPercent: 1.69,
+          leverage: 10,
+          collateral: 281.08
+        }
+      ];
+
+      updatePositionsList();
+    }
+
+    // Update positions list
+    function updatePositionsList() {
+      if (state.positions.length === 0) {
+        elements.positionsList.innerHTML = `
+          <div class="text-center py-8 text-gray-500 text-sm">
+            No open positions
+          </div>
+        `;
+        return;
+      }
+
+      elements.positionsList.innerHTML = state.positions.map(pos => `
+        <div class="bg-zinc-800 rounded-lg p-3">
+          <div class="flex justify-between items-center mb-2">
+            <div class="flex items-center space-x-2">
+              <span class="font-medium">${pos.symbol}</span>
+              <span class="text-xs px-1 ${pos.side === 'long' ? 'bg-green-600' : 'bg-red-600'} rounded">
+                ${pos.side.toUpperCase()}
+              </span>
+              <span class="text-xs text-gray-400">${pos.leverage}x</span>
+            </div>
+            <span class="${pos.pnl >= 0 ? 'text-green-400' : 'text-red-400'} text-sm">
+              ${pos.pnl >= 0 ? '+' : ''}${pos.pnl.toFixed(2)} (${pos.pnlPercent.toFixed(2)}%)
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="text-gray-400">Entry</div>
+            <div class="text-right">${pos.entryPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div class="text-gray-400">Mark</div>
+            <div class="text-right">${pos.markPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div class="text-gray-400">Size</div>
+            <div class="text-right">${pos.amount.toFixed(4)}</div>
+            <div class="text-gray-400">Liq Price</div>
+            <div class="text-right">${pos.liqPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div class="text-gray-400">Collateral</div>
+            <div class="text-right">${pos.collateral.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          </div>
+          <div class="flex space-x-2 mt-3">
+            <button class="flex-1 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-xs">Close</button>
+            <button class="flex-1 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-xs">TP/SL</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Load user orders (mock)
+    function loadUserOrders() {
+      // Mock orders
+      state.orders = [
+        {
+          id: '1',
+          symbol: 'BTC-PERP',
+          side: 'buy',
+          price: 108200.00,
+          amount: 0.02,
+          filled: 0.00,
+          type: 'limit',
+          time: '12:34:56',
+          status: 'open'
+        },
+        {
+          id: '2',
+          symbol: 'ETH-PERP',
+          side: 'sell',
+          price: 2800.00,
+          amount: 0.5,
+          filled: 0.25,
+          type: 'limit',
+          time: '10:20:30',
+          status: 'partial'
+        }
+      ];
+
+      updateOrdersList();
+    }
+
+    // Update orders list
+    function updateOrdersList() {
+      if (state.orders.length === 0) {
+        elements.ordersList.innerHTML = `
+          <div class="text-center py-8 text-gray-500 text-sm">
+            No open orders
+          </div>
+        `;
+        return;
+      }
+
+      elements.ordersList.innerHTML = state.orders.map(order => `
+        <div class="bg-zinc-800 rounded-lg p-3">
+          <div class="flex justify-between items-center mb-1">
+            <div class="flex items-center space-x-2">
+              <span class="text-sm font-medium">${order.symbol}</span>
+              <span class="text-xs px-1 ${order.side === 'buy' ? 'bg-green-600' : 'bg-red-600'} rounded">
+                ${order.side.toUpperCase()}
+              </span>
+            </div>
+            <span class="text-xs ${order.status === 'open' ? 'text-green-400' : 'text-yellow-400'}">
+              ${order.status.toUpperCase()}
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-1 text-xs">
+            <div class="text-gray-400">Price</div>
+            <div class="text-right">${order.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div class="text-gray-400">Amount</div>
+            <div class="text-right">${order.amount.toFixed(4)}</div>
+            <div class="text-gray-400">Filled</div>
+            <div class="text-right">${order.filled.toFixed(4)}</div>
+            <div class="text-gray-400">Type</div>
+            <div class="text-right">${order.type.toUpperCase()}</div>
+            <div class="text-gray-400">Time</div>
+            <div class="text-right">${order.time}</div>
+          </div>
+          <div class="flex space-x-2 mt-2">
+            <button class="flex-1 py-1 bg-red-600 hover:bg-red-700 rounded text-xs">Cancel</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Load user trade history (mock)
+    function loadUserHistory() {
+      // Mock history
+      state.history = [
+        {
+          id: '1',
+          symbol: 'BTC-PERP',
+          side: 'buy',
+          price: 108000.00,
+          amount: 0.01,
+          fee: 2.16,
+          pnl: 18.23,
+          time: '2023-06-15 09:45:23',
+          type: 'market'
+        },
+        {
+          id: '2',
+          symbol: 'ETH-PERP',
+          side: 'sell',
+          price: 2825.50,
+          amount: 0.2,
+          fee: 1.13,
+          pnl: -8.75,
+          time: '2023-06-14 14:30:10',
+          type: 'limit'
+        }
+      ];
+
+      updateHistoryList();
+    }
+
+    // Update history list
+    function updateHistoryList() {
+      if (state.history.length === 0) {
+        elements.historyList.innerHTML = `
+          <div class="text-center py-8 text-gray-500 text-sm">
+            No trade history
+          </div>
+        `;
+        return;
+      }
+
+      elements.historyList.innerHTML = state.history.map(trade => `
+        <div class="bg-zinc-800 rounded-lg p-3">
+          <div class="flex justify-between items-center mb-1">
+            <div class="flex items-center space-x-2">
+              <span class="text-sm font-medium">${trade.symbol}</span>
+              <span class="text-xs px-1 ${trade.side === 'buy' ? 'bg-green-600' : 'bg-red-600'} rounded">
+                ${trade.side.toUpperCase()}
+              </span>
+            </div>
+            <span class="text-xs text-gray-400">${trade.time.split(' ')[0]}</span>
+          </div>
+          <div class="grid grid-cols-2 gap-1 text-xs">
+            <div class="text-gray-400">Price</div>
+            <div class="text-right">${trade.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div class="text-gray-400">Amount</div>
+            <div class="text-right">${trade.amount.toFixed(4)}</div>
+            <div class="text-gray-400">Fee</div>
+            <div class="text-right">${trade.fee.toFixed(2)}</div>
+            <div class="text-gray-400">PNL</div>
+            <div class="text-right ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}">
+              ${trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}
+            </div>
+            <div class="text-gray-400">Type</div>
+            <div class="text-right">${trade.type.toUpperCase()}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Show specific tab content
+    function showTab(tabName) {
+      elements.positionsList.classList.add('hidden');
+      elements.ordersList.classList.add('hidden');
+      elements.historyList.classList.add('hidden');
+      
+      elements.positionsTab.classList.remove('bg-purple-600');
+      elements.ordersTab.classList.remove('bg-purple-600');
+      elements.historyTab.classList.remove('bg-purple-600');
+      
+      elements.positionsTab.classList.add('bg-zinc-800');
+      elements.ordersTab.classList.add('bg-zinc-800');
+      elements.historyTab.classList.add('bg-zinc-800');
+
+      if (tabName === 'positions') {
+        elements.positionsList.classList.remove('hidden');
+        elements.positionsTab.classList.add('bg-purple-600');
+        elements.positionsTab.classList.remove('bg-zinc-800');
+      } else if (tabName === 'orders') {
+        elements.ordersList.classList.remove('hidden');
+        elements.ordersTab.classList.add('bg-purple-600');
+        elements.ordersTab.classList.remove('bg-zinc-800');
+      } else if (tabName === 'history') {
+        elements.historyList.classList.remove('hidden');
+        elements.historyTab.classList.add('bg-purple-600');
+        elements.historyTab.classList.remove('bg-zinc-800');
+      }
+    }
+
+    // Open market selection modal
+    function openMarketModal() {
+      elements.marketModal.classList.remove('hidden');
+      updateMarketModal();
+    }
+
+    // Close modal
+    function closeModal() {
+      elements.marketModal.classList.add('hidden');
+    }
+
+    // Update market modal content
+    function updateMarketModal() {
+      // Favorite markets (mock)
+      const favoriteMarkets = ['BTC-PERP', 'ETH-PERP'];
+      
+      elements.favoriteMarkets.innerHTML = state.markets
+        .filter(m => favoriteMarkets.includes(m.symbol))
+        .map(m => createMarketButton(m))
+        .join('');
+      
+      elements.allMarkets.innerHTML = state.markets
+        .filter(m => !favoriteMarkets.includes(m.symbol))
+        .map(m => createMarketButton(m))
+        .join('');
+    }
+
+    // Create market button for modal
+    function createMarketButton(market) {
+      return `
+        <button onclick="selectMarket('${market.symbol}')" 
+          class="w-full p-2 hover:bg-zinc-800 rounded text-left flex justify-between items-center">
+          <div>
+            <div class="font-medium">${market.symbol}</div>
+            <div class="text-xs text-gray-400">${market.name}</div>
+          </div>
+          <div class="text-right">
+            <div>$${market.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div class="text-xs ${market.change24h >= 0 ? 'text-green-400' : 'text-red-400'}">
+              ${market.change24h >= 0 ? '+' : ''}${market.change24h.toFixed(2)}%
+            </div>
+          </div>
+        </button>
+      `;
+    }
+
+    // Select new market
+    function selectMarket(symbol) {
+      state.currentMarket = symbol;
+      elements.selectedMarket.textContent = symbol;
+      closeModal();
+      refreshData();
+    }
+
+    // Update market data display
+    function updateMarketData() {
+      const market = state.markets.find(m => m.symbol === state.currentMarket);
+      if (!market) return;
+
+      elements.selectedMarket.textContent = market.symbol;
+      elements.marketPrice.textContent = `$${market.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      
+      const changeClass = market.change24h >= 0 ? 'text-green-400' : 'text-red-400';
+      const changeSymbol = market.change24h >= 0 ? '+' : '';
+      elements.priceChange.className = `text-sm ${changeClass}`;
+      elements.priceChange.textContent = `${changeSymbol}${market.change24h.toFixed(2)}%`;
+      elements.priceChange24h.className = `text-xs ${changeClass}`;
+      elements.priceChange24h.textContent = `${changeSymbol}${market.change24h.toFixed(2)}%`;
+      
+      // Mock some price range data
+      const high = market.price * (1 + Math.abs(market.change24h) / 100;
+      const low = market.price * (1 - Math.abs(market.change24h) / 100;
+      
+      elements.high24h.textContent = `$${high.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      elements.low24h.textContent = `$${low.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      elements.volume24h.textContent = `$${(market.volume * 1000).toLocaleString()}`;
+      elements.openInterest.textContent = `$${(market.oi * 1000).toLocaleString()}`;
+      
+      // Mock funding data
+      const fundingRate = (Math.random() * 0.0005 - 0.00025).toFixed(6);
+      elements.fundingRate.textContent = `${fundingRate}%`;
+      elements.nextFunding.textContent = '1h 23m';
+      elements.markPrice.textContent = `$${(market.price * (1 + parseFloat(fundingRate) / 10000)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      elements.indexPrice.textContent = `$${market.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    // Refresh all data
+    function refreshData() {
+      updateMarketData();
+      
+      // Mock price data
+      const market = state.markets.find(m => m.symbol === state.currentMarket);
+      if (market) {
+        state.priceData = [];
+        for (let i = 24; i >= 0; i--) {
+          const time = new Date(Date.now() - i * 3600 * 1000);
+          const basePrice = market.price * (1 + (Math.random() * 0.02 - 0.01));
+          state.priceData.push({
+            time,
+            open: basePrice,
+            high: basePrice * (1 + Math.random() * 0.01),
+            low: basePrice * (1 - Math.random() * 0.01),
+            close: basePrice * (1 + (Math.random() * 0.002 - 0.001))
+          });
+        }
+        updateChart();
+      }
+      
+      // Update order book and trades
+      simulateOrderBookUpdates();
+      simulateNewTrades(market?.price || 0);
+    }
+
+    // Start periodic data updates
+    function startDataUpdates() {
+      // Initial data load
+      refreshData();
+      
+      // Set up periodic updates
+      setInterval(() => {
+        refreshData();
+      }, config.updateInterval);
+    }
+
+    // Make functions available globally for HTML event handlers
+    window.selectMarket = selectMarket;
+    window.closeModal = closeModal;
+  </script>
+</body>
+</html>
