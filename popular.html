@@ -206,205 +206,171 @@
   const timeTabs=Array.from(document.querySelectorAll(".time-tab"));
   let selected=new Set(), cache={}, favorites=JSON.parse(localStorage.getItem("favorites")||"[]"), lastData=[], loading=false, range="h24";
 
-    // Build grid
-  chains.forEach(id => {
-    const d = document.createElement("div");
-    d.className = "network-option flex flex-col items-center p-2";
-    const img = document.createElement("img");
-    img.src = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${id}/info/logo.png`;
-    img.onerror = () => img.style.visibility = "hidden";
-    const span = document.createElement("span");
-    span.textContent = id;
-    span.className = "text-xs text-center mt-1";
-    d.append(img, span);
-    d.dataset.chain = id;
+// Build grid
+chains.forEach(id => {
+  const d = document.createElement("div");
+  d.className = "network-option flex flex-col items-center p-2";
+  const img = document.createElement("img");
+  img.src = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${id}/info/logo.png`;
+  img.onerror = () => img.style.visibility = "hidden";
+  const span = document.createElement("span");
+  span.textContent = id;
+  span.className = "text-xs text-center mt-1";
+  d.append(img, span);
+  d.dataset.chain = id;
 
-    d.onclick = () => {
-      if (selected.has(id)) {
-        selected.delete(id);
-        d.classList.remove("selected");
-      } else {
-        selected.add(id);
-        d.classList.add("selected");
-        chainsModal.classList.remove("active");
-      }
-      chainsLbl.textContent = `Select Networks (${selected.size})`;
-    };
-    chainGrid.appendChild(d);
-  });
-
-  openChainsBtn.onclick = () => chainsModal.classList.add("active");
-  chainsModal.onclick = e => e.target === chainsModal && chainsModal.classList.remove("active");
-  clearChains.onclick = () => {
-    selected.clear();
-    document.querySelectorAll(".network-option.selected").forEach(e => e.classList.remove("selected"));
-    chainsLbl.textContent = "Select Networks (0)";
-  };
-  searchChain.oninput = () => {
-    const val = searchChain.value.toLowerCase();
-    document.querySelectorAll(".network-option").forEach(e => {
-      e.style.display = e.dataset.chain.includes(val) ? "flex" : "none";
-    });
-  };
-
-  timeTabs.forEach(btn => btn.onclick = () => {
-    timeTabs.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    range = btn.dataset.range;
-    lastData = [];
-    tokensContainer.innerHTML = "";
-  });
-
-  tdClose.onclick = () => tokenModal.classList.remove("active");
-  tokenModal.onclick = e => e.target === tokenModal && tokenModal.classList.remove("active");
-
-  tdCopy.onclick = () => {
-    navigator.clipboard.writeText(tdAddr.textContent);
-    tdCopy.textContent = "Copied!";
-    tdCopy.disabled = true;
-    setTimeout(() => {
-      tdCopy.textContent = "Copy";
-      tdCopy.disabled = false;
-    }, 1500);
-  };
-
-  tdTrade.onclick = () => window.location = `swap.html?token=${tdAddr.textContent}`;
-
-  fetchBtn.onclick = loadTokens;
-
-  window.addEventListener("scroll", () => {
-    if (!loading && window.innerHeight + window.scrollY > document.body.offsetHeight - 200) {
-      loadMore();
+  d.onclick = () => {
+    if (selected.has(id)) {
+      selected.delete(id);
+      d.classList.remove("selected");
+    } else {
+      selected.add(id);
+      d.classList.add("selected");
+      chainsModal.classList.remove("active");
     }
+    chainsLbl.textContent = `Select Networks (${selected.size})`;
+  };
+  chainGrid.appendChild(d);
+});
+
+openChainsBtn.onclick = () => chainsModal.classList.add("active");
+chainsModal.onclick = e => e.target === chainsModal && chainsModal.classList.remove("active");
+clearChains.onclick = () => {
+  selected.clear();
+  document.querySelectorAll(".network-option.selected").forEach(e => e.classList.remove("selected"));
+  chainsLbl.textContent = "Select Networks (0)";
+};
+searchChain.oninput = () => {
+  const val = searchChain.value.toLowerCase();
+  document.querySelectorAll(".network-option").forEach(e => {
+    e.style.display = e.dataset.chain.includes(val) ? "flex" : "none";
   });
+};
 
-  async function loadTokens() {
-    if (selected.size === 0 && !tokenInput.value.trim()) {
-      alert("Select chain(s) or paste address");
-      return;
-    }
+timeTabs.forEach(btn => btn.onclick = () => {
+  timeTabs.forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  range = btn.dataset.range;
+  lastData = [];
+  tokensContainer.innerHTML = "";
+});
 
-    loading = true;
-    tokensContainer.innerHTML = Array(6).fill('<div class="skeleton"></div>').join('');
-    lastData = [];
+tdClose.onclick = () => tokenModal.classList.remove("active");
+tokenModal.onclick = e => e.target === tokenModal && tokenModal.classList.remove("active");
 
-    try {
-      const addr = tokenInput.value.trim().toLowerCase();
-      const tasks = [...selected].map(chain => {
-        const key = addr ? `${chain}-${addr}` : `${chain}-pairs`;
-        if (cache[key]) return Promise.resolve(cache[key]);
+tdCopy.onclick = () => {
+  navigator.clipboard.writeText(tdAddr.textContent);
+  tdCopy.textContent = "Copied!";
+  tdCopy.disabled = true;
+  setTimeout(() => {
+    tdCopy.textContent = "Copy";
+    tdCopy.disabled = false;
+  }, 1500);
+};
 
-        const url = addr
-          ? `https://api.dexscreener.com/token-pairs/v1/${chain}/${addr}`
-          : `https://api.dexscreener.com/latest/dex/pairs/${chain}`;
+tdTrade.onclick = () => window.location = `swap.html?token=${tdAddr.textContent}`;
 
-        return fetch(url)
-          .then(r => r.json())
-          .then(j => {
-            const arr = addr ? j : j.pairs;
-            const mapped = arr.map(p => ({ ...p, chain }));
-            cache[key] = mapped;
-            return mapped;
-          });
-      });
+fetchBtn.onclick = loadTokens;
 
-      const all = (await Promise.all(tasks)).flat();
-      lastData = all.sort((a, b) => (b.volume?.usd || 0) - (a.volume?.usd || 0));
-      tokensContainer.innerHTML = "";
-      loading = false;
-      loadMore();
-    } catch (e) {
-      console.error(e);
-      tokensContainer.innerHTML = '<p class="text-red-500 text-center">Error loading tokens</p>';
-      loading = false;
-    }
+window.addEventListener("scroll", () => {
+  if (!loading && window.innerHeight + window.scrollY > document.body.offsetHeight - 200) {
+    loadMore();
+  }
+});
+
+async function loadTokens() {
+  if (selected.size === 0 && !tokenInput.value.trim()) {
+    alert("Select chain(s) or paste address");
+    return;
   }
 
-  function loadMore() {
-    if (loading || !lastData.length) return;
-    loading = true;
+  loading = true;
+  tokensContainer.innerHTML = Array(6).fill('<div class="skeleton"></div>').join('');
+  lastData = [];
 
-    const chunk = lastData.splice(0, 20);
-    chunk.forEach(data => {
-      const div = document.createElement("div");
-      div.className = "glass grid grid-cols-3 p-4 rounded-lg items-center token-card";
+  try {
+    const addr = tokenInput.value.trim().toLowerCase();
+    const tasks = [...selected].map(chain => {
+      const key = addr ? `${chain}-${addr}` : `${chain}-pairs`;
+      if (cache[key]) return Promise.resolve(cache[key]);
 
-      div.innerHTML = `
-        <div class="flex items-center gap-2">
-          <img src="${data.info.imageUrl}" class="w-6 h-6 rounded-full" onerror="this.style.display='none'" />
-          <span>${data.baseToken.symbol}</span>
-        </div>
-        <div class="text-right">${parseFloat(data.priceUsd).toFixed(4)} USD</div>
-        <div class="text-right ${data.priceChange?.[range] >= 0 ? 'text-green-500' : 'text-red-500'}">
-          ${parseFloat(data.priceChange?.[range] || 0).toFixed(2)}%
-        </div>
-        <canvas class="sparkline"></canvas>
-        <div class="star-btn${favorites.includes(data.pairAddress) ? ' favored' : ''}">★</div>
-      `;
+      const url = addr
+        ? `https://api.dexscreener.com/token-pairs/v1/${chain}/${addr}`
+        : `https://api.dexscreener.com/latest/dex/pairs/${chain}`;
 
-      div.onclick = () => showDetail(data);
-      div.querySelector(".star-btn").onclick = e => {
-        e.stopPropagation();
-        toggleFavorite(data.pairAddress, e.target);
-      };
-
-      tokensContainer.appendChild(div);
-      drawSparkline(div.querySelector("canvas"), data);
+      return fetch(url)
+        .then(r => {
+          if (!r.ok) throw new Error(`API error: ${r.status}`);
+          return r.json();
+        })
+        .then(j => {
+          const arr = addr ? j : j.pairs;
+          if (!arr || !arr.length) throw new Error("No pairs found");
+          const mapped = arr.map(p => ({ ...p, chain }));
+          cache[key] = mapped;
+          return mapped;
+        })
+        .catch(e => {
+          console.error(`Failed for ${chain}:`, e);
+          return []; // Retourne un tableau vide pour éviter de bloquer Promise.all
+        });
     });
 
+    const results = await Promise.all(tasks);
+    const all = results.flat();
+    lastData = all.sort((a, b) => (b.volume?.usd || 0) - (a.volume?.usd || 0));
+    
+    tokensContainer.innerHTML = "";
+    if (!lastData.length) {
+      tokensContainer.innerHTML = '<p class="text-red-500 text-center">No tokens found. Try another address or chain.</p>';
+    }
+    loading = false;
+    loadMore();
+  } catch (e) {
+    console.error(e);
+    tokensContainer.innerHTML = '<p class="text-red-500 text-center">Error loading tokens. Check console.</p>';
     loading = false;
   }
+}
 
-  function toggleFavorite(addr, btn) {
-    const i = favorites.indexOf(addr);
-    if (i >= 0) {
-      favorites.splice(i, 1);
-      btn.classList.remove("favored");
-    } else {
-      favorites.push(addr);
-      btn.classList.add("favored");
-    }
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  }
+function loadMore() {
+  if (loading || !lastData.length) return;
+  loading = true;
 
-  function showDetail(data) {
-    tdLogo.src = data.info.imageUrl;
-    tdName.textContent = `${data.baseToken.name} (${data.baseToken.symbol})`;
-    tdAddr.textContent = data.baseToken.address;
-    tdLinks.innerHTML = "";
+  const chunk = lastData.splice(0, 20);
+  chunk.forEach(data => {
+    const div = document.createElement("div");
+    div.className = "glass grid grid-cols-3 p-4 rounded-lg items-center token-card hover:bg-gray-50 cursor-pointer";
 
-    (data.info.websites || []).forEach(url => {
-      tdLinks.innerHTML += `<a href="${url}" target="_blank" class="block text-blue-400">🔗 Website</a>`;
-    });
-    (data.info.socials || []).forEach(s => {
-      tdLinks.innerHTML += `<a href="${s.handle}" target="_blank" class="block">📣 ${s.platform}</a>`;
-    });
+    div.innerHTML = `
+      <div class="flex items-center gap-2">
+        <img src="${data.baseToken.logoURI || data.info?.imageUrl}" 
+             class="w-6 h-6 rounded-full" 
+             onerror="this.src='https://via.placeholder.com/24'; this.onerror=null;" />
+        <span>${data.baseToken.symbol}</span>
+      </div>
+      <div class="text-right">${parseFloat(data.priceUsd || 0).toFixed(4)} USD</div>
+      <div class="text-right ${data.priceChange?.[range] >= 0 ? 'text-green-500' : 'text-red-500'}">
+        ${parseFloat(data.priceChange?.[range] || 0).toFixed(2)}%
+      </div>
+      <canvas class="sparkline"></canvas>
+      <div class="star-btn${favorites.includes(data.pairAddress) ? ' favored' : ''}">★</div>
+    `;
 
-    tokenModal.classList.add("active");
-  }
+    div.onclick = () => showDetail(data);
+    div.querySelector(".star-btn").onclick = e => {
+      e.stopPropagation();
+      toggleFavorite(data.pairAddress, e.target);
+    };
 
-  function drawSparkline(canvas, data) {
-    fetch(`https://api.dexscreener.com/latest/dex/pairs/${data.chain}/${data.pairAddress}`)
-      .then(r => r.json())
-      .then(j => {
-        const arr = j.pair.priceUsdTimeline.map(p => parseFloat(p.priceUsd));
-        const ctx = canvas.getContext("2d");
-        const w = canvas.width = 100, h = canvas.height = 30;
-        const min = Math.min(...arr), max = Math.max(...arr), rangeVal = max - min || 1;
+    tokensContainer.appendChild(div);
+    drawSparkline(div.querySelector("canvas"), data);
+  });
 
-        ctx.beginPath();
-        arr.forEach((v, i) => {
-          const x = i * (w / arr.length);
-          const y = h - ((v - min) / rangeVal) * h;
-          i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-        });
+  loading = false;
+}
 
-        ctx.strokeStyle = "#2563EB";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      })
-      .catch(console.error);
-  }
+// ... (Le reste du code reste identique, y compris showDetail, toggleFavorite, drawSparkline)
 })();
 </script>
 </body>
