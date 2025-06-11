@@ -233,13 +233,10 @@
   </div>
 
   <!-- NETWORK SELECTOR -->
-<div class="relative px-4 mb-3">
+<div class="px-4 mb-3 relative">
   <button 
     id="networkSelector" 
-    class="w-full p-3 bg-[#1F1F1F] rounded-lg flex items-center justify-between text-white focus:outline-none"
-    aria-haspopup="true" 
-    aria-expanded="false" 
-    aria-controls="networkDropdown"
+    class="w-full p-3 bg-[#1F1F1F] rounded-lg flex items-center justify-between text-white"
   >
     <div class="flex items-center gap-2">
       <span id="selectedNetwork">All Networks</span>
@@ -247,14 +244,10 @@
     <span class="text-sm">▼</span>
   </button>
 
-  <div 
-    id="networkDropdown" 
-    class="absolute w-full mt-2 bg-[#1A1A1A] rounded-lg shadow-lg z-50 hidden"
-    role="menu" 
-    aria-labelledby="networkSelector"
-  >
+  <!-- Menu déroulant visible dans le flux normal (pas absolute) -->
+  <div id="networkDropdown" class="mt-2 bg-[#1A1A1A] rounded-lg shadow-inner hidden">
     <!-- All Networks -->
-    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3 selected">
+    <div class="network-item selected px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
       <span>All Networks</span>
     </div>
 
