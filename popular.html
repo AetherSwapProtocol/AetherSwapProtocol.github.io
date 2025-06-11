@@ -7,24 +7,28 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
   :root {
-  --bg-main: #0a0a0a;
-  --bg-card: rgba(15, 15, 15, 0.7);
-  --text-primary: #ffffff;
+  --bg-main: #f9fafb;
+  --bg-card: rgba(0, 0, 0, 0.05);
+  --text-primary: #000000;
   --text-gradient: linear-gradient(90deg, #7e22ce 0%, #3b82f6 100%);
   --primary-violet: #7e22ce;
   --primary-blue: #2563eb;
   --dark-blue: #1e40af;
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glow-blue: rgba(37, 99, 235, 0.5);
-  --shadow-purple: rgba(124, 58, 237, 0.1);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glow-blue: rgba(37, 99, 235, 0.3);
+  --shadow-purple: rgba(124, 58, 237, 0.06);
   --gradient-core: linear-gradient(135deg, #7e22ce, #3b82f6);
   --gradient-active: linear-gradient(135deg, #2563eb, #1e40af);
 }
-    html[data-theme='dark'] {
-      --bg: #121212;
-      --card: rgba(255, 255, 255, 0.05);
-      --text: #fff;
-    }
+
+html[data-theme='dark'] {
+  --bg-main: #0a0a0a;
+  --bg-card: rgba(15, 15, 15, 0.7);
+  --text-primary: #ffffff;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glow-blue: rgba(37, 99, 235, 0.5);
+  --shadow-purple: rgba(124, 58, 237, 0.1);
+}
 
     html[data-theme='light'] {
       --bg: #f9fafb;
