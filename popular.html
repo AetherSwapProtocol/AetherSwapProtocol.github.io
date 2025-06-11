@@ -211,16 +211,13 @@ async function fetchTokens() {
     let url = `${baseUrl}?vs_currency=${vs_currency}&order=volume_desc&sparkline=true&per_page=${perPage}&page=1`;
 
 if (selectedChains.length === 1) {
-  const platformMap = {
-    "ethereum": "ethereum",
-    "solana": "solana",
-    "binance-smart-chain": "binance-smart-chain",
-    "base": "base"
-  };
-  const platform = platformMap[selectedChains[0]];
-  if (platform) {
-    url += `&category=${platform}`;
-  }
+  const chain = selectedChains[0];
+  tokens = tokens.filter(t =>
+    t.platforms &&
+    Object.values(t.platforms).some(p =>
+      p.toLowerCase().includes(chain)
+    )
+  );
 }
     const res = await fetch(url);
     const tokens = await res.json();
