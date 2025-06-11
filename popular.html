@@ -1,31 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>AetherSwap – Trending Tokens</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
       background-color: #121212;
-      color: #FFF;
+      color: #ffffff;
       font-family: 'Inter', sans-serif;
       margin: 0;
       padding-bottom: 90px;
     }
-
-    .glass {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
+    .glass-popup {
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: background 0.2s;
-      position: relative;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+      border-radius: 16px;
+      transition: 0.3s ease-in-out;
     }
-
-    .glass:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
     .modal-bg {
       display: none;
       position: fixed;
@@ -35,189 +30,113 @@
       justify-content: center;
       align-items: center;
     }
-
     .modal-bg.active {
       display: flex;
     }
-
-    .modal {
-      background: #1F1F1F;
-      border-radius: 16px;
-      padding: 20px;
-      width: 90%;
-      max-width: 480px;
-      max-height: 90vh;
-      overflow-y: auto;
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 100;
     }
-
-    .star-btn {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      font-size: 18px;
-      color: rgba(255, 255, 255, 0.5);
-      cursor: pointer;
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
     }
-
-    .star-btn.favored {
-      color: #FFD700;
-    }
-
-    .sparkline {
-      width: 100px;
-      height: 30px;
+    .nav-item.active {
+      color: #ffffff;
     }
   </style>
 </head>
-<body class="p-4">
-
+<body>
   <header class="text-center py-4">
-    <h1 class="text-2xl font-bold text-white">Popular Tokens</h1>
+    <h1 class="text-2xl font-bold text-white">Trending Tokens</h1>
   </header>
 
-  <input id="tokenSearch" type="text" placeholder="Search token (name, symbol, or address)" class="w-full p-3 mb-4 bg-[#2A2A2A] text-white rounded-lg" />
+  <!-- Top bar for networks -->
+  <div class="flex gap-2 overflow-x-auto px-4 mb-4">
+    <button class="bg-blue-700 text-white px-3 py-1 rounded">All</button>
+    <button class="bg-blue-700 text-white px-3 py-1 rounded">Ethereum</button>
+    <button class="bg-blue-700 text-white px-3 py-1 rounded">Solana</button>
+    <button class="bg-blue-700 text-white px-3 py-1 rounded">BNB</button>
+    <button class="bg-blue-700 text-white px-3 py-1 rounded">Base</button>
+    <button class="bg-gray-800 text-white px-3 py-1 rounded" onclick="openNetworkModal()">+ More</button>
+  </div>
 
-  <div id="tokenList" class="space-y-4"></div>
+  <!-- Token List -->
+  <div id="tokenList" class="space-y-4 px-4"></div>
 
+  <!-- Modal for Token Details -->
   <div id="tokenModal" class="modal-bg">
-    <div class="modal">
+    <div class="glass-popup w-full max-w-md p-4">
       <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
           <img id="modalLogo" class="w-10 h-10 rounded-full" />
           <h3 id="modalName" class="text-lg font-semibold"></h3>
         </div>
-        <button id="modalClose" class="text-white text-2xl">&times;</button>
+        <button onclick="closeTokenModal()" class="text-white text-2xl">&times;</button>
       </div>
-
-      <div class="mb-4">
-        <label class="block text-sm mb-1">Contract:</label>
-        <div class="flex justify-between items-center bg-[#2A2A2A] p-3 rounded-lg">
-          <span id="modalAddress" class="truncate"></span>
-          <button id="copyBtn" class="ml-2 px-2 py-1 bg-blue-600 rounded text-white">Copy</button>
-        </div>
-      </div>
-
-      <div id="modalLinks" class="space-y-2 mb-4"></div>
-
+      <p class="text-sm text-gray-400 mb-2">Contract: <span id="modalAddress" class="font-mono text-sm"></span></p>
       <canvas id="modalChart" class="w-full h-24 mb-4"></canvas>
-
-      <button id="tradeBtn" class="w-full p-3 bg-green-500 rounded-lg">Trade this token</button>
+      <div id="modalLinks" class="space-y-1 mb-4"></div>
+      <button id="tradeBtn" class="w-full bg-green-500 py-2 rounded text-white">Trade this token</button>
     </div>
   </div>
 
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal-bg">
+    <div class="glass-popup w-full max-w-sm p-4">
+      <h2 class="text-lg font-bold mb-4">Settings</h2>
+      <label for="langSelect" class="block mb-2">🌐 Language:</label>
+      <select id="langSelect" class="w-full mb-4 p-2 bg-gray-800 text-white rounded">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="zh-CN">中文</option>
+        <option value="es">Español</option>
+      </select>
+      <label class="block mb-2">🌓 Theme:</label>
+      <button onclick="toggleTheme()" class="w-full bg-blue-600 text-white py-2 rounded">Toggle Dark / Light</button>
+      <button onclick="closeSettings()" class="w-full mt-4 bg-gray-600 py-2 rounded text-white">Close</button>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <div class="nav-item active">🏠 Home</div>
+    <div class="nav-item">🔁 Swap</div>
+    <div class="nav-item">📊 Tokens</div>
+    <div class="nav-item">👤 Profile</div>
+    <div class="nav-item" onclick="document.getElementById('settingsModal').classList.add('active')">⚙️ Settings</div>
+  </nav>
+
   <script>
-    const tokenList = document.getElementById("tokenList");
-    const tokenModal = document.getElementById("tokenModal");
-    const modalLogo = document.getElementById("modalLogo");
-    const modalName = document.getElementById("modalName");
-    const modalAddress = document.getElementById("modalAddress");
-    const modalLinks = document.getElementById("modalLinks");
-    const modalChart = document.getElementById("modalChart");
-    const copyBtn = document.getElementById("copyBtn");
-    const tradeBtn = document.getElementById("tradeBtn");
-    const modalClose = document.getElementById("modalClose");
-    const tokenSearch = document.getElementById("tokenSearch");
-
-    let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-    let allTokens = [];
-
-    async function fetchTokens() {
-      const url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&sparkline=true&per_page=50&page=1";
-      const res = await fetch(url);
-      const tokens = await res.json();
-      allTokens = tokens;
-      renderTokens(tokens);
+    // Placeholder: dynamic JS rendering and behavior to be added in JS build
+    function openNetworkModal() { alert("Open Blockchain Modal (not yet wired here)"); }
+    function closeTokenModal() { document.getElementById("tokenModal").classList.remove("active"); }
+    function closeSettings() { document.getElementById("settingsModal").classList.remove("active"); }
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const newTheme = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
     }
 
-    function renderTokens(tokens) {
-      tokenList.innerHTML = "";
-      tokens.forEach(token => {
-        const div = document.createElement("div");
-        div.className = "glass p-4 rounded-lg flex justify-between items-center relative";
-        div.innerHTML = `
-          <div class="flex items-center gap-2">
-            <img src="${token.image}" class="w-6 h-6 rounded-full" />
-            <span>${token.symbol.toUpperCase()}</span>
-          </div>
-          <div class="text-right">${token.current_price.toFixed(2)} USD</div>
-          <div class="text-right ${token.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}">
-            ${token.price_change_percentage_24h.toFixed(2)}%
-          </div>
-          <canvas class="sparkline absolute right-4 bottom-2"></canvas>
-          <div class="star-btn ${favorites.includes(token.id) ? 'favored' : ''}">★</div>
-        `;
-
-        div.querySelector(".star-btn").onclick = (e) => {
-          e.stopPropagation();
-          toggleFavorite(token.id, e.target);
-        };
-
-        div.onclick = () => showModal(token);
-
-        tokenList.appendChild(div);
-        drawSparkline(div.querySelector("canvas"), token.sparkline_in_7d.price);
-      });
+    // Dark mode persist
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      document.documentElement.setAttribute("data-theme", savedTheme);
     }
-
-    function toggleFavorite(id, btn) {
-      const index = favorites.indexOf(id);
-      if (index >= 0) {
-        favorites.splice(index, 1);
-        btn.classList.remove("favored");
-      } else {
-        favorites.push(id);
-        btn.classList.add("favored");
-      }
-      localStorage.setItem("favorites", JSON.stringify(favorites));
-    }
-
-    function drawSparkline(canvas, data) {
-      const ctx = canvas.getContext("2d");
-      const w = canvas.width = 100, h = canvas.height = 30;
-      const min = Math.min(...data), max = Math.max(...data), range = max - min || 1;
-      ctx.beginPath();
-      data.forEach((v, i) => {
-        const x = i * (w / data.length);
-        const y = h - ((v - min) / range) * h;
-        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-      });
-      ctx.strokeStyle = "#4F46E5";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-
-    async function showModal(token) {
-      modalLogo.src = token.image;
-      modalName.textContent = `${token.name} (${token.symbol.toUpperCase()})`;
-      modalAddress.textContent = token.contract_address || "Not available";
-      tradeBtn.onclick = () => window.open(`https://app.uniswap.org/#/swap?outputCurrency=${token.contract_address}`, '_blank');
-      copyBtn.onclick = () => {
-        navigator.clipboard.writeText(token.contract_address || "");
-        copyBtn.textContent = "Copied!";
-        setTimeout(() => copyBtn.textContent = "Copy", 1500);
-      };
-      modalLinks.innerHTML = "";
-      const detail = await fetch(`https://api.coingecko.com/api/v3/coins/${token.id}`).then(r => r.json());
-
-      if (detail.links.homepage?.[0]) modalLinks.innerHTML += `<a href="${detail.links.homepage[0]}" target="_blank" class="block text-blue-400">🔗 Website</a>`;
-      if (detail.links.twitter_screen_name) modalLinks.innerHTML += `<a href="https://twitter.com/${detail.links.twitter_screen_name}" target="_blank" class="block text-blue-400">🐦 Twitter</a>`;
-      if (detail.links.telegram_channel_identifier) modalLinks.innerHTML += `<a href="https://t.me/${detail.links.telegram_channel_identifier}" target="_blank" class="block text-blue-400">💬 Telegram</a>`;
-
-      drawSparkline(modalChart, detail.market_data.sparkline_7d.price);
-      tokenModal.classList.add("active");
-    }
-
-    modalClose.onclick = () => tokenModal.classList.remove("active");
-    tokenModal.onclick = e => { if (e.target === tokenModal) tokenModal.classList.remove("active"); };
-
-    tokenSearch.addEventListener("input", () => {
-      const val = tokenSearch.value.toLowerCase();
-      const filtered = allTokens.filter(t => t.id.includes(val) || t.symbol.includes(val));
-      renderTokens(filtered);
-    });
-
-    fetchTokens();
   </script>
-
 </body>
 </html>
