@@ -1,779 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Discover trending tokens on AetherSwap, ranked by volume and performance" />
-  <meta name="theme-color" content="#121212" />
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>AetherSwap – Popular Tokens</title>
-  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-
   <style>
-    :root {
-      --bg-primary: #121212;
-      --bg-secondary: #1f1f1f;
-      --bg-accent: rgba(255, 255, 255, 0.05);
-      --text-primary: #ffffff;
-      --text-secondary: #a3a3a3;
-      --gradient-primary: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-    }
-
-    body {
-      margin: 0;
-      padding-bottom: 120px;
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      overflow-x: hidden;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .glass {
-      background: var(--bg-accent);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .time-tab {
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .time-tab.active {
-      background: var(--gradient-primary);
-    }
-
-    .network-dropdown {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      background: var(--bg-secondary);
-      border-radius: 12px;
-      z-index: 10;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .network-dropdown.active {
-      display: block;
-    }
-
-    .network-item {
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .network-item:hover {
-      background: var(--bg-accent);
-    }
-
-    .network-item.selected {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .token-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      align-items: center;
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--bg-accent);
-      cursor: pointer;
-    }
-
-    .token-row:hover {
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .token-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .token-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--bg-accent);
-    }
-
-    .price-up {
-      color: #10b981;
-    }
-
-    .price-down {
-      color: #ef4444;
-    }
-
-    .modal-bg {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
-    }
-
-    .token-modal {
-      width: 90%;
-      max-width: 420px;
-      border-radius: 16px;
-      background: var(--bg-secondary);
-      overflow: hidden;
-    }
-
-    .token-header {
-      padding: 20px;
-      border-bottom: 1px solid var(--bg-accent);
-    }
-
-    .token-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 16px;
-    }
-
-    .stat-item {
-      background: var(--bg-accent);
-      border-radius: 8px;
-      padding: 12px;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 4px;
-    }
-
-    .stat-value {
-      font-weight: 500;
-    }
-
-    .contract-address {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      background: var(--bg-accent);
-      border-radius: 8px;
-      margin: 16px;
-    }
-
-    .time-tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 16px;
-      scrollbar-width: none;
-    }
-
-    .time-tabs::-webkit-scrollbar {
-      display: none;
-    }
-
-    .scrollbar-hide::-webkit-scrollbar {
-      display: none;
-    }
-
-    .scrollbar-hide {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-
-    .pulse {
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% {
-        opacity: 0.6;
-      }
-
-      50% {
-        opacity: 1;
-      }
-
-      100% {
-        opacity: 0.6;
-      }
-    }
+    body { background:#121212; color:#FFF; font-family:'Inter',sans-serif; margin:0; padding-bottom:90px; }
+    .glass{background:rgba(255,255,255,0.05); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.1); transition:background 0.2s; position:relative;}
+    .glass:hover{background:rgba(255,255,255,0.1);}
+    .skeleton{height:64px; border-radius:12px; background:rgba(255,255,255,0.1); animation:pulse 1.5s infinite;}
+    @keyframes pulse{0%,100%{opacity:0.6;}50%{opacity:1;}}
+    .modal-bg{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:50; justify-content:center; align-items:center;}
+    .modal-bg.active{display:flex;}
+    .modal{background:#1F1F1F; border-radius:16px; padding:20px; width:90%; max-width:480px; max-height:90vh; overflow:auto;}
+    .network-option, .token-card{cursor:pointer;}
+    .network-option img{width:36px;height:36px;border-radius:50%;}
+    .network-option:hover, .network-option.selected{background:rgba(255,255,255,0.05);}
+    .network-option.selected{background:rgba(255,255,255,0.1);}
+    .badge{position:absolute; top:8px; right:8px; background:#2563EB; padding:4px; border-radius:50%; color:#FFF;}
+    .bottom-nav{position:fixed; bottom:0; inset-x:0; height:60px; background:rgba(255,255,255,0.05); backdrop-filter:blur(12px); display:flex; justify-content:space-around; align-items:center; border-top:1px solid rgba(255,255,255,0.1);}
+    .nav-item{flex:1; text-align:center; color:rgba(255,255,255,0.7); font-size:12px;}
+    .nav-item.active{color:#FFF;}
+    .nav-trade{position:relative; top:-20px; background:#2563EB; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#FFF; box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+    .sparkline{width:100px; height:30px;}
+    .star-btn{position:absolute; top:8px; left:8px; font-size:18px; color:rgba(255,255,255,0.5); transition:color 0.2s;}
+    .star-btn.favored{color:#FFD700;}
+    .time-tab{padding:8px 12px;border-radius:8px;font-size:14px;cursor:pointer;transition:0.2s;color:#A3A3A3;}
+    .time-tab.active{background:linear-gradient(135deg,#2563EB,#7C3AED);color:#FFF;}
   </style>
 </head>
-<body>
+<body class="p-4">
 
-  <!-- TOP BAR -->
-  <header class="sticky top-0 z-40 bg-black/80 backdrop-blur-sm p-4 border-b border-white/5">
-    <h1 class="text-lg font-semibold text-center">Popular Tokens</h1>
-  </header>
-
-  <!-- TIME FILTER -->
-  <div class="time-tabs">
-    <div class="time-tab active">1H</div>
-    <div class="time-tab">24H</div>
-    <div class="time-tab">7D</div>
-    <div class="time-tab">1M</div>
-    <div class="time-tab">ALL</div>
-  </div>
-
-  <!-- NETWORK SELECTOR -->
-<div class="px-4 mb-3 relative">
-  <button 
-    id="networkSelector" 
-    class="w-full p-3 bg-[#1F1F1F] rounded-lg flex items-center justify-between text-white"
-  >
-    <div class="flex items-center gap-2">
-      <span id="selectedNetwork">All Networks</span>
-    </div>
-    <span class="text-sm">▼</span>
+  <button id="openChainsBtn" class="w-full p-3 bg-[#1F1F1F] rounded-lg flex justify-between items-center mb-4">
+    <span id="chainsLbl">Select Networks (0)</span><span>▼</span>
   </button>
-
-  <!-- Menu déroulant visible dans le flux normal (pas absolute) -->
-  <div id="networkDropdown" class="mt-2 bg-[#1A1A1A] rounded-lg shadow-inner hidden">
-    <!-- All Networks -->
-    <div class="network-item selected px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
-      <span>All Networks</span>
-    </div>
-
-    <!-- Ethereum -->
-    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
-      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png" class="w-5 h-5 rounded-full" alt="Ethereum" />
-      <span>Ethereum</span>
-    </div>
-
-    <!-- Solana -->
-    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
-      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png" class="w-5 h-5 rounded-full" alt="Solana" />
-      <span>Solana</span>
-    </div>
-
-    <!-- BNB Chain -->
-    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
-      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" class="w-5 h-5 rounded-full" alt="BNB Chain" />
-      <span>BNB Chain</span>
-    </div>
-
-    <!-- Polygon -->
-    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
-      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/info/logo.png" class="w-5 h-5 rounded-full" alt="Polygon" />
-      <span>Polygon</span>
-    </div>
-
-    <!-- Arbitrum -->
-    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
-      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrum/info/logo.png" class="w-5 h-5 rounded-full" alt="Arbitrum" />
-      <span>Arbitrum</span>
+  <div id="chainsModal" class="modal-bg">
+    <div class="modal">
+      <div class="flex gap-2 mb-4">
+        <input id="searchChain" placeholder="Search chains..." class="flex-1 p-3 bg-[#2A2A2A] rounded-lg text-white"/>
+        <button id="clearChains" class="px-4 py-3 bg-red-600 rounded-lg">Clear</button>
+      </div>
+      <div id="chainGrid" class="grid grid-cols-4 gap-3 mb-4"></div>
+      <input id="tokenInput" placeholder="Paste token address…" class="w-full mb-4 p-3 bg-[#2A2A2A] rounded-lg text-white"/>
+      <button id="fetchBtn" class="w-full p-3 bg-[#2563EB] rounded-lg text-white">Load Tokens</button>
     </div>
   </div>
-</div>
 
-  <!-- TOKEN LIST HEADER -->
-  <div class="px-4 grid grid-cols-3 text-sm text-gray-400 mb-2">
-    <div class="pl-4">Token</div>
-    <div class="text-right">Price</div>
-    <div class="text-right pr-4">Volume</div>
-  </div>
-
-  <!-- TOKEN LIST -->
-  <main id="tokenList" class="glass mx-4 rounded-xl overflow-hidden">
-    <!-- Token rows will be inserted here by JavaScript -->
-  </main>
-
-  <!-- LOADING INDICATOR -->
-  <div id="loadingIndicator" class="text-center py-4 text-gray-400 text-sm pulse">Loading tokens...</div>
-
-  <!-- Modal: Token Detail -->
   <div id="tokenModal" class="modal-bg">
-    <div class="token-modal">
-      <div class="token-header">
-        <div class="flex justify-between items-start mb-4">
-          <div>
-            <h2 id="modalName" class="text-xl font-bold">TRUMP</h2>
-            <p id="modalChain" class="text-sm text-gray-400">SPL • Solana</p>
-          </div>
-          <div class="text-right">
-            <p id="modalPrice" class="text-xl font-bold">9.52 €</p>
-            <p id="modalChange" class="text-sm price-up">+1.41%</p>
-          </div>
-        </div>
-        <div class="time-tabs">
-          <div class="time-tab active">1H</div>
-          <div class="time-tab">1D</div>
-          <div class="time-tab">1W</div>
-          <div class="time-tab">1M</div>
-          <div class="time-tab">1Y</div>
-          <div class="time-tab">ALL</div>
+    <div class="modal">
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center gap-3"><img id="tdLogo" class="w-8 h-8 rounded-full"/><h3 id="tdName" class="text-lg font-semibold"></h3></div>
+        <button id="tdClose" class="text-white text-xl">&times;</button>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm mb-1">Contract:</label>
+        <div class="flex justify-between items-center bg-[#2A2A2A] p-3 rounded-lg">
+          <span id="tdAddr" class="truncate"></span>
+          <button id="tdCopy" class="ml-2 px-2 py-1 bg-[#2563EB] rounded">Copy</button>
         </div>
       </div>
-      
-      <div class="p-4">
-        <h3 class="font-medium mb-2">About TRUMP</h3>
-        <p class="text-sm text-gray-300 mb-4">$TRUMP are now freely tradeable on the blockchain.</p>
-        <a href="#" class="text-blue-400 text-sm font-medium">Learn more</a>
-        
-        <div class="bg-yellow-900/20 border border-yellow-800 rounded-lg p-3 mt-4 mb-6">
-          <p class="text-yellow-400 text-sm">Note: OFFICIAL TRUMP is not currently scanned by Go+. Please do your own research (DYOR).</p>
-        </div>
-        
-        <h3 class="font-medium mb-3">Statistics</h3>
-        <div class="token-stats">
-          <div class="stat-item">
-            <div class="stat-label">Market Cap</div>
-            <div class="stat-value">1.90B €</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-label">Circulating Supply</div>
-            <div class="stat-value">199.99M TRUMP</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-label">Total Supply</div>
-            <div class="stat-value">999.99M TRUMP</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-label">Volume (24h)</div>
-            <div class="stat-value">32.54M €</div>
-          </div>
-        </div>
-        
-        <h3 class="font-medium mb-3 mt-6">Contract Address</h3>
-        <div class="contract-address">
-          <span class="text-sm font-mono">6p6xgH...GIPN</span>
-          <button class="text-blue-400 text-sm font-medium">Copy</button>
-        </div>
-        
-        <h3 class="font-medium mb-3 mt-6">Links</h3>
-        <div class="grid grid-cols-3 gap-3">
-          <a href="#" class="bg-[#1F1F1F] rounded-lg p-3 text-center text-sm">Website</a>
-          <a href="#" class="bg-[#1F1F1F] rounded-lg p-3 text-center text-sm">Explorer</a>
-          <a href="#" class="bg-[#1F1F1F] rounded-lg p-3 text-center text-sm">CMC</a>
-        </div>
-        
-        <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 py-3 rounded-lg font-medium mt-6">Swap Token</button>
-      </div>
+      <div id="tdLinks" class="space-y-2 mb-4"></div>
+      <button id="tdTrade" class="w-full p-3 bg-green-500 rounded-lg">Trade this token</button>
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
-  <nav class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-between px-6 py-2 w-[calc(100%-32px)] max-w-[360px] rounded-full z-40">
-    <a href="index.html" class="flex flex-col items-center text-xs p-2 rounded-lg hover:bg-white/5 transition-colors">
-      <img src="/icons/home.svg" class="w-5 h-5 mb-1" alt="Home"/>
-      <span>Home</span>
-    </a>
-    <a href="popular.html" class="flex flex-col items-center text-xs p-2 rounded-lg hover:bg-white/5 transition-colors">
-      <img src="/icons/trending_up.svg" class="w-5 h-5 mb-1" alt="Popular"/>
-      <span>Popular</span>
-    </a>
-    <div class="w-12"></div>
-    <a href="wallet.html" class="flex flex-col items-center text-xs p-2 rounded-lg hover:bg-white/5 transition-colors">
-      <img src="/icons/account_balance_wallet.svg" class="w-5 h-5 mb-1" alt="Wallet"/>
-      <span>Wallet</span>
-    </a>
-    <a href="settings.html" class="flex flex-col items-center text-xs p-2 rounded-lg hover:bg-white/5 transition-colors">
-      <img src="/icons/settings.svg" class="w-5 h-5 mb-1" alt="Settings"/>
-      <span>Settings</span>
-    </a>
-    <a href="swap.html" class="absolute -top-6 left-1/2 transform -translate-x-1/2 hover:scale-105 transition-transform">
-      <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full border-4 border-black flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
-        <img src="/icons/swap_horiz.svg" class="w-7 h-7 text-white" alt="Swap"/>
-      </div>
-    </a>
+  <div class="flex gap-2 overflow-x-auto mb-4 scrollbar-hide">
+    <button class="time-tab active" data-range="h1">1h</button>
+    <button class="time-tab" data-range="h24">24h</button>
+    <button class="time-tab" data-range="d7">7d</button>
+  </div>
+
+  <div id="tokens" class="space-y-4"></div>
+
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item"><svg class="w-6 h-6 inline"></svg><br>Home</a>
+    <a href="#" class="nav-item"><svg class="w-6 h-6 inline"></svg><br>Explore</a>
+    <a href="swap.html" class="nav-item nav-trade"><svg class="w-6 h-6 inline"></svg></a>
+    <a href="#" class="nav-item"><svg class="w-6 h-6 inline"></svg><br>Portfolio</a>
+    <a href="#" class="nav-item"><svg class="w-6 h-6 inline"></svg><br>Profile</a>
   </nav>
 
   <script>
-    // Configuration
-    const PAGE_SIZE = 20;
-    const chains = [
-      { id: 'all', name: 'All Networks', logo: null },
-      { id: 'ethereum', name: 'Ethereum', logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png?v=025' },
-      { id: 'solana', name: 'Solana', logo: 'https://cryptologos.cc/logos/solana-sol-logo.png?v=025' },
-      { id: 'bnb', name: 'BNB Chain', logo: 'https://cryptologos.cc/logos/binance-coin-bnb-logo.png?v=025' },
-      { id: 'polygon', name: 'Polygon', logo: 'https://cryptologos.cc/logos/polygon-matic-logo.png?v=025' },
-      { id: 'arbitrum', name: 'Arbitrum', logo: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png?v=025' },
-      { id: 'base', name: 'Base', logo: 'https://cryptologos.cc/logos/base-logo.png?v=025' },
-      { id: 'optimism', name: 'Optimism', logo: 'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png?v=025' }
-    ];
-    
-    // Sample token data - in a real app this would come from an API
-    const sampleTokens = [
-      {
-        id: 'trump',
-        name: 'TRUMP',
-        symbol: 'TRUMP',
-        chain: 'solana',
-        price: 9.5379,
-        change24h: -0.38,
-        volume: 32540000,
-        marketCap: 1904568986.35,
-        circulatingSupply: 199999367.163,
-        totalSupply: 999999391.527,
-        contract: '6p6xgH...GIPN',
-        about: '$TRUMP are now freely tradeable on the blockchain.',
-        warning: 'OFFICIAL TRUMP is not currently scanned by Go+. Please do your own research (DYOR).'
-      },
-      {
-        id: 'launchcoin',
-        name: 'LAUNCHCOIN',
-        symbol: 'LAUNCH',
-        chain: 'ethereum',
-        price: 0.19943,
-        change24h: -1.74,
-        volume: 19590000
-      },
-      {
-        id: 'jlp',
-        name: 'JLP',
-        symbol: 'JLP',
-        chain: 'bnb',
-        price: 4.0378,
-        change24h: -0.33,
-        volume: 19020000
-      },
-      {
-        id: 'aura',
-        name: 'Aura',
-        symbol: 'AURA',
-        chain: 'ethereum',
-        price: 0.027601,
-        change24h: -15.03,
-        volume: 17630000
-      },
-      {
-        id: 'mcgaa',
-        name: 'MCGAA',
-        symbol: 'MCGAA',
-        chain: 'solana',
-        price: 0.0034715,
-        change24h: 0.32,
-        volume: 16360000
-      },
-      {
-        id: 'encode',
-        name: 'ENCODE',
-        symbol: 'ENCODE',
-        chain: 'bnb',
-        price: 0.0037497,
-        change24h: 0.03,
-        volume: 15260000
-      },
-      {
-        id: 'chester',
-        name: 'Chester',
-        symbol: 'CHESTER',
-        chain: 'solana',
-        price: 0.0058471,
-        change24h: 0.04,
-        volume: 14960000
-      },
-      {
-        id: 'fartcoin',
-        name: 'Fartcoin',
-        symbol: 'FART',
-        chain: 'ethereum',
-        price: 1.1685,
-        change24h: 0.28,
-        volume: 13510000
-      },
-      {
-        id: 'crybb',
-        name: 'CryBB',
-        symbol: 'CRYBB',
-        chain: 'bnb',
-        price: 0.0086001,
-        change24h: 0.08,
-        volume: 11290000
-      },
-      {
-        id: 'chloe',
-        name: 'CHLOE',
-        symbol: 'CHLOE',
-        chain: 'solana',
-        price: 0.0027453,
-        change24h: -0.00,
-        volume: 8670000
-      },
-      {
-        id: 'toli',
-        name: 'Toli',
-        symbol: 'TOLI',
-        chain: 'ethereum',
-        price: 0.00083376,
-        change24h: -0.28,
-        volume: 8500000
-      }
-    ];
+  (function(){
+    const chains = ["ethereum","bsc","polygon","arbitrum","avalanche","fantom","optimism","solana","tron","cronos","metis","harmony","nova","klaytn","okexchain","moonbeam","celo","aurora","base","linea","sui","aptos","zksync","starknet","moonriver","the-open-network","evmos","theta","milkomeda","palm","sepolia","rinkeby","goerli","ropsten","kovan","arbnova","bnbchain-test","optimism-kovan","moonbase","celo-alfajores","fantom-testnet","clv12","godwoken","heco","one","meter"];
+    const openChainsBtn=document.getElementById("openChainsBtn"), chainsLbl=document.getElementById("chainsLbl"), chainsModal=document.getElementById("chainsModal");
+    const chainGrid=document.getElementById("chainGrid"), searchChain=document.getElementById("searchChain"), clearChains=document.getElementById("clearChains");
+    const tokenInput=document.getElementById("tokenInput"), fetchBtn=document.getElementById("fetchBtn"), tokensContainer=document.getElementById("tokens");
+    const tokenModal=document.getElementById("tokenModal"), tdClose=document.getElementById("tdClose"), tdLogo=document.getElementById("tdLogo"), tdName=document.getElementById("tdName"), tdAddr=document.getElementById("tdAddr"), tdCopy=document.getElementById("tdCopy"), tdLinks=document.getElementById("tdLinks"), tdTrade=document.getElementById("tdTrade");
+    const timeTabs=Array.from(document.querySelectorAll(".time-tab"));
+    let selected=new Set(), cache={}, favorites=JSON.parse(localStorage.getItem("favorites")||"[]"), lastData=[], loading=false, range="h24";
 
-    // State management
-    let currentChain = 'all';
-    let currentTime = '24h';
-    let allTokens = [];
-    let renderedCount = 0;
-    let isLoading = false;
-    let hasMore = true;
-
-    // Initialize on load
-    window.addEventListener('DOMContentLoaded', () => {
-      setupEventListeners();
-      loadTokens();
+    // Build grid
+    chains.forEach(id=>{
+      const d=document.createElement("div"); d.className="network-option flex flex-col items-center p-2";
+      const img=document.createElement("img"); img.src=`https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${id}/info/logo.png`; img.onerror=()=>img.style.visibility="hidden";
+      const span=document.createElement("span"); span.textContent=id; span.className="text-xs text-center mt-1";
+      d.append(img, span);
+      d.dataset.chain=id;
+      d.onclick=()=>{
+        if(selected.has(id)){ selected.delete(id); d.classList.remove("selected"); }
+        else { selected.add(id); d.classList.add("selected"); }
+        chainsLbl.textContent=`Select Networks (${selected.size})`;
+      };
+      chainGrid.appendChild(d);
     });
 
-    function setupEventListeners() {
-      // Network selector dropdown
-      document.getElementById('networkSelector').addEventListener('click', toggleNetworkDropdown);
-      
-      // Time filter tabs
-      document.querySelectorAll('.time-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('.time-tab').forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          currentTime = tab.textContent.toLowerCase().replace('all', 'max');
-          reloadTokens();
-        });
-      });
-      
-      // Network items in dropdown
-      document.querySelectorAll('.network-item').forEach(item => {
-        item.addEventListener('click', () => {
-          const networkName = item.querySelector('span').textContent;
-          document.getElementById('networkSelector').querySelector('span').textContent = networkName;
-          currentChain = chains.find(c => c.name === networkName)?.id || 'all';
-          toggleNetworkDropdown();
-          reloadTokens();
-        });
-      });
-      
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('#networkSelector') && !e.target.closest('#networkDropdown')) {
-          document.getElementById('networkDropdown').classList.remove('active');
-        }
-      });
-    }
+    openChainsBtn.onclick=()=>chainsModal.classList.add("active");
+    chainsModal.onclick=e=>e.target===chainsModal&&chainsModal.classList.remove("active");
+    clearChains.onclick=()=>{ selected.clear(); document.querySelectorAll(".network-option.selected").forEach(e=>e.classList.remove("selected")); chainsLbl.textContent="Select Networks (0)"; };
+    searchChain.oninput=()=>document.querySelectorAll(".network-option").forEach(e=>e.style.display=e.dataset.chain.includes(searchChain.value.toLowerCase())?"flex":"none");
+    
+    timeTabs.forEach(btn=>btn.onclick=()=>{
+      timeTabs.forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      range=btn.dataset.range;
+      lastData=[]; tokensContainer.innerHTML="";
+    });
 
-    function toggleNetworkDropdown() {
-      document.getElementById('networkDropdown').classList.toggle('active');
-    }
+    tdClose.onclick=()=>tokenModal.classList.remove("active");
+    tokenModal.onclick=e=>e.target===tokenModal&&tokenModal.classList.remove("active");
+    tdCopy.onclick=()=>{
+      navigator.clipboard.writeText(tdAddr.textContent);
+      tdCopy.textContent="Copied!"; tdCopy.disabled=true;
+      setTimeout(()=>{ tdCopy.textContent="Copy"; tdCopy.disabled=false; },1500);
+    };
+    tdTrade.onclick=()=>window.location=`swap.html?token=${tdAddr.textContent}`;
 
-    // Load tokens from APIs
-    async function loadTokens() {
-      if (isLoading) return;
-      
-      isLoading = true;
-      document.getElementById('loadingIndicator').textContent = 'Loading tokens...';
-      
-      try {
-        // In a real app, you would fetch from actual APIs here
-        // For now we'll use the sample data
-        allTokens = sampleTokens;
-        
-        renderedCount = 0;
-        document.getElementById('tokenList').innerHTML = '';
-        renderTokens();
-        
-      } catch (error) {
-        console.error('Error loading tokens:', error);
-        showError('Error loading tokens. Pull down to refresh.');
-      } finally {
-        isLoading = false;
+    fetchBtn.onclick=loadTokens;
+    window.addEventListener("scroll",()=>{
+      if(!loading && window.innerHeight+window.scrollY>document.body.offsetHeight-200){
+        loadMore();
+      }
+    });
+
+    async function loadTokens(){
+      if(selected.size===0 && !tokenInput.value.trim()){ alert("Select chain(s) or paste address"); return; }
+      loading=true;
+      tokensContainer.innerHTML=Array(6).fill('<div class="skeleton"></div>').join('');
+      lastData=[];
+      try{
+        const addr=tokenInput.value.trim().toLowerCase();
+        const tasks=[...selected].map(chain=>{
+          const key=addr?`${chain}-${addr}`:`${chain}-pairs`;
+          if(cache[key]) return Promise.resolve(cache[key]);
+          const url=addr ?
+            `https://api.dexscreener.com/token-pairs/v1/${chain}/${addr}` :
+            `https://api.dexscreener.com/latest/dex/pairs/${chain}`;
+          return fetch(url).then(r=>r.json()).then(j=>{
+            const arr=addr?j:j.pairs;
+            const mapped = arr.map(p=> { p.chain=chain; return p; });
+            cache[key]=mapped;
+            return mapped;
+          });
+        });
+        const all=(await Promise.all(tasks)).flat();
+        lastData=all.sort((a,b)=>(b.volume?.usd||0)-(a.volume?.usd||0));
+        tokensContainer.innerHTML="";
+        loading=false;
+        loadMore();
+      }catch(e){
+        console.error(e);
+        tokensContainer.innerHTML='<p class="text-red-500 text-center">Error loading tokens</p>';
+        loading=false;
       }
     }
 
-    function reloadTokens() {
-      renderedCount = 0;
-      document.getElementById('tokenList').innerHTML = '';
-      renderTokens();
-    }
-
-    function renderTokens() {
-      const filteredTokens = allTokens.filter(token => 
-        currentChain === 'all' || token.chain === currentChain
-      );
-      
-      const tokensToRender = filteredTokens.slice(renderedCount, renderedCount + PAGE_SIZE);
-      
-      if (tokensToRender.length === 0) {
-        document.getElementById('loadingIndicator').textContent = renderedCount === 0 
-          ? 'No tokens found' 
-          : 'No more tokens to load';
-        hasMore = false;
-        return;
-      }
-      
-      const list = document.getElementById('tokenList');
-      
-      tokensToRender.forEach(token => {
-        const changePercent = token.change24h.toFixed(2);
-        const changeClass = token.change24h >= 0 ? 'price-up' : 'price-down';
-        const volume = formatCurrency(token.volume);
-        const price = formatCurrency(token.price, 6);
-        
-        const tokenElement = document.createElement('div');
-        tokenElement.className = 'token-row';
-        tokenElement.onclick = () => openTokenModal(token);
-        tokenElement.innerHTML = `
-          <div class="token-info">
-            <img src="${chains.find(c => c.id === token.chain)?.logo || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQTEwIDEwIDAgMDAyIDEyYzAgMS42LjQgMy4xIDEuMSA0LjRMMy4xIDE4LjVDMS4zIDE2LjUgMCAxMy44IDAgMTFBMTEgMTEgMCAwMTExIDBjMi44IDAgNS4zIDEuMyA3IDEuMUwxNi40IDMuMUMxNS4xIDIuNCAxMy42IDIgMTIgMnptMCAyYTggOCAwIDAxOCA4YzAgLjcgMCAxLjQtLjIgMkg0LjJjLS4xLS42LS4yLTEuMy0uMi0yYTggOCAwIDAxOC04em0xIDguNXYtMy41aDJ2My41aDIuNWwtMy41IDMuNS0zLjUtMy41SDN2LTJoMy41VjcuNUg4djMuNUg1LjVMMyA4bDMuNS0zLjVINHYySDYuNVY3LjVIMTB2My41eiIvPjwvc3ZnPg=='}" 
-                 class="token-icon" 
-                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQTEwIDEwIDAgMDAyIDEyYzAgMS42LjQgMy4xIDEuMSA0LjRMMy4xIDE4LjVDMS4zIDE2LjUgMCAxMy44IDAgMTFBMTEgMTEgMCAwMTExIDBjMi44IDAgNS4zIDEuMyA3IDEuMUwxNi40IDMuMUMxNS4xIDIuNCAxMy42IDIgMTIgMnptMCAyYTggOCAwIDAxOCA4YzAgLjcgMCAxLjQtLjIgMkg0LjJjLS4xLS42LS4yLTEuMy0uMi0yYTggOCAwIDAxOC04em0xIDguNXYtMy41aDJ2My41aDIuNWwtMy41IDMuNS0zLjUtMy41SDN2LTJoMy41VjcuNUg4djMuNUg1LjVMMyA4bDMuNS0zLjVINHYySDYuNVY3LjVIMTB2My41eiIvPjwvc3ZnPg=='"/>
-            <div class="min-w-0">
-              <p class="font-medium truncate">${token.name}</p>
-              <p class="text-xs text-gray-400 truncate">${chains.find(c => c.id === token.chain)?.name || 'Unknown'}</p>
-            </div>
+    function loadMore(){
+      if(loading||!lastData.length)return;
+      loading=true;
+      const chunk=lastData.splice(0,20);
+      chunk.forEach(data=>{
+        const div=document.createElement("div");
+        div.className="glass grid grid-cols-3 p-4 rounded-lg items-center token-card";
+        div.innerHTML=`
+          <div class="flex items-center gap-2">
+            <img src="${data.info.imageUrl}" class="w-6 h-6 rounded-full"/>
+            <span>${data.baseToken.symbol}</span>
           </div>
-          <div class="text-right ${changeClass} font-medium">${price}</div>
-          <div class="text-right pr-4">
-            <div class="text-sm">${volume}</div>
-            <div class="text-xs ${changeClass}">${changePercent}%</div>
-          </div>`;
-        list.appendChild(tokenElement);
+          <div class="text-right">${parseFloat(data.priceUsd).toFixed(4)} USD</div>
+          <div class="text-right ${data.priceChange?.[range]>=0?'text-green-500':'text-red-500'}">${parseFloat(data.priceChange?.[range]||0).toFixed(2)}%</div>
+          <canvas class="sparkline"></canvas>
+          <div class="star-btn${favorites.includes(data.pairAddress)?' favored':''}">★</div>
+        `;
+        div.onclick=()=>showDetail(data);
+        div.querySelector(".star-btn").onclick=e=>{
+          e.stopPropagation();
+          toggleFavorite(data.pairAddress, e.target);
+        };
+        tokensContainer.appendChild(div);
+        drawSparkline(div.querySelector("canvas"), data);
       });
-      
-      renderedCount += tokensToRender.length;
-      hasMore = renderedCount < filteredTokens.length;
-      
-      document.getElementById('loadingIndicator').textContent = hasMore 
-        ? 'Scroll to load more' 
-        : 'All tokens loaded';
+      loading=false;
     }
 
-    // Open token details modal
-    function openTokenModal(token) {
-      const chainName = chains.find(c => c.id === token.chain)?.name || 'Unknown';
-      
-      document.getElementById('modalName').textContent = token.name;
-      document.getElementById('modalChain').textContent = `${token.symbol} • ${chainName}`;
-      document.getElementById('modalPrice').textContent = `${formatCurrency(token.price)} €`;
-      
-      const changeElement = document.getElementById('modalChange');
-      changeElement.textContent = `${token.change24h >= 0 ? '+' : ''}${token.change24h.toFixed(2)}%`;
-      changeElement.className = token.change24h >= 0 ? 'text-sm price-up' : 'text-sm price-down';
-      
-      // Set additional token details if available
-      if (token.about) {
-        document.querySelector('#tokenModal .about-text').textContent = token.about;
-      }
-      if (token.warning) {
-        document.querySelector('#tokenModal .warning-text').textContent = token.warning;
-      }
-      if (token.marketCap) {
-        document.querySelector('#tokenModal .market-cap').textContent = formatCurrency(token.marketCap, 2) + ' €';
-      }
-      if (token.circulatingSupply) {
-        document.querySelector('#tokenModal .circulating-supply').textContent = formatCurrency(token.circulatingSupply, 2) + ' ' + token.symbol;
-      }
-      if (token.totalSupply) {
-        document.querySelector('#tokenModal .total-supply').textContent = formatCurrency(token.totalSupply, 2) + ' ' + token.symbol;
-      }
-      if (token.contract) {
-        document.querySelector('#tokenModal .contract-address span').textContent = token.contract;
-      }
-      
-      toggleModal('tokenModal');
+    function toggleFavorite(addr, btn){
+      const i=favorites.indexOf(addr);
+      if(i>=0){ favorites.splice(i,1); btn.classList.remove("favored"); }
+      else { favorites.push(addr); btn.classList.add("favored"); }
+      localStorage.setItem("favorites", JSON.stringify(favorites));
     }
 
-    // Format currency
-    function formatCurrency(value, maxDecimals = 2) {
-      if (value >= 1000000000) {
-        return `$${(value / 1000000000).toFixed(maxDecimals)}B`;
-      }
-      if (value >= 1000000) {
-        return `$${(value / 1000000).toFixed(maxDecimals)}M`;
-      }
-      if (value >= 1000) {
-        return `$${(value / 1000).toFixed(maxDecimals)}K`;
-      }
-      return `$${value.toFixed(maxDecimals)}`;
+    function showDetail(data){
+      tdLogo.src=data.info.imageUrl;
+      tdName.textContent=`${data.baseToken.name} (${data.baseToken.symbol})`;
+      tdAddr.textContent=data.baseToken.address;
+      tdLinks.innerHTML="";
+      (data.info.websites||[]).forEach(url=>tdLinks.innerHTML+=`<a href="${url}" target="_blank" class="block text-blue-400">🔗 Website</a>`);
+      (data.info.socials||[]).forEach(s=>tdLinks.innerHTML+=`<a href="${s.handle}" target="_blank" class="block">📣 ${s.platform}</a>`);
+      tokenModal.classList.add("active");
     }
 
-    // Show error message
-    function showError(message) {
-      const list = document.getElementById('tokenList');
-      list.innerHTML = `
-        <div class="p-4 text-center text-red-400">
-          ${message}
-        </div>
-      `;
-      document.getElementById('loadingIndicator').textContent = '';
+    function drawSparkline(canvas, data){
+      fetch(`https://api.dexscreener.com/latest/dex/pairs/${data.chain}/${data.pairAddress}`)
+        .then(r=>r.json()).then(j=>{
+          const arr=j.pair.priceUsdTimeline.map(p=>parseFloat(p.priceUsd));
+          const ctx=canvas.getContext("2d"), w=canvas.width=100, h=canvas.height=30;
+          const min=Math.min(...arr), max=Math.max(...arr), rangeVal=max-min||1;
+          ctx.beginPath();
+          arr.forEach((v,i)=>{
+            const x=i*(w/arr.length), y=h - ((v-min)/rangeVal)*h;
+            i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+          });
+          ctx.strokeStyle="#2563EB"; ctx.lineWidth=1; ctx.stroke();
+        })
+        .catch(console.error);
     }
-
-    // Toggle modal visibility
-    function toggleModal(modalId) {
-      const modal = document.getElementById(modalId);
-      if (modal.style.display === 'flex') {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-      } else {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-      }
-    }
-
-    // Infinite scroll
-    window.addEventListener('scroll', () => {
-      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-      
-      if (scrollTop + clientHeight >= scrollHeight - 200 && hasMore && !isLoading) {
-        renderTokens();
-      }
-    });
-
-    // Pull-to-refresh
-    let startY = 0;
-    let touchStart = false;
-    
-    document.addEventListener('touchstart', (e) => {
-      if (window.scrollY === 0) {
-        startY = e.touches[0].clientY;
-        touchStart = true;
-      }
-    }, { passive: true });
-    
-    document.addEventListener('touchmove', (e) => {
-      if (!touchStart) return;
-      
-      const y = e.touches[0].clientY;
-      const pullDistance = y - startY;
-      
-      if (pullDistance > 50 && window.scrollY === 0) {
-        touchStart = false;
-        loadTokens();
-      }
-    }, { passive: true });
-    
-    document.addEventListener('touchend', () => {
-      touchStart = false;
-    }, { passive: true });
+  })();
   </script>
+
 </body>
 </html>
