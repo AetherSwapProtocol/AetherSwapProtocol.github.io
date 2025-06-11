@@ -106,13 +106,39 @@
   </div>
 
   <!-- 📱 Bottom Navigation -->
-  <nav class="bottom-nav">
-    <div class="nav-item active">🏠 Home</div>
-    <div class="nav-item">🔁 Swap</div>
-    <div class="nav-item">📊 Tokens</div>
-    <div class="nav-item">👤 Profile</div>
-    <div class="nav-item" onclick="document.getElementById('settingsModal').classList.add('active')">⚙️ Settings</div>
-  </nav>
+  <!-- Nouvelle nav bar futuriste avec SVG -->
+<nav class="bottom-nav">
+  <button class="nav-item active flex flex-col items-center">
+    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+         d="M3 12l2-2m0 0l7-7 7 7m-9 2v8h4v-8m0 0l2 2m-2-2l-2 2" /></svg>
+    <span>Home</span>
+  </button>
+  <button class="nav-item flex flex-col items-center">
+    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+         d="M4 4v6h6M20 20v-6h-6M5 19l14-14" /></svg>
+    <span>Swap</span>
+  </button>
+  <button class="nav-item flex flex-col items-center">
+    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+         d="M3 7h18M3 12h18M3 17h18" /></svg>
+    <span>Tokens</span>
+  </button>
+  <button class="nav-item flex flex-col items-center">
+    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+         d="M5.121 17.804A4.5 4.5 0 0112 14a4.5 4.5 0 016.879 3.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+    <span>Profile</span>
+  </button>
+  <button class="nav-item flex flex-col items-center" onclick="document.getElementById('settingsModal').classList.add('active')">
+    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+         d="M10.325 4.317a9.004 9.004 0 011.35 0M4.319 10.32a9 9 0 010 3.36M10.325 19.683a9.004 9.004 0 01-1.35 0M19.681 13.68a9.004 9.004 0 010-3.36M15.36 4.319a9.004 9.004 0 013.36 0M8.64 19.681a9.004 9.004 0 01-3.36 0" /></svg>
+    <span>Settings</span>
+  </button>
+</nav>
     <!-- 🪙 Modal Token Details -->
   <div id="tokenModal" class="modal-bg">
     <div class="glass-popup">
