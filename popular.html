@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>AetherSwap – Trending Tokens</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>AetherSwap – Token Listing</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      background-color: #121212;
-      color: #ffffff;
+      background: #121212;
+      color: #fff;
       font-family: 'Inter', sans-serif;
       margin: 0;
-      padding-bottom: 90px;
+      padding-bottom: 100px;
     }
-    .glass-popup {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    .glass {
+      background: rgba(255,255,255,0.05);
       backdrop-filter: blur(12px);
-      box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 12px rgba(37,99,235,0.3);
       border-radius: 16px;
-      transition: 0.3s ease-in-out;
     }
     .modal-bg {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0,0,0,0.6);
       z-index: 50;
       justify-content: center;
       align-items: center;
@@ -38,49 +37,87 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 60px;
-      background: rgba(255, 255, 255, 0.05);
+      height: 70px;
+      background: rgba(255,255,255,0.05);
       backdrop-filter: blur(12px);
       display: flex;
       justify-content: space-around;
       align-items: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 1px solid rgba(255,255,255,0.1);
       z-index: 100;
     }
     .nav-item {
       flex: 1;
       text-align: center;
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255,255,255,0.7);
     }
     .nav-item.active {
-      color: #ffffff;
+      color: #fff;
+    }
+    .glass-popup {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+      border-radius: 16px;
+      padding: 20px;
+      width: 90%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
   </style>
 </head>
-<body>
+<body class="p-4">
   <header class="text-center py-4">
-    <h1 class="text-2xl font-bold text-white">Trending Tokens</h1>
+    <h1 class="text-2xl font-bold">Popular Tokens</h1>
   </header>
 
-  <!-- Top bar for networks -->
-  <div class="flex gap-2 overflow-x-auto px-4 mb-4">
-    <button class="bg-blue-700 text-white px-3 py-1 rounded">All</button>
-    <button class="bg-blue-700 text-white px-3 py-1 rounded">Ethereum</button>
-    <button class="bg-blue-700 text-white px-3 py-1 rounded">Solana</button>
-    <button class="bg-blue-700 text-white px-3 py-1 rounded">BNB</button>
-    <button class="bg-blue-700 text-white px-3 py-1 rounded">Base</button>
-    <button class="bg-gray-800 text-white px-3 py-1 rounded" onclick="openNetworkModal()">+ More</button>
+  <!-- Top bar réseaux -->
+  <div class="flex gap-2 overflow-x-auto mb-4">
+    <button class="bg-blue-700 text-white px-3 py-1 rounded" onclick="resetChains()">All</button>
+    <button class="bg-blue-700 text-white px-3 py-1 rounded" onclick="selectChain('ethereum')">Ethereum</button>
+    <button class="bg-blue-700 text-white px-3 py-1 rounded" onclick="selectChain('solana')">Solana</button>
+    <button class="bg-blue-700 text-white px-3 py-1 rounded" onclick="selectChain('binance-smart-chain')">BNB</button>
+    <button class="bg-blue-700 text-white px-3 py-1 rounded" onclick="selectChain('base')">Base</button>
+    <button class="bg-gray-800 text-white px-3 py-1 rounded" onclick="document.getElementById('networkModal').classList.add('active')">+ More</button>
   </div>
 
-  <!-- Token List -->
-  <div id="tokenList" class="space-y-4 px-4"></div>
+  <!-- Zone d'affichage des tokens -->
+  <div id="tokenList" class="space-y-4"></div>
 
-  <!-- Modal for Token Details -->
+  <!-- ⚙️ Settings Modal -->
+  <div id="settingsModal" class="modal-bg">
+    <div class="glass-popup">
+      <h2 class="text-lg font-bold mb-4">Settings</h2>
+      <label class="block mb-1">🌐 Language</label>
+      <select id="langSelect" class="w-full p-2 mb-4 bg-gray-800 text-white rounded">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="zh-CN">中文</option>
+        <option value="es">Español</option>
+      </select>
+      <label class="block mb-1">🌓 Theme</label>
+      <button onclick="toggleTheme()" class="w-full py-2 mb-4 bg-blue-600 rounded text-white">Toggle Dark / Light</button>
+      <button onclick="document.getElementById('settingsModal').classList.remove('active')" class="w-full bg-gray-600 py-2 text-white rounded">Close</button>
+    </div>
+  </div>
+
+  <!-- 📱 Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="nav-item active">🏠 Home</div>
+    <div class="nav-item">🔁 Swap</div>
+    <div class="nav-item">📊 Tokens</div>
+    <div class="nav-item">👤 Profile</div>
+    <div class="nav-item" onclick="document.getElementById('settingsModal').classList.add('active')">⚙️ Settings</div>
+  </nav>
+    <!-- 🪙 Modal Token Details -->
   <div id="tokenModal" class="modal-bg">
-    <div class="glass-popup w-full max-w-md p-4">
+    <div class="glass-popup">
       <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
           <img id="modalLogo" class="w-10 h-10 rounded-full" />
           <h3 id="modalName" class="text-lg font-semibold"></h3>
         </div>
@@ -93,50 +130,185 @@
     </div>
   </div>
 
-  <!-- Settings Modal -->
-  <div id="settingsModal" class="modal-bg">
-    <div class="glass-popup w-full max-w-sm p-4">
-      <h2 class="text-lg font-bold mb-4">Settings</h2>
-      <label for="langSelect" class="block mb-2">🌐 Language:</label>
-      <select id="langSelect" class="w-full mb-4 p-2 bg-gray-800 text-white rounded">
-        <option value="en">English</option>
-        <option value="fr">Français</option>
-        <option value="de">Deutsch</option>
-        <option value="zh-CN">中文</option>
-        <option value="es">Español</option>
-      </select>
-      <label class="block mb-2">🌓 Theme:</label>
-      <button onclick="toggleTheme()" class="w-full bg-blue-600 text-white py-2 rounded">Toggle Dark / Light</button>
-      <button onclick="closeSettings()" class="w-full mt-4 bg-gray-600 py-2 rounded text-white">Close</button>
+  <!-- 🌐 Modal Blockchain Selection -->
+  <div id="networkModal" class="modal-bg">
+    <div class="glass-popup">
+      <div class="flex justify-between mb-2 items-center">
+        <h2 class="text-lg font-bold">Select Blockchains</h2>
+        <button onclick="document.getElementById('networkModal').classList.remove('active')" class="text-white text-xl">&times;</button>
+      </div>
+      <input id="searchChainInput" type="text" placeholder="Search chain..." class="w-full mb-4 p-2 bg-gray-800 text-white rounded">
+      <div id="chainGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[40vh] overflow-y-auto"></div>
+      <button onclick="applyChainFilter()" class="w-full mt-4 py-2 bg-blue-600 rounded text-white">Apply</button>
     </div>
   </div>
-
-  <!-- Bottom Nav -->
-  <nav class="bottom-nav">
-    <div class="nav-item active">🏠 Home</div>
-    <div class="nav-item">🔁 Swap</div>
-    <div class="nav-item">📊 Tokens</div>
-    <div class="nav-item">👤 Profile</div>
-    <div class="nav-item" onclick="document.getElementById('settingsModal').classList.add('active')">⚙️ Settings</div>
-  </nav>
-
   <script>
-    // Placeholder: dynamic JS rendering and behavior to be added in JS build
-    function openNetworkModal() { alert("Open Blockchain Modal (not yet wired here)"); }
-    function closeTokenModal() { document.getElementById("tokenModal").classList.remove("active"); }
-    function closeSettings() { document.getElementById("settingsModal").classList.remove("active"); }
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute("data-theme");
-      const newTheme = current === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", newTheme);
-      localStorage.setItem("theme", newTheme);
-    }
+const tokenList = document.getElementById("tokenList");
+const modal = document.getElementById("tokenModal");
+const modalLogo = document.getElementById("modalLogo");
+const modalName = document.getElementById("modalName");
+const modalAddress = document.getElementById("modalAddress");
+const modalLinks = document.getElementById("modalLinks");
+const modalChart = document.getElementById("modalChart");
+const tradeBtn = document.getElementById("tradeBtn");
 
-    // Dark mode persist
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      document.documentElement.setAttribute("data-theme", savedTheme);
+let selectedChains = [];
+let allTokens = [];
+let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+
+// Themes & Langue
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+
+document.getElementById("langSelect").value = localStorage.getItem("lang") || "en";
+document.getElementById("langSelect").onchange = (e) => {
+  localStorage.setItem("lang", e.target.value);
+};
+
+function toggleTheme() {
+  const now = document.documentElement.getAttribute("data-theme");
+  const next = now === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("theme", next);
+}
+
+// Load tokens
+async function fetchTokens() {
+  const baseUrl = "https://api.coingecko.com/api/v3/coins/markets";
+  const vs_currency = "usd";
+  const perPage = 50;
+  const chains = selectedChains.length > 0 ? selectedChains : [];
+
+  tokenList.innerHTML = "Loading...";
+
+  try {
+    const url = `${baseUrl}?vs_currency=${vs_currency}&order=volume_desc&sparkline=true&per_page=${perPage}&page=1`;
+    const res = await fetch(url);
+    const tokens = await res.json();
+    allTokens = tokens;
+    renderTokens(tokens);
+  } catch (err) {
+    console.error(err);
+    tokenList.innerHTML = "<p class='text-red-500'>Error loading tokens</p>";
+  }
+}
+
+function renderTokens(tokens) {
+  tokenList.innerHTML = "";
+  tokens.forEach(token => {
+    const div = document.createElement("div");
+    div.className = "glass p-4 rounded-lg flex justify-between items-center";
+    div.innerHTML = `
+      <div class="flex items-center gap-2">
+        <img src="${token.image}" class="w-6 h-6 rounded-full" />
+        <span>${token.symbol.toUpperCase()}</span>
+      </div>
+      <div class="text-right">${token.current_price.toFixed(2)} USD</div>
+      <div class="text-right ${token.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}">
+        ${token.price_change_percentage_24h?.toFixed(2) || 0}%
+      </div>
+    `;
+    div.onclick = () => openTokenModal(token);
+    tokenList.appendChild(div);
+  });
+}
+
+function openTokenModal(token) {
+  modalLogo.src = token.image;
+  modalName.textContent = `${token.name} (${token.symbol.toUpperCase()})`;
+  modalAddress.textContent = token.id;
+
+  modalLinks.innerHTML = "";
+  fetch(`https://api.coingecko.com/api/v3/coins/${token.id}`)
+    .then(r => r.json())
+    .then(data => {
+      const links = data.links;
+      if (links.homepage[0]) {
+        modalLinks.innerHTML += `<a href="${links.homepage[0]}" class="block text-blue-400" target="_blank">🌐 Website</a>`;
+      }
+      if (links.twitter_screen_name) {
+        modalLinks.innerHTML += `<a href="https://twitter.com/${links.twitter_screen_name}" class="block text-blue-400" target="_blank">🐦 Twitter</a>`;
+      }
+      if (links.telegram_channel_identifier) {
+        modalLinks.innerHTML += `<a href="https://t.me/${links.telegram_channel_identifier}" class="block text-blue-400" target="_blank">💬 Telegram</a>`;
+      }
+    });
+
+  drawSparkline(modalChart, token.sparkline_in_7d.price);
+  tradeBtn.onclick = () => {
+    window.open(`https://app.uniswap.org/#/swap?outputCurrency=${token.id}`, "_blank");
+  };
+
+  modal.classList.add("active");
+}
+
+function closeTokenModal() {
+  modal.classList.remove("active");
+}
+
+function drawSparkline(canvas, data) {
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width = 300;
+  const h = canvas.height = 80;
+  const min = Math.min(...data), max = Math.max(...data), range = max - min || 1;
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.beginPath();
+  data.forEach((val, i) => {
+    const x = i * (w / data.length);
+    const y = h - ((val - min) / range) * h;
+    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+  });
+  ctx.strokeStyle = "#2563EB";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+// Networks logic
+const supportedChains = ["ethereum", "solana", "binance-smart-chain", "arbitrum", "polygon", "base", "optimism"];
+const chainGrid = document.getElementById("chainGrid");
+const searchChainInput = document.getElementById("searchChainInput");
+
+supportedChains.forEach(chain => {
+  const btn = document.createElement("div");
+  btn.textContent = chain;
+  btn.className = "bg-gray-700 text-white p-2 text-sm rounded text-center cursor-pointer";
+  btn.onclick = () => {
+    if (selectedChains.includes(chain)) {
+      selectedChains = selectedChains.filter(c => c !== chain);
+      btn.classList.remove("bg-blue-600");
+    } else {
+      selectedChains.push(chain);
+      btn.classList.add("bg-blue-600");
     }
-  </script>
+  };
+  chainGrid.appendChild(btn);
+});
+
+function applyChainFilter() {
+  document.getElementById("networkModal").classList.remove("active");
+  fetchTokens();
+}
+
+function resetChains() {
+  selectedChains = [];
+  fetchTokens();
+}
+
+function selectChain(chain) {
+  selectedChains = [chain];
+  fetchTokens();
+}
+
+searchChainInput.addEventListener("input", () => {
+  const val = searchChainInput.value.toLowerCase();
+  chainGrid.childNodes.forEach(node => {
+    node.style.display = node.textContent.includes(val) ? "block" : "none";
+  });
+});
+
+// Load on first view
+fetchTokens();
+</script>
 </body>
 </html>
