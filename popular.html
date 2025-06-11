@@ -54,24 +54,37 @@
     }
 
     .network-tab {
-      padding: 6px 10px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      color: #fff;
-      transition: 0.2s;
-      white-space: nowrap;
-    }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 14px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.2);
+  transition: all 0.25s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 
-    .network-tab:hover {
-      background: rgba(37, 99, 235, 0.1);
-    }
+.network-tab:hover {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0.05));
+  box-shadow: 0 0 22px rgba(37, 99, 235, 0.4);
+  transform: scale(1.05);
+}
 
-    .network-tab.active {
-      background: #2563eb;
-      color: white;
-    }
-
+.network-tab.active {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  box-shadow: 0 0 26px rgba(37, 99, 235, 0.65);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
     .bottom-nav {
       position: fixed;
       bottom: 0;
