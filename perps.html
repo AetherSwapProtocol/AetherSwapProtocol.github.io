@@ -1116,9 +1116,14 @@
   </script>
 <script>
   // Activation basique des boutons
-  document.getElementById('connectBtn')?.addEventListener('click', function() {
-    alert("Fonctionnalité wallet en cours de développement");
-  });
+  document.getElementById('connectBtn').addEventListener('click', async () => {
+  try {
+    await connectWallet();
+  } catch (error) {
+    console.error('Erreur connexion wallet:', error);
+    alert('Erreur lors de la connexion au portefeuille.');
+  }
+});
 
   // Simulation de changement de marché
   document.querySelectorAll('[onclick*="selectMarket"]').forEach(btn => {
