@@ -233,51 +233,62 @@
   </div>
 
   <!-- NETWORK SELECTOR -->
-  <div class="px-4 mb-3 relative">
-    <button id="networkSelector" class="w-full p-3 bg-[#1F1F1F] rounded-lg flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <span>All Networks</span>
-      </div>
-      <span>▼</span>
-    </button>
-    <div id="networkDropdown" class="network-dropdown">
-      <div class="network-item selected">
-        <div class="flex items-center gap-3 w-full">
-          <span>All Networks</span>
-        </div>
-      </div>
-      <div class="network-item">
-        <div class="flex items-center gap-3 w-full">
-          <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=025" class="w-5 h-5 rounded-full" alt="Ethereum"/>
-          <span>Ethereum</span>
-        </div>
-      </div>
-      <div class="network-item">
-        <div class="flex items-center gap-3 w-full">
-          <img src="https://cryptologos.cc/logos/solana-sol-logo.png?v=025" class="w-5 h-5 rounded-full" alt="Solana"/>
-          <span>Solana</span>
-        </div>
-      </div>
-      <div class="network-item">
-        <div class="flex items-center gap-3 w-full">
-          <img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.png?v=025" class="w-5 h-5 rounded-full" alt="BNB Chain"/>
-          <span>BNB Chain</span>
-        </div>
-      </div>
-      <div class="network-item">
-        <div class="flex items-center gap-3 w-full">
-          <img src="https://cryptologos.cc/logos/polygon-matic-logo.png?v=025" class="w-5 h-5 rounded-full" alt="Polygon"/>
-          <span>Polygon</span>
-        </div>
-      </div>
-      <div class="network-item">
-        <div class="flex items-center gap-3 w-full">
-          <img src="https://cryptologos.cc/logos/arbitrum-arb-logo.png?v=025" class="w-5 h-5 rounded-full" alt="Arbitrum"/>
-          <span>Arbitrum</span>
-        </div>
-      </div>
+<div class="relative px-4 mb-3">
+  <button 
+    id="networkSelector" 
+    class="w-full p-3 bg-[#1F1F1F] rounded-lg flex items-center justify-between text-white focus:outline-none"
+    aria-haspopup="true" 
+    aria-expanded="false" 
+    aria-controls="networkDropdown"
+  >
+    <div class="flex items-center gap-2">
+      <span id="selectedNetwork">All Networks</span>
+    </div>
+    <span class="text-sm">▼</span>
+  </button>
+
+  <div 
+    id="networkDropdown" 
+    class="absolute w-full mt-2 bg-[#1A1A1A] rounded-lg shadow-lg z-50 hidden"
+    role="menu" 
+    aria-labelledby="networkSelector"
+  >
+    <!-- All Networks -->
+    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3 selected">
+      <span>All Networks</span>
+    </div>
+
+    <!-- Ethereum -->
+    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png" class="w-5 h-5 rounded-full" alt="Ethereum" />
+      <span>Ethereum</span>
+    </div>
+
+    <!-- Solana -->
+    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png" class="w-5 h-5 rounded-full" alt="Solana" />
+      <span>Solana</span>
+    </div>
+
+    <!-- BNB Chain -->
+    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" class="w-5 h-5 rounded-full" alt="BNB Chain" />
+      <span>BNB Chain</span>
+    </div>
+
+    <!-- Polygon -->
+    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/info/logo.png" class="w-5 h-5 rounded-full" alt="Polygon" />
+      <span>Polygon</span>
+    </div>
+
+    <!-- Arbitrum -->
+    <div class="network-item px-4 py-2 hover:bg-[#2A2A2A] cursor-pointer flex items-center gap-3">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrum/info/logo.png" class="w-5 h-5 rounded-full" alt="Arbitrum" />
+      <span>Arbitrum</span>
     </div>
   </div>
+</div>
 
   <!-- TOKEN LIST HEADER -->
   <div class="px-4 grid grid-cols-3 text-sm text-gray-400 mb-2">
