@@ -67,13 +67,18 @@
         <a href="pools.html" class="text-white/70 hover:text-purple-400 transition">Pools</a>
       </nav>
     </div>
+
     <div class="flex items-center space-x-4">
+      <!-- Infos wallet cachées au départ -->
       <div id="walletInfo" class="flex items-center space-x-2 hidden">
         <div class="w-2 h-2 rounded-full bg-green-400"></div>
         <span id="walletAddress" class="text-sm truncate max-w-[120px]">0x...</span>
         <span id="walletBalance" class="text-sm text-gray-400">0.00 SOL</span>
       </div>
-      <button id="connectWalletBtn" class="bg-aether-primary hover:bg-purple-700 px-4 py-2 rounded text-sm transition">
+
+      <!-- Bouton connexion wallet -->
+      <button id="connectWalletBtn" 
+              class="bg-aether-primary hover:bg-purple-700 px-4 py-2 rounded text-sm transition">
         Connect Wallet
       </button>
     </div>
