@@ -5,28 +5,140 @@
   <title>AetherSwap – Popular Tokens</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background:#121212; color:#FFF; font-family:'Inter',sans-serif; margin:0; padding-bottom:90px; }
-    .glass{background:rgba(255,255,255,0.05); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.1); transition:background 0.2s; position:relative;}
-    .glass:hover{background:rgba(255,255,255,0.1);}
-    .skeleton{height:64px; border-radius:12px; background:rgba(255,255,255,0.1); animation:pulse 1.5s infinite;}
-    @keyframes pulse{0%,100%{opacity:0.6;}50%{opacity:1;}}
-    .modal-bg{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:50; justify-content:center; align-items:center;}
-    .modal-bg.active{display:flex;}
-    .modal{background:#1F1F1F; border-radius:16px; padding:20px; width:90%; max-width:480px; max-height:90vh; overflow:auto;}
-    .network-option, .token-card{cursor:pointer;}
-    .network-option img{width:36px;height:36px;border-radius:50%;}
-    .network-option:hover, .network-option.selected{background:rgba(255,255,255,0.05);}
-    .network-option.selected{background:rgba(255,255,255,0.1);}
-    .badge{position:absolute; top:8px; right:8px; background:#2563EB; padding:4px; border-radius:50%; color:#FFF;}
-    .bottom-nav{position:fixed; bottom:0; inset-x:0; height:60px; background:rgba(255,255,255,0.05); backdrop-filter:blur(12px); display:flex; justify-content:space-around; align-items:center; border-top:1px solid rgba(255,255,255,0.1);}
-    .nav-item{flex:1; text-align:center; color:rgba(255,255,255,0.7); font-size:12px;}
-    .nav-item.active{color:#FFF;}
-    .nav-trade{position:relative; top:-20px; background:#2563EB; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#FFF; box-shadow:0 4px 12px rgba(0,0,0,0.3);}
-    .sparkline{width:100px; height:30px;}
-    .star-btn{position:absolute; top:8px; left:8px; font-size:18px; color:rgba(255,255,255,0.5); transition:color 0.2s;}
-    .star-btn.favored{color:#FFD700;}
-    .time-tab{padding:8px 12px;border-radius:8px;font-size:14px;cursor:pointer;transition:0.2s;color:#A3A3A3;}
-    .time-tab.active{background:linear-gradient(135deg,#2563EB,#7C3AED);color:#FFF;}
+    body {
+      background: #121212;
+      color: #FFF;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding-bottom: 90px;
+    }
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: background 0.2s;
+      position: relative;
+    }
+    .glass:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .skeleton {
+      height: 64px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 50;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-bg.active { display: flex; }
+    .modal {
+      background: #1F1F1F;
+      border-radius: 16px;
+      padding: 20px;
+      width: 90%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow: auto;
+    }
+    .network-option, .token-card { cursor: pointer; }
+    .network-option img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+    }
+    .network-option:hover, .network-option.selected {
+      background: rgba(255,255,255,0.05);
+    }
+    .network-option.selected {
+      background: rgba(255,255,255,0.1);
+    }
+    .badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #2563EB;
+      padding: 4px;
+      border-radius: 50%;
+      color: #FFF;
+    }
+
+    /* ✅ Barre de navigation basse corrigée */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      height: 70px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .nav-item.active { color: #FFF; }
+    .nav-trade {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2563EB;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      z-index: 60;
+    }
+
+    .sparkline {
+      width: 100px;
+      height: 30px;
+    }
+    .star-btn {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.5);
+      transition: color 0.2s;
+    }
+    .star-btn.favored { color: #FFD700; }
+
+    .time-tab {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #A3A3A3;
+    }
+    .time-tab.active {
+      background: linear-gradient(135deg, #2563EB, #7C3AED);
+      color: #FFF;
+    }
   </style>
 </head>
 <body class="p-4">
