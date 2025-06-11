@@ -81,219 +81,123 @@
 </header>
 
   <!-- Main Content -->
-  <main class="flex flex-1 container mx-auto p-4">
-    <!-- Left Column - Order Book -->
-    <div class="w-1/4 hidden lg:block pr-4">
-      <div class="bg-zinc-900 rounded-lg p-4">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold">Order Book</h2>
-          <div class="text-xs text-gray-400">
-            Depth: <span id="orderbookDepth">20</span>
-          </div>
-        </div>
-        <div class="text-xs text-gray-400 flex justify-between mb-2">
-          <span>Price (USDC)</span>
-          <span>Size (BTC)</span>
-        </div>
-        <div id="bidsList" class="space-y-1 mb-4">
-          <!-- Filled dynamically -->
-        </div>
-        <div class="text-center py-2">
-          <div class="text-xl font-mono" id="currentPrice">-</div>
-          <div class="text-xs" id="priceChange24h">-</div>
-        </div>
-        <div id="asksList" class="space-y-1">
-          <!-- Filled dynamically -->
+<main class="flex flex-1 container mx-auto p-4">
+  <!-- Left Column - Order Book -->
+  <div class="w-1/4 hidden lg:block pr-4">
+    <div class="bg-zinc-900 rounded-lg p-4 shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-white">Order Book</h2>
+        <div class="text-xs text-gray-400">
+          Depth: <select id="orderbookDepth" class="bg-zinc-800 text-gray-200 text-xs rounded px-1">
+            <option value="10">10</option>
+            <option value="20" selected>20</option>
+            <option value="50">50</option>
+          </select>
         </div>
       </div>
+
+      <div class="text-xs text-gray-400 flex justify-between mb-2">
+        <span>Price (USDC)</span>
+        <span>Size (BTC)</span>
+      </div>
+
+      <!-- Orderbook Bids -->
+      <div id="bidsList" class="space-y-1 mb-4 max-h-48 overflow-y-auto">
+        <!-- Dynamically injected rows -->
+      </div>
+
+      <!-- Mid Price -->
+      <div class="text-center py-2 border-y border-zinc-700 my-2">
+        <div class="text-xl font-mono text-white" id="currentPrice">Loading...</div>
+        <div class="text-xs text-green-400" id="priceChange24h">+0.00%</div>
+      </div>
+
+      <!-- Orderbook Asks -->
+      <div id="asksList" class="space-y-1 max-h-48 overflow-y-auto">
+        <!-- Dynamically injected rows -->
+      </div>
     </div>
+  </div>
 
     <!-- Center Column - Chart and Trading -->
-    <div class="flex-1 px-2">
-      <!-- Market Selection -->
-      <div class="flex justify-between items-center mb-4">
-        <div>
-          <div class="flex items-center space-x-2">
-            <h2 class="text-xl font-bold" id="selectedMarket">BTC-PERP</h2>
-            <span class="text-xs px-2 py-1 bg-zinc-800 rounded">20x</span>
-          </div>
-          <div class="flex items-center space-x-4 text-sm">
-            <span id="marketPrice" class="text-lg font-mono">-</span>
-            <span id="priceChange" class="text-sm"></span>
-            <div class="text-xs text-gray-400">
-              <span>24h High: </span><span id="high24h">-</span>
-            </div>
-            <div class="text-xs text-gray-400">
-              <span>24h Low: </span><span id="low24h">-</span>
-            </div>
-          </div>
-        </div>
+<main class="flex-1 overflow-y-auto p-4">
+  <!-- Market Header -->
+  <div class="flex justify-between items-center mb-4">
+    <div>
+      <h2 class="text-2xl font-bold text-white" id="selectedMarket">BTC-PERP</h2>
+      <p class="text-sm text-gray-400">Trade perpetual futures</p>
+    </div>
+    <button id="refreshDataBtn" class="bg-zinc-800 text-white px-4 py-2 rounded hover:bg-zinc-700">
+      ↻ Refresh
+    </button>
+  </div>
+
+  <!-- Chart -->
+  <div class="bg-zinc-900 rounded-lg p-4 mb-4">
+    <div class="text-white font-bold mb-2">Price Chart</div>
+    <div id="priceChart" class="h-64 w-full rounded overflow-hidden"></div>
+  </div>
+
+  <!-- Trade Panel -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Order Form -->
+    <div class="bg-zinc-900 p-4 rounded-lg">
+      <div class="flex items-center justify-between mb-2">
         <div class="flex space-x-2">
-          <button id="changeMarketBtn" class="bg-zinc-800 hover:bg-zinc-700 px-3 py-1 rounded text-sm">
-            Change Market
-          </button>
-          <button id="refreshDataBtn" class="bg-zinc-800 hover:bg-zinc-700 px-3 py-1 rounded text-sm">
-            ↻ Refresh
-          </button>
+          <button id="longBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Long</button>
+          <button id="shortBtn" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Short</button>
+        </div>
+        <div class="text-xs text-gray-400">
+          Available: <span id="availableBalance">0.00</span> USDC
         </div>
       </div>
-
-      <!-- Chart -->
-      <div class="bg-zinc-900 rounded-lg mb-4" style="height: 400px;">
-        <canvas id="priceChart"></canvas>
+      <div class="mb-4">
+        <label for="priceInput" class="block text-sm text-gray-300">Price (USDC)</label>
+        <input type="number" id="priceInput" class="w-full mt-1 p-2 bg-zinc-800 text-white rounded" placeholder="Market">
       </div>
-
-      <!-- Trading Panel -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Order Form -->
-        <div class="bg-zinc-900 rounded-lg p-4">
-          <div class="flex space-x-2 mb-4">
-            <button id="limitTab" class="px-3 py-1 bg-purple-600 rounded text-sm">Limit</button>
-            <button id="marketTab" class="px-3 py-1 bg-zinc-800 rounded text-sm">Market</button>
-          </div>
-
-          <div class="mb-4">
-            <div class="flex justify-between text-xs text-gray-400 mb-1">
-              <span>Side</span>
-              <span>Available: <span id="availableBalance">0.00</span> USDC</span>
-            </div>
-            <div class="flex space-x-2">
-              <button id="buyBtn" class="flex-1 py-2 bg-green-600 hover:bg-green-700 rounded">Buy / Long</button>
-              <button id="sellBtn" class="flex-1 py-2 bg-red-600 hover:bg-red-700 rounded">Sell / Short</button>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <div id="limitPriceContainer">
-              <label class="text-xs text-gray-400 block mb-1">Price (USDC)</label>
-              <input type="text" id="priceInput" class="w-full bg-zinc-800 px-3 py-2 rounded" placeholder="0.00">
-            </div>
-            <div>
-              <label class="text-xs text-gray-400 block mb-1">Amount (BTC)</label>
-              <div class="relative">
-                <input type="text" id="amountInput" class="w-full bg-zinc-800 px-3 py-2 rounded" placeholder="0.00">
-                <div class="absolute right-2 top-2 flex space-x-1">
-                  <button class="text-xs px-1 bg-zinc-700 rounded" data-multiplier="0.25">25%</button>
-                  <button class="text-xs px-1 bg-zinc-700 rounded" data-multiplier="0.5">50%</button>
-                  <button class="text-xs px-1 bg-zinc-700 rounded" data-multiplier="1">100%</button>
-                </div>
-              </div>
-            </div>
-            <div>
-              <label class="text-xs text-gray-400 block mb-1">Leverage: <span id="leverageValue">5x</span></label>
-              <div class="flex items-center space-x-2">
-                <input type="range" id="leverageSlider" min="1" max="20" value="5" class="flex-1">
-                <button id="leveragePreset5" class="text-xs px-2 py-1 bg-purple-600 rounded">5x</button>
-                <button id="leveragePreset10" class="text-xs px-2 py-1 bg-zinc-800 rounded">10x</button>
-              </div>
-            </div>
-            <div class="pt-2">
-              <div class="flex justify-between text-xs text-gray-400 mb-1">
-                <span>Total</span>
-                <span id="orderTotal">0.00 USDC</span>
-              </div>
-              <button id="placeOrderBtn" class="w-full bg-purple-600 hover:bg-purple-700 py-3 rounded font-medium">
-                Place Buy Order
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Positions and Orders -->
-        <div class="bg-zinc-900 rounded-lg p-4">
-          <div class="flex space-x-2 mb-4">
-            <button id="positionsTab" class="px-3 py-1 bg-purple-600 rounded text-sm">Positions</button>
-            <button id="ordersTab" class="px-3 py-1 bg-zinc-800 rounded text-sm">Orders</button>
-            <button id="historyTab" class="px-3 py-1 bg-zinc-800 rounded text-sm">History</button>
-          </div>
-
-          <div id="positionsList" class="space-y-4">
-            <div class="text-center py-8 text-gray-500 text-sm">
-              No open positions
-            </div>
-          </div>
-
-          <div id="ordersList" class="hidden space-y-3">
-            <!-- Filled dynamically -->
-          </div>
-
-          <div id="historyList" class="hidden space-y-3">
-            <!-- Filled dynamically -->
-          </div>
+      <div class="mb-4">
+        <label for="amountInput" class="block text-sm text-gray-300">Amount</label>
+        <input type="number" id="amountInput" class="w-full mt-1 p-2 bg-zinc-800 text-white rounded" placeholder="0.00">
+      </div>
+      <div class="mb-4">
+        <label for="leverageSlider" class="block text-sm text-gray-300">Leverage: <span id="leverageValue">5x</span></label>
+        <input type="range" id="leverageSlider" min="1" max="20" value="5" class="w-full mt-1">
+      </div>
+      <div class="mb-4">
+        <div class="flex justify-between text-sm text-gray-400">
+          <span>Estimated Total:</span>
+          <span id="orderTotal">0.00 USDC</span>
         </div>
       </div>
+      <button id="placeOrderBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded">
+        Place Order
+      </button>
     </div>
 
-    <!-- Right Column - Market Info -->
-    <div class="w-1/4 hidden lg:block pl-4">
-      <div class="bg-zinc-900 rounded-lg p-4 mb-4">
-        <h2 class="text-lg font-semibold mb-4">Market Stats</h2>
-        <div class="space-y-3 text-sm">
-          <div class="flex justify-between">
-            <span class="text-gray-400">24h Volume</span>
-            <span id="volume24h">-</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Open Interest</span>
-            <span id="openInterest">-</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Funding Rate</span>
-            <span id="fundingRate">-</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Next Funding</span>
-            <span id="nextFunding">-</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Mark Price</span>
-            <span id="markPrice">-</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Index Price</span>
-            <span id="indexPrice">-</span>
-          </div>
+    <!-- Open Positions -->
+    <div class="bg-zinc-900 p-4 rounded-lg">
+      <div class="flex space-x-2 mb-4">
+        <button id="positionsTab" class="bg-purple-600 px-3 py-1 rounded text-sm text-white">Positions</button>
+        <button id="ordersTab" class="bg-zinc-800 px-3 py-1 rounded text-sm text-white">Orders</button>
+        <button id="historyTab" class="bg-zinc-800 px-3 py-1 rounded text-sm text-white">History</button>
+      </div>
+
+      <div id="positionsList" class="space-y-2">
+        <div class="text-center py-8 text-gray-500 text-sm">
+          No open positions
         </div>
       </div>
 
-      <div class="bg-zinc-900 rounded-lg p-4 mb-4">
-        <h2 class="text-lg font-semibold mb-4">Recent Trades</h2>
-        <div class="text-xs text-gray-400 flex justify-between mb-2">
-          <span>Price</span>
-          <span>Size</span>
-          <span>Time</span>
-        </div>
-        <div id="tradesList" class="space-y-1">
-          <!-- Filled dynamically -->
-        </div>
+      <div id="ordersList" class="hidden space-y-2">
+        <!-- Orders go here -->
       </div>
 
-      <div class="bg-zinc-900 rounded-lg p-4">
-        <h2 class="text-lg font-semibold mb-2">Risk Management</h2>
-        <div class="space-y-3 text-sm">
-          <div>
-            <label class="text-xs text-gray-400 block mb-1">Take Profit</label>
-            <div class="flex space-x-2">
-              <input type="text" class="flex-1 bg-zinc-800 px-2 py-1 rounded" placeholder="Price">
-              <button class="px-2 py-1 bg-zinc-800 rounded text-xs">Market</button>
-            </div>
-          </div>
-          <div>
-            <label class="text-xs text-gray-400 block mb-1">Stop Loss</label>
-            <div class="flex space-x-2">
-              <input type="text" class="flex-1 bg-zinc-800 px-2 py-1 rounded" placeholder="Price">
-              <button class="px-2 py-1 bg-zinc-800 rounded text-xs">Market</button>
-            </div>
-          </div>
-          <div class="pt-2">
-            <button class="w-full bg-zinc-800 hover:bg-zinc-700 py-2 rounded text-sm">
-              Apply to All Positions
-            </button>
-          </div>
-        </div>
+      <div id="historyList" class="hidden space-y-2">
+        <!-- Trade history goes here -->
       </div>
     </div>
-  </main>
+  </div>
+</main>
 
   <!-- Market Selection Modal -->
   <div id="marketModal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4">
