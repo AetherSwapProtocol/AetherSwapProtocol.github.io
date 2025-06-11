@@ -7,63 +7,21 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(180deg, #0f0f0f 0%, #1e1e1e 100%);
-      color: white;
-      padding-bottom: 100px;
-      margin: 0;
-      overflow-x: hidden;
-    }
-    .glass {
-      background: rgba(255,255,255,0.1);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-    }
-    .chain-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 12px;
-      border-radius: 9999px;
-      background: #2a2a2a;
-      transition: background 0.2s;
-      font-size: 0.875rem;
-    }
-    .chain-btn.selected {
-      background: rgba(255,255,255,0.2);
-    }
-    select, .filter-btn {
-      background: #2a2a2a;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 8px;
-    }
-    .modal-bg {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-    }
-    .modal-bg.active {
-      display: flex;
-    }
-    .scrollbar-hide::-webkit-scrollbar {
-      display: none;
-    }
-    .scrollbar-hide {
-      -ms-overflow-style:none;
-      scrollbar-width:none;
-    }
+    body { font-family:'Inter',sans-serif; background:linear-gradient(180deg,#0f0f0f,#1e1e1e); color:#fff; margin:0; padding-bottom:140px; overflow-x:hidden; }
+    .glass { background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border-radius:20px; }
+    .chain-btn { display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:9999px;background:#2a2a2a;transition:background 0.2s;font-size:.875rem; }
+    .chain-btn.selected { background:rgba(255,255,255,0.2); }
+    select, .filter-btn { background:#2a2a2a;color:#fff;border:none;padding:6px 10px;border-radius:8px; }
+    .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:50; }
+    .modal-bg.active { display:flex; }
+    .scrollbar-hide::-webkit-scrollbar{ display:none; } 
+    .scrollbar-hide{ -ms-overflow-style:none; scrollbar-width:none; }
+    #loadingIndicator { text-align:center; padding:16px; color:#888; }
   </style>
 </head>
 <body>
 
-  <!-- Top bar: title + time filter -->
+  <!-- Top bar -->
   <div class="sticky top-0 p-4 flex justify-between items-center bg-black z-50">
     <h1 class="text-lg font-semibold">Popular Tokens</h1>
     <select id="timeFilter" onchange="setTimeFilter()" class="filter-btn">
@@ -73,13 +31,14 @@
     </select>
   </div>
 
-  <!-- Chain selection bar -->
+  <!-- Chain bar -->
   <div id="chainBar" class="flex overflow-x-auto gap-2 px-4 py-3 scrollbar-hide"></div>
 
   <!-- Token list -->
   <div id="tokenList" class="space-y-3 px-4"></div>
+  <div id="loadingIndicator">Scroll down to load more tokens...</div>
 
-  <!-- Chain picker modal -->
+  <!-- Chain modal -->
   <div id="chainModal" class="modal-bg">
     <div class="glass p-6 w-11/12 max-w-md rounded-xl relative">
       <button onclick="toggleModal('chainModal')" class="absolute top-2 right-2 text-white text-xl">✕</button>
@@ -89,11 +48,11 @@
     </div>
   </div>
 
-  <!-- Token details modal -->
+  <!-- Token modal -->
   <div id="tokenModal" class="modal-bg">
     <div class="glass p-6 w-11/12 max-w-md rounded-xl relative">
       <button onclick="toggleModal('tokenModal')" class="absolute top-2 right-2 text-white text-xl">✕</button>
-      <img id="modalIcon" src="" alt="" class="mx-auto w-14 h-14 rounded-full mb-3" />
+      <img id="modalIcon" src="" class="mx-auto w-14 h-14 rounded-full mb-3" />
       <h2 id="modalName" class="text-lg font-semibold text-center mb-1">Token Name</h2>
       <p id="modalChain" class="text-xs text-center text-gray-300 mb-2">Chain</p>
       <div class="bg-gray-800 rounded-lg p-3 mb-2 flex justify-between items-center">
@@ -104,106 +63,85 @@
     </div>
   </div>
 
-  <!-- Bottom nav bar -->
+  <!-- Bottom nav -->
   <nav class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-between px-6 py-2 w-[360px] rounded-full z-50">
-    <a href="index.html" class="flex flex-col items-center text-xs text-white">
-      <img src="/icons/home.svg" class="w-6 h-6 mb-1"><span>Home</span>
-    </a>
-    <a href="popular.html" class="flex flex-col items-center text-xs text-white">
-      <img src="/icons/metrics.svg" class="w-6 h-6 mb-1"><span>Popular</span>
-    </a>
-    <div></div>
-    <a href="wallet.html" class="flex flex-col items-center text-xs text-white">
-      <img src="/icons/wallet.svg" class="w-6 h-6 mb-1"><span>Wallet</span>
-    </a>
-    <a href="settings.html" class="flex flex-col items-center text-xs text-white">
-      <img src="/icons/settings.svg" class="w-6 h-6 mb-1"><span>Settings</span>
-    </a>
-    <a href="swap.html" class="absolute -top-6 left-1/2 transform -translate-x-1/2">
-      <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full border-4 border-black flex items-center justify-center shadow-lg">
-        <img src="/icons/trade.svg" class="w-8 h-8 text-white" />
-      </div>
-    </a>
+    <a href="index.html" class="flex flex-col items-center text-xs text-white"><img src="/icons/home.svg" class="w-6 h-6 mb-1"><span>Home</span></a>
+    <a href="popular.html" class="flex flex-col items-center text-xs text-white"><img src="/icons/metrics.svg" class="w-6 h-6 mb-1"><span>Popular</span></a><div></div>
+    <a href="wallet.html" class="flex flex-col items-center text-xs text-white"><img src="/icons/wallet.svg" class="w-6 h-6 mb-1"><span>Wallet</span></a>
+    <a href="settings.html" class="flex flex-col items-center text-xs text-white"><img src="/icons/settings.svg" class="w-6 h-6 mb-1"><span>Settings</span></a>
+    <a href="swap.html" class="absolute -top-6 left-1/2 transform -translate-x-1/2"><div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full border-4 border-black flex items-center justify-center shadow-lg"><img src="/icons/trade.svg" class="w-8 h-8 text-white"/></div></a>
   </nav>
 
   <script>
-    const chains = [
-      { id: 'all', name: 'All Chains', logo: null },
-      { id: 'ethereum', name: 'Ethereum', logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png' },
-      { id: 'solana', name: 'Solana', logo: 'https://cryptologos.cc/logos/solana-sol-logo.png' },
-      { id: 'bnb', name: 'BNB', logo: 'https://cryptologos.cc/logos/bnb-bnb-logo.png' },
-      { id: 'polygon', name: 'Polygon', logo: 'https://cryptologos.cc/logos/polygon-matic-logo.png' },
-      { id: 'arbitrum', name: 'Arbitrum', logo: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png' }
+    const PAGE_SIZE = 20;
+    let chains = [
+      { id:'all', name:'All Chains', logo:null },
+      { id:'ethereum', name:'Ethereum', logo:'https://cryptologos.cc/logos/ethereum-eth-logo.png?v=025' },
+      { id:'solana', name:'Solana', logo:'https://cryptologos.cc/logos/solana-sol-logo.png?v=025' },
+      { id:'bnb', name:'BNB', logo:'https://cryptologos.cc/logos/binance-coin-bnb-logo.png?v=025' },
+      { id:'polygon', name:'Polygon', logo:'https://cryptologos.cc/logos/polygon-matic-logo.png?v=025' },
+      { id:'arbitrum', name:'Arbitrum', logo:'https://cryptologos.cc/logos/arbitrum-arb-logo.png?v=025' }
     ];
-    let currentChain = 'all', currentTime = '24h', tokens = [];
+    let currentChain='all', currentTime='24h', tokensAll=[], renderedCount=0;
 
-    function buildChains() {
-      const bar = document.getElementById('chainBar');
-      bar.innerHTML = '';
-      chains.forEach(c => {
-        const btn = document.createElement('button');
-        btn.className = 'chain-btn';
-        if (c.logo) btn.innerHTML = `<img src="${c.logo}" /><span>${c.name}</span>`;
-        else btn.textContent = c.name;
-        if (currentChain === c.id) btn.classList.add('selected');
-        btn.onclick = () => {
-          currentChain = c.id;
-          buildChains();
-          loadTokens();
-        };
+    async function loadTokens(){
+      const [b,p] = await Promise.all([
+        fetch('https://api.dexscreener.com/token-boosts/latest/v1').then(r=>r.json()),
+        fetch('https://api.geckoterminal.com/api/v2/networks/new_pools').then(r=>r.json()).catch(()=>({data:[]})),
+      ]);
+      const merged={};
+      [...b, ...p.data.map(x=>({
+        chainId:x.network, tokenAddress:x.base_token.address,
+        header:x.base_token.symbol, icon:x.base_token.logo,
+        priceChange:x.price_change_24h, volumeUsd:x.volume_24h_usd
+      }))].forEach(t=> merged[t.chainId+'_'+t.tokenAddress] ||= t);
+      tokensAll = Object.values(merged).sort((a,b)=> (b.volumeUsd||0)-(a.volumeUsd||0));
+      renderedCount = 0;
+      document.getElementById('tokenList').innerHTML = '';
+      loadMoreTokens();
+    }
+
+    function loadMoreTokens(){
+      const list = document.getElementById('tokenList');
+      const toRender = tokensAll
+        .filter(t=> currentChain==='all' || t.chainId===currentChain)
+        .slice(renderedCount, renderedCount+PAGE_SIZE);
+      toRender.forEach(t=> {
+        const d = document.createElement('div');
+        d.className='glass flex items-center justify-between p-4 rounded-xl cursor-pointer';
+        d.onclick=()=>openToken(t);
+        const ch=(t.priceChange||0)*100;
+        d.innerHTML=`
+          <div class="flex items-center gap-3"><img src="${t.icon}" class="w-8 h-8 rounded-full"/><div><p class="font-semibold text-sm">${t.header}</p><p class="text-xs text-gray-300">${t.chainId}</p></div></div>
+          <div class="text-right"><p class="${ch>=0?'text-green-400':'text-red-400'} font-bold text-sm">${ch.toFixed(1)}%</p><p class="text-xs text-gray-300">${(t.volumeUsd||0).toLocaleString()} USD</p></div>`;
+        list.appendChild(d);
+      });
+      renderedCount += toRender.length;
+      document.getElementById('loadingIndicator').style.display = (renderedCount < tokensAll.length) ? 'block' : 'none';
+    }
+
+    window.addEventListener('scroll', () => {
+      if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 120) {
+        loadMoreTokens();
+      }
+    });
+
+    function buildChains(){
+      const bar=document.getElementById('chainBar');
+      bar.innerHTML='';
+      chains.forEach(c=>{
+        const btn=document.createElement('button');
+        btn.className='chain-btn';
+        btn.innerHTML = c.logo
+          ? `<img src="${c.logo}" class="w-4 h-4"/><span>${c.name}</span>`
+          : c.name;
+        if(currentChain===c.id) btn.classList.add('selected');
+        btn.onclick=()=>{ currentChain=c.id; buildChains(); loadTokens(); };
         bar.appendChild(btn);
       });
     }
 
-    function toggleModal(id) {
-      document.getElementById(id).classList.toggle('active');
-    }
-
-    async function loadTokens() {
-      const [boosts, pools] = await Promise.all([
-        fetch('https://api.dexscreener.com/token-boosts/latest/v1').then(r => r.json()),
-        fetch('https://api.geckoterminal.com/api/v2/networks/new_pools').then(r => r.json()).catch(() => ({data: []}))
-      ]);
-      const merged = {};
-      [...boosts, ...pools.data.map(p => ({
-        chainId: p.network,
-        tokenAddress: p.base_token.address,
-        header: p.base_token.symbol,
-        icon: p.base_token.logo,
-        priceChange: p.price_change_24h,
-        volumeUsd: p.volume_24h_usd
-      }))].forEach(t => {
-        merged[t.chainId + '_' + t.tokenAddress] = merged[t.chainId + '_' + t.tokenAddress] || t;
-      });
-      tokens = Object.values(merged).sort((a,b) => (b.volumeUsd || 0) - (a.volumeUsd || 0));
-      renderTokens();
-    }
-
-    function renderTokens() {
-      const list = document.getElementById('tokenList');
-      list.innerHTML = '';
-      tokens.filter(t => currentChain === 'all' || t.chainId === currentChain).forEach(t => {
-        const d = document.createElement('div');
-        d.className = 'glass flex items-center justify-between p-4 rounded-xl cursor-pointer';
-        d.onclick = () => openToken(t);
-        const change = (t.priceChange || 0) * 100;
-        d.innerHTML = `
-          <div class="flex items-center gap-3">
-            <img src="${t.icon}" class="w-8 h-8 rounded-full" />
-            <div>
-              <p class="font-semibold text-sm">${t.header}</p>
-              <p class="text-xs text-gray-300">${t.chainId}</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <p class="${change >= 0 ? 'text-green-400' : 'text-red-400'} font-bold text-sm">${change.toFixed(1)}%</p>
-            <p class="text-xs text-gray-300">${(t.volumeUsd || 0).toLocaleString()} USD</p>
-          </div>`;
-        list.appendChild(d);
-      });
-    }
-
-    function openToken(t) {
+    function openToken(t){
       document.getElementById('modalIcon').src = t.icon;
       document.getElementById('modalName').innerText = t.header;
       document.getElementById('modalChain').innerText = t.chainId;
@@ -211,74 +149,49 @@
       document.getElementById('modalSwap').href = `swap.html?chain=${t.chainId}&address=${t.tokenAddress}`;
       toggleModal('tokenModal');
     }
+    function copyAddress(){ navigator.clipboard.writeText(document.getElementById('modalAddress').innerText).then(()=>alert('Copied')); }
 
-    function copyAddress() {
-      const addr = document.getElementById('modalAddress').innerText;
-      navigator.clipboard.writeText(addr).then(() => alert('Copied to clipboard'));
+    async function loadTokenByAddress(addr){
+      try {
+        const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addr}`);
+        const js = await res.json(), pair=js.pairs[0];
+        if(pair){
+          const t = { chainId:pair.chainId, tokenAddress:addr, header:js.token.symbol, icon:js.token.logo,
+                      priceChange:pair.priceChange?.percent24/100||0, volumeUsd:pair.volume?.usd24h||0 };
+          tokensAll.unshift(t);
+          loadMoreTokens();
+        } else alert('Token not found');
+      } catch(e){ alert('Error loading token'); }
     }
 
-    function onChainSearch() {
+    function onChainSearch(){
       const q = document.getElementById('chainSearch').value.trim().toLowerCase();
       const res = document.getElementById('chainSearchResult');
-      res.innerHTML = '';
-      if (q.startsWith('0x') && q.length >= 42) {
-        const btn = document.createElement('div');
-        btn.className = 'p-3 glass rounded-lg cursor-pointer';
-        btn.innerText = 'Load token by address';
-        btn.onclick = () => {
-          toggleModal('chainModal');
-          loadTokenByAddress(q);
-        };
+      res.innerHTML='';
+      if(q.startsWith('0x') && q.length>=42){
+        const btn=document.createElement('div');
+        btn.className='p-3 glass rounded-lg cursor-pointer';
+        btn.innerText='Load token by address';
+        btn.onclick=()=>{ toggleModal('chainModal'); loadTokenByAddress(q); };
         res.appendChild(btn);
       } else {
-        chains.forEach(c => {
-          if (c.id !== 'all' && c.name.toLowerCase().includes(q)) {
-            const btn = document.createElement('div');
-            btn.className = 'chain-btn';
-            btn.innerHTML = `<img src="${c.logo}" /><span>${c.name}</span>`;
-            btn.onclick = () => {
-              currentChain = c.id;
-              buildChains();
-              toggleModal('chainModal');
-              loadTokens();
-            };
+        chains.forEach(c=> {
+          if(c.id!=='all' && c.name.toLowerCase().includes(q)){
+            const btn=document.createElement('div');
+            btn.className='chain-btn';
+            btn.innerHTML=`<img src="${c.logo}" class="w-4 h-4"/><span>${c.name}</span>`;
+            btn.onclick=()=>{ currentChain=c.id; buildChains(); toggleModal('chainModal'); loadTokens(); };
             res.appendChild(btn);
           }
         });
       }
     }
-
-    async function loadTokenByAddress(addr) {
-      try {
-        const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addr}`);
-        const js = await r.json();
-        const pair = js.pairs[0];
-        if (pair) {
-          const t = {
-            chainId: pair.chainId,
-            tokenAddress: addr,
-            header: js.token.symbol,
-            icon: js.token.logo,
-            priceChange: pair.priceChange?.percent24 / 100 || 0,
-            volumeUsd: pair.volume?.usd24h || 0
-          };
-          tokens.unshift(t);
-          renderTokens();
-        } else alert('Token not found');
-      } catch(e) {
-        alert('Error loading token');
-      }
-    }
-
-    function setTimeFilter() {
-      currentTime = document.getElementById('timeFilter').value;
+    function toggleModal(id){ document.getElementById(id).classList.toggle('active'); }
+    function setTimeFilter(){
+      currentTime=document.getElementById('timeFilter').value;
       loadTokens();
     }
-
-    window.addEventListener('load', () => {
-      buildChains();
-      loadTokens();
-    });
+    window.addEventListener('load', () => { buildChains(); loadTokens(); });
   </script>
 
 </body>
