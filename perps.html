@@ -8,185 +8,798 @@
   <script src="https://cdn.jsdelivr.net/npm/@phantom-wallet-adapter/solana@0.0.4/lib/index.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.2.0"></script>
+  <style>
+    .orderbook-row { transition: background-color 0.2s; }
+    .orderbook-row:hover { background-color: rgba(255, 255, 255, 0.05); }
+    .flasher-green { animation: flashGreen 1s; }
+    .flasher-red { animation: flashRed 1s; }
+    @keyframes flashGreen { 0% { background-color: rgba(16, 185, 129, 0.3); } 100% { background-color: transparent; } }
+    @keyframes flashRed { 0% { background-color: rgba(239, 68, 68, 0.3); } 100% { background-color: transparent; } }
+  </style>
 </head>
-<body class="font-sans">
-
+<body class="font-sans flex flex-col min-h-screen">
   <!-- Header -->
-  <header class="text-center p-4 bg-gradient-to-r from-violet-700 to-blue-700">
-    <h1 class="text-xl font-bold">AetherSwap — Perpetual Trading</h1>
+  <header class="border-b border-white/10">
+    <div class="container mx-auto flex justify-between items-center p-4">
+      <div class="flex items-center space-x-8">
+        <h1 class="text-xl font-bold">AetherSwap</h1>
+        <nav class="hidden md:flex space-x-6">
+          <a href="#" class="text-purple-400">Perpetuals</a>
+          <a href="#" class="text-white/70 hover:text-white">Swap</a>
+          <a href="#" class="text-white/70 hover:text-white">Pools</a>
+        </nav>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div id="walletInfo" class="hidden items-center space-x-2">
+          <div class="w-2 h-2 rounded-full bg-green-400"></div>
+          <span id="walletAddress" class="text-sm">0x...1234</span>
+          <span id="walletBalance" class="text-sm text-gray-400">0.00 USDC</span>
+        </div>
+        <button id="connectBtn" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-sm">
+          Connect Wallet
+        </button>
+      </div>
+    </div>
   </header>
 
-  <!-- Token Selection Modal -->
-  <div id="tokenModal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center">
-    <div class="bg-zinc-900 p-4 rounded w-full max-w-md">
+  <!-- Main Content -->
+  <main class="flex flex-1 container mx-auto p-4">
+    <!-- Left Column - Order Book -->
+    <div class="w-1/4 hidden lg:block pr-4">
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold">Order Book</h2>
+          <div class="text-xs text-gray-400">
+            Depth: <span id="orderbookDepth">20</span>
+          </div>
+        </div>
+        <div class="text-xs text-gray-400 flex justify-between mb-2">
+          <span>Price (USDC)</span>
+          <span>Size (BTC)</span>
+        </div>
+        <div id="bidsList" class="space-y-1 mb-4">
+          <!-- Filled dynamically -->
+        </div>
+        <div class="text-center py-2">
+          <div class="text-xl font-mono" id="currentPrice">-</div>
+          <div class="text-xs" id="priceChange24h">-</div>
+        </div>
+        <div id="asksList" class="space-y-1">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Column - Chart and Trading -->
+    <div class="flex-1 px-2">
+      <!-- Market Selection -->
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold">Select a Pair</h2>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h2 class="text-xl font-bold" id="selectedMarket">BTC-PERP</h2>
+            <span class="text-xs px-2 py-1 bg-zinc-800 rounded">20x</span>
+          </div>
+          <div class="flex items-center space-x-4 text-sm">
+            <span id="marketPrice" class="text-lg font-mono">-</span>
+            <span id="priceChange" class="text-sm"></span>
+            <div class="text-xs text-gray-400">
+              <span>24h High: </span><span id="high24h">-</span>
+            </div>
+            <div class="text-xs text-gray-400">
+              <span>24h Low: </span><span id="low24h">-</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex space-x-2">
+          <button id="changeMarketBtn" class="bg-zinc-800 hover:bg-zinc-700 px-3 py-1 rounded text-sm">
+            Change Market
+          </button>
+          <button id="refreshDataBtn" class="bg-zinc-800 hover:bg-zinc-700 px-3 py-1 rounded text-sm">
+            ↻ Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="bg-zinc-900 rounded-lg mb-4" style="height: 400px;">
+        <canvas id="priceChart"></canvas>
+      </div>
+
+      <!-- Trading Panel -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Order Form -->
+        <div class="bg-zinc-900 rounded-lg p-4">
+          <div class="flex space-x-2 mb-4">
+            <button id="limitTab" class="px-3 py-1 bg-purple-600 rounded text-sm">Limit</button>
+            <button id="marketTab" class="px-3 py-1 bg-zinc-800 rounded text-sm">Market</button>
+          </div>
+
+          <div class="mb-4">
+            <div class="flex justify-between text-xs text-gray-400 mb-1">
+              <span>Side</span>
+              <span>Available: <span id="availableBalance">0.00</span> USDC</span>
+            </div>
+            <div class="flex space-x-2">
+              <button id="buyBtn" class="flex-1 py-2 bg-green-600 hover:bg-green-700 rounded">Buy / Long</button>
+              <button id="sellBtn" class="flex-1 py-2 bg-red-600 hover:bg-red-700 rounded">Sell / Short</button>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div id="limitPriceContainer">
+              <label class="text-xs text-gray-400 block mb-1">Price (USDC)</label>
+              <input type="text" id="priceInput" class="w-full bg-zinc-800 px-3 py-2 rounded" placeholder="0.00">
+            </div>
+            <div>
+              <label class="text-xs text-gray-400 block mb-1">Amount (BTC)</label>
+              <div class="relative">
+                <input type="text" id="amountInput" class="w-full bg-zinc-800 px-3 py-2 rounded" placeholder="0.00">
+                <div class="absolute right-2 top-2 flex space-x-1">
+                  <button class="text-xs px-1 bg-zinc-700 rounded" data-multiplier="0.25">25%</button>
+                  <button class="text-xs px-1 bg-zinc-700 rounded" data-multiplier="0.5">50%</button>
+                  <button class="text-xs px-1 bg-zinc-700 rounded" data-multiplier="1">100%</button>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="text-xs text-gray-400 block mb-1">Leverage: <span id="leverageValue">5x</span></label>
+              <div class="flex items-center space-x-2">
+                <input type="range" id="leverageSlider" min="1" max="20" value="5" class="flex-1">
+                <button id="leveragePreset5" class="text-xs px-2 py-1 bg-purple-600 rounded">5x</button>
+                <button id="leveragePreset10" class="text-xs px-2 py-1 bg-zinc-800 rounded">10x</button>
+              </div>
+            </div>
+            <div class="pt-2">
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Total</span>
+                <span id="orderTotal">0.00 USDC</span>
+              </div>
+              <button id="placeOrderBtn" class="w-full bg-purple-600 hover:bg-purple-700 py-3 rounded font-medium">
+                Place Buy Order
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Positions and Orders -->
+        <div class="bg-zinc-900 rounded-lg p-4">
+          <div class="flex space-x-2 mb-4">
+            <button id="positionsTab" class="px-3 py-1 bg-purple-600 rounded text-sm">Positions</button>
+            <button id="ordersTab" class="px-3 py-1 bg-zinc-800 rounded text-sm">Orders</button>
+            <button id="historyTab" class="px-3 py-1 bg-zinc-800 rounded text-sm">History</button>
+          </div>
+
+          <div id="positionsList" class="space-y-4">
+            <div class="text-center py-8 text-gray-500 text-sm">
+              No open positions
+            </div>
+          </div>
+
+          <div id="ordersList" class="hidden space-y-3">
+            <!-- Filled dynamically -->
+          </div>
+
+          <div id="historyList" class="hidden space-y-3">
+            <!-- Filled dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Market Info -->
+    <div class="w-1/4 hidden lg:block pl-4">
+      <div class="bg-zinc-900 rounded-lg p-4 mb-4">
+        <h2 class="text-lg font-semibold mb-4">Market Stats</h2>
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-400">24h Volume</span>
+            <span id="volume24h">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Open Interest</span>
+            <span id="openInterest">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Funding Rate</span>
+            <span id="fundingRate">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Next Funding</span>
+            <span id="nextFunding">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Mark Price</span>
+            <span id="markPrice">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Index Price</span>
+            <span id="indexPrice">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-zinc-900 rounded-lg p-4 mb-4">
+        <h2 class="text-lg font-semibold mb-4">Recent Trades</h2>
+        <div class="text-xs text-gray-400 flex justify-between mb-2">
+          <span>Price</span>
+          <span>Size</span>
+          <span>Time</span>
+        </div>
+        <div id="tradesList" class="space-y-1">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <h2 class="text-lg font-semibold mb-2">Risk Management</h2>
+        <div class="space-y-3 text-sm">
+          <div>
+            <label class="text-xs text-gray-400 block mb-1">Take Profit</label>
+            <div class="flex space-x-2">
+              <input type="text" class="flex-1 bg-zinc-800 px-2 py-1 rounded" placeholder="Price">
+              <button class="px-2 py-1 bg-zinc-800 rounded text-xs">Market</button>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs text-gray-400 block mb-1">Stop Loss</label>
+            <div class="flex space-x-2">
+              <input type="text" class="flex-1 bg-zinc-800 px-2 py-1 rounded" placeholder="Price">
+              <button class="px-2 py-1 bg-zinc-800 rounded text-xs">Market</button>
+            </div>
+          </div>
+          <div class="pt-2">
+            <button class="w-full bg-zinc-800 hover:bg-zinc-700 py-2 rounded text-sm">
+              Apply to All Positions
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Market Selection Modal -->
+  <div id="marketModal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4">
+    <div class="bg-zinc-900 p-4 rounded-lg w-full max-w-2xl max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">Select Market</h2>
         <button onclick="closeModal()" class="text-white text-sm">✕</button>
       </div>
-      <input id="searchInput" placeholder="Search by name or paste address" class="w-full p-2 mb-2 bg-zinc-800 rounded" />
-      <div id="tokenList" class="max-h-80 overflow-y-auto space-y-2 text-sm"></div>
-    </div>
-  </div>
-
-  <!-- Token Select -->
-  <div class="p-4">
-    <div class="flex justify-between items-center">
-      <div>
-        <div class="text-sm text-gray-400">Selected Pair</div>
-        <div id="selectedToken" class="text-lg font-semibold">SOL / USDC</div>
-      </div>
-      <button onclick="openModal()" class="bg-purple-700 hover:bg-purple-800 px-3 py-1 rounded text-sm">
-        Change
-      </button>
-    </div>
-  </div>
-
-  <!-- Chart -->
-  <div class="p-4">
-    <div class="text-sm mb-2">Chart</div>
-    <div class="relative border border-white/10 rounded overflow-hidden">
-      <iframe id="tvChart"
-        src="https://www.tradingview.com/embed-widget/mini-symbol-overview/?symbol=SOLUSDT&locale=en&colorTheme=dark&dateRange=1D&autosize=true"
-        style="width: 100%; height: 300px; border: none;">
-      </iframe>
-      <button id="expandChartBtn" class="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-xs px-2 py-1 rounded">
-        Expand
-      </button>
-    </div>
-  </div>
-
-  <!-- Trading Panel -->
-  <div class="p-4 space-y-4">
-    <div class="flex items-center justify-between text-sm">
-      <span class="text-gray-400">Side</span>
-      <div class="flex gap-2">
-        <button id="longBtn" class="bg-green-600 px-3 py-1 rounded text-white text-xs hover:bg-green-700">Long</button>
-        <button id="shortBtn" class="bg-red-600 px-3 py-1 rounded text-white text-xs hover:bg-red-700">Short</button>
+      <input id="marketSearch" placeholder="Search markets..." class="w-full p-2 mb-4 bg-zinc-800 rounded">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto">
+        <div class="space-y-2">
+          <h3 class="text-sm font-semibold text-gray-400">Favorites</h3>
+          <div id="favoriteMarkets">
+            <!-- Filled dynamically -->
+          </div>
+        </div>
+        <div class="space-y-2">
+          <h3 class="text-sm font-semibold text-gray-400">All Markets</h3>
+          <div id="allMarkets">
+            <!-- Filled dynamically -->
+          </div>
+        </div>
       </div>
     </div>
-
-    <div class="flex items-center justify-between text-sm">
-      <span class="text-gray-400">Leverage</span>
-      <input id="leverageInput" type="number" min="1" max="20" value="5"
-        class="w-20 bg-zinc-900 px-2 py-1 rounded text-right text-sm outline-none" />
-    </div>
-
-    <div class="flex items-center justify-between text-sm">
-      <span class="text-gray-400">Size (USDC)</span>
-      <input id="sizeInput" type="number" placeholder="100"
-        class="w-32 bg-zinc-900 px-2 py-1 rounded text-right text-sm outline-none" />
-    </div>
-
-    <button id="openPositionBtn" class="w-full bg-purple-600 hover:bg-purple-700 py-2 rounded text-sm font-semibold">
-      Open Position
-    </button>
-  </div>
-
-  <!-- Live Data -->
-  <div class="p-4 space-y-1 text-sm text-gray-300">
-    <div class="flex justify-between">
-      <span>Live Price:</span>
-      <span id="livePrice">-</span>
-    </div>
-    <div class="flex justify-between">
-      <span>Est. Liquidation:</span>
-      <span id="liquidationPrice">-</span>
-    </div>
-    <div class="flex justify-between">
-      <span>Est. PnL:</span>
-      <span id="estimatedPnL">-</span>
-    </div>
-  </div>
-
-  <!-- Connect Wallet -->
-  <div class="p-4 text-center">
-    <button id="connectBtn" class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded">
-      Connect Phantom
-    </button>
-    <div id="walletAddress" class="mt-2 text-sm text-gray-400"></div>
   </div>
 
   <script>
-    const modal = document.getElementById("tokenModal");
-    const selectedTokenEl = document.getElementById("selectedToken");
-    let selectedTokenSymbol = "SOLUSDT";
-    let price = 0;
+    // Configuration
+    const config = {
+      apiBaseUrl: 'https://api.birdeye.so',
+      wsBaseUrl: 'wss://stream.birdeye.so',
+      defaultMarket: 'BTC-PERP',
+      updateInterval: 5000, // ms
+      maxOrderbookDepth: 20
+    };
 
-    function openModal() {
-      modal.classList.remove("hidden");
-      loadTokenList();
-    }
+    // State
+    const state = {
+      connected: false,
+      currentMarket: config.defaultMarket,
+      markets: [],
+      orderbook: { bids: [], asks: [] },
+      trades: [],
+      priceData: [],
+      positions: [],
+      orders: [],
+      history: [],
+      walletBalance: 0,
+      selectedSide: 'buy',
+      leverage: 5,
+      chart: null
+    };
 
-    function closeModal() {
-      modal.classList.add("hidden");
-    }
+    // WebSocket connection
+    let wsConnection = null;
 
-    async function loadTokenList() {
-      const res = await fetch("https://public-api.birdeye.so/public/tokenlist?sort_by=volume_24h_usd");
-      const data = await res.json();
-      const list = data.data.tokens;
-      const tokenListEl = document.getElementById("tokenList");
-      tokenListEl.innerHTML = "";
-      list.slice(0, 1000).forEach(token => {
-        const div = document.createElement("div");
-        div.textContent = `${token.symbol} (${token.address.slice(0, 4)}...)`;
-        div.className = "p-2 bg-zinc-800 rounded cursor-pointer hover:bg-zinc-700";
-        div.onclick = () => selectToken(token);
-        tokenListEl.appendChild(div);
+    // DOM Elements
+    const elements = {
+      walletInfo: document.getElementById('walletInfo'),
+      walletAddress: document.getElementById('walletAddress'),
+      walletBalance: document.getElementById('walletBalance'),
+      connectBtn: document.getElementById('connectBtn'),
+      selectedMarket: document.getElementById('selectedMarket'),
+      marketPrice: document.getElementById('marketPrice'),
+      priceChange: document.getElementById('priceChange'),
+      priceChange24h: document.getElementById('priceChange24h'),
+      high24h: document.getElementById('high24h'),
+      low24h: document.getElementById('low24h'),
+      bidsList: document.getElementById('bidsList'),
+      asksList: document.getElementById('asksList'),
+      currentPrice: document.getElementById('currentPrice'),
+      volume24h: document.getElementById('volume24h'),
+      openInterest: document.getElementById('openInterest'),
+      fundingRate: document.getElementById('fundingRate'),
+      nextFunding: document.getElementById('nextFunding'),
+      markPrice: document.getElementById('markPrice'),
+      indexPrice: document.getElementById('indexPrice'),
+      tradesList: document.getElementById('tradesList'),
+      positionsList: document.getElementById('positionsList'),
+      ordersList: document.getElementById('ordersList'),
+      historyList: document.getElementById('historyList'),
+      availableBalance: document.getElementById('availableBalance'),
+      priceInput: document.getElementById('priceInput'),
+      amountInput: document.getElementById('amountInput'),
+      orderTotal: document.getElementById('orderTotal'),
+      placeOrderBtn: document.getElementById('placeOrderBtn'),
+      leverageSlider: document.getElementById('leverageSlider'),
+      leverageValue: document.getElementById('leverageValue'),
+      buyBtn: document.getElementById('buyBtn'),
+      sellBtn: document.getElementById('sellBtn'),
+      limitTab: document.getElementById('limitTab'),
+      marketTab: document.getElementById('marketTab'),
+      positionsTab: document.getElementById('positionsTab'),
+      ordersTab: document.getElementById('ordersTab'),
+      historyTab: document.getElementById('historyTab'),
+      marketModal: document.getElementById('marketModal'),
+      marketSearch: document.getElementById('marketSearch'),
+      favoriteMarkets: document.getElementById('favoriteMarkets'),
+      allMarkets: document.getElementById('allMarkets'),
+      changeMarketBtn: document.getElementById('changeMarketBtn'),
+      refreshDataBtn: document.getElementById('refreshDataBtn'),
+      priceChart: document.getElementById('priceChart')
+    };
+
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', async () => {
+      initializeEventListeners();
+      await loadMarkets();
+      initializeChart();
+      connectWebSocket();
+      startDataUpdates();
+    });
+
+    // Initialize event listeners
+    function initializeEventListeners() {
+      // Wallet connection
+      elements.connectBtn.addEventListener('click', connectWallet);
+
+      // Trading panel
+      elements.buyBtn.addEventListener('click', () => setOrderSide('buy'));
+      elements.sellBtn.addEventListener('click', () => setOrderSide('sell'));
+      elements.leverageSlider.addEventListener('input', updateLeverage);
+      elements.priceInput.addEventListener('input', calculateOrderTotal);
+      elements.amountInput.addEventListener('input', calculateOrderTotal);
+      elements.placeOrderBtn.addEventListener('click', placeOrder);
+
+      // Leverage presets
+      document.getElementById('leveragePreset5').addEventListener('click', () => setLeverage(5));
+      document.getElementById('leveragePreset10').addEventListener('click', () => setLeverage(10));
+
+      // Percentage buttons
+      document.querySelectorAll('[data-multiplier]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const multiplier = parseFloat(e.target.dataset.multiplier);
+          const maxAmount = state.walletBalance / (elements.priceInput.value || state.priceData[state.priceData.length - 1]?.close);
+          elements.amountInput.value = (maxAmount * multiplier).toFixed(4);
+          calculateOrderTotal();
+        });
       });
+
+      // Tabs
+      elements.limitTab.addEventListener('click', () => setOrderType('limit'));
+      elements.marketTab.addEventListener('click', () => setOrderType('market'));
+      elements.positionsTab.addEventListener('click', () => showTab('positions'));
+      elements.ordersTab.addEventListener('click', () => showTab('orders'));
+      elements.historyTab.addEventListener('click', () => showTab('history'));
+
+      // Market selection
+      elements.changeMarketBtn.addEventListener('click', openMarketModal);
+      elements.refreshDataBtn.addEventListener('click', refreshData);
     }
 
-    function selectToken(token) {
-      selectedTokenSymbol = token.symbol + "USDC";
-      selectedTokenEl.textContent = token.symbol + " / USDC";
-      document.getElementById("tvChart").src =
-        `https://www.tradingview.com/embed-widget/mini-symbol-overview/?symbol=${token.symbol}USDC&locale=en&colorTheme=dark&dateRange=1D&autosize=true`;
-      closeModal();
-      fetchPrice();
-    }
-
-    async function fetchPrice() {
-      try {
-        const response = await axios.get(`https://public-api.birdeye.so/public/price?address=So11111111111111111111111111111111111111112`);
-        price = response.data.data.value;
-        document.getElementById("livePrice").textContent = "$" + price.toFixed(2);
-        calculateLiquidation();
-      } catch (e) {
-        document.getElementById("livePrice").textContent = "N/A";
-      }
-    }
-
-    function calculateLiquidation() {
-      const size = parseFloat(document.getElementById("sizeInput").value || 0);
-      const leverage = parseFloat(document.getElementById("leverageInput").value || 1);
-      if (price && size && leverage) {
-        const entry = price;
-        const margin = size / leverage;
-        const liquidation = entry - (entry * 0.8); // mock ratio
-        document.getElementById("liquidationPrice").textContent = "$" + liquidation.toFixed(2);
-      }
-    }
-
-    document.getElementById("sizeInput").addEventListener("input", calculateLiquidation);
-    document.getElementById("leverageInput").addEventListener("input", calculateLiquidation);
-
-    // Wallet Connection
-    const connectBtn = document.getElementById("connectBtn");
-    const walletAddressEl = document.getElementById("walletAddress");
-    connectBtn.addEventListener("click", async () => {
+    // Connect to Phantom wallet
+    async function connectWallet() {
       if (window.solana && window.solana.isPhantom) {
         try {
           const resp = await window.solana.connect();
-          walletAddressEl.textContent = resp.publicKey.toString();
+          const pubKey = resp.publicKey.toString();
+          state.connected = true;
+          
+          elements.walletAddress.textContent = `${pubKey.slice(0, 4)}...${pubKey.slice(-4)}`;
+          elements.connectBtn.classList.add('hidden');
+          elements.walletInfo.classList.remove('hidden');
+          
+          // Fetch wallet balance (mock)
+          state.walletBalance = 2500; // Mock balance
+          elements.walletBalance.textContent = state.walletBalance.toFixed(2) + ' USDC';
+          elements.availableBalance.textContent = state.walletBalance.toFixed(2);
+          
+          // Load user data
+          loadUserPositions();
+          loadUserOrders();
+          loadUserHistory();
         } catch (err) {
-          alert("Connection cancelled");
+          console.error("Wallet connection error:", err);
+          alert("Failed to connect wallet");
         }
       } else {
-        alert("Phantom wallet not found");
+        window.open('https://phantom.app/', '_blank');
       }
-    });
+    }
 
-    fetchPrice();
-  </script>
-</body>
-</html>
+    // Load available markets
+    async function loadMarkets() {
+      try {
+        // Mock data - in a real app you would fetch this from your API
+        state.markets = [
+          { symbol: 'BTC-PERP', name: 'BTC Perpetual', price: 109823.4, change24h: -0.18, volume: 11.8, oi: 27.25, maxLeverage: 20 },
+          { symbol: 'ETH-PERP', name: 'ETH Perpetual', price: 2763.15, change24h: 4.56, volume: 27.25, oi: 2.76, maxLeverage: 20 },
+          { symbol: 'SOL-PERP', name: 'SOL Perpetual', price: 163.46, change24h: 2.46, volume: 10.18, oi: 1.63, maxLeverage: 20 },
+          { symbol: 'SUI-PERP', name: 'SUI Perpetual', price: 3.45, change24h: 0.11, volume: 1.32, oi: 0.35, maxLeverage: 10 },
+          { symbol: 'HYPE-PERP', name: 'HYPE Perpetual', price: 41.59, change24h: 8.13, volume: 0.5, oi: 0.42, maxLeverage: 10 }
+        ];
+
+        updateMarketData();
+      } catch (error) {
+        console.error("Failed to load markets:", error);
+      }
+    }
+
+    // Connect to WebSocket for real-time data
+    function connectWebSocket() {
+      if (wsConnection) wsConnection.close();
+
+      // Mock WebSocket connection - in a real app this would connect to your WebSocket endpoint
+      console.log("Connecting to WebSocket...");
+      
+      // Simulate WebSocket updates
+      setInterval(() => {
+        simulateWebSocketUpdate();
+      }, 1000);
+    }
+
+    // Simulate WebSocket updates (mock)
+    function simulateWebSocketUpdate() {
+      if (!state.priceData.length) return;
+
+      // Simulate price change
+      const lastPrice = state.priceData[state.priceData.length - 1].close;
+      const newPrice = lastPrice * (1 + (Math.random() * 0.002 - 0.001)); // Random small change
+      const change = newPrice - lastPrice;
+      const changePercent = (change / lastPrice) * 100;
+
+      // Update price
+      updatePrice(newPrice, change, changePercent);
+
+      // Simulate order book updates
+      simulateOrderBookUpdates();
+
+      // Simulate new trades
+      simulateNewTrades(newPrice);
+    }
+
+    // Update price display
+    function updatePrice(price, change, changePercent) {
+      const priceFormatted = price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const changeFormatted = change.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const changePercentFormatted = changePercent.toFixed(2);
+      
+      elements.marketPrice.textContent = `$${priceFormatted}`;
+      elements.currentPrice.textContent = `$${priceFormatted}`;
+      
+      if (change >= 0) {
+        elements.priceChange.textContent = `+${changeFormatted} (+${changePercentFormatted}%)`;
+        elements.priceChange.className = 'text-sm text-green-400';
+        elements.currentPrice.classList.add('text-green-400');
+        elements.currentPrice.classList.remove('text-red-400');
+      } else {
+        elements.priceChange.textContent = `${changeFormatted} (${changePercentFormatted}%)`;
+        elements.priceChange.className = 'text-sm text-red-400';
+        elements.currentPrice.classList.add('text-red-400');
+        elements.currentPrice.classList.remove('text-green-400');
+      }
+
+      // Add to price history
+      const now = new Date();
+      state.priceData.push({
+        time: now,
+        open: price,
+        high: price * (1 + Math.random() * 0.001),
+        low: price * (1 - Math.random() * 0.001),
+        close: price
+      });
+
+      // Keep only the last 100 data points
+      if (state.priceData.length > 100) {
+        state.priceData.shift();
+      }
+
+      // Update chart
+      updateChart();
+    }
+
+    // Simulate order book updates
+    function simulateOrderBookUpdates() {
+      if (!state.priceData.length) return;
+      const lastPrice = state.priceData[state.priceData.length - 1].close;
+
+      // Generate bids (below current price)
+      const bids = [];
+      for (let i = 0; i < config.maxOrderbookDepth; i++) {
+        const price = lastPrice * (1 - (i + 1) * 0.0005);
+        const size = Math.random() * 0.5;
+        bids.push({ price, size });
+      }
+
+      // Generate asks (above current price)
+      const asks = [];
+      for (let i = 0; i < config.maxOrderbookDepth; i++) {
+        const price = lastPrice * (1 + (i + 1) * 0.0005);
+        const size = Math.random() * 0.5;
+        asks.push({ price, size });
+      }
+
+      state.orderbook = { bids, asks };
+      updateOrderBook();
+    }
+
+    // Update order book display
+    function updateOrderBook() {
+      // Bids
+      elements.bidsList.innerHTML = state.orderbook.bids.map(order => `
+        <div class="orderbook-row flex justify-between text-green-400 text-sm">
+          <span>${order.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span>${order.size.toFixed(5)}</span>
+        </div>
+      `).join('');
+
+      // Asks
+      elements.asksList.innerHTML = state.orderbook.asks.map(order => `
+        <div class="orderbook-row flex justify-between text-red-400 text-sm">
+          <span>${order.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span>${order.size.toFixed(5)}</span>
+        </div>
+      `).join('');
+    }
+
+    // Simulate new trades
+    function simulateNewTrades(currentPrice) {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      
+      // Generate random trades
+      const side = Math.random() > 0.5 ? 'buy' : 'sell';
+      const size = (Math.random() * 0.5).toFixed(5);
+      
+      const trade = {
+        price: currentPrice * (1 + (Math.random() * 0.001 - 0.0005)),
+        size,
+        side,
+        time: timeStr
+      };
+
+      // Add to beginning of array
+      state.trades.unshift(trade);
+      
+      // Keep only the last 20 trades
+      if (state.trades.length > 20) {
+        state.trades.pop();
+      }
+
+      updateTradesList();
+    }
+
+    // Update trades list
+    function updateTradesList() {
+      elements.tradesList.innerHTML = state.trades.map(trade => `
+        <div class="flex justify-between text-sm flasher-${trade.side}">
+          <span class="${trade.side === 'buy' ? 'text-green-400' : 'text-red-400'}">
+            ${trade.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
+          <span>${trade.size}</span>
+          <span class="text-gray-400">${trade.time}</span>
+        </div>
+      `).join('');
+    }
+
+    // Initialize price chart
+    function initializeChart() {
+      const ctx = elements.priceChart.getContext('2d');
+      
+      state.chart = new Chart(ctx, {
+        type: 'candlestick',
+        data: {
+          datasets: [{
+            label: 'Price',
+            data: [],
+            color: {
+              up: '#10b981',
+              down: '#ef4444',
+              unchanged: '#64748b',
+            }
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'minute'
+              }
+            },
+            y: {
+              ticks: {
+                callback: function(value) {
+                  return '$' + value.toLocaleString();
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const data = context.raw;
+                  return [
+                    `O: $${data.o.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                    `H: $${data.h.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                    `L: $${data.l.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                    `C: $${data.c.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                  ];
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Update chart with new data
+    function updateChart() {
+      if (!state.chart) return;
+      
+      const chartData = state.priceData.map(item => ({
+        x: item.time,
+        o: item.open,
+        h: item.high,
+        l: item.low,
+        c: item.close
+      }));
+      
+      state.chart.data.datasets[0].data = chartData;
+      state.chart.update();
+    }
+
+    // Set order side (buy/sell)
+    function setOrderSide(side) {
+      state.selectedSide = side;
+      
+      if (side === 'buy') {
+        elements.buyBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+        elements.buyBtn.classList.remove('bg-zinc-800');
+        elements.sellBtn.classList.add('bg-zinc-800');
+        elements.sellBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+        elements.placeOrderBtn.textContent = 'Place Buy Order';
+        elements.placeOrderBtn.className = 'w-full bg-green-600 hover:bg-green-700 py-3 rounded font-medium';
+      } else {
+        elements.sellBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+        elements.sellBtn.classList.remove('bg-zinc-800');
+        elements.buyBtn.classList.add('bg-zinc-800');
+        elements.buyBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+        elements.placeOrderBtn.textContent = 'Place Sell Order';
+        elements.placeOrderBtn.className = 'w-full bg-red-600 hover:bg-red-700 py-3 rounded font-medium';
+      }
+    }
+
+    // Set order type (limit/market)
+    function setOrderType(type) {
+      if (type === 'limit') {
+        elements.limitTab.classList.add('bg-purple-600');
+        elements.limitTab.classList.remove('bg-zinc-800');
+        elements.marketTab.classList.add('bg-zinc-800');
+        elements.marketTab.classList.remove('bg-purple-600');
+        elements.priceInput.disabled = false;
+      } else {
+        elements.marketTab.classList.add('bg-purple-600');
+        elements.marketTab.classList.remove('bg-zinc-800');
+        elements.limitTab.classList.add('bg-zinc-800');
+        elements.limitTab.classList.remove('bg-purple-600');
+        elements.priceInput.disabled = true;
+        elements.priceInput.value = '';
+        calculateOrderTotal();
+      }
+    }
+
+    // Update leverage
+    function updateLeverage() {
+      state.leverage = parseInt(elements.leverageSlider.value);
+      elements.leverageValue.textContent = `${state.leverage}x`;
+    }
+
+    // Set leverage to specific value
+    function setLeverage(value) {
+      state.leverage = value;
+      elements.leverageSlider.value = value;
+      elements.leverageValue.textContent = `${value}x`;
+      
+      // Update button states
+      document.getElementById('leveragePreset5').className = `text-xs px-2 py-1 ${value === 5 ? 'bg-purple-600' : 'bg-zinc-800'} rounded`;
+      document.getElementById('leveragePreset10').className = `text-xs px-2 py-1 ${value === 10 ? 'bg-purple-600' : 'bg-zinc-800'} rounded`;
+    }
+
+    // Calculate order total
+    function calculateOrderTotal() {
+      const price = parseFloat(elements.priceInput.value) || state.priceData[state.priceData.length - 1]?.close || 0;
+      const amount = parseFloat(elements.amountInput.value) || 0;
+      const total = price * amount;
+      
+      elements.orderTotal.textContent = total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USDC';
+    }
+
+    // Place order (mock implementation)
+    function placeOrder() {
+      if (!state.connected) {
+        alert('Please connect your wallet first');
+        return;
+      }
+
+      const price = parseFloat(elements.priceInput.value) || state.priceData[state.priceData.length - 1]?.close || 0;
+      const amount = parseFloat(elements.amountInput.value) || 0;
+      
+      if (amount <= 0) {
+        alert('Please enter a valid amount');
+        return;
+      }
+
+      // Mock order placement
+      const order = {
+        id: Date.now().toString(),
+        side: state.selectedSide,
+        price,
+        amount,
+        leverage: state.leverage,
+        time: new Date().toLocaleTimeString(),
+        status: 'open'
+      };
+
+      // Add to orders list
+      state.orders.unshift(order);
+      updateOrdersList();
+
+      // Show confirmation
+      alert(`Order placed: ${order.side.toUpperCase()} ${order.amount} BTC at ${order.price.toFixed(2)} USDC with ${order.leverage}x leverage`);
+      
+      // Clear inputs
+      elements.amountInput.value = '';
+      calculateOrderTotal();
+    }
+
+    // Load user positions (mock)
+    function loadUserPositions() {
+      // Mock positions
+      state.positions = [
+        {
+          id: '1',
+          symbol: 'BTC-PERP',
+          side: 'long',
+          entryPrice: 108500.25,
+          amount: 0.05,
