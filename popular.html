@@ -3,139 +3,294 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Discover trending tokens on AetherSwap, ranked by volume and performance"/>
+  <meta name="theme-color" content="#121212"/>
   <title>AetherSwap – Popular Tokens</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <!-- Preload critical resources -->
+  <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-primary: #121212;
+      --bg-secondary: #1F1F1F;
+      --bg-accent: rgba(255,255,255,0.05);
+      --text-primary: #FFFFFF;
+      --text-secondary: #A3A3A3;
+      --gradient-primary: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+    }
+    
     body {
-      margin:0; padding-bottom:120px;
-      font-family:'Inter',sans-serif;
-      background:#121212;
-      color:#fff;
-      overflow-x:hidden;
+      margin: 0;
+      padding-bottom: 120px;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
+    
     .glass {
-      background:rgba(255,255,255,0.05);
-      backdrop-filter:blur(12px);
-      border-radius:16px;
+      background: var(--bg-accent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.1);
     }
+    
     .chain-btn {
-      display:flex; align-items:center; gap:6px;
-      padding:8px 12px; border-radius:9999px;
-      background:#1f1f1f; transition:background 0.2s;
-      font-size:0.875rem; white-space:nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 9999px;
+      background: var(--bg-secondary);
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      border: 1px solid transparent;
     }
+    
+    .chain-btn:hover {
+      background: #2A2A2A;
+    }
+    
     .chain-btn.selected {
-      background:#333; position:relative;
+      background: #333;
+      border-color: rgba(255,255,255,0.2);
+      position: relative;
     }
-    .chain-btn.selected:after {
-      content:"✕";
-      font-size:0.75rem; position:absolute;
-      top:-4px; right:-4px;
-      background:#ff4d4d; border-radius:50%; width:16px;
-      height:16px; display:flex; align-items:center; justify-content:center;
+    
+    .chain-btn.selected::after {
+      content: "✕";
+      font-size: 0.75rem;
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #EF4444;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+    
     .modal-bg {
-      display:none; position:fixed; inset:0;
-      background:rgba(0,0,0,0.7);
-      align-items:center; justify-content:center;
-      z-index:50;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      animation: fadeIn 0.2s ease-out;
     }
-    .modal-bg.active { display:flex; }
-    select, .filter-btn { background:#1f1f1f; color:#fff; border:none; padding:6px 10px; border-radius:8px; }
-    .scrollbar-hide::-webkit-scrollbar { display:none; }
-    .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
-    #loadingIndicator { text-align:center; padding:12px; color:#888; }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    select, .filter-btn {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      appearance: none;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    #loadingIndicator {
+      text-align: center;
+      padding: 16px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    
+    .token-card {
+      transition: transform 0.1s ease;
+    }
+    
+    .token-card:active {
+      transform: scale(0.98);
+    }
+    
+    .gradient-btn {
+      background: var(--gradient-primary);
+      transition: all 0.2s ease;
+    }
+    
+    .gradient-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
   </style>
 </head>
 <body>
 
   <!-- TOP BAR -->
-  <div class="sticky top-0 z-50 bg-black p-4 flex justify-between items-center">
-    <h1 class="text-lg font-semibold">Tokens populaires</h1>
+  <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-sm p-4 flex justify-between items-center border-b border-white/5">
+    <h1 class="text-lg font-semibold">Popular Tokens</h1>
     <select id="timeFilter" onchange="setTimeFilter()" class="filter-btn">
-      <option value="1h">1 h</option>
-      <option value="24h" selected>24 h</option>
-      <option value="7d">7 j</option>
+      <option value="1h">1h</option>
+      <option value="24h" selected>24h</option>
+      <option value="7d">7d</option>
     </select>
-  </div>
+  </header>
 
   <!-- CHAIN BAR -->
-  <div id="chainBar" class="flex overflow-x-auto gap-2 px-4 py-3 scrollbar-hide"></div>
+  <div id="chainBar" class="flex overflow-x-auto gap-2 px-4 py-3 scrollbar-hide bg-black/30"></div>
 
   <!-- TOKEN LIST -->
-  <div id="tokenList" class="space-y-3 px-4"></div>
-  <div id="loadingIndicator">Défile vers le bas pour charger plus…</div>
+  <main id="tokenList" class="space-y-3 px-4"></main>
+  <div id="loadingIndicator" class="pulse">Loading more tokens...</div>
 
   <!-- Modal: All Chains -->
   <div id="chainModal" class="modal-bg">
-    <div class="glass p-6 w-11/12 max-w-md rounded-xl relative">
-      <button onclick="toggleModal('chainModal')" class="absolute top-2 right-2 text-white text-xl">✕</button>
-      <h2 class="text-xl font-semibold mb-4">Réseaux / Coller adresse token</h2>
-      <input id="chainSearch" type="text" placeholder="Rechercher chaîne ou coller 0x..." oninput="onChainSearch()" class="w-full p-3 rounded-lg bg-[#1f1f1f] text-white mb-4"/>
-      <div id="chainSearchResult" class="space-y-2 max-h-64 overflow-y-auto"></div>
+    <div class="glass p-6 w-11/12 max-w-md rounded-xl relative max-h-[90vh] overflow-hidden">
+      <button onclick="toggleModal('chainModal')" class="absolute top-4 right-4 text-white text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-all" aria-label="Close modal">
+        ✕
+      </button>
+      <h2 class="text-xl font-semibold mb-4">Networks / Paste Token Address</h2>
+      <input 
+        id="chainSearch" 
+        type="text" 
+        placeholder="Search network or paste 0x..." 
+        oninput="onChainSearch()" 
+        class="w-full p-3 rounded-lg bg-[#1f1f1f] text-white mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+      />
+      <div id="chainSearchResult" class="space-y-2 max-h-[60vh] overflow-y-auto pr-2"></div>
     </div>
   </div>
 
   <!-- Modal: Token Detail -->
   <div id="tokenModal" class="modal-bg">
     <div class="glass p-6 w-11/12 max-w-md rounded-xl relative">
-      <button onclick="toggleModal('tokenModal')" class="absolute top-2 right-2 text-white text-xl">✕</button>
-      <img id="modalIcon" src="" class="mx-auto w-16 h-16 rounded-full mb-3"/>
+      <button onclick="toggleModal('tokenModal')" class="absolute top-4 right-4 text-white text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-all" aria-label="Close modal">
+        ✕
+      </button>
+      <img id="modalIcon" src="" class="mx-auto w-16 h-16 rounded-full mb-3 bg-white/10" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQTEwIDEwIDAgMDAyIDEyYzAgMS42LjQgMy4xIDEuMSA0LjRMMy4xIDE4LjVDMS4zIDE2LjUgMCAxMy44IDAgMTFBMTEgMTEgMCAwMTExIDBjMi44IDAgNS4zIDEuMyA3IDEuMUwxNi40IDMuMUMxNS4xIDIuNCAxMy42IDIgMTIgMnptMCAyYTggOCAwIDAxOCA4YzAgLjcgMCAxLjQtLjIgMkg0LjJjLS4xLS42LS4yLTEuMy0uMi0yYTggOCAwIDAxOC04em0xIDguNXYtMy41aDJ2My41aDIuNWwtMy41IDMuNS0zLjUtMy41SDN2LTJoMy41VjcuNUg4djMuNUg1LjVMMyA4bDMuNS0zLjVINHYySDYuNVY3LjVIMTB2My41eiIvPjwvc3ZnPg=='"/>
       <h2 id="modalName" class="text-lg font-semibold text-center mb-1">Token Name</h2>
-      <p id="modalChain" class="text-center text-xs text-gray-400 mb-2">Chain</p>
-      <div class="bg-[#1f1f1f] rounded-lg p-3 mb-3 flex justify-between items-center">
-        <code id="modalAddress" class="text-xs break-all"></code>
-        <button onclick="copyAddress()" class="text-blue-400 text-xs">Copier</button>
+      <p id="modalChain" class="text-center text-xs text-gray-400 mb-2">Network</p>
+      <div class="bg-[#1f1f1f] rounded-lg p-3 mb-4 flex justify-between items-center gap-2">
+        <code id="modalAddress" class="text-xs break-all font-mono select-all"></code>
+        <button onclick="copyAddress()" class="text-blue-400 text-xs font-medium whitespace-nowrap hover:text-blue-300 transition-colors">
+          Copy
+        </button>
       </div>
-      <a id="modalSwap" href="#" class="block bg-gradient-to-br from-blue-600 to-purple-600 text-white text-center py-2 rounded-full">Swap</a>
+      <a id="modalSwap" href="#" class="block gradient-btn text-white text-center py-3 rounded-full font-medium hover:shadow-lg">
+        Swap Token
+      </a>
     </div>
   </div>
 
   <!-- BOTTOM NAV -->
-  <nav class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-between px-6 py-2 w-[360px] rounded-full z-40">
-    <a href="index.html" class="flex flex-col items-center text-xs"><img src="/icons/home.svg" class="w-6 h-6 mb-1"/><span>Accueil</span></a>
-    <a href="popular.html" class="flex flex-col items-center text-xs"><img src="/icons/trending_up.svg" class="w-6 h-6 mb-1"/><span>Populaires</span></a>
-    <div></div>
-    <a href="wallet.html" class="flex flex-col items-center text-xs"><img src="/icons/account_balance_wallet.svg" class="w-6 h-6 mb-1"/><span>Wallet</span></a>
-    <a href="settings.html" class="flex flex-col items-center text-xs"><img src="/icons/settings.svg" class="w-6 h-6 mb-1"/><span>Paramètres</span></a>
-    <a href="swap.html" class="absolute -top-6 left-1/2 transform -translate-x-1/2">
-      <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full border-4 border-black flex items-center justify-center shadow-lg">
-        <img src="/icons/swap_horiz.svg" class="w-8 h-8 text-white"/>
+  <nav class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-between px-6 py-2 w-[calc(100%-32px)] max-w-[360px] rounded-full z-40">
+    <a href="index.html" class="flex flex-col items-center text-xs p-2 rounded-lg hover:bg-white/5 transition-colors">
+      <img src="/icons/home.svg" class="w-5 h-5 mb-1" alt="Home"/>
+      <span>Home</span>
+    </a>
+    <a href="popular.html" class="flex flex-col items-center text-xs p-2 rounded-lg hover:bg-white/5 transition-colors">
+      <img src="/icons/trending_up.svg" class="w-5 h-5 mb-1" alt="Popular"/>
+      <span>Popular</span>
+    </a>
+    <div class="w-12"></div>
+    <a href="wallet.html" class="flex flex-col items-center text-xs p-2 rounded-lg hover:bg-white/5 transition-colors">
+      <img src="/icons/account_balance_wallet.svg" class="w-5 h-5 mb-1" alt="Wallet"/>
+      <span>Wallet</span>
+    </a>
+    <a href="settings.html" class="flex flex-col items-center text-xs p-2 rounded-lg hover:bg-white/5 transition-colors">
+      <img src="/icons/settings.svg" class="w-5 h-5 mb-1" alt="Settings"/>
+      <span>Settings</span>
+    </a>
+    <a href="swap.html" class="absolute -top-6 left-1/2 transform -translate-x-1/2 hover:scale-105 transition-transform">
+      <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full border-4 border-black flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
+        <img src="/icons/swap_horiz.svg" class="w-7 h-7 text-white" alt="Swap"/>
       </div>
     </a>
   </nav>
 
   <script>
+    // Configuration
     const PAGE_SIZE = 20;
     const chains = [
-      { id:'all', name:'Tous les réseaux', logo:null },
+      { id:'all', name:'All Networks', logo:null },
       { id:'ethereum', name:'Ethereum', logo:'https://cryptologos.cc/logos/ethereum-eth-logo.png?v=025' },
       { id:'solana', name:'Solana', logo:'https://cryptologos.cc/logos/solana-sol-logo.png?v=025' },
-      { id:'bnb', name:'BNB Smart Chain', logo:'https://cryptologos.cc/logos/binance-coin-bnb-logo.png?v=025' },
+      { id:'bnb', name:'BNB Chain', logo:'https://cryptologos.cc/logos/binance-coin-bnb-logo.png?v=025' },
       { id:'polygon', name:'Polygon', logo:'https://cryptologos.cc/logos/polygon-matic-logo.png?v=025' },
       { id:'arbitrum', name:'Arbitrum', logo:'https://cryptologos.cc/logos/arbitrum-arb-logo.png?v=025' },
-      { id:'base', name:'Base', logo:'https://cryptologos.cc/logos/base-logo.png?v=025' }
+      { id:'base', name:'Base', logo:'https://cryptologos.cc/logos/base-logo.png?v=025' },
+      { id:'optimism', name:'Optimism', logo:'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png?v=025' }
     ];
-    let currentChain='all', currentTime='24h', tokensAll=[], renderedCount=0;
+    
+    // State management
+    let currentChain = 'all';
+    let currentTime = '24h';
+    let allTokens = [];
+    let renderedCount = 0;
+    let isLoading = false;
+    let hasMore = true;
+    let scrollDebounce;
 
-    window.addEventListener('load', ()=>{
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
       buildChainBar();
       loadTokens();
+      
+      // Add network selector button
+      const chainBar = document.getElementById('chainBar');
+      const addNetworkBtn = document.createElement('button');
+      addNetworkBtn.className = 'chain-btn bg-white/10 hover:bg-white/20';
+      addNetworkBtn.innerHTML = '+ Add Network';
+      addNetworkBtn.onclick = () => toggleModal('chainModal');
+      chainBar.appendChild(addNetworkBtn);
     });
 
-    function buildChainBar(){
+    // Build the chain selection bar
+    function buildChainBar() {
       const bar = document.getElementById('chainBar');
       bar.innerHTML = '';
-      chains.forEach(c=>{
+      
+      chains.forEach(chain => {
         const btn = document.createElement('button');
         btn.className = 'chain-btn';
-        btn.innerHTML = c.logo
-          ? `<img src="${c.logo}" class="w-4 h-4"/><span>${c.name}</span>`
-          : c.name;
-        if(c.id===currentChain) btn.classList.add('selected');
-        btn.onclick = ()=> {
-          currentChain = c.id;
+        btn.innerHTML = chain.logo
+          ? `<img src="${chain.logo}" class="w-4 h-4 rounded-full" alt="${chain.name} logo"/><span>${chain.name}</span>`
+          : chain.name;
+        if(chain.id === currentChain) btn.classList.add('selected');
+        btn.onclick = () => {
+          currentChain = chain.id;
+          renderedCount = 0;
+          document.getElementById('tokenList').innerHTML = '';
           buildChainBar();
           loadTokens();
         };
@@ -143,157 +298,318 @@
       });
     }
 
- async function loadTokens(){
-  // Chargement des nouvelles listes boostées via token-profiles
-  const resp1 = await fetch('https://api.dexscreener.com/token-profiles/latest/v1');
-  const boosts = await resp1.json(); // format corrigé
-
-  const resp2 = await fetch('https://api.geckoterminal.com/api/v2/networks/new_pools');
-  const pools = await resp2.json().catch(()=>({data:[]})); 
-
-  const tmp = {};
-  boosts.forEach(t => {
-    tmp[t.chainId + '_' + t.tokenAddress] = {
-      chainId: t.chainId,
-      tokenAddress: t.tokenAddress,
-      header: t.header,
-      icon: t.icon,
-      priceChange: t.priceChange24h || 0,
-      volumeUsd: t.volumeUsd24h || 0,
-    };
-  });
-
-  pools.data.forEach(p => {
-    const t = {
-      chainId: p.network,
-      tokenAddress: p.base_token.address,
-      header: p.base_token.symbol,
-      icon: p.base_token.logo,
-      priceChange: p.price_change_24h,
-      volumeUsd: p.volume_24h_usd
-    };
-    tmp[t.chainId + '_' + t.tokenAddress] = tmp[t.chainId + '_' + t.tokenAddress] || t;
-  });
-
-  tokensAll = Object.values(tmp).sort((a,b)=> (b.volumeUsd || 0) - (a.volumeUsd || 0));
-  renderedCount = 0;
-  document.getElementById('tokenList').innerHTML = '';
-  loadMoreTokens();
-}
-
-    function loadMoreTokens(){
-      const list = document.getElementById('tokenList');
-      const slice = tokensAll
-        .filter(t => currentChain==='all' || t.chainId===currentChain)
-        .slice(renderedCount, renderedCount+PAGE_SIZE);
-      slice.forEach(t=> {
-        const d = document.createElement('div');
-        d.className='glass flex items-center justify-between p-4 rounded-xl cursor-pointer';
-        d.onclick = ()=>openToken(t);
-        const ch = ((t.priceChange||0)*100).toFixed(1);
-        d.innerHTML = `
-          <div class="flex items-center gap-3">
-            <img src="${t.icon}" class="w-8 h-8 rounded-full"/>
-            <div>
-              <p class="font-semibold">${t.header}</p>
-              <p class="text-xs text-gray-400">${t.chainId}</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <p class="${ch>=0?'text-green-400':'text-red-400'} font-bold">${ch}%</p>
-            <p class="text-xs text-gray-400">${(t.volumeUsd||0).toLocaleString()} USD</p>
-          </div>`;
-        list.appendChild(d);
-      });
-      renderedCount += slice.length;
-      document.getElementById('loadingIndicator').style.display = (renderedCount < tokensAll.length) ? 'block' : 'none';
+    // Load tokens from APIs
+    async function loadTokens() {
+      if(isLoading) return;
+      
+      isLoading = true;
+      document.getElementById('loadingIndicator').textContent = 'Loading tokens...';
+      
+      try {
+        const [boosts, pools] = await Promise.all([
+          fetch('https://api.dexscreener.com/token-boosts/latest/v1').then(r => r.json()),
+          fetch('https://api.geckoterminal.com/api/v2/networks/new_pools').then(r => r.json()).catch(() => ({data: []}))
+        ]);
+        
+        const tokenMap = {};
+        
+        // Process boosts data
+        boosts.forEach(token => {
+          const key = `${token.chainId}_${token.tokenAddress}`;
+          tokenMap[key] = {
+            chainId: token.chainId,
+            tokenAddress: token.tokenAddress,
+            header: token.header || token.symbol,
+            icon: token.icon || token.logo,
+            priceChange: token.priceChange?.percent24 / 100 || 0,
+            volumeUsd: token.volumeUsd || token.volume?.usd24h || 0,
+            timestamp: Date.now()
+          };
+        });
+        
+        // Process pools data
+        pools.data?.forEach(pool => {
+          const key = `${pool.network}_${pool.base_token.address}`;
+          if (!tokenMap[key]) {
+            tokenMap[key] = {
+              chainId: pool.network,
+              tokenAddress: pool.base_token.address,
+              header: pool.base_token.symbol,
+              icon: pool.base_token.logo,
+              priceChange: pool.price_change_24h || 0,
+              volumeUsd: pool.volume_24h_usd || 0,
+              timestamp: Date.now()
+            };
+          }
+        });
+        
+        allTokens = Object.values(tokenMap)
+          .sort((a, b) => (b.volumeUsd || 0) - (a.volumeUsd || 0));
+          
+        renderedCount = 0;
+        document.getElementById('tokenList').innerHTML = '';
+        loadMoreTokens();
+        
+      } catch (error) {
+        console.error('Error loading tokens:', error);
+        document.getElementById('loadingIndicator').textContent = 'Error loading tokens. Pull down to refresh.';
+      } finally {
+        isLoading = false;
+      }
     }
 
-    window.addEventListener('scroll', () => {
-      if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 120) {
-        loadMoreTokens();
+    // Lazy load more tokens
+    function loadMoreTokens() {
+      if (isLoading) return;
+      
+      const filteredTokens = allTokens.filter(token => 
+        currentChain === 'all' || token.chainId === currentChain
+      );
+      
+      const tokensToRender = filteredTokens.slice(renderedCount, renderedCount + PAGE_SIZE);
+      
+      if (tokensToRender.length === 0) {
+        document.getElementById('loadingIndicator').textContent = renderedCount === 0 
+          ? 'No tokens found' 
+          : 'No more tokens to load';
+        hasMore = false;
+        return;
       }
-    });
+      
+      const list = document.getElementById('tokenList');
+      
+      tokensToRender.forEach(token => {
+        const changePercent = ((token.priceChange || 0) * 100).toFixed(1);
+        const volume = token.volumeUsd ? formatCurrency(token.volumeUsd) : 'N/A';
+        
+        const tokenElement = document.createElement('div');
+        tokenElement.className = 'glass token-card flex items-center justify-between p-4 rounded-xl cursor-pointer';
+        tokenElement.onclick = () => openTokenModal(token);
+        tokenElement.innerHTML = `
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="${token.icon || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQTEwIDEwIDAgMDAyIDEyYzAgMS42LjQgMy4xIDEuMSA0LjRMMy4xIDE4LjVDMS4zIDE2LjUgMCAxMy44IDAgMTFBMTEgMTEgMCAwMTExIDBjMi44IDAgNS4zIDEuMyA3IDEuMUwxNi40IDMuMUMxNS4xIDIuNCAxMy42IDIgMTIgMnptMCAyYTggOCAwIDAxOCA4YzAgLjcgMCAxLjQtLjIgMkg0LjJjLS4xLS42LS4yLTEuMy0uMi0yYTggOCAwIDAxOC04em0xIDguNXYtMy41aDJ2My41aDIuNWwtMy41IDMuNS0zLjUtMy41SDN2LTJoMy41VjcuNUg4djMuNUg1LjVMMyA4bDMuNS0zLjVINHYySDYuNVY3LjVIMTB2My41eiIvPjwvc3ZnPg=='}" 
+                 class="w-9 h-9 rounded-full bg-white/10" 
+                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQTEwIDEwIDAgMDAyIDEyYzAgMS42LjQgMy4xIDEuMSA0LjRMMy4xIDE4LjVDMS4zIDE2LjUgMCAxMy44IDAgMTFBMTEgMTEgMCAwMTExIDBjMi44IDAgNS4zIDEuMyA3IDEuMUwxNi40IDMuMUMxNS4xIDIuNCAxMy42IDIgMTIgMnptMCAyYTggOCAwIDAxOCA4YzAgLjcgMCAxLjQtLjIgMkg0LjJjLS4xLS42LS4yLTEuMy0uMi0yYTggOCAwIDAxOC04em0xIDguNXYtMy41aDJ2My41aDIuNWwtMy41IDMuNS0zLjUtMy41SDN2LTJoMy41VjcuNUg4djMuNUg1LjVMMyA4bDMuNS0zLjVINHYySDYuNVY3LjVIMTB2My41eiIvPjwvc3ZnPg=='"/>
+            <div class="min-w-0">
+              <p class="font-semibold truncate">${token.header || 'Unknown'}</p>
+              <p class="text-xs text-gray-400 truncate">${token.chainId || 'Unknown'}</p>
+            </div>
+          </div>
+          <div class="text-right min-w-0 ml-2">
+            <p class="${changePercent >= 0 ? 'text-green-400' : 'text-red-400'} font-bold">
+              ${changePercent}%
+            </p>
+            <p class="text-xs text-gray-400 truncate">${volume}</p>
+          </div>`;
+        list.appendChild(tokenElement);
+      });
+      
+      renderedCount += tokensToRender.length;
+      hasMore = renderedCount < filteredTokens.length;
+      
+      document.getElementById('loadingIndicator').textContent = hasMore 
+        ? 'Scroll to load more' 
+        : 'All tokens loaded';
+    }
 
-    function openToken(t){
-      document.getElementById('modalIcon').src = t.icon;
-      document.getElementById('modalName').innerText = t.header;
-      document.getElementById('modalChain').innerText = t.chainId;
-      document.getElementById('modalAddress').innerText = t.tokenAddress;
-      document.getElementById('modalSwap').href = `swap.html?chain=${t.chainId}&address=${t.tokenAddress}`;
+    // Open token details modal
+    function openTokenModal(token) {
+      document.getElementById('modalIcon').src = token.icon || 'data:image/svg+xml;base64,...';
+      document.getElementById('modalName').textContent = token.header || 'Unknown Token';
+      document.getElementById('modalChain').textContent = token.chainId || 'Unknown Network';
+      document.getElementById('modalAddress').textContent = token.tokenAddress || 'N/A';
+      document.getElementById('modalSwap').href = `swap.html?chain=${encodeURIComponent(token.chainId)}&address=${encodeURIComponent(token.tokenAddress)}`;
       toggleModal('tokenModal');
     }
 
-    function copyAddress(){
-      navigator.clipboard.writeText(document.getElementById('modalAddress').innerText).then(()=>{
-        alert('Adresse copiée');
+    // Copy token address to clipboard
+    async function copyAddress() {
+      const address = document.getElementById('modalAddress').textContent;
+      try {
+        await navigator.clipboard.writeText(address);
+        const btn = document.querySelector('#tokenModal button[onclick="copyAddress()"]');
+        btn.textContent = 'Copied!';
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
+
+    // Toggle modal visibility
+    function toggleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.classList.toggle('active');
+      
+      if (modal.classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+        if (modalId === 'chainModal') {
+          document.getElementById('chainSearch').focus();
+        }
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Search chains in modal
+    function onChainSearch() {
+      const query = document.getElementById('chainSearch').value.trim().toLowerCase();
+      const resultsContainer = document.getElementById('chainSearchResult');
+      resultsContainer.innerHTML = '';
+      
+      if (query.startsWith('0x') && query.length >= 20) {
+        const addressBtn = document.createElement('button');
+        addressBtn.className = 'glass p-3 rounded-lg cursor-pointer w-full text-left hover:bg-white/10 transition-colors';
+        addressBtn.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <span class="text-blue-400 text-lg">⟳</span>
+            </div>
+            <div>
+              <p class="font-medium">Load token by address</p>
+              <p class="text-xs text-gray-400 truncate">${query.substring(0, 6)}...${query.substring(query.length - 4)}</p>
+            </div>
+          </div>`;
+        addressBtn.onclick = () => {
+          loadTokenByAddress(query);
+          toggleModal('chainModal');
+        };
+        resultsContainer.appendChild(addressBtn);
+      }
+      
+      chains.forEach(chain => {
+        if (chain.id !== 'all' && (chain.name.toLowerCase().includes(query) || chain.id.includes(query))) {
+          const chainBtn = document.createElement('button');
+          chainBtn.className = 'chain-btn w-full text-left justify-start px-3 py-2.5';
+          chainBtn.innerHTML = `
+            <img src="${chain.logo}" class="w-5 h-5 rounded-full" alt="${chain.name}"/>
+            <span class="ml-2">${chain.name}</span>`;
+          chainBtn.onclick = () => {
+            currentChain = chain.id;
+            renderedCount = 0;
+            document.getElementById('tokenList').innerHTML = '';
+            buildChainBar();
+            loadTokens();
+            toggleModal('chainModal');
+          };
+          resultsContainer.appendChild(chainBtn);
+        }
       });
     }
 
-    function toggleModal(id){
-      document.getElementById(id).classList.toggle('active');
-    }
-
-    function onChainSearch(){
-      const q = document.getElementById('chainSearch').value.trim().toLowerCase();
-      const res = document.getElementById('chainSearchResult');
-      res.innerHTML = '';
-      if (q.startsWith('0x') && q.length >= 20) {
-        const btn = document.createElement('div');
-        btn.className='glass p-3 rounded-lg cursor-pointer';
-        btn.innerText = 'Charger token via adresse';
-        btn.onclick = ()=>{
-          loadTokenByAddress(q);
-          toggleModal('chainModal');
-        };
-        res.appendChild(btn);
-      } else {
-        chains.forEach(c => {
-          if(c.id!=='all' && c.name.toLowerCase().includes(q)) {
-            const btn = document.createElement('div');
-            btn.className='chain-btn';
-            btn.innerHTML = `<img src="${c.logo}" class="w-4 h-4"/><span>${c.name}</span>`;
-            btn.onclick = ()=>{
-              currentChain = c.id;
-              buildChainBar();
-              loadTokens();
-              toggleModal('chainModal');
-            };
-            res.appendChild(btn);
-          }
-        });
-      }
-    }
-
-    async function loadTokenByAddress(addr){
+    // Load token by address
+    async function loadTokenByAddress(address) {
       try {
-        const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addr}`);
-        const js = await r.json();
-        const pair = js.pairs?.[0];
-        if(pair) {
-          const t = {
-            chainId:pair.chainId,
-            tokenAddress:addr,
-            header:js.token.symbol,
-            icon:js.token.logo,
-            priceChange:pair.priceChange?.percent24/100||0,
-            volumeUsd:pair.volume?.usd24h||0
+        toggleModal('chainModal');
+        document.getElementById('loadingIndicator').textContent = 'Loading token...';
+        
+        const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${address}`);
+        const data = await response.json();
+        
+        if (data.pairs?.length > 0) {
+          const pair = data.pairs[0];
+          const token = {
+            chainId: pair.chainId,
+            tokenAddress: address,
+            header: data.token?.symbol || 'Unknown',
+            icon: data.token?.logo || '',
+            priceChange: pair.priceChange?.percent24 / 100 || 0,
+            volumeUsd: pair.volume?.usd24h || 0,
+            timestamp: Date.now()
           };
-          tokensAll.unshift(t);
+          
+          // Add to beginning of list
+          allTokens.unshift(token);
+          renderedCount = 0;
+          document.getElementById('tokenList').innerHTML = '';
           loadMoreTokens();
         } else {
-          alert('Token introuvable');
+          showToast('Token not found', 'error');
         }
-      } catch(e) {
-        alert('Erreur lors du chargement du token');
+      } catch (error) {
+        console.error('Error loading token:', error);
+        showToast('Error loading token', 'error');
+      } finally {
+        document.getElementById('loadingIndicator').textContent = hasMore 
+          ? 'Scroll to load more' 
+          : 'All tokens loaded';
       }
     }
 
-    function setTimeFilter(){
+    // Set time filter
+    function setTimeFilter() {
       currentTime = document.getElementById('timeFilter').value;
+      renderedCount = 0;
+      document.getElementById('tokenList').innerHTML = '';
       loadTokens();
     }
-  </script>
 
+    // Format currency
+    function formatCurrency(value) {
+      if (value >= 1000000) {
+        return `$${(value / 1000000).toFixed(1)}M`;
+      }
+      if (value >= 1000) {
+        return `$${(value / 1000).toFixed(1)}K`;
+      }
+      return `$${value.toFixed(2)}`;
+    }
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+      } text-white font-medium text-sm z-50 animate-fadeInOut`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.add('animate-fadeOut');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Infinite scroll
+    window.addEventListener('scroll', () => {
+      clearTimeout(scrollDebounce);
+      
+      scrollDebounce = setTimeout(() => {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        
+        if (scrollTop + clientHeight >= scrollHeight - 200 && hasMore && !isLoading) {
+          loadMoreTokens();
+        }
+      }, 100);
+    });
+
+    // Pull-to-refresh
+    let startY = 0;
+    let touchStart = false;
+    
+    document.addEventListener('touchstart', (e) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].clientY;
+        touchStart = true;
+      }
+    }, { passive: true });
+    
+    document.addEventListener('touchmove', (e) => {
+      if (!touchStart) return;
+      
+      const y = e.touches[0].clientY;
+      const pullDistance = y - startY;
+      
+      if (pullDistance > 50 && window.scrollY === 0) {
+        touchStart = false;
+        loadTokens();
+      }
+    }, { passive: true });
+    
+    document.addEventListener('touchend', () => {
+      touchStart = false;
+    }, { passive: true });
+  </script>
 </body>
 </html>
