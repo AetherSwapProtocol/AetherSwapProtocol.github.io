@@ -3,33 +3,57 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AetherSwap Perpetuals</title>
-  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.76.0/lib/index.iife.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@phantom-wallet-adapter/solana@0.0.4/lib/index.umd.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <title>AetherSwap</title>
+
+  <!-- Tailwind + custom theme -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.2.0"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            dark: '#0e0b1e',
+            purple: {
+              500: '#8b5cf6',
+              600: '#7c3aed',
+            },
+            blue: {
+              500: '#6366f1',
+              600: '#4f46e5',
+            },
+            green: {
+              500: '#14f195'
+            },
+            zinc: {
+              800: '#27272a',
+            },
+            aether: {
+              primary: '#8b5cf6',
+              secondary: '#6366f1',
+              bg: '#0e0b1e',
+              card: '#1C1933',
+              accent: '#14f195'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    .orderbook-row { transition: background-color 0.2s; }
-    .orderbook-row:hover { background-color: rgba(255, 255, 255, 0.05); }
-    .flasher-green { animation: flashGreen 1s; }
-    .flasher-red { animation: flashRed 1s; }
-    @keyframes flashGreen { 0% { background-color: rgba(16, 185, 129, 0.3); } 100% { background-color: transparent; } }
-    @keyframes flashRed { 0% { background-color: rgba(239, 68, 68, 0.3); } 100% { background-color: transparent; } }
-  </style>
-<!-- Ajoutez ceci dans <head> pour forcer le chargement JS -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM chargé - Vérification des scripts...");
-    if (typeof solana === 'undefined') {
-      console.error("Phantom Wallet non détecté!");
-    } else {
-      console.log("SDK Solana prêt");
+    body {
+      font-family: 'Inter', sans-serif;
     }
-  });
-</script>
+  </style>
+
+  <!-- Solana Web3 (Phantom) -->
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+
+  <!-- TradingView -->
+  <script src="https://s3.tradingview.com/tv.js"></script>
 </head>
 <body class="font-sans flex flex-col min-h-screen">
   <!-- Header -->
