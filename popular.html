@@ -193,42 +193,47 @@
   </nav>
 
   <script>
-  (function(){
-    const chains = ["ethereum","bsc","polygon","arbitrum","avalanche","fantom","optimism","solana","tron","cronos","metis","harmony","nova","klaytn","okexchain","moonbeam","celo","aurora","base","linea","sui","aptos","zksync","starknet","moonriver","the-open-network","evmos","theta","milkomeda","palm","sepolia","rinkeby","goerli","ropsten","kovan","arbnova","bnbchain-test","optimism-kovan","moonbase","celo-alfajores","fantom-testnet","clv12","godwoken","heco","one","meter"];
-    const openChainsBtn=document.getElementById("openChainsBtn"), chainsLbl=document.getElementById("chainsLbl"), chainsModal=document.getElementById("chainsModal");
-    const chainGrid=document.getElementById("chainGrid"), searchChain=document.getElementById("searchChain"), clearChains=document.getElementById("clearChains");
-    const tokenInput=document.getElementById("tokenInput"), fetchBtn=document.getElementById("fetchBtn"), tokensContainer=document.getElementById("tokens");
-    const tokenModal=document.getElementById("tokenModal"), tdClose=document.getElementById("tdClose"), tdLogo=document.getElementById("tdLogo"), tdName=document.getElementById("tdName"), tdAddr=document.getElementById("tdAddr"), tdCopy=document.getElementById("tdCopy"), tdLinks=document.getElementById("tdLinks"), tdTrade=document.getElementById("tdTrade");
-    const timeTabs=Array.from(document.querySelectorAll(".time-tab"));
-    let selected=new Set(), cache={}, favorites=JSON.parse(localStorage.getItem("favorites")||"[]"), lastData=[], loading=false, range="h24";
+(function(){
+  const chains = ["ethereum","bsc","polygon","arbitrum","avalanche","fantom","optimism","solana","tron","cronos","metis","harmony","nova","klaytn","okexchain","moonbeam","celo","aurora","base","linea","sui","aptos","zksync","starknet","moonriver","the-open-network","evmos","theta","milkomeda","palm","sepolia","rinkeby","goerli","ropsten","kovan","arbnova","bnbchain-test","optimism-kovan","moonbase","celo-alfajores","fantom-testnet","clv12","godwoken","heco","one","meter"];
+  const openChainsBtn=document.getElementById("openChainsBtn"), chainsLbl=document.getElementById("chainsLbl"), chainsModal=document.getElementById("chainsModal");
+  const chainGrid=document.getElementById("chainGrid"), searchChain=document.getElementById("searchChain"), clearChains=document.getElementById("clearChains");
+  const tokenInput=document.getElementById("tokenInput"), fetchBtn=document.getElementById("fetchBtn"), tokensContainer=document.getElementById("tokens");
+  const tokenModal=document.getElementById("tokenModal"), tdClose=document.getElementById("tdClose"), tdLogo=document.getElementById("tdLogo"), tdName=document.getElementById("tdName"), tdAddr=document.getElementById("tdAddr"), tdCopy=document.getElementById("tdCopy"), tdLinks=document.getElementById("tdLinks"), tdTrade=document.getElementById("tdTrade");
+  const timeTabs=Array.from(document.querySelectorAll(".time-tab"));
+  let selected=new Set(), cache={}, favorites=JSON.parse(localStorage.getItem("favorites")||"[]"), lastData=[], loading=false, range="h24";
 
-    // Build grid
-    chains.forEach(id=>{
-      const d=document.createElement("div"); d.className="network-option flex flex-col items-center p-2";
-      const img=document.createElement("img"); img.src=`https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${id}/info/logo.png`; img.onerror=()=>img.style.visibility="hidden";
-      const span=document.createElement("span"); span.textContent=id; span.className="text-xs text-center mt-1";
-      d.append(img, span);
-      d.dataset.chain=id;
-      d.onclick=()=>{
-        if(selected.has(id)){ selected.delete(id); d.classList.remove("selected"); }
-        else { selected.add(id); d.classList.add("selected"); }
-        chainsLbl.textContent=`Select Networks (${selected.size})`;
-      };
-      chainGrid.appendChild(d);
-    });
+  // Build grid
+  chains.forEach(id=>{
+    const d=document.createElement("div"); d.className="network-option flex flex-col items-center p-2";
+    const img=document.createElement("img"); img.src=`https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${id}/info/logo.png`; img.onerror=()=>img.style.visibility="hidden";
+    const span=document.createElement("span"); span.textContent=id; span.className="text-xs text-center mt-1";
+    d.append(img, span);
+    d.dataset.chain=id;
+    d.onclick=()=>{
+      if(selected.has(id)){
+        selected.delete(id);
+        d.classList.remove("selected");
+      } else {
+        selected.add(id);
+        d.classList.add("selected");
+        chainsModal.classList.remove("active"); // Fermer le popup après sélection
+      }
+      chainsLbl.textContent=`Select Networks (${selected.size})`;
+    };
+    chainGrid.appendChild(d);
+  });
 
-    openChainsBtn.onclick=()=>chainsModal.classList.add("active");
-    chainsModal.onclick=e=>e.target===chainsModal&&chainsModal.classList.remove("active");
-    clearChains.onclick=()=>{ selected.clear(); document.querySelectorAll(".network-option.selected").forEach(e=>e.classList.remove("selected")); chainsLbl.textContent="Select Networks (0)"; };
-    searchChain.oninput=()=>document.querySelectorAll(".network-option").forEach(e=>e.style.display=e.dataset.chain.includes(searchChain.value.toLowerCase())?"flex":"none");
-    
-    timeTabs.forEach(btn=>btn.onclick=()=>{
-      timeTabs.forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      range=btn.dataset.range;
-      lastData=[]; tokensContainer.innerHTML="";
-    });
+  openChainsBtn.onclick=()=>chainsModal.classList.add("active");
+  chainsModal.onclick=e=>e.target===chainsModal&&chainsModal.classList.remove("active");
+  clearChains.onclick=()=>{ selected.clear(); document.querySelectorAll(".network-option.selected").forEach(e=>e.classList.remove("selected")); chainsLbl.textContent="Select Networks (0)"; };
+  searchChain.oninput=()=>document.querySelectorAll(".network-option").forEach(e=>e.style.display=e.dataset.chain.includes(searchChain.value.toLowerCase())?"flex":"none");
 
+  timeTabs.forEach(btn=>btn.onclick=()=>{
+    timeTabs.forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    range=btn.dataset.range;
+    lastData=[]; tokensContainer.innerHTML="";
+  });
     tdClose.onclick=()=>tokenModal.classList.remove("active");
     tokenModal.onclick=e=>e.target===tokenModal&&tokenModal.classList.remove("active");
     tdCopy.onclick=()=>{
