@@ -143,26 +143,43 @@
       });
     }
 
-    async function loadTokens(){
-      const [boosts, pools] = await Promise.all([
-        fetch('https://api.dexscreener.com/token-boosts/latest/v1').then(r=>r.json()),
-        fetch('https://api.geckoterminal.com/api/v2/networks/new_pools').then(r=>r.json()).catch(()=>({data:[]}))
-      ]);
-      const tmp = {};
-      boosts.forEach(t => tmp[t.chainId + '_' + t.tokenAddress] = t);
-      pools.data.forEach(p => {
-        const t = {
-          chainId:p.network, tokenAddress:p.base_token.address,
-          header:p.base_token.symbol, icon:p.base_token.logo,
-          priceChange:p.price_change_24h, volumeUsd:p.volume_24h_usd
-        };
-        tmp[t.chainId + '_' + t.tokenAddress] = tmp[t.chainId + '_' + t.tokenAddress] || t;
-      });
-      tokensAll = Object.values(tmp).sort((a,b)=> (b.volumeUsd||0)-(a.volumeUsd||0));
-      renderedCount = 0;
-      document.getElementById('tokenList').innerHTML = '';
-      loadMoreTokens();
-    }
+ async function loadTokens(){
+  // Chargement des nouvelles listes boostées via token-profiles
+  const resp1 = await fetch('https://api.dexscreener.com/token-profiles/latest/v1');
+  const boosts = await resp1.json(); // format corrigé
+
+  const resp2 = await fetch('https://api.geckoterminal.com/api/v2/networks/new_pools');
+  const pools = await resp2.json().catch(()=>({data:[]})); 
+
+  const tmp = {};
+  boosts.forEach(t => {
+    tmp[t.chainId + '_' + t.tokenAddress] = {
+      chainId: t.chainId,
+      tokenAddress: t.tokenAddress,
+      header: t.header,
+      icon: t.icon,
+      priceChange: t.priceChange24h || 0,
+      volumeUsd: t.volumeUsd24h || 0,
+    };
+  });
+
+  pools.data.forEach(p => {
+    const t = {
+      chainId: p.network,
+      tokenAddress: p.base_token.address,
+      header: p.base_token.symbol,
+      icon: p.base_token.logo,
+      priceChange: p.price_change_24h,
+      volumeUsd: p.volume_24h_usd
+    };
+    tmp[t.chainId + '_' + t.tokenAddress] = tmp[t.chainId + '_' + t.tokenAddress] || t;
+  });
+
+  tokensAll = Object.values(tmp).sort((a,b)=> (b.volumeUsd || 0) - (a.volumeUsd || 0));
+  renderedCount = 0;
+  document.getElementById('tokenList').innerHTML = '';
+  loadMoreTokens();
+}
 
     function loadMoreTokens(){
       const list = document.getElementById('tokenList');
