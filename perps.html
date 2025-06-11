@@ -19,6 +19,17 @@
     @keyframes flashGreen { 0% { background-color: rgba(16, 185, 129, 0.3); } 100% { background-color: transparent; } }
     @keyframes flashRed { 0% { background-color: rgba(239, 68, 68, 0.3); } 100% { background-color: transparent; } }
   </style>
+<!-- Ajoutez ceci dans <head> pour forcer le chargement JS -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM chargé - Vérification des scripts...");
+    if (typeof solana === 'undefined') {
+      console.error("Phantom Wallet non détecté!");
+    } else {
+      console.log("SDK Solana prêt");
+    }
+  });
+</script>
 </head>
 <body class="font-sans flex flex-col min-h-screen">
   <!-- Header -->
@@ -1175,5 +1186,26 @@
     window.selectMarket = selectMarket;
     window.closeModal = closeModal;
   </script>
+<script>
+  // Activation basique des boutons
+  document.getElementById('connectBtn')?.addEventListener('click', function() {
+    alert("Fonctionnalité wallet en cours de développement");
+  });
+
+  // Simulation de changement de marché
+  document.querySelectorAll('[onclick*="selectMarket"]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const market = this.getAttribute('data-market');
+      alert(`Marché sélectionné: ${market}`);
+    });
+  });
+
+  // Activer les onglets
+  ['positionsTab', 'ordersTab', 'historyTab'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', function() {
+      alert(`Onglet ${id} cliqué`);
+    });
+  });
+</script>
 </body>
 </html>
