@@ -57,28 +57,28 @@
 </head>
 <body class="font-sans flex flex-col min-h-screen">
   <!-- Header -->
-  <header class="border-b border-white/10">
-    <div class="container mx-auto flex justify-between items-center p-4">
-      <div class="flex items-center space-x-8">
-        <h1 class="text-xl font-bold">AetherSwap</h1>
-        <nav class="hidden md:flex space-x-6">
-          <a href="#" class="text-purple-400">Perpetuals</a>
-          <a href="#" class="text-white/70 hover:text-white">Swap</a>
-          <a href="#" class="text-white/70 hover:text-white">Pools</a>
-        </nav>
-      </div>
-      <div class="flex items-center space-x-4">
-        <div id="walletInfo" class="hidden items-center space-x-2">
-          <div class="w-2 h-2 rounded-full bg-green-400"></div>
-          <span id="walletAddress" class="text-sm">0x...1234</span>
-          <span id="walletBalance" class="text-sm text-gray-400">0.00 USDC</span>
-        </div>
-        <button id="connectBtn" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-sm">
-          Connect Wallet
-        </button>
-      </div>
+  <header class="border-b border-white/10 bg-zinc-900 shadow-sm">
+  <div class="container mx-auto flex justify-between items-center p-4">
+    <div class="flex items-center space-x-8">
+      <h1 class="text-xl font-bold text-aether-primary">AetherSwap</h1>
+      <nav class="hidden md:flex space-x-6">
+        <a href="perps.html" class="text-white/70 hover:text-purple-400 transition">Perpetuals</a>
+        <a href="swap.html" class="text-white/70 hover:text-purple-400 transition">Swap</a>
+        <a href="pools.html" class="text-white/70 hover:text-purple-400 transition">Pools</a>
+      </nav>
     </div>
-  </header>
+    <div class="flex items-center space-x-4">
+      <div id="walletInfo" class="flex items-center space-x-2 hidden">
+        <div class="w-2 h-2 rounded-full bg-green-400"></div>
+        <span id="walletAddress" class="text-sm truncate max-w-[120px]">0x...</span>
+        <span id="walletBalance" class="text-sm text-gray-400">0.00 SOL</span>
+      </div>
+      <button id="connectWalletBtn" class="bg-aether-primary hover:bg-purple-700 px-4 py-2 rounded text-sm transition">
+        Connect Wallet
+      </button>
+    </div>
+  </div>
+</header>
 
   <!-- Main Content -->
   <main class="flex flex-1 container mx-auto p-4">
