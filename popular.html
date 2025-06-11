@@ -1,210 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Popular Tokens – AetherSwap</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  body { background: #0f0f1b; color: #fff; font-family: 'Inter', sans-serif; padding-bottom: 100px; }
-  .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(14px); border:1px solid rgba(255,255,255,0.1); border-radius:20px; }
-  .chain-btn { display:flex; align-items:center; gap:0.25rem; padding:0.5rem 0.75rem; border-radius:9999px; }
-  .chain-btn img { width:20px; height:20px; border-radius:50%; }
-  .chain-btn.selected { background:rgba(255,255,255,0.12); }
-  .filter-btn, .chain-btn { transition:background 0.2s; }
-  .filter-btn:hover, .chain-btn:hover { background:rgba(255,255,255,0.1); }
-  .modal-bg { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:50; }
-  .modal-bg.active { display:flex; }
-  .scrollbar-hide::-webkit-scrollbar { display:none; }
-  .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherSwap - Popular Tokens</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #0f0f0f 0%, #1e1e1e 100%);
+      color: white;
+      overflow-x: hidden;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+    }
+    .chain-btn.selected {
+      background-color: rgba(255,255,255,0.2);
+      border: 1px solid white;
+    }
+  </style>
 </head>
-<body class="p-4">
+<body class="pb-20">
 
-  <!-- Chain selector scroll -->
-  <div id="chainBar" class="flex overflow-x-auto scrollbar-hide mb-4 gap-2"></div>
+<!-- 🔼 Menu filtre temporel -->
+<div class="w-full p-4 flex justify-between items-center sticky top-0 bg-black z-50">
+  <h1 class="text-lg font-semibold">Popular Tokens</h1>
+  <select id="timeFilter" class="bg-gray-800 text-white px-3 py-2 rounded-lg">
+    <option value="1h">1 Hour</option>
+    <option value="24h">24 Hours</option>
+    <option value="7d">7 Days</option>
+  </select>
+</div>
 
-  <!-- Time filter and AllChains popup -->
-  <div class="flex items-center gap-2 mb-4">
-    <button class="glass filter-btn px-3 py-1 text-xs" onclick="setTime('1h')">1h</button>
-    <button class="glass filter-btn px-3 py-1 text-xs" onclick="setTime('24h')">24h</button>
-    <button class="glass filter-btn px-3 py-1 text-xs" onclick="setTime('7d')">7d</button>
-    <div class="flex-1"></div>
-    <button class="glass px-3 py-1 text-xs" onclick="openChainModal()">All Chains</button>
+<!-- 🔄 Bandeau horizontal scrollable blockchains -->
+<div class="flex overflow-x-auto gap-2 px-4 py-3 scrollbar-hide">
+  <button class="chain-btn px-4 py-2 rounded-full flex items-center gap-2 bg-gray-800 text-white text-sm" onclick="openChainPopup()">
+    <span>All Chains</span>
+  </button>
+  <button class="chain-btn px-4 py-2 rounded-full flex items-center gap-2 bg-gray-800 text-white text-sm" onclick="selectChain('solana')">
+    <img src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-4 h-4" />
+    Solana
+  </button>
+  <button class="chain-btn px-4 py-2 rounded-full flex items-center gap-2 bg-gray-800 text-white text-sm" onclick="selectChain('ethereum')">
+    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" class="w-4 h-4" />
+    Ethereum
+  </button>
+  <button class="chain-btn px-4 py-2 rounded-full flex items-center gap-2 bg-gray-800 text-white text-sm" onclick="selectChain('bnb')">
+    <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png" class="w-4 h-4" />
+    BNB
+  </button>
+  <!-- ajoute d'autres chains ici -->
+</div>
+<!-- 📋 Liste des tokens -->
+<div id="tokenList" class="px-4 mt-4 flex flex-col gap-3">
+  <!-- Exemple statique d’un token (sera dynamique plus tard) -->
+  <div onclick="openTokenPopup('TokenX', '0x123456789', 'https://cryptologos.cc/logos/ethereum-eth-logo.png')" class="bg-gray-800 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-gray-700">
+    <div class="flex items-center gap-3">
+      <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" class="w-8 h-8 rounded-full" />
+      <div>
+        <p class="font-semibold text-sm">TokenX</p>
+        <p class="text-xs text-gray-400">0x1234...6789</p>
+      </div>
+    </div>
+    <span class="text-green-400 text-sm">+42%</span>
   </div>
+</div>
 
-  <!-- Tokens list -->
-  <div id="tokenList" class="space-y-3"></div>
-
-  <!-- Chain selection modal -->
-  <div id="chainModal" class="modal-bg">
-    <div class="glass p-6 w-11/12 max-w-md">
-      <h3 class="mb-3 font-semibold">Select Chain or paste Token Address</h3>
-      <input id="chainSearch" type="text" placeholder="e.g. ethereum or 0x..." class="w-full p-2 rounded bg-gray-800 mb-4 text-white" onkeyup="onChainSearch(event)" />
-      <div id="chainSuggestions" class="grid grid-cols-2 gap-2 mb-3"></div>
-      <button onclick="closeChainModal()" class="bg-red-500 px-4 py-2 rounded-full text-white">Close</button>
+<!-- 🔍 Popup Token Détail -->
+<div id="tokenModal" class="fixed inset-0 z-50 bg-black bg-opacity-70 hidden flex items-center justify-center">
+  <div class="glass p-6 w-80 rounded-xl relative">
+    <button onclick="closeTokenPopup()" class="absolute top-2 right-2 text-white text-lg">✕</button>
+    <div class="flex flex-col items-center gap-3">
+      <img id="tokenImage" src="" class="w-14 h-14 rounded-full">
+      <h2 id="tokenName" class="text-lg font-semibold">Token Name</h2>
+      <p id="tokenAddress" class="text-sm text-gray-300 break-all text-center"></p>
+      <button onclick="copyAddress()" class="bg-white text-black px-3 py-1 mt-1 rounded-lg text-sm">Copy Address</button>
+      <a href="swap.html" class="bg-purple-600 text-white px-4 py-2 mt-3 rounded-full">Trade</a>
     </div>
   </div>
+</div>
 
-  <!-- Token detail modal -->
-  <div id="tokenModal" class="modal-bg">
-    <div class="glass p-6 w-11/12 max-w-md relative">
-      <button onclick="closeTokenModal()" class="absolute top-3 right-3 text-white text-xl">✕</button>
-      <div id="modalIcon" class="mx-auto mb-3"></div>
-      <h3 id="modalName" class="text-lg font-semibold mb-2">Token Name</h3>
-      <div class="text-sm mb-2">Chain: <span id="modalChain"></span></div>
-      <div class="text-sm mb-2">Contract:</div>
-      <div class="bg-gray-800 p-2 rounded flex justify-between items-center mb-4">
-        <code id="modalAddress" class="text-xs truncate"></code>
-        <button onclick="copyAddress()" class="text-xs text-blue-400">Copy</button>
-      </div>
-      <a id="modalSwap" href="#" class="block bg-purple-600 text-center text-white py-2 rounded-full">Swap Token</a>
+<!-- 🔗 Popup Sélection de Blockchain -->
+<div id="chainPopup" class="fixed inset-0 z-50 bg-black bg-opacity-70 hidden flex items-center justify-center">
+  <div class="glass w-11/12 max-w-md p-6 rounded-xl relative">
+    <button onclick="closeChainPopup()" class="absolute top-2 right-2 text-white text-lg">✕</button>
+    <h2 class="text-xl font-semibold mb-4">Select or Paste Token Address</h2>
+    <input type="text" id="chainSearch" oninput="handleChainSearch()" placeholder="Search or paste token address..." class="w-full p-3 rounded-lg bg-gray-800 text-white mb-4">
+    <div id="chainSearchResult" class="text-sm text-gray-400">
+      <!-- Résultat ou info dynamique -->
     </div>
   </div>
+</div>
+<!-- ⬇️ Barre de navigation basse fixe -->
+<div class="fixed bottom-0 left-0 right-0 bg-black/50 backdrop-blur-md border-t border-white/10 flex justify-between px-4 py-2 z-50">
+  <a href="index.html" class="flex-1 flex justify-center items-center text-white text-sm">🏠 Home</a>
+  <a href="popular.html" class="flex-1 flex justify-center items-center text-white text-sm">🔥 Popular</a>
 
-  <!-- Bottom nav bar -->
-  <nav class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40 glass px-6 py-3 flex items-center justify-between w-[360px] shadow-lg">
-    <a href="index.html" class="flex flex-col items-center"><img src="/icons/home.svg" class="w-6 h-6"><span class="text-xs mt-1">Home</span></a>
-    <a href="markets.html" class="flex flex-col items-center"><img src="/icons/markets.svg" class="w-6 h-6"><span class="text-xs mt-1">Markets</span></a>
-    <div></div>
-    <a href="wallet.html" class="flex flex-col items-center"><img src="/icons/wallet.svg" class="w-6 h-6"><span class="text-xs mt-1">Wallet</span></a>
-    <a href="settings.html" class="flex flex-col items-center"><img src="/icons/settings.svg" class="w-6 h-6"><span class="text-xs mt-1">Settings</span></a>
-    <a href="swap.html" class="absolute -top-6 left-1/2 transform -translate-x-1/2">
-      <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl border-4 border-[#0f0f1b]">
-        <img src="/icons/trade.svg" class="w-8 h-8 text-white">
-      </div>
-    </a>
-  </nav>
+  <!-- Bouton central Trade -->
+  <a href="swap.html" class="relative -top-6">
+    <div class="w-16 h-16 bg-purple-600 rounded-full border-4 border-black flex items-center justify-center text-white text-xl shadow-lg">⇄</div>
+  </a>
 
+  <a href="portfolio.html" class="flex-1 flex justify-center items-center text-white text-sm">📊 Portfolio</a>
+  <a href="settings.html" class="flex-1 flex justify-center items-center text-white text-sm">⚙️ Settings</a>
+</div>
+
+<!-- 💡 Scripts -->
 <script>
-  const chains = [
-    { id:'all', name:'All Chains', logo:'' },
-    { id:'ethereum', name:'Ethereum', logo:'https://cryptologos.cc/logos/ethereum-eth-logo.png' },
-    { id:'solana', name:'Solana', logo:'https://cryptologos.cc/logos/solana-sol-logo.png' },
-    { id:'bnb-chain', name:'BNB Chain', logo:'https://cryptologos.cc/logos/bnb-bnb-logo.png' },
-    { id:'polygon', name:'Polygon', logo:'https://cryptologos.cc/logos/polygon-matic-logo.png' },
-    { id:'arbitrum', name:'Arbitrum', logo:'https://cryptologos.cc/logos/arbitrum-arb-logo.png' }
-  ];
-
-  let currentChain = 'all', currentTime = '24h', allTokens = [];
-
-  function buildChainBar() {
-    const bar = document.getElementById('chainBar');
-    bar.innerHTML = '';
-    chains.forEach(c => {
-      const btn = document.createElement('button');
-      btn.className = 'chain-btn glass text-xs';
-      if (c.logo) btn.innerHTML = `<img src="${c.logo}" alt=""><span>${c.name}</span>`;
-      else btn.textContent = c.name;
-      if (currentChain === c.id) btn.classList.add('selected');
-      btn.onclick = () => { currentChain = c.id; buildChainBar(); renderTokens(); };
-      bar.appendChild(btn);
-    });
+  function openChainPopup() {
+    document.getElementById('chainPopup').classList.remove('hidden');
+    document.getElementById('chainSearch').value = '';
+    document.getElementById('chainSearchResult').innerHTML = '';
   }
 
-  async function loadTokens() {
-    const [boosts, pools] = await Promise.all([
-      fetch('https://api.dexscreener.com/token-boosts/latest/v1').then(r=>r.json()),
-      fetch('https://api.geckoterminal.com/api/v2/networks/new_pools').then(r=>r.json()).catch(()=>({data:[]}))
-    ]);
-
-    const merged = {};
-    [...boosts, ...pools.data.map(p=>({
-      chainId:p.network, tokenAddress:p.base_token.address, header:p.base_token.symbol,
-      icon:p.base_token.logo, priceChange:p.price_change_24h, volumeUsd:p.volume_24h_usd
-    }))].forEach(t=>{ const key = t.chainId+'_'+t.tokenAddress; merged[key]=merged[key]||t; });
-    allTokens = Object.values(merged).sort((a,b)=>(b.volumeUsd||0)-(a.volumeUsd||0));
-    renderTokens();
+  function closeChainPopup() {
+    document.getElementById('chainPopup').classList.add('hidden');
   }
 
-  function renderTokens() {
-    const list = document.getElementById('tokenList');
-    list.innerHTML = '';
-    allTokens.filter(t => currentChain==='all'||t.chainId===currentChain)
-      .forEach(item=> {
-        const d = document.createElement('div');
-        d.className='glass p-4 flex items-center justify-between token-row';
-        d.onclick=()=> openTokenDetail(item);
-        const change=(item.priceChange||0)*100;
-        d.innerHTML=`
-          <div class="flex items-center space-x-3">
-            <img src="${item.icon}" class="w-8 h-8 rounded-full"/>
-            <div><span class="font-semibold">${item.header}</span><br><span class="text-xs text-gray-400">${item.chainId}</span></div>
-          </div>
-          <div class="text-right"><span class="text-sm font-bold ${change>=0?'text-green-400':'text-red-400'}">${change.toFixed(1)}%</span><br><span class="text-xs text-gray-400">${(item.volumeUsd||0).toLocaleString()} USD</span></div>`;
-        list.appendChild(d);
-      });
+  function openTokenPopup(name, address, image) {
+    document.getElementById('tokenName').innerText = name;
+    document.getElementById('tokenAddress').innerText = address;
+    document.getElementById('tokenImage').src = image;
+    document.getElementById('tokenModal').classList.remove('hidden');
   }
 
-  function openChainModal() { document.getElementById('chainModal').classList.add('active'); }
-  function closeChainModal() { document.getElementById('chainModal').classList.remove('active'); }
-  function onChainSearch(e) {
-    const q = e.target.value.trim().toLowerCase();
-    const sug = document.getElementById('chainSuggestions');
-    sug.innerHTML = '';
-    chains.forEach(c=>{
-      if (c.id!=='all' && (c.name.toLowerCase().includes(q) || c.id===q)) {
-        const btn = document.createElement('button');
-        btn.className = 'chain-btn glass';
-        btn.innerHTML = `<img src="${c.logo}"/><span>${c.name}</span>`;
-        btn.onclick=()=>{
-          currentChain=c.id; buildChainBar(); closeChainModal();
-        };
-        sug.appendChild(btn);
-      }
-    });
-    if (q.startsWith('0x') && q.length>20) {
-      // direct token address paste
-      const btn = document.createElement('button');
-      btn.className = 'filter-btn glass';
-      btn.textContent = 'Paste token address';
-      btn.onclick=()=> { currentChain='searched'; buildChainBar(); fetchTokenByAddress(q); closeChainModal(); };
-      sug.appendChild(btn);
-    }
+  function closeTokenPopup() {
+    document.getElementById('tokenModal').classList.add('hidden');
   }
 
-  async function fetchTokenByAddress(addr) {
-    // fetch price & data via DexScreener lookup
-    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addr}`);
-    if (res.ok) {
-      const data = await res.json();
-      // parse and insert into allTokens
-      const token = {
-        chainId: data.pairs[0]?.chainId || 'unknown',
-        tokenAddress: addr,
-        header: data.token.name || data.token.symbol,
-        icon: data.token.logo,
-        priceChange: data.pairs[0]?.priceChange?.percent24 || 0,
-        volumeUsd: data.pairs[0]?.volume?.usd24h || 0
-      };
-      allTokens.unshift(token);
-      renderTokens();
-    }
-  }
-
-  function openTokenDetail(t) {
-    document.getElementById('modalIcon').innerHTML = `<img src="${t.icon}" class="w-12 h-12 rounded-full mx-auto"/>`;
-    document.getElementById('modalName').textContent = t.header;
-    document.getElementById('modalChain').textContent = t.chainId;
-    document.getElementById('modalAddress').textContent = t.tokenAddress;
-    document.getElementById('modalSwap').href = `swap.html?chain=${t.chainId}&address=${t.tokenAddress}`;
-    document.getElementById('tokenModal').classList.add('active');
-  }
-
-  function closeTokenModal() { document.getElementById('tokenModal').classList.remove('active'); }
   function copyAddress() {
-    const a = document.getElementById('modalAddress').innerText;
-    navigator.clipboard.writeText(a).then(()=>alert('Copied'));
-  }
-  function setTime(t) {
-    currentTime = t;
-    loadTokens();
+    const address = document.getElementById('tokenAddress').innerText;
+    navigator.clipboard.writeText(address).then(() => {
+      alert("Address copied!");
+    });
   }
 
-  window.addEventListener('load', () => {
-    buildChainBar();
-    loadTokens();
+  function handleChainSearch() {
+    const input = document.getElementById('chainSearch').value.trim();
+    const resultBox = document.getElementById('chainSearchResult');
+
+    if (input.startsWith("0x") && input.length >= 42) {
+      resultBox.innerHTML = "Fetching token info...";
+      // Simuler appel API
+      setTimeout(() => {
+        resultBox.innerHTML = `
+          <div onclick="openTokenPopup('MockToken', '${input}', 'https://cryptologos.cc/logos/ethereum-eth-logo.png')" class="p-2 bg-gray-800 rounded-lg cursor-pointer">
+            <p class="text-white font-semibold">MockToken</p>
+            <p class="text-xs text-gray-400">${input}</p>
+          </div>`;
+      }, 800);
+    } else {
+      resultBox.innerHTML = '';
+    }
+  }
+
+  function toggleChain(button, chainName) {
+    const isSelected = button.classList.contains('bg-white');
+    if (isSelected) {
+      button.classList.remove('bg-white', 'text-black');
+      button.classList.add('bg-white/10', 'text-white');
+      button.querySelector('.chain-x')?.remove();
+    } else {
+      button.classList.remove('bg-white/10', 'text-white');
+      button.classList.add('bg-white', 'text-black');
+      const x = document.createElement('span');
+      x.className = 'ml-2 chain-x';
+      x.innerText = '✕';
+      button.appendChild(x);
+    }
+  }
+
+  // 🕓 Dropdown filtres durée
+  document.getElementById('durationDropdownBtn').addEventListener('click', () => {
+    const menu = document.getElementById('durationDropdown');
+    menu.classList.toggle('hidden');
   });
+
+  window.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('durationDropdown');
+    const btn = document.getElementById('durationDropdownBtn');
+    if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+
+  function selectDuration(duration) {
+    document.getElementById('selectedDuration').innerText = duration;
+    document.getElementById('durationDropdown').classList.add('hidden');
+    // Optionnel : actualiser la liste de tokens selon durée
+  }
 </script>
 </body>
 </html>
