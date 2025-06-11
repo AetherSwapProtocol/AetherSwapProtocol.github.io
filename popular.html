@@ -209,7 +209,7 @@
 // Build grid
 chains.forEach(id => {
   const d = document.createElement("div");
-  d.className = "network-option flex flex-col items-center p-2";
+  d.className = "network-option flex flex-col items-center p-2 cursor-pointer";
   const img = document.createElement("img");
   img.src = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${id}/info/logo.png`;
   img.onerror = () => img.style.visibility = "hidden";
@@ -226,13 +226,13 @@ chains.forEach(id => {
     } else {
       selected.add(id);
       d.classList.add("selected");
-      chainsModal.classList.remove("active");
     }
     chainsLbl.textContent = `Select Networks (${selected.size})`;
   };
   chainGrid.appendChild(d);
 });
 
+// Gestion des clics
 openChainsBtn.onclick = () => chainsModal.classList.add("active");
 chainsModal.onclick = e => e.target === chainsModal && chainsModal.classList.remove("active");
 clearChains.onclick = () => {
@@ -240,6 +240,8 @@ clearChains.onclick = () => {
   document.querySelectorAll(".network-option.selected").forEach(e => e.classList.remove("selected"));
   chainsLbl.textContent = "Select Networks (0)";
 };
+
+// Recherche réseaux
 searchChain.oninput = () => {
   const val = searchChain.value.toLowerCase();
   document.querySelectorAll(".network-option").forEach(e => {
@@ -247,6 +249,7 @@ searchChain.oninput = () => {
   });
 };
 
+// Gestion du temps
 timeTabs.forEach(btn => btn.onclick = () => {
   timeTabs.forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
@@ -255,80 +258,91 @@ timeTabs.forEach(btn => btn.onclick = () => {
   tokensContainer.innerHTML = "";
 });
 
+// Modal token
 tdClose.onclick = () => tokenModal.classList.remove("active");
 tokenModal.onclick = e => e.target === tokenModal && tokenModal.classList.remove("active");
 
+// Boutons token
 tdCopy.onclick = () => {
   navigator.clipboard.writeText(tdAddr.textContent);
   tdCopy.textContent = "Copied!";
-  tdCopy.disabled = true;
-  setTimeout(() => {
-    tdCopy.textContent = "Copy";
-    tdCopy.disabled = false;
-  }, 1500);
+  setTimeout(() => tdCopy.textContent = "Copy", 1500);
 };
+tdTrade.onclick = () => window.open(`https://app.uniswap.org/#/swap?inputCurrency=${tdAddr.textContent}`, "_blank");
 
-tdTrade.onclick = () => window.location = `swap.html?token=${tdAddr.textContent}`;
-
+// Chargement initial
 fetchBtn.onclick = loadTokens;
 
+// Scroll infini
 window.addEventListener("scroll", () => {
   if (!loading && window.innerHeight + window.scrollY > document.body.offsetHeight - 200) {
     loadMore();
   }
 });
 
+// -- Fonctions critiques --
 async function loadTokens() {
-  if (selected.size === 0 && !tokenInput.value.trim()) {
-    alert("Select chain(s) or paste address");
+  const addr = tokenInput.value.trim();
+  if (selected.size === 0 && !addr) {
+    alert("⚠️ Select at least 1 network or paste a token address");
     return;
   }
 
   loading = true;
-  tokensContainer.innerHTML = Array(6).fill('<div class="skeleton"></div>').join('');
-  lastData = [];
+  tokensContainer.innerHTML = Array(6).fill('<div class="skeleton h-20"></div>').join('');
 
   try {
-    const addr = tokenInput.value.trim().toLowerCase();
     const tasks = [...selected].map(chain => {
-      const key = addr ? `${chain}-${addr}` : `${chain}-pairs`;
-      if (cache[key]) return Promise.resolve(cache[key]);
+      const cacheKey = addr ? `${chain}-${addr}` : `${chain}-top-pairs`;
+      if (cache[cacheKey] && cache[cacheKey].length > 0) {
+        return cache[cacheKey];
+      }
 
-      const url = addr
-        ? `https://api.dexscreener.com/token-pairs/v1/${chain}/${addr}`
+      const url = addr 
+        ? `https://api.dexscreener.com/latest/dex/tokens/${addr}`
         : `https://api.dexscreener.com/latest/dex/pairs/${chain}`;
 
-      return fetch(url)
-        .then(r => {
-          if (!r.ok) throw new Error(`API error: ${r.status}`);
-          return r.json();
+      return fetch(url, { timeout: 5000 })
+        .then(res => {
+          if (!res.ok) throw new Error(`API ${res.status}`);
+          return res.json();
         })
-        .then(j => {
-          const arr = addr ? j : j.pairs;
-          if (!arr || !arr.length) throw new Error("No pairs found");
-          const mapped = arr.map(p => ({ ...p, chain }));
-          cache[key] = mapped;
-          return mapped;
+        .then(data => {
+          const pairs = addr ? data.pairs : data.pairs.slice(0, 50); // Limite pour les tops
+          pairs.forEach(p => p.chain = chain); // Ajoute la chaine à chaque paire
+          cache[cacheKey] = pairs;
+          return pairs;
         })
         .catch(e => {
-          console.error(`Failed for ${chain}:`, e);
-          return []; // Retourne un tableau vide pour éviter de bloquer Promise.all
+          console.error(`[API] ${chain} failed:`, e);
+          return [];
         });
     });
 
     const results = await Promise.all(tasks);
-    const all = results.flat();
-    lastData = all.sort((a, b) => (b.volume?.usd || 0) - (a.volume?.usd || 0));
-    
+    lastData = results.flat()
+      .filter(p => p) // Retire les undefined
+      .sort((a, b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0));
+
     tokensContainer.innerHTML = "";
-    if (!lastData.length) {
-      tokensContainer.innerHTML = '<p class="text-red-500 text-center">No tokens found. Try another address or chain.</p>';
+    if (lastData.length === 0) {
+      tokensContainer.innerHTML = `
+        <div class="text-center py-10">
+          <p class="text-red-500">No tokens found</p>
+          ${addr ? `<p>Check if the address is correct on <a href="https://dexscreener.com/${[...selected][0]}/${addr}" target="_blank" class="text-blue-500">DexScreener</a></p>` : ""}
+        </div>
+      `;
+    } else {
+      loadMore();
     }
-    loading = false;
-    loadMore();
   } catch (e) {
-    console.error(e);
-    tokensContainer.innerHTML = '<p class="text-red-500 text-center">Error loading tokens. Check console.</p>';
+    console.error("[LOAD TOKENS ERROR]", e);
+    tokensContainer.innerHTML = `
+      <div class="text-center py-10 text-red-500">
+        Failed to load data. Check console for details.
+      </div>
+    `;
+  } finally {
     loading = false;
   }
 }
@@ -337,40 +351,40 @@ function loadMore() {
   if (loading || !lastData.length) return;
   loading = true;
 
-  const chunk = lastData.splice(0, 20);
-  chunk.forEach(data => {
+  const chunk = lastData.splice(0, 10);
+  chunk.forEach(pair => {
     const div = document.createElement("div");
-    div.className = "glass grid grid-cols-3 p-4 rounded-lg items-center token-card hover:bg-gray-50 cursor-pointer";
-
+    div.className = "token-card glass p-4 grid grid-cols-3 gap-2 items-center hover:bg-gray-100 rounded-lg";
     div.innerHTML = `
-      <div class="flex items-center gap-2">
-        <img src="${data.baseToken.logoURI || data.info?.imageUrl}" 
+      <div class="flex items-center gap-2 col-span-2">
+        <img src="${pair.baseToken.logoURI || 'https://via.placeholder.com/24'}" 
              class="w-6 h-6 rounded-full" 
-             onerror="this.src='https://via.placeholder.com/24'; this.onerror=null;" />
-        <span>${data.baseToken.symbol}</span>
+             onerror="this.src='https://via.placeholder.com/24'">
+        <span class="font-medium">${pair.baseToken.symbol}</span>
       </div>
-      <div class="text-right">${parseFloat(data.priceUsd || 0).toFixed(4)} USD</div>
-      <div class="text-right ${data.priceChange?.[range] >= 0 ? 'text-green-500' : 'text-red-500'}">
-        ${parseFloat(data.priceChange?.[range] || 0).toFixed(2)}%
+      <div class="text-right">$${parseFloat(pair.priceUsd).toFixed(6)}</div>
+      <div class="text-right ${pair.priceChange.h24 >= 0 ? 'text-green-500' : 'text-red-500'}">
+        ${pair.priceChange.h24?.toFixed(2) || '0.00'}%
       </div>
-      <canvas class="sparkline"></canvas>
-      <div class="star-btn${favorites.includes(data.pairAddress) ? ' favored' : ''}">★</div>
+      <div class="col-span-3 flex justify-between items-center">
+        <small class="text-gray-500">${pair.chain}</small>
+        <button class="star-btn ${favorites.includes(pair.pairAddress) ? 'text-yellow-500' : 'text-gray-400'}">★</button>
+      </div>
     `;
 
-    div.onclick = () => showDetail(data);
-    div.querySelector(".star-btn").onclick = e => {
+    div.onclick = () => showTokenDetails(pair);
+    div.querySelector(".star-btn").onclick = (e) => {
       e.stopPropagation();
-      toggleFavorite(data.pairAddress, e.target);
+      toggleFavorite(pair.pairAddress, e.target);
     };
 
     tokensContainer.appendChild(div);
-    drawSparkline(div.querySelector("canvas"), data);
   });
 
   loading = false;
 }
 
-// ... (Le reste du code reste identique, y compris showDetail, toggleFavorite, drawSparkline)
+// ... (keep your existing showTokenDetails, toggleFavorite, etc.)
 })();
 </script>
 </body>
