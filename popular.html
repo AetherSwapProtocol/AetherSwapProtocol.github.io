@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Discover trending tokens on AetherSwap, ranked by volume and performance"/>
-  <meta name="theme-color" content="#121212"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Discover trending tokens on AetherSwap, ranked by volume and performance" />
+  <meta name="theme-color" content="#121212" />
   <title>AetherSwap – Popular Tokens</title>
-  <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <!-- Preload critical resources -->
-  <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
     :root {
       --bg-primary: #121212;
-      --bg-secondary: #1F1F1F;
-      --bg-accent: rgba(255,255,255,0.05);
-      --text-primary: #FFFFFF;
-      --text-secondary: #A3A3A3;
-      --gradient-primary: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+      --bg-secondary: #1f1f1f;
+      --bg-accent: rgba(255, 255, 255, 0.05);
+      --text-primary: #ffffff;
+      --text-secondary: #a3a3a3;
+      --gradient-primary: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
     }
-    
+
     body {
       margin: 0;
       padding-bottom: 120px;
@@ -32,15 +35,15 @@
       overflow-x: hidden;
       -webkit-tap-highlight-color: transparent;
     }
-    
+
     .glass {
       background: var(--bg-accent);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
+
     .time-tab {
       padding: 8px 12px;
       border-radius: 8px;
@@ -48,11 +51,11 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    
+
     .time-tab.active {
       background: var(--gradient-primary);
     }
-    
+
     .network-dropdown {
       display: none;
       position: absolute;
@@ -62,15 +65,15 @@
       background: var(--bg-secondary);
       border-radius: 12px;
       z-index: 10;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
       max-height: 300px;
       overflow-y: auto;
     }
-    
+
     .network-dropdown.active {
       display: block;
     }
-    
+
     .network-item {
       padding: 12px 16px;
       display: flex;
@@ -79,65 +82,70 @@
       cursor: pointer;
       transition: background 0.2s ease;
     }
-    
+
     .network-item:hover {
-      background: rgba(255,255,255,0.05);
+      background: var(--bg-accent);
     }
-    
+
     .network-item.selected {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
     }
-    
+
     .token-row {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr;
       align-items: center;
       padding: 12px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid var(--bg-accent);
       cursor: pointer;
     }
-    
+
     .token-row:hover {
-      background: rgba(255,255,255,0.03);
+      background: rgba(255, 255, 255, 0.03);
     }
-    
+
     .token-info {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    
+
     .token-icon {
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.1);
+      background: var(--bg-accent);
     }
-    
+
     .price-up {
-      color: #10B981;
+      color: #10b981;
     }
-    
+
     .price-down {
-      color: #EF4444;
+      color: #ef4444;
     }
-    
+
     .modal-bg {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0, 0, 0, 0.7);
       align-items: center;
       justify-content: center;
       z-index: 50;
       animation: fadeIn 0.2s ease-out;
     }
-    
+
     @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
-    
+
     .token-modal {
       width: 90%;
       max-width: 420px;
@@ -145,45 +153,45 @@
       background: var(--bg-secondary);
       overflow: hidden;
     }
-    
+
     .token-header {
       padding: 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid var(--bg-accent);
     }
-    
+
     .token-stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       padding: 16px;
     }
-    
+
     .stat-item {
-      background: rgba(255,255,255,0.05);
+      background: var(--bg-accent);
       border-radius: 8px;
       padding: 12px;
     }
-    
+
     .stat-label {
       font-size: 12px;
       color: var(--text-secondary);
       margin-bottom: 4px;
     }
-    
+
     .stat-value {
       font-weight: 500;
     }
-    
+
     .contract-address {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 12px 16px;
-      background: rgba(255,255,255,0.05);
+      background: var(--bg-accent);
       border-radius: 8px;
       margin: 16px;
     }
-    
+
     .time-tabs {
       display: flex;
       gap: 8px;
@@ -191,28 +199,36 @@
       padding: 16px;
       scrollbar-width: none;
     }
-    
+
     .time-tabs::-webkit-scrollbar {
       display: none;
     }
-    
+
     .scrollbar-hide::-webkit-scrollbar {
       display: none;
     }
-    
+
     .scrollbar-hide {
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-    
+
     .pulse {
       animation: pulse 1.5s infinite;
     }
-    
+
     @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
+      0% {
+        opacity: 0.6;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.6;
+      }
     }
   </style>
 </head>
