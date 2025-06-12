@@ -1,487 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- METADONNEES ET LIENS CSS -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap - Enhanced Swap Interface</title>
-  <!-- TailwindCSS -->
+  <title>AetherSwap - DEX Fonctionnel</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <!-- Favicon -->
-  <link rel="icon" href="logo-dex.png" type="image/png">
-  <!-- Solana Web3.js -->
-  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js" defer></script>
-  <!-- Jupiter Aggregator SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@jup-ag/core" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  
   <style>
-    .token-suggestions {
-      max-height: 200px;
+    /* Styles critiques locaux */
+    .token-dropdown {
+      max-height: 300px;
       overflow-y: auto;
+      position: absolute;
+      width: 100%;
+      z-index: 50;
+      background: #1f2937;
       border: 1px solid #374151;
       border-radius: 0.5rem;
     }
+    .token-item {
+      padding: 0.75rem;
+      cursor: pointer;
+    }
     .token-item:hover {
-      background-color: #374151;
-    }
-    .swap-icon {
-      transition: transform 0.3s ease;
-    }
-    .swap-icon:hover {
-      transform: rotate(180deg);
+      background: #374151;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-[#0B0B1F] to-[#1A1A40] text-white font-sans min-h-screen">
 
-<!-- HEADER -->
-<header class="flex justify-between items-center p-6 bg-[#1A1A40] shadow-lg">
-  <img src="logo-dex.png" alt="DEX Logo" class="h-10">
-  <nav class="flex space-x-6 text-sm">
-    <a href="#" class="hover:text-cyan-400">Swap</a>
-    <a href="#" class="hover:text-cyan-400">Liquidity</a>
-    <a href="#" class="hover:text-cyan-400">Portfolio</a>
-    <a href="#" class="hover:text-cyan-400">Settings</a>
-  </nav>
-  <button id="connect-wallet" class="px-4 py-2 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg font-medium">
-    Connect Wallet
-  </button>
-</header>
-
-<!-- MAIN SWAP CONTAINER -->
-<main class="max-w-lg mx-auto mt-10 p-8 bg-[#111827] rounded-lg shadow-lg">
-  <h1 class="text-2xl font-bold mb-6 text-center">Enhanced Swap</h1>
-  
-  <!-- From Section -->
-  <div class="mb-4">
-    <div class="flex justify-between items-center mb-2">
-      <label class="block text-sm font-medium">From:</label>
-      <span id="from-balance" class="text-xs text-gray-400">Balance: -</span>
-    </div>
-    <div class="flex items-center space-x-2">
-      <div class="relative flex-1">
-        <input id="from-token" type="text" placeholder="SOL, USDC, etc..." 
-               class="bg-gray-800 text-white p-3 rounded-lg w-full">
-        <div id="from-suggestions" class="token-suggestions hidden absolute z-10 w-full mt-1 bg-gray-900"></div>
+<body class="bg-gray-900 text-white font-sans">
+  <!-- STRUCTURE PRINCIPALE -->
+  <div class="container mx-auto p-4 max-w-2xl">
+    <!-- CARTE DE SWAP -->
+    <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
+      <!-- EN-TETE -->
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Swap</h1>
+        <button id="connect-wallet" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+          Connect Wallet
+        </button>
       </div>
-      <input id="from-amount" type="number" placeholder="0.0" 
-             class="bg-gray-800 text-white p-3 rounded-lg flex-1">
-    </div>
-  </div>
 
-  <!-- Swap Direction Toggle -->
-  <div class="flex justify-center my-2">
-    <button id="swap-direction" class="swap-icon p-2 bg-gray-700 rounded-full">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
-      </svg>
-    </button>
-  </div>
-
-  <!-- To Section -->
-  <div class="mb-6">
-    <div class="flex justify-between items-center mb-2">
-      <label class="block text-sm font-medium">To:</label>
-      <span id="to-balance" class="text-xs text-gray-400">Balance: -</span>
-    </div>
-    <div class="relative">
-      <input id="to-token" type="text" placeholder="SOL, USDC, etc..." 
-             class="bg-gray-800 text-white p-3 rounded-lg w-full">
-      <div id="to-suggestions" class="token-suggestions hidden absolute z-10 w-full mt-1 bg-gray-900"></div>
-    </div>
-  </div>
-
-  <!-- Advanced Options -->
-  <div class="mb-6 border-t border-gray-700 pt-4">
-    <div class="flex justify-between items-center mb-2">
-      <label class="block text-sm font-medium">Slippage Tolerance:</label>
-      <div class="flex space-x-2">
-        <button class="slippage-option px-2 py-1 text-xs rounded" value="0.5">0.5%</button>
-        <button class="slippage-option px-2 py-1 text-xs rounded" value="1.0">1.0%</button>
-        <button class="slippage-option px-2 py-1 text-xs rounded" value="2.0">2.0%</button>
-        <input type="number" id="custom-slippage" placeholder="Custom" 
-               class="w-16 bg-gray-800 text-white px-2 py-1 text-xs rounded">
-      </div>
-    </div>
-  </div>
-
-  <!-- Swap Info -->
-  <div class="text-sm text-gray-400 mb-6 space-y-1">
-    <div class="flex justify-between">
-      <span>Exchange Rate:</span>
-      <span id="rate-info">-</span>
-    </div>
-    <div class="flex justify-between">
-      <span>Minimum Received:</span>
-      <span id="min-received">-</span>
-    </div>
-    <div class="flex justify-between">
-      <span>Price Impact:</span>
-      <span id="price-impact">-</span>
-    </div>
-  </div>
-
-  <!-- Swap Button -->
-  <button id="swap-button" class="px-4 py-3 bg-gradient-to-r from-cyan-400 to-blue-500 text-white text-lg rounded-lg w-full disabled:opacity-50">
-    Swap
-  </button>
-</main>
-
-<!-- FOOTER -->
-<footer class="text-center mt-10 text-sm text-gray-400">
-  <p>© 2025 AetherSwap Protocol. All rights reserved.</p>
-</footer>
-
-<!-- SCRIPTS -->
-<script>
-  // State management
-  const state = {
-    wallet: null,
-    jupiter: null,
-    tokens: [],
-    fromToken: null,
-    toToken: null,
-    slippage: 0.5, // default 0.5%
-    loading: false
-  };
-
-  // DOM Elements
-  const elements = {
-    connectWallet: document.getElementById('connect-wallet'),
-    fromTokenInput: document.getElementById('from-token'),
-    toTokenInput: document.getElementById('to-token'),
-    fromAmount: document.getElementById('from-amount'),
-    fromSuggestions: document.getElementById('from-suggestions'),
-    toSuggestions: document.getElementById('to-suggestions'),
-    swapDirection: document.getElementById('swap-direction'),
-    swapButton: document.getElementById('swap-button'),
-    fromBalance: document.getElementById('from-balance'),
-    toBalance: document.getElementById('to-balance'),
-    rateInfo: document.getElementById('rate-info'),
-    minReceived: document.getElementById('min-received'),
-    priceImpact: document.getElementById('price-impact'),
-    slippageOptions: document.querySelectorAll('.slippage-option'),
-    customSlippage: document.getElementById('custom-slippage')
-  };
-
-  // Initialize the application
-  document.addEventListener('DOMContentLoaded', async () => {
-    await initJupiter();
-    setupEventListeners();
-  });
-
-  // Initialize Jupiter
-  async function initJupiter() {
-    try {
-      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-      state.jupiter = await JupiterCore.init({ connection });
-      await loadTokenList();
-    } catch (error) {
-      console.error('Jupiter initialization error:', error);
-    }
-  }
-
-  // Load token list from Jupiter
-  async function loadTokenList() {
-    try {
-      state.tokens = await state.jupiter.getTokenList();
-      console.log('Loaded tokens:', state.tokens.length);
-    } catch (error) {
-      console.error('Error loading token list:', error);
-    }
-  }
-
-  // Setup all event listeners
-  function setupEventListeners() {
-    // Wallet connection
-    elements.connectWallet.addEventListener('click', connectWallet);
-
-    // Token input handling
-    elements.fromTokenInput.addEventListener('input', () => handleTokenInput('from'));
-    elements.toTokenInput.addEventListener('input', () => handleTokenInput('to'));
-
-    // Swap direction toggle
-    elements.swapDirection.addEventListener('click', swapTokens);
-
-    // Slippage options
-    elements.slippageOptions.forEach(option => {
-      option.addEventListener('click', () => {
-        state.slippage = parseFloat(option.value);
-        updateSlippageUI();
-        calculateSwap();
-      });
-    });
-
-    elements.customSlippage.addEventListener('change', (e) => {
-      const value = parseFloat(e.target.value);
-      if (!isNaN(value) && value >= 0.1 && value <= 10) {
-        state.slippage = value;
-        updateSlippageUI();
-        calculateSwap();
-      }
-    });
-
-    // Amount input handling
-    elements.fromAmount.addEventListener('input', calculateSwap);
-
-    // Swap button
-    elements.swapButton.addEventListener('click', executeSwap);
-  }
-
-  // Connect wallet handler
-  async function connectWallet() {
-    try {
-      const provider = window.phantom?.solana;
-      if (!provider) {
-        alert('Phantom Wallet not found! Please install it first.');
-        return;
-      }
-      
-      const response = await provider.connect();
-      state.wallet = response;
-      elements.connectWallet.textContent = `${state.wallet.publicKey.toString().slice(0, 4)}...${state.wallet.publicKey.toString().slice(-4)}`;
-      
-      // Update balances after connection
-      updateBalances();
-    } catch (error) {
-      console.error('Wallet connection error:', error);
-      alert('Failed to connect wallet: ' + error.message);
-    }
-  }
-
-  // Handle token input and suggestions
-  function handleTokenInput(direction) {
-    const input = direction === 'from' ? elements.fromTokenInput : elements.toTokenInput;
-    const suggestions = direction === 'from' ? elements.fromSuggestions : elements.toSuggestions;
-    
-    const query = input.value.trim();
-    if (query.length < 2) {
-      suggestions.classList.add('hidden');
-      return;
-    }
-
-    const filtered = state.tokens.filter(token => 
-      token.symbol.toLowerCase().includes(query.toLowerCase()) || 
-      token.name.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 5);
-
-    displaySuggestions(filtered, suggestions, direction);
-  }
-
-  // Display token suggestions
-  function displaySuggestions(tokens, container, direction) {
-    container.innerHTML = '';
-    
-    if (!tokens.length) {
-      container.classList.add('hidden');
-      return;
-    }
-
-    tokens.forEach(token => {
-      const div = document.createElement('div');
-      div.className = 'token-item flex items-center p-2 cursor-pointer';
-      div.innerHTML = `
-        <img src="${token.logoURI || 'default-token.png'}" alt="${token.symbol}" class="w-6 h-6 mr-2 rounded-full">
-        <div>
-          <div class="font-medium">${token.symbol}</div>
-          <div class="text-xs text-gray-400">${token.name}</div>
+      <!-- CHAMP FROM -->
+      <div class="mb-4 relative">
+        <div class="flex justify-between mb-2">
+          <label class="text-sm">From</label>
+          <span id="from-balance" class="text-sm text-gray-400">Balance: 0</span>
         </div>
-      `;
-      div.addEventListener('click', () => {
-        if (direction === 'from') {
-          state.fromToken = token;
-          elements.fromTokenInput.value = token.symbol;
-        } else {
-          state.toToken = token;
-          elements.toTokenInput.value = token.symbol;
-        }
-        container.classList.add('hidden');
-        calculateSwap();
-        updateBalances();
-      });
-      container.appendChild(div);
+        <div class="flex items-center bg-gray-700 rounded-lg p-3">
+          <input id="from-amount" type="number" placeholder="0.0" 
+                 class="bg-transparent text-xl w-full focus:outline-none">
+          <div class="relative">
+            <button id="from-token-select" class="flex items-center bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded-lg">
+              <span id="from-token-symbol">SOL</span>
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div id="from-token-list" class="token-dropdown hidden mt-1"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOUTON SWAP -->
+      <div class="flex justify-center my-2">
+        <button id="swap-direction" class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M8 7l4-4m0 0l4 4m-4-4v18m-4 0l4 4m0 0l4-4m-4 4V3"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- CHAMP TO -->
+      <div class="mb-6 relative">
+        <div class="flex justify-between mb-2">
+          <label class="text-sm">To</label>
+          <span id="to-balance" class="text-sm text-gray-400">Balance: 0</span>
+        </div>
+        <div class="flex items-center bg-gray-700 rounded-lg p-3">
+          <input id="to-amount" type="number" placeholder="0.0" 
+                 class="bg-transparent text-xl w-full focus:outline-none" readonly>
+          <div class="relative">
+            <button id="to-token-select" class="flex items-center bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded-lg">
+              <span id="to-token-symbol">USDC</span>
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div id="to-token-list" class="token-dropdown hidden mt-1"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARAMETRES AVANCES -->
+      <div class="mb-6">
+        <div class="flex justify-between items-center">
+          <label class="text-sm">Slippage Tolerance</label>
+          <input id="slippage" type="number" value="0.5" min="0.1" max="5" step="0.1"
+                 class="bg-gray-700 text-white w-16 px-2 py-1 rounded text-right">
+          <span>%</span>
+        </div>
+      </div>
+
+      <!-- BOUTON SWAP -->
+      <button id="execute-swap" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-medium">
+        Swap
+      </button>
+    </div>
+  </div>
+
+  <!-- LIENS JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@jup-ag/core@3.1.0"></script>
+  
+  <script>
+    // CONFIGURATION INITIALE
+    const state = {
+      wallet: null,
+      tokens: [],
+      fromToken: { symbol: 'SOL', mint: 'So11111111111111111111111111111111111111112' },
+      toToken: { symbol: 'USDC', mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' },
+      slippage: 0.5
+    };
+
+    // INITIALISATION AU CHARGEMENT
+    document.addEventListener('DOMContentLoaded', async () => {
+      await initTokens();
+      setupEventListeners();
+      updateUI();
     });
-    
-    container.classList.remove('hidden');
-  }
 
-  // Swap tokens direction
-  function swapTokens() {
-    if (!state.fromToken || !state.toToken) return;
-    
-    const temp = state.fromToken;
-    state.fromToken = state.toToken;
-    state.toToken = temp;
-    
-    elements.fromTokenInput.value = state.fromToken?.symbol || '';
-    elements.toTokenInput.value = state.toToken?.symbol || '';
-    
-    calculateSwap();
-    updateBalances();
-  }
-
-  // Calculate swap details
-  async function calculateSwap() {
-    if (!state.fromToken || !state.toToken || !elements.fromAmount.value) {
-      resetSwapInfo();
-      return;
+    // CHARGE LA LISTE DES TOKENS
+    async function initTokens() {
+      try {
+        const response = await fetch('https://token.jup.ag/strict');
+        state.tokens = await response.json();
+        console.log('Tokens loaded:', state.tokens.length);
+      } catch (error) {
+        console.error('Failed to load tokens:', error);
+      }
     }
 
-    const amount = parseFloat(elements.fromAmount.value);
-    if (isNaN(amount) {
-      resetSwapInfo();
-      return;
+    // CONFIGURATION DES INTERACTIONS
+    function setupEventListeners() {
+      // Connexion wallet
+      document.getElementById('connect-wallet').addEventListener('click', connectWallet);
+
+      // Sélection des tokens
+      document.getElementById('from-token-select').addEventListener('click', () => toggleTokenDropdown('from'));
+      document.getElementById('to-token-select').addEventListener('click', () => toggleTokenDropdown('to'));
+
+      // Changement de montant
+      document.getElementById('from-amount').addEventListener('input', updateSwapQuote);
+
+      // Exécution du swap
+      document.getElementById('execute-swap').addEventListener('click', executeSwap);
     }
 
-    try {
-      // Get routes from Jupiter
-      const routes = await state.jupiter.getRoutes({
-        inputMint: state.fromToken.address,
-        outputMint: state.toToken.address,
-        amount: amount * Math.pow(10, state.fromToken.decimals), // Convert to token decimals
-        slippage: state.slippage,
+    // AFFICHAGE DES TOKENS
+    function toggleTokenDropdown(direction) {
+      const dropdown = document.getElementById(`${direction}-token-list`);
+      const isHidden = dropdown.classList.contains('hidden');
+
+      // Cache les autres dropdowns
+      document.querySelectorAll('.token-dropdown').forEach(el => {
+        if (el !== dropdown) el.classList.add('hidden');
       });
 
-      if (!routes?.length) {
-        resetSwapInfo();
+      // Affiche/cache le dropdown actuel
+      dropdown.classList.toggle('hidden', !isHidden);
+
+      // Remplit la liste si nécessaire
+      if (isHidden) {
+        populateTokenDropdown(direction);
+      }
+    }
+
+    // REMPLIT LA LISTE DES TOKENS
+    function populateTokenDropdown(direction) {
+      const dropdown = document.getElementById(`${direction}-token-list`);
+      dropdown.innerHTML = '';
+
+      // Ajoute la recherche
+      const search = document.createElement('input');
+      search.type = 'text';
+      search.placeholder = 'Search token or paste address';
+      search.className = 'w-full p-2 bg-gray-800 text-white border-b border-gray-700 focus:outline-none';
+      search.addEventListener('input', (e) => filterTokens(e.target.value, dropdown));
+      dropdown.appendChild(search);
+
+      // Ajoute les tokens
+      state.tokens.slice(0, 50).forEach(token => {
+        const item = document.createElement('div');
+        item.className = 'token-item flex items-center p-2';
+        item.innerHTML = `
+          <img src="${token.logoURI}" alt="${token.symbol}" class="w-6 h-6 mr-2 rounded-full">
+          <div>
+            <div class="font-medium">${token.symbol}</div>
+            <div class="text-xs text-gray-400">${token.name}</div>
+          </div>
+        `;
+        item.addEventListener('click', () => selectToken(token, direction));
+        dropdown.appendChild(item);
+      });
+    }
+
+    // FILTRE LES TOKENS
+    function filterTokens(query, dropdown) {
+      const items = dropdown.querySelectorAll('.token-item');
+      const search = query.toLowerCase();
+
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(search) ? 'flex' : 'none';
+      });
+    }
+
+    // SELECTION D'UN TOKEN
+    function selectToken(token, direction) {
+      state[`${direction}Token`] = token;
+      document.getElementById(`${direction}-token-symbol`).textContent = token.symbol;
+      document.getElementById(`${direction}-token-list`).classList.add('hidden');
+      updateSwapQuote();
+    }
+
+    // MET A JOUR L'INTERFACE
+    function updateUI() {
+      document.getElementById('from-token-symbol').textContent = state.fromToken.symbol;
+      document.getElementById('to-token-symbol').textContent = state.toToken.symbol;
+    }
+
+    // CONNEXION WALLET
+    async function connectWallet() {
+      if (window.solana && window.solana.isPhantom) {
+        try {
+          const response = await window.solana.connect();
+          state.wallet = response.publicKey.toString();
+          document.getElementById('connect-wallet').textContent = 'Connected';
+          console.log('Connected:', state.wallet);
+        } catch (err) {
+          console.error('Connection error:', err);
+        }
+      } else {
+        alert('Phantom Wallet not found!');
+      }
+    }
+
+    // CALCUL DU SWAP
+    async function updateSwapQuote() {
+      const amount = parseFloat(document.getElementById('from-amount').value);
+      if (!amount || isNaN(amount)) return;
+
+      try {
+        const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+        const jupiter = await JupiterCore.init({ connection });
+
+        const routes = await jupiter.getRoutes({
+          inputMint: state.fromToken.mint,
+          outputMint: state.toToken.mint,
+          amount: amount * Math.pow(10, state.fromToken.decimals || 9), // Convert to lamports
+          slippage: state.slippage
+        });
+
+        if (routes && routes.length > 0) {
+          const bestRoute = routes[0];
+          document.getElementById('to-amount').value = (bestRoute.outAmount / Math.pow(10, state.toToken.decimals || 9)).toFixed(6);
+        }
+      } catch (error) {
+        console.error('Swap calculation failed:', error);
+      }
+    }
+
+    // EXECUTION DU SWAP
+    async function executeSwap() {
+      if (!state.wallet) {
+        alert('Please connect your wallet first');
         return;
       }
 
-      const bestRoute = routes[0];
-      updateSwapInfo(bestRoute);
-    } catch (error) {
-      console.error('Swap calculation error:', error);
-      resetSwapInfo();
-    }
-  }
-
-  // Update swap information UI
-  function updateSwapInfo(route) {
-    const outputAmount = route.outAmount / Math.pow(10, state.toToken.decimals);
-    const rate = outputAmount / parseFloat(elements.fromAmount.value);
-    
-    elements.rateInfo.textContent = `1 ${state.fromToken.symbol} = ${rate.toFixed(6)} ${state.toToken.symbol}`;
-    elements.minReceived.textContent = `${(outputAmount * (1 - state.slippage / 100)).toFixed(6)} ${state.toToken.symbol}`;
-    elements.priceImpact.textContent = `${route.priceImpactPct.toFixed(2)}%`;
-    
-    elements.swapButton.disabled = false;
-  }
-
-  // Reset swap information
-  function resetSwapInfo() {
-    elements.rateInfo.textContent = '-';
-    elements.minReceived.textContent = '-';
-    elements.priceImpact.textContent = '-';
-    elements.swapButton.disabled = true;
-  }
-
-  // Update slippage UI
-  function updateSlippageUI() {
-    elements.slippageOptions.forEach(option => {
-      option.classList.remove('bg-cyan-500');
-      if (parseFloat(option.value) === state.slippage) {
-        option.classList.add('bg-cyan-500');
+      const amount = parseFloat(document.getElementById('from-amount').value);
+      if (!amount || isNaN(amount)) {
+        alert('Please enter a valid amount');
+        return;
       }
-    });
-  }
 
-  // Update token balances
-  async function updateBalances() {
-    if (!state.wallet) return;
-    
-    try {
-      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-      
-      // Update from token balance
-      if (state.fromToken) {
-        if (state.fromToken.symbol === 'SOL') {
-          const balance = await connection.getBalance(state.wallet.publicKey);
-          elements.fromBalance.textContent = `Balance: ${balance / solanaWeb3.LAMPORTS_PER_SOL} SOL`;
-        } else {
-          // For SPL tokens, you would need to fetch the token account balance
-          elements.fromBalance.textContent = `Balance: -`;
+      try {
+        const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+        const jupiter = await JupiterCore.init({ connection });
+
+        const routes = await jupiter.getRoutes({
+          inputMint: state.fromToken.mint,
+          outputMint: state.toToken.mint,
+          amount: amount * Math.pow(10, state.fromToken.decimals || 9),
+          slippage: state.slippage
+        });
+
+        if (routes && routes.length > 0) {
+          const { execute } = await jupiter.exchange({
+            route: routes[0]
+          });
+
+          const swapResult = await execute();
+          console.log('Swap successful:', swapResult);
+          alert(`Swap executed! Tx: ${swapResult.txid}`);
         }
+      } catch (error) {
+        console.error('Swap failed:', error);
+        alert('Swap failed: ' + error.message);
       }
-      
-      // Update to token balance
-      if (state.toToken) {
-        if (state.toToken.symbol === 'SOL') {
-          const balance = await connection.getBalance(state.wallet.publicKey);
-          elements.toBalance.textContent = `Balance: ${balance / solanaWeb3.LAMPORTS_PER_SOL} SOL`;
-        } else {
-          // For SPL tokens
-          elements.toBalance.textContent = `Balance: -`;
-        }
-      }
-    } catch (error) {
-      console.error('Balance update error:', error);
     }
-  }
-
-  // Execute the swap
-  async function executeSwap() {
-    if (!state.wallet || !state.fromToken || !state.toToken || !elements.fromAmount.value) {
-      alert('Please complete all swap details first');
-      return;
-    }
-
-    const amount = parseFloat(elements.fromAmount.value);
-    if (isNaN(amount) || amount <= 0) {
-      alert('Please enter a valid amount');
-      return;
-    }
-
-    try {
-      elements.swapButton.disabled = true;
-      elements.swapButton.textContent = 'Processing...';
-      
-      // Get routes again to ensure fresh data
-      const routes = await state.jupiter.getRoutes({
-        inputMint: state.fromToken.address,
-        outputMint: state.toToken.address,
-        amount: amount * Math.pow(10, state.fromToken.decimals),
-        slippage: state.slippage,
-      });
-
-      if (!routes?.length) {
-        throw new Error('No routes available for this swap');
-      }
-
-      const bestRoute = routes[0];
-      
-      // Prepare and send transaction
-      const { transaction } = await state.jupiter.prepareTransaction({
-        route: bestRoute,
-        wallet: state.wallet,
-      });
-
-      const signedTransaction = await state.wallet.signTransaction(transaction);
-      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-      const txId = await connection.sendRawTransaction(signedTransaction.serialize());
-      
-      alert(`Swap successful! Transaction ID: ${txId}`);
-      
-      // Reset form
-      elements.fromAmount.value = '';
-      resetSwapInfo();
-      updateBalances();
-      
-    } catch (error) {
-      console.error('Swap execution error:', error);
-      alert('Swap failed: ' + error.message);
-    } finally {
-      elements.swapButton.disabled = false;
-      elements.swapButton.textContent = 'Swap';
-    }
-  }
-
-  // Close suggestions when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('#from-token') && !e.target.closest('#from-suggestions')) {
-      elements.fromSuggestions.classList.add('hidden');
-    }
-    if (!e.target.closest('#to-token') && !e.target.closest('#to-suggestions')) {
-      elements.toSuggestions.classList.add('hidden');
-    }
-  });
-</script>
+  </script>
 </body>
 </html>
