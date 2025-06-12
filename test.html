@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherSwap - Enhanced Swap Interface</title>
+  <!-- TailwindCSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- Favicon -->
+  <link rel="icon" href="logo-dex.png" type="image/png">
+  <!-- Solana Web3.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js" defer></script>
+  <!-- Jupiter Aggregator SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@jup-ag/core" defer></script>
+</head>
+<body class="bg-gradient-to-br from-[#0B0B1F] to-[#1A1A40] text-white font-sans min-h-screen">
+
+<!-- HEADER -->
+<header class="flex justify-between items-center p-6 bg-[#1A1A40] shadow-lg">
+  <img src="logo-dex.png" alt="DEX Logo" class="h-10">
+  <nav class="flex space-x-6 text-sm">
+    <a href="#" class="hover:text-cyan-400">Swap</a>
+    <a href="#" class="hover:text-cyan-400">Liquidity</a>
+    <a href="#" class="hover:text-cyan-400">Portfolio</a>
+    <a href="#" class="hover:text-cyan-400">Settings</a>
+  </nav>
+  <button id="connect-wallet" class="px-4 py-2 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg font-medium">
+    Connect Wallet
+  </button>
+</header>
+
+<!-- MAIN SWAP CONTAINER -->
+<main class="max-w-lg mx-auto mt-10 p-8 bg-[#111827] rounded-lg shadow-lg">
+  <h1 class="text-2xl font-bold mb-6 text-center">Enhanced Swap</h1>
+  
+  <!-- From Section -->
+  <div class="mb-6">
+    <label for="from-token" class="block text-sm font-medium mb-2">From:</label>
+    <div class="flex items-center space-x-2">
+      <select id="from-token" class="bg-gray-800 text-white p-3 rounded-lg flex-1">
+        <option value="USDC">USDC</option>
+        <option value="SOL">SOL</option>
+        <option value="RAY">RAY</option>
+      </select>
+      <input id="from-amount" type="number" placeholder="Amount" class="bg-gray-800 text-white p-3 rounded-lg flex-1" />
+    </div>
+  </div>
+
+  <!-- To Section -->
+  <div class="mb-6">
+    <label for="to-token" class="block text-sm font-medium mb-2">To:</label>
+    <select id="to-token" class="bg-gray-800 text-white p-3 rounded-lg flex-1">
+      <option value="SOL">SOL</option>
+      <option value="USDC">USDC</option>
+    </select>
+  </div>
+
+  <!-- Contract Address Input -->
+  <div class="mb-6">
+    <label for="contract-address" class="block text-sm font-medium mb-2">Token Contract Address:</label>
+    <input id="contract-address" type="text" placeholder="Paste contract address here" class="bg-gray-800 text-white p-3 rounded-lg w-full" />
+    <button id="find-token" class="mt-2 px-4 py-2 bg-gray-700 rounded-lg text-sm w-full">
+      Find Token
+    </button>
+  </div>
+
+  <!-- Calculations -->
+  <div class="text-sm text-gray-400 mb-6">
+    <p id="rate-info">Exchange Rate: Calculating...</p>
+    <p id="min-received">Minimum Received: Calculating...</p>
+    <p id="price-impact">Price Impact: Calculating...</p>
+  </div>
+
+  <!-- Swap Button -->
+  <button id="swap-button" class="px-4 py-3 bg-gradient-to-r from-cyan-400 to-blue-500 text-white text-lg rounded-lg w-full">
+    Swap
+  </button>
+</main>
+
+<!-- FOOTER -->
+<footer class="text-center mt-10 text-sm text-gray-400">
+  <p>© 2025 AetherSwap Protocol. All rights reserved.</p>
+</footer>
+
+<!-- SCRIPTS -->
+<script>
+  let wallet;
+
+  // Wallet Connection
+  const connectWalletButton = document.getElementById('connect-wallet');
+  connectWalletButton.addEventListener('click', async () => {
+    try {
+      const provider = window.phantom?.solana;
+      if (!provider) {
+        alert('Phantom Wallet not found!');
+        return;
+      }
+      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+      wallet = await provider.connect();
+      alert(`Wallet connected: ${wallet.publicKey.toString()}`);
+    } catch (error) {
+      console.error('Wallet connection error:', error);
+    }
+  });
+
+  // Find Token by Contract Address
+  const findTokenButton = document.getElementById('find-token');
+  findTokenButton.addEventListener('click', async () => {
+    const contractAddress = document.getElementById('contract-address').value;
+
+    if (!contractAddress) {
+      alert('Please enter a contract address.');
+      return;
+    }
+
+    try {
+      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+      const tokenInfo = await connection.getParsedAccountInfo(new solanaWeb3.PublicKey(contractAddress));
+
+      if (!tokenInfo?.value) {
+        alert('Token not found or invalid contract address.');
+        return;
+      }
+
+      alert(`Token found: ${JSON.stringify(tokenInfo.value)}`);
+    } catch (error) {
+      console.error('Error fetching token info:', error);
+      alert('An error occurred while fetching token info.');
+    }
+  });
+
+  // Swap Functionality
+  const swapButton = document.getElementById('swap-button');
+  swapButton.addEventListener('click', async () => {
+    const fromToken = document.getElementById('from-token').value;
+    const toToken = document.getElementById('to-token').value;
+    const amount = parseFloat(document.getElementById('from-amount').value);
+
+    if (!wallet) {
+      alert('Please connect your wallet first.');
+      return;
+    }
+
+    if (!amount || amount <= 0) {
+      alert('Please enter a valid amount.');
+      return;
+    }
+
+    try {
+      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+      const jupiter = await JupiterCore.init(connection);
+
+      const routeMap = await jupiter.getRouteMap();
+      const routes = await jupiter.getRoutes({
+        inputMint: routeMap[fromToken],
+        outputMint: routeMap[toToken],
+        amount: amount,
+        slippage: 0.5, // 0.5% slippage
+      });
+
+      if (routes?.length === 0) {
+        alert('No routes found for this swap.');
+        return;
+      }
+
+      const bestRoute = routes[0];
+      const transaction = await jupiter.prepareTransaction({
+        route: bestRoute,
+        wallet: wallet,
+      });
+
+      const signedTransaction = await wallet.signTransaction(transaction);
+      const txId = await connection.sendRawTransaction(signedTransaction.serialize());
+
+      alert(`Swap successful! Transaction ID: ${txId}`);
+    } catch (error) {
+      console.error('Swap error:', error);
+      alert('An error occurred during the swap.');
+    }
+  });
+</script>
+
+</body>
+</html>
