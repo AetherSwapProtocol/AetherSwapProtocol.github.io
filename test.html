@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +14,9 @@
     .modal { position: fixed; bottom: 0; left: 0; width: 100%; background: #1f2937; border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem; max-height: 75%; overflow-y: auto; display: none; }
     .modal.active { display: block; animation: slideUp 0.3s ease-out forwards; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .error-text { color: #dc2626; font-size: 0.875rem; }
+    .loading-spinner { border: 4px solid #333; border-top: 4px solid #fff; border-radius: 50%; width: 32px; height: 32px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -34,13 +36,19 @@
         <span id="from-balance">Balance: 0</span>
       </div>
       <div class="flex gap-2 items-center">
-        <button id="from-token" class="bg-gray-700 px-3 py-2 rounded">SOL</button>
+        <select id="from-token" class="bg-gray-700 px-3 py-2 rounded text-white">
+          <option value="SOL">SOL</option>
+          <option value="USDC">USDC</option>
+          <option value="BTC">BTC</option>
+          <option value="ETH">ETH</option>
+        </select>
         <input type="number" id="from-amount" class="flex-1 bg-transparent text-right px-2 py-2 outline-none" placeholder="0.00">
       </div>
+      <p id="from-error" class="error-text hidden">Invalid amount entered!</p>
     </div>
 
     <div class="flex justify-center mb-4">
-      <button id="swap-direction" class="p-2 bg-gray-700 rounded-full">â</button>
+      <button id="swap-direction" class="p-2 bg-gray-700 rounded-full">⇄</button>
     </div>
 
     <div class="token-box mb-6">
@@ -49,12 +57,24 @@
         <span id="to-balance">Balance: 0</span>
       </div>
       <div class="flex gap-2 items-center">
-        <button id="to-token" class="bg-gray-700 px-3 py-2 rounded">USDC</button>
+        <select id="to-token" class="bg-gray-700 px-3 py-2 rounded text-white">
+          <option value="USDC">USDC</option>
+          <option value="SOL">SOL</option>
+          <option value="ETH">ETH</option>
+          <option value="BTC">BTC</option>
+        </select>
         <input type="number" id="to-amount" class="flex-1 bg-transparent text-right px-2 py-2 outline-none" disabled placeholder="0.00">
       </div>
     </div>
 
+    <div class="mb-4">
+      <label for="slippage" class="text-sm text-gray-400">Slippage Tolerance:</label>
+      <input type="number" id="slippage" class="w-full bg-gray-700 text-white px-2 py-2 rounded" placeholder="1.00 (default)">
+    </div>
+
     <button id="swap-button" class="w-full py-3 btn-gradient rounded-lg font-bold hover:opacity-90">Swap</button>
+    
+    <div id="transaction-status" class="mt-4 text-center text-gray-400"></div>
   </main>
 
   <div id="wallet-modal" class="modal p-6">
@@ -68,7 +88,12 @@
 
   <script>
     let wallet = null;
-    const getMint = (symbol) => ({ SOL: "So11111111111111111111111111111111111111112", USDC: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" })[symbol];
+    const tokenMints = {
+      SOL: "So11111111111111111111111111111111111111112",
+      USDC: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      BTC: "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E",
+      ETH: "7vfCXT3gLxJqxMxpqQHhnyvJ7PfUPtHkaKfUu4KecqWd"
+    };
 
     document.getElementById("connect-wallet").onclick = () => {
       document.getElementById("wallet-modal").classList.add("active");
@@ -81,48 +106,71 @@
         wallet = publicKey.toString();
         document.getElementById("connect-wallet").textContent = wallet.slice(0, 4) + "..." + wallet.slice(-4);
         document.getElementById("wallet-modal").classList.remove("active");
-      }).catch(console.error);
+      }).catch(err => alert("Failed to connect wallet: " + err.message));
     }
 
     document.getElementById("from-amount").addEventListener("input", async () => {
-      const from = "SOL", to = "USDC";
+      const fromToken = document.getElementById("from-token").value;
+      const toToken = document.getElementById("to-token").value;
       const amount = parseFloat(document.getElementById("from-amount").value);
-      if (!amount) return;
-      const url = `https://quote-api.jup.ag/v6/quote?inputMint=${getMint(from)}&outputMint=${getMint(to)}&amount=${Math.floor(amount * 1e9)}&slippageBps=100`;
-      const res = await fetch(url);
-      const data = await res.json();
-      const out = data.data?.[0]?.outAmount;
-      if (out) document.getElementById("to-amount").value = (parseInt(out) / 1e6).toFixed(4);
+      const slippage = parseFloat(document.getElementById("slippage").value) || 1;
+
+      if (!amount || amount <= 0) {
+        document.getElementById("from-error").classList.remove("hidden");
+        return;
+      } else {
+        document.getElementById("from-error").classList.add("hidden");
+      }
+
+      const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${tokenMints[fromToken]}&outputMint=${tokenMints[toToken]}&amount=${Math.floor(amount * 1e9)}&slippageBps=${slippage * 100}`;
+      try {
+        const res = await fetch(quoteUrl);
+        const data = await res.json();
+        const outAmount = data.data?.[0]?.outAmount;
+        if (outAmount) {
+          document.getElementById("to-amount").value = (parseInt(outAmount) / 1e6).toFixed(4);
+        }
+      } catch (err) {
+        alert("Failed to fetch swap quote: " + err.message);
+      }
     });
 
     document.getElementById("swap-button").addEventListener("click", async () => {
       if (!wallet) return alert("Connect wallet first");
+      const fromToken = document.getElementById("from-token").value;
+      const toToken = document.getElementById("to-token").value;
       const amount = parseFloat(document.getElementById("from-amount").value);
-      if (!amount) return alert("Enter amount");
+      const slippage = parseFloat(document.getElementById("slippage").value) || 1;
 
-      const body = {
+      if (!amount || amount <= 0) return alert("Enter a valid amount");
+
+      const swapBody = {
         userPublicKey: wallet,
         wrapUnwrapSOL: true,
-        inputMint: getMint("SOL"),
-        outputMint: getMint("USDC"),
+        inputMint: tokenMints[fromToken],
+        outputMint: tokenMints[toToken],
         amount: Math.floor(amount * 1e9),
-        slippageBps: 100,
+        slippageBps: slippage * 100,
         feeBps: 10,
         feeAccount: "H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw"
       };
 
-      const res = await fetch("https://quote-api.jup.ag/v6/swap", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
-      const result = await res.json();
-      const tx = solanaWeb3.Transaction.from(Uint8Array.from(atob(result.swapTransaction), c => c.charCodeAt(0)));
-      tx.feePayer = new solanaWeb3.PublicKey(wallet);
-      tx.recentBlockhash = (await new solanaWeb3.Connection("https://api.mainnet-beta.solana.com").getRecentBlockhash()).blockhash;
-      const signed = await window.phantom.solana.signTransaction(tx);
-      const sig = await new solanaWeb3.Connection("https://api.mainnet-beta.solana.com").sendRawTransaction(signed.serialize());
-      alert("Swap sent! Tx: " + sig);
+      try {
+        const res = await fetch("https://quote-api.jup.ag/v6/swap", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(swapBody)
+        });
+        const result = await res.json();
+        const tx = solanaWeb3.Transaction.from(Uint8Array.from(atob(result.swapTransaction), c => c.charCodeAt(0)));
+        tx.feePayer = new solanaWeb3.PublicKey(wallet);
+        tx.recentBlockhash = (await new solanaWeb3.Connection("https://api.mainnet-beta.solana.com").getRecentBlockhash()).blockhash;
+        const signed = await window.phantom.solana.signTransaction(tx);
+        const sig = await new solanaWeb3.Connection("https://api.mainnet-beta.solana.com").sendRawTransaction(signed.serialize());
+        document.getElementById("transaction-status").innerHTML = `Swap sent! <a href="https://explorer.solana.com/tx/${sig}" target="_blank" class="text-blue-400">View on Explorer</a>`;
+      } catch (err) {
+        alert("Swap failed: " + err.message);
+      }
     });
   </script>
 </body>
