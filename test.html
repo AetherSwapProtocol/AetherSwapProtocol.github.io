@@ -1,316 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- METADONNEES ET LIENS CSS -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap - DEX</title>
+  <title>AetherSwap - Nouveau Design</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-  
   <style>
-    /* Styles critiques locaux */
-    .token-dropdown {
-      max-height: 300px;
-      overflow-y: auto;
-      position: absolute;
-      width: 100%;
-      z-index: 50;
+    .token-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .token-container {
       background: #1f2937;
-      border: 1px solid #374151;
-      border-radius: 0.5rem;
+      border-radius: 1rem;
+      width: 90%;
+      max-width: 420px;
+      max-height: 80vh;
+      overflow: hidden;
     }
-    .token-item {
-      padding: 0.75rem;
-      cursor: pointer;
+    .token-search {
+      position: sticky;
+      top: 0;
+      background: #1f2937;
+      padding: 1rem;
+      border-bottom: 1px solid #374151;
     }
-    .token-item:hover {
-      background: #374151;
+    .token-list {
+      max-height: 60vh;
+      overflow-y: auto;
     }
   </style>
 </head>
+<body class="bg-gray-900 text-white">
 
-<body class="bg-gray-900 text-white font-sans">
-  <!-- STRUCTURE PRINCIPALE -->
-  <div class="container mx-auto p-4 max-w-2xl">
-    <!-- CARTE DE SWAP -->
-    <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
-      <!-- EN-TETE -->
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Swap</h1>
-        <button id="connect-wallet" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
-          Connect Wallet
-        </button>
+<div class="container mx-auto p-4 max-w-md">
+  <!-- CARTE DE SWAP -->
+  <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
+    
+    <!-- CHAMP FROM - NOUVEAU DESIGN -->
+    <div class="mb-4">
+      <div class="flex justify-between mb-2">
+        <label class="text-sm">From</label>
+        <span class="text-sm text-gray-400">Balance: 0</span>
       </div>
-
-      <!-- CHAMP FROM -->
-      <div class="mb-4 relative">
-        <div class="flex justify-between mb-2">
-          <label class="text-sm">From</label>
-          <span id="from-balance" class="text-sm text-gray-400">Balance: 0</span>
-        </div>
-        <div class="flex items-center bg-gray-700 rounded-lg p-3">
-          <input id="from-amount" type="number" placeholder="0.0" 
-                 class="bg-transparent text-xl w-full focus:outline-none">
-          <div class="relative">
-            <button id="from-token-select" class="flex items-center bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded-lg">
-              <span id="from-token-symbol">SOL</span>
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </button>
-            <div id="from-token-list" class="token-dropdown hidden mt-1"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- BOUTON SWAP -->
-      <div class="flex justify-center my-2">
-        <button id="swap-direction" class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M8 7l4-4m0 0l4 4m-4-4v18m-4 0l4 4m0 0l4-4m-4 4V3"></path>
+      <div class="flex">
+        <!-- Bouton de sélection à gauche -->
+        <button id="open-from-modal" class="flex items-center bg-gray-700 hover:bg-gray-600 rounded-l-lg px-4 py-3 w-28">
+          <span id="from-token-symbol" class="font-medium">SOL</span>
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
+        <!-- Champ de saisie -->
+        <input id="from-amount" type="number" placeholder="0.0" 
+               class="bg-gray-700 text-xl p-3 rounded-r-lg w-full focus:outline-none text-right">
       </div>
+    </div>
 
-      <!-- CHAMP TO -->
-      <div class="mb-6 relative">
-        <div class="flex justify-between mb-2">
-          <label class="text-sm">To</label>
-          <span id="to-balance" class="text-sm text-gray-400">Balance: 0</span>
-        </div>
-        <div class="flex items-center bg-gray-700 rounded-lg p-3">
-          <input id="to-amount" type="number" placeholder="0.0" 
-                 class="bg-transparent text-xl w-full focus:outline-none" readonly>
-          <div class="relative">
-            <button id="to-token-select" class="flex items-center bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded-lg">
-              <span id="to-token-symbol">USDC</span>
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </button>
-            <div id="to-token-list" class="token-dropdown hidden mt-1"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PARAMETRES AVANCES -->
-      <div class="mb-6">
-        <div class="flex justify-between items-center">
-          <label class="text-sm">Slippage Tolerance</label>
-          <input id="slippage" type="number" value="0.5" min="0.1" max="5" step="0.1"
-                 class="bg-gray-700 text-white w-16 px-2 py-1 rounded text-right">
-          <span>%</span>
-        </div>
-      </div>
-
-      <!-- BOUTON SWAP -->
-      <button id="execute-swap" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-medium">
-        Swap
+    <!-- BOUTON SWAP DIRECTION -->
+    <div class="flex justify-center my-3">
+      <button class="bg-gray-700 hover:bg-gray-600 p-2 rounded-full">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M8 7l4-4m0 0l4 4m-4-4v18m-4 0l4 4m0 0l4-4m-4 4V3"></path>
+        </svg>
       </button>
     </div>
+
+    <!-- CHAMP TO - MEME DESIGN -->
+    <div class="mb-6">
+      <div class="flex justify-between mb-2">
+        <label class="text-sm">To</label>
+        <span class="text-sm text-gray-400">Balance: 0</span>
+      </div>
+      <div class="flex">
+        <button id="open-to-modal" class="flex items-center bg-gray-700 hover:bg-gray-600 rounded-l-lg px-4 py-3 w-28">
+          <span id="to-token-symbol" class="font-medium">USDC</span>
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <input id="to-amount" type="number" placeholder="0.0" 
+               class="bg-gray-700 text-xl p-3 rounded-r-lg w-full focus:outline-none text-right" readonly>
+      </div>
+    </div>
+
+    <!-- BOUTON SWAP -->
+    <button class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-medium">
+      Swap
+    </button>
   </div>
+</div>
 
-  <!-- LIENS JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@jup-ag/core@3.1.0"></script>
-  
-  <script>
-    // CONFIGURATION INITIALE
-    const state = {
-      wallet: null,
-      tokens: [],
-      fromToken: { symbol: 'SOL', mint: 'So11111111111111111111111111111111111111112' },
-      toToken: { symbol: 'USDC', mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' },
-      slippage: 0.5
-    };
+<!-- MODAL POUR SELECTION TOKEN -->
+<div id="token-modal" class="token-modal hidden">
+  <div class="token-container">
+    <div class="token-search">
+      <input type="text" id="token-search-input" placeholder="Search token name or paste address" 
+             class="w-full p-2 bg-gray-800 text-white rounded-lg focus:outline-none">
+    </div>
+    <div class="token-list">
+      <!-- Les tokens seront injectés ici par JavaScript -->
+    </div>
+  </div>
+</div>
 
-    // INITIALISATION AU CHARGEMENT
-    document.addEventListener('DOMContentLoaded', async () => {
-      await initTokens();
-      setupEventListeners();
-      updateUI();
+<script>
+  // État de l'application
+  const state = {
+    currentSelection: null, // 'from' ou 'to'
+    tokens: [
+      { symbol: 'SOL', name: 'Solana', mint: 'So111...11112', logoURI: 'solana-logo.png' },
+      { symbol: 'USDC', name: 'USD Coin', mint: 'EPjFW...TDt1v', logoURI: 'usdc-logo.png' },
+      // ... autres tokens
+    ]
+  };
+
+  // Initialisation
+  document.addEventListener('DOMContentLoaded', () => {
+    // Gestion des modals
+    document.getElementById('open-from-modal').addEventListener('click', () => openTokenModal('from'));
+    document.getElementById('open-to-modal').addEventListener('click', () => openTokenModal('to'));
+    
+    // Fermer la modal quand on clique à l'extérieur
+    document.getElementById('token-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'token-modal') {
+        closeTokenModal();
+      }
     });
 
-    // CHARGE LA LISTE DES TOKENS
-    async function initTokens() {
-      try {
-        const response = await fetch('https://token.jup.ag/strict');
-        state.tokens = await response.json();
-        console.log('Tokens loaded:', state.tokens.length);
-      } catch (error) {
-        console.error('Failed to load tokens:', error);
-      }
+    // Recherche de tokens
+    document.getElementById('token-search-input').addEventListener('input', filterTokens);
+  });
+
+  // Ouvrir la modal de sélection
+  function openTokenModal(direction) {
+    state.currentSelection = direction;
+    const modal = document.getElementById('token-modal');
+    modal.classList.remove('hidden');
+    renderTokenList();
+  }
+
+  // Fermer la modal
+  function closeTokenModal() {
+    document.getElementById('token-modal').classList.add('hidden');
+  }
+
+  // Afficher la liste des tokens
+  function renderTokenList(filter = '') {
+    const listContainer = document.querySelector('.token-list');
+    listContainer.innerHTML = '';
+
+    const filteredTokens = state.tokens.filter(token => 
+      token.symbol.toLowerCase().includes(filter.toLowerCase()) || 
+      token.name.toLowerCase().includes(filter.toLowerCase())
+    );
+
+    filteredTokens.forEach(token => {
+      const tokenElement = document.createElement('div');
+      tokenElement.className = 'flex items-center p-4 hover:bg-gray-700 cursor-pointer';
+      tokenElement.innerHTML = `
+        <img src="${token.logoURI}" alt="${token.symbol}" class="w-8 h-8 mr-3 rounded-full">
+        <div>
+          <div class="font-medium">${token.symbol}</div>
+          <div class="text-sm text-gray-400">${token.name}</div>
+        </div>
+      `;
+      tokenElement.addEventListener('click', () => selectToken(token));
+      listContainer.appendChild(tokenElement);
+    });
+  }
+
+  // Filtrer les tokens
+  function filterTokens(e) {
+    renderTokenList(e.target.value);
+  }
+
+  // Sélectionner un token
+  function selectToken(token) {
+    if (state.currentSelection === 'from') {
+      document.getElementById('from-token-symbol').textContent = token.symbol;
+    } else {
+      document.getElementById('to-token-symbol').textContent = token.symbol;
     }
-
-    // CONFIGURATION DES INTERACTIONS
-    function setupEventListeners() {
-      // Connexion wallet
-      document.getElementById('connect-wallet').addEventListener('click', connectWallet);
-
-      // Sélection des tokens
-      document.getElementById('from-token-select').addEventListener('click', () => toggleTokenDropdown('from'));
-      document.getElementById('to-token-select').addEventListener('click', () => toggleTokenDropdown('to'));
-
-      // Changement de montant
-      document.getElementById('from-amount').addEventListener('input', updateSwapQuote);
-
-      // Exécution du swap
-      document.getElementById('execute-swap').addEventListener('click', executeSwap);
-    }
-
-    // AFFICHAGE DES TOKENS
-    function toggleTokenDropdown(direction) {
-      const dropdown = document.getElementById(`${direction}-token-list`);
-      const isHidden = dropdown.classList.contains('hidden');
-
-      // Cache les autres dropdowns
-      document.querySelectorAll('.token-dropdown').forEach(el => {
-        if (el !== dropdown) el.classList.add('hidden');
-      });
-
-      // Affiche/cache le dropdown actuel
-      dropdown.classList.toggle('hidden', !isHidden);
-
-      // Remplit la liste si nécessaire
-      if (isHidden) {
-        populateTokenDropdown(direction);
-      }
-    }
-
-    // REMPLIT LA LISTE DES TOKENS
-    function populateTokenDropdown(direction) {
-      const dropdown = document.getElementById(`${direction}-token-list`);
-      dropdown.innerHTML = '';
-
-      // Ajoute la recherche
-      const search = document.createElement('input');
-      search.type = 'text';
-      search.placeholder = 'Search token or paste address';
-      search.className = 'w-full p-2 bg-gray-800 text-white border-b border-gray-700 focus:outline-none';
-      search.addEventListener('input', (e) => filterTokens(e.target.value, dropdown));
-      dropdown.appendChild(search);
-
-      // Ajoute les tokens
-      state.tokens.slice(0, 50).forEach(token => {
-        const item = document.createElement('div');
-        item.className = 'token-item flex items-center p-2';
-        item.innerHTML = `
-          <img src="${token.logoURI}" alt="${token.symbol}" class="w-6 h-6 mr-2 rounded-full">
-          <div>
-            <div class="font-medium">${token.symbol}</div>
-            <div class="text-xs text-gray-400">${token.name}</div>
-          </div>
-        `;
-        item.addEventListener('click', () => selectToken(token, direction));
-        dropdown.appendChild(item);
-      });
-    }
-
-    // FILTRE LES TOKENS
-    function filterTokens(query, dropdown) {
-      const items = dropdown.querySelectorAll('.token-item');
-      const search = query.toLowerCase();
-
-      items.forEach(item => {
-        const text = item.textContent.toLowerCase();
-        item.style.display = text.includes(search) ? 'flex' : 'none';
-      });
-    }
-
-    // SELECTION D'UN TOKEN
-    function selectToken(token, direction) {
-      state[`${direction}Token`] = token;
-      document.getElementById(`${direction}-token-symbol`).textContent = token.symbol;
-      document.getElementById(`${direction}-token-list`).classList.add('hidden');
-      updateSwapQuote();
-    }
-
-    // MET A JOUR L'INTERFACE
-    function updateUI() {
-      document.getElementById('from-token-symbol').textContent = state.fromToken.symbol;
-      document.getElementById('to-token-symbol').textContent = state.toToken.symbol;
-    }
-
-    // CONNEXION WALLET
-    async function connectWallet() {
-      if (window.solana && window.solana.isPhantom) {
-        try {
-          const response = await window.solana.connect();
-          state.wallet = response.publicKey.toString();
-          document.getElementById('connect-wallet').textContent = 'Connected';
-          console.log('Connected:', state.wallet);
-        } catch (err) {
-          console.error('Connection error:', err);
-        }
-      } else {
-        alert('Phantom Wallet not found!');
-      }
-    }
-
-    // CALCUL DU SWAP
-    async function updateSwapQuote() {
-      const amount = parseFloat(document.getElementById('from-amount').value);
-      if (!amount || isNaN(amount)) return;
-
-      try {
-        const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-        const jupiter = await JupiterCore.init({ connection });
-
-        const routes = await jupiter.getRoutes({
-          inputMint: state.fromToken.mint,
-          outputMint: state.toToken.mint,
-          amount: amount * Math.pow(10, state.fromToken.decimals || 9), // Convert to lamports
-          slippage: state.slippage
-        });
-
-        if (routes && routes.length > 0) {
-          const bestRoute = routes[0];
-          document.getElementById('to-amount').value = (bestRoute.outAmount / Math.pow(10, state.toToken.decimals || 9)).toFixed(6);
-        }
-      } catch (error) {
-        console.error('Swap calculation failed:', error);
-      }
-    }
-
-    // EXECUTION DU SWAP
-    async function executeSwap() {
-      if (!state.wallet) {
-        alert('Please connect your wallet first');
-        return;
-      }
-
-      const amount = parseFloat(document.getElementById('from-amount').value);
-      if (!amount || isNaN(amount)) {
-        alert('Please enter a valid amount');
-        return;
-      }
-
-      try {
-        const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-        const jupiter = await JupiterCore.init({ connection });
-
-        const routes = await jupiter.getRoutes({
-          inputMint: state.fromToken.mint,
-          outputMint: state.toToken.mint,
-          amount: amount * Math.pow(10, state.fromToken.decimals || 9),
-          slippage: state.slippage
-        });
-
-        if (routes && routes.length > 0) {
-          const { execute } = await jupiter.exchange({
-            route: routes[0]
-          });
-
-          const swapResult = await execute();
-          console.log('Swap successful:', swapResult);
-          alert(`Swap executed! Tx: ${swapResult.txid}`);
-        }
-      } catch (error) {
-        console.error('Swap failed:', error);
-        alert('Swap failed: ' + error.message);
-      }
-    }
-  </script>
+    closeTokenModal();
+  }
+</script>
 </body>
 </html>
