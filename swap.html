@@ -2,397 +2,381 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AetherSwap - Swap Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AetherSwap - Decentralized Exchange</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-react-ui@latest/styles.css" rel="stylesheet" />
   <script src="https://unpkg.com/@solana/web3.js@1.84.0/lib/index.iife.min.js"></script>
-  <script src="https://unpkg.com/axios@1.5.0/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/@jup-ag/core@3.6.0/dist/index.iife.min.js"></script>
   <style>
     body {
-      background-color: #0e0e11;
       font-family: 'Space Grotesk', sans-serif;
+      background-color: #0b0c12;
       color: white;
     }
     .gradient-text {
-      background: linear-gradient(to right, #7e22ce, #3b82f6);
+      background: linear-gradient(to right, #7c3aed, #3b82f6);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .tab-active {
-      background-color: #1f2937;
       color: #7c3aed;
-      font-weight: bold;
-      border-radius: 0.5rem;
+      border-bottom: 2px solid #7c3aed;
+    }
+    .card-glow {
+      border: 1px solid #7c3aed55;
+      background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(59,130,246,0.1));
+      box-shadow: 0 0 10px #7c3aed33;
+    }
+    .neon-card {
+      border: 1px solid #3b82f6;
+      background-color: rgba(59, 130, 246, 0.1);
+      backdrop-filter: blur(4px);
     }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- Navbar -->
-  <nav class="flex justify-between items-center px-6 py-4 bg-gray-900 border-b border-gray-800">
+  <!-- NAVIGATION -->
+  <nav class="flex justify-between items-center px-4 py-3 bg-gray-900 border-b border-gray-800">
     <div class="flex items-center space-x-2">
-      <img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" class="w-8 h-8" alt="logo" />
-      <h1 class="text-xl font-bold gradient-text">AetherSwap</h1>
+      <img src="logo.png" alt="Logo" class="w-8 h-8">
+      <h1 class="text-lg font-bold gradient-text">AetherSwap</h1>
     </div>
-    <div id="wallet-button" class="px-4 py-2 bg-indigo-600 rounded-lg text-sm font-semibold hover:bg-indigo-500 cursor-pointer">
+    <button id="wallet-button" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg text-sm font-semibold">
       Connect Wallet
-    </div>
+    </button>
   </nav>
 
-  <!-- Tabs (Swap, Limit, Perpetual) -->
-  <div class="flex justify-around mt-2 mb-4 border-b border-gray-700">
-    <button class="tab-btn py-2 px-6 text-white border-b-2 border-indigo-500 active-tab" data-tab="swap">Swap</button>
-    <button class="tab-btn py-2 px-6 text-gray-400 hover:text-white border-b-2 border-transparent" data-tab="limit">Limit</button>
-    <button class="tab-btn py-2 px-6 text-gray-400 hover:text-white border-b-2 border-transparent" data-tab="perps">Perpetual</button>
+  <!-- TABS -->
+  <div class="flex justify-center space-x-6 bg-gray-900 border-b border-gray-800 py-3">
+    <button class="tab-btn text-sm tab-active" data-tab="swap">Swap</button>
+    <button class="tab-btn text-sm text-gray-400 hover:text-white" data-tab="limit">Limit</button>
+    <button class="tab-btn text-sm text-gray-400 hover:text-white" data-tab="perpetual">Perpetual</button>
   </div>
 
-  <!-- Buy Card -->
-  <div class="px-4 max-w-2xl mx-auto w-full">
-    <div class="bg-gradient-to-r from-purple-800 via-indigo-700 to-blue-600 rounded-xl px-6 py-3 shadow-lg text-white text-sm font-semibold flex items-center space-x-3 cursor-pointer hover:scale-105 transition mb-4 w-max">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21V3m0 18l4-4m-4 4l-4-4" />
-      </svg>
-      <span>Buy</span>
+  <!-- MAIN BODY -->
+  <main class="flex-1 max-w-2xl w-full mx-auto p-4 space-y-6">
+
+    <!-- BUY CARD -->
+    <div class="neon-card rounded-xl px-4 py-3 flex justify-center">
+      <span class="text-lg font-semibold text-indigo-400">Buy</span>
     </div>
 
-    <!-- Swap Card -->
-    <div id="swap-tab" class="tab-content">
-      <div class="bg-gray-800 rounded-xl p-4 mb-4">
-        <div class="flex justify-between items-center mb-2">
+    <!-- SWAP TAB -->
+    <section id="tab-swap" class="tab-section">
+      <!-- From Section -->
+      <div class="bg-gray-800 rounded-xl p-4">
+        <div class="flex justify-between mb-2">
           <span class="text-sm text-gray-400">From</span>
           <span class="text-xs text-gray-400">Balance: <span id="from-balance">0</span></span>
         </div>
-        <div class="flex items-center">
-          <input 
-            type="number" 
-            id="from-amount" 
-            placeholder="0.0" 
-            class="bg-transparent text-3xl w-full outline-none"
-            value="0"
-          >
-          <div class="flex items-center space-x-2 ml-4">
-            <button class="bg-gray-700 text-xs px-2 py-1 rounded hover:bg-gray-600 transition" id="from-max">Max</button>
-            <button class="bg-gray-700 text-xs px-2 py-1 rounded hover:bg-gray-600 transition" id="from-half">50%</button>
-            <button id="from-token-select" class="flex items-center space-x-2 bg-gray-700 px-3 py-2 rounded-lg hover:bg-gray-600 transition">
-              <img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" class="w-6 h-6 rounded-full">
-              <span>SOL</span>
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </button>
-          </div>
+        <div class="flex items-center space-x-2">
+          <input type="number" id="from-amount" placeholder="0.0" class="flex-1 text-3xl bg-transparent outline-none text-white">
+          <button id="from-max" class="text-xs px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">Max</button>
+          <button id="from-half" class="text-xs px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">50%</button>
+          <button id="from-token-select" class="flex items-center space-x-2 bg-gray-700 px-3 py-2 rounded-lg hover:bg-gray-600">
+            <img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" class="w-5 h-5 rounded-full">
+            <span>SOL</span>
+          </button>
         </div>
-        <div class="text-sm text-gray-400 mt-2">≈ $<span id="from-amount-usd">0.00</span></div>
+        <div class="text-sm text-gray-500 mt-1">≈ $<span id="from-amount-usd">0.00</span></div>
       </div>
 
-      <!-- Swap Direction Arrow -->
-      <div class="flex justify-center my-2">
-        <button id="switch-tokens" class="bg-gray-800 p-2 rounded-full border-2 border-gray-900 hover:bg-gray-700 transition transform hover:rotate-180 duration-300">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+      <!-- Swap Arrow -->
+      <div class="flex justify-center my-4">
+        <button id="switch-tokens" class="bg-gray-700 p-2 rounded-full hover:bg-gray-600">
+          <svg class="w-5 h-5 text-white transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
       </div>
-            <!-- TO TOKEN SECTION -->
-      <div class="bg-gray-800 rounded-xl p-4 mb-6">
-        <div class="flex justify-between items-center mb-2">
+
+      <!-- To Section -->
+      <div class="bg-gray-800 rounded-xl p-4">
+        <div class="flex justify-between mb-2">
           <span class="text-sm text-gray-400">To</span>
           <span class="text-xs text-gray-400">Balance: <span id="to-balance">0</span></span>
         </div>
-        <div class="flex items-center">
-          <input 
-            type="number" 
-            id="to-amount" 
-            placeholder="0.0" 
-            class="bg-transparent text-3xl w-full outline-none"
-            readonly
-          >
-          <button id="to-token-select" class="flex items-center space-x-2 bg-gray-700 px-3 py-2 rounded-lg hover:bg-gray-600 transition ml-4">
-            <div class="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        <div class="flex items-center space-x-2">
+          <input type="number" id="to-amount" readonly placeholder="0.0" class="flex-1 text-3xl bg-transparent outline-none text-white">
+          <button id="to-token-select" class="flex items-center space-x-2 bg-gray-700 px-3 py-2 rounded-lg hover:bg-gray-600">
+            <div class="w-5 h-5 bg-gray-500 rounded-full flex items-center justify-center">
+              <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
             </div>
             <span>Select</span>
-            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
           </button>
         </div>
-        <div class="text-sm text-gray-400 mt-2">≈ $<span id="to-amount-usd">0.00</span></div>
+        <div class="text-sm text-gray-500 mt-1">≈ $<span id="to-amount-usd">0.00</span></div>
       </div>
-
-      <!-- Swap Details -->
-      <div class="bg-gray-800 rounded-xl p-4 mb-6">
-        <div class="flex justify-between items-center mb-3">
-          <span class="text-sm text-gray-400">Price</span>
-          <span class="text-sm" id="price-ratio">-</span>
+            <!-- Swap Details -->
+      <div class="bg-gray-800 rounded-xl p-4 space-y-3">
+        <div class="flex justify-between text-sm text-gray-400">
+          <span>Price</span>
+          <span id="price-ratio">-</span>
         </div>
-        <div class="flex justify-between items-center mb-3">
-          <span class="text-sm text-gray-400">Minimum Received</span>
-          <span class="text-sm" id="min-received">-</span>
+        <div class="flex justify-between text-sm text-gray-400">
+          <span>Minimum Received</span>
+          <span id="min-received">-</span>
         </div>
-        <div class="flex justify-between items-center">
-          <span class="text-sm text-gray-400">Slippage Tolerance</span>
-          <div class="flex items-center space-x-2">
-            <button class="text-xs bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 transition" data-slippage="0.5">0.5%</button>
-            <button class="text-xs bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 transition" data-slippage="1.0">1.0%</button>
-            <button class="text-xs bg-indigo-900 px-2 py-1 rounded" data-slippage="0.1">Custom</button>
+        <div class="flex justify-between items-center text-sm text-gray-400">
+          <span>Slippage Tolerance</span>
+          <div class="space-x-2">
+            <button class="bg-gray-700 px-2 py-1 rounded text-xs" data-slippage="0.5">0.5%</button>
+            <button class="bg-gray-700 px-2 py-1 rounded text-xs" data-slippage="1.0">1%</button>
+            <button class="bg-indigo-900 px-2 py-1 rounded text-xs" data-slippage="0.1">Custom</button>
           </div>
         </div>
       </div>
 
       <!-- Swap Button -->
-      <button id="swap-button" class="w-full bg-indigo-600 hover:bg-indigo-700 py-4 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+      <button id="swap-button" class="w-full bg-indigo-600 hover:bg-indigo-700 py-3 rounded-xl mt-4 font-medium transition disabled:opacity-40" disabled>
         Connect Wallet
       </button>
-    </div> <!-- END swap-tab -->
+    </section>
 
-    <!-- LIMIT -->
-    <div id="limit-tab" class="tab-content hidden text-center text-gray-400 text-sm">
-      <div class="p-6 border border-dashed border-gray-700 rounded-xl mt-6">
-        Coming soon: Limit Orders 🚀
+    <!-- LIMIT TAB -->
+    <section id="tab-limit" class="tab-section hidden">
+      <div class="text-center py-10 bg-gray-900 rounded-xl border border-gray-800">
+        <h2 class="text-xl font-bold mb-2 text-indigo-400">Limit Orders 💼</h2>
+        <p class="text-sm text-gray-400">Coming Soon - Smart order routing with on-chain execution.</p>
       </div>
-    </div>
+    </section>
 
-    <!-- PERPETUAL -->
-    <div id="perps-tab" class="tab-content hidden text-center text-gray-400 text-sm">
-      <div class="p-6 border border-dashed border-gray-700 rounded-xl mt-6">
-        Coming soon: Perpetual Trading 📈
+    <!-- PERPETUAL TAB -->
+    <section id="tab-perpetual" class="tab-section hidden">
+      <div class="text-center py-10 bg-gray-900 rounded-xl border border-gray-800">
+        <h2 class="text-xl font-bold mb-2 text-pink-500">Perpetual Trading ⚡</h2>
+        <p class="text-sm text-gray-400">In dev: Monitor live meme coins with real-time prices and new token listing status.</p>
       </div>
-    </div>
+    </section>
 
-    <!-- Price Chart -->
-    <div class="bg-gray-900 rounded-xl shadow-lg border border-gray-800 overflow-hidden mt-10">
-      <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-        <h3 class="font-medium text-white" id="chart-pair">SOL/USDC</h3>
-        <div class="flex space-x-2">
-          <button class="text-xs bg-gray-800 px-3 py-1 rounded hover:bg-gray-700 transition" data-interval="15m">15m</button>
-          <button class="text-xs bg-gray-800 px-3 py-1 rounded hover:bg-gray-700 transition" data-interval="1h">1h</button>
-          <button class="text-xs bg-indigo-900 px-3 py-1 rounded" data-interval="1d">1D</button>
-          <button class="text-xs bg-gray-800 px-3 py-1 rounded hover:bg-gray-700 transition" data-interval="1w">1W</button>
+    <!-- Token Select Modal -->
+    <div id="token-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center hidden">
+      <div class="bg-gray-900 border border-gray-800 rounded-xl w-full max-w-md mx-4">
+        <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+          <h3 class="text-white font-semibold">Select Token</h3>
+          <button id="close-token-modal" class="text-gray-400 hover:text-white text-xl">✕</button>
+        </div>
+        <div class="p-4">
+          <div class="relative mb-4">
+            <input id="token-search" type="text" placeholder="Paste token address or search..." class="w-full bg-gray-800 px-4 py-2 rounded-lg text-sm text-white outline-none" />
+          </div>
+          <div id="token-list" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
         </div>
       </div>
-      <div id="price-chart" class="h-96 w-full"></div>
     </div>
-  </div>
-</div> <!-- END wrapper -->
-<!-- Token Select Modal -->
-<div id="token-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center hidden">
-  <div class="bg-gray-900 rounded-xl w-full max-w-md max-h-[80vh] mx-4 overflow-hidden border border-gray-800">
-    <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-      <h3 class="font-medium text-white">Select Token</h3>
-      <div class="relative w-1/2">
-        <input 
-          type="text" 
-          id="token-search" 
-          placeholder="Search or paste token address" 
-          class="w-full bg-gray-800 rounded-lg px-4 py-2 text-sm outline-none pl-10 text-white"
-        >
-        <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
-      </div>
-      <button id="close-token-modal" class="text-gray-400 hover:text-white">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    <div class="p-4">
-      <div id="token-list" class="max-h-[60vh] overflow-y-auto space-y-2">
-        <!-- Tokens generated dynamically -->
+
+    <!-- TX Modal -->
+    <div id="tx-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center hidden">
+      <div class="bg-gray-900 border border-gray-800 rounded-xl w-full max-w-md mx-4 text-center p-6">
+        <div class="text-green-400 text-4xl mb-4">✔</div>
+        <h3 class="text-white text-lg font-semibold mb-2">Swap Successful</h3>
+        <p id="tx-summary" class="text-gray-300 mb-3">Swapped X SOL for Y TOKEN</p>
+        <a id="tx-explorer-link" class="text-indigo-400 hover:underline text-sm" href="#" target="_blank">View on Solana Explorer</a>
+        <button id="close-tx-modal" class="mt-4 text-sm text-gray-400 hover:text-white">Close</button>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- Transaction Confirmation Modal -->
-<div id="tx-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center hidden">
-  <div class="bg-gray-900 rounded-xl w-full max-w-md mx-4 overflow-hidden border border-gray-800">
-    <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-      <h3 class="font-medium text-white">Transaction Submitted</h3>
-      <button id="close-tx-modal" class="text-gray-400 hover:text-white">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    <div class="p-6 text-center">
-      <div class="w-16 h-16 bg-indigo-900 rounded-full flex items-center justify-center mx-auto mb-4">
-        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg>
+    <!-- Chart Display (small) -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden mt-8">
+      <div class="flex justify-between p-4 border-b border-gray-800">
+        <h3 class="text-white text-sm font-medium" id="chart-pair-label">SOL / USDC</h3>
+        <div class="space-x-2">
+          <button data-interval="15m" class="text-xs bg-gray-800 px-2 py-1 rounded">15m</button>
+          <button data-interval="1h" class="text-xs bg-gray-800 px-2 py-1 rounded">1H</button>
+          <button data-interval="1d" class="text-xs bg-indigo-900 px-2 py-1 rounded">1D</button>
+        </div>
       </div>
-      <h4 class="text-lg font-medium text-white mb-2">Swap Completed</h4>
-      <p class="text-gray-400 mb-4" id="tx-summary">Swapped 0 SOL for 0 USDC</p>
-      <a id="tx-explorer-link" href="#" target="_blank" class="text-indigo-500 hover:text-indigo-400 text-sm">View on Solana Explorer</a>
+      <div id="price-chart" class="h-72">
+        <!-- Embedded TradingView widget will go here -->
+      </div>
     </div>
-  </div>
-</div>
+  </main>
 
-<!-- Tabs Navigation Script -->
-<script>
-  const tabs = document.querySelectorAll(".tab-button");
-  tabs.forEach(btn => {
-    btn.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("tab-active"));
-      btn.classList.add("tab-active");
-      document.querySelectorAll(".tab-content").forEach(content => content.classList.add("hidden"));
-      const tabId = btn.dataset.tab;
-      document.getElementById("tab-" + tabId).classList.remove("hidden");
-    });
-  });
+  <!-- Footer Navigation -->
+  <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 flex justify-around py-2 text-xs">
+    <a href="#" class="flex flex-col items-center text-indigo-400">
+      <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h16v16H4z" />
+      </svg>
+      <span>Swap</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-gray-400">
+      <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 6H7" />
+      </svg>
+      <span>LaunchLab</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-gray-400">
+      <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+      <span>Popular</span>
+    </a>
+  </footer>
+    <!-- Script Global -->
+  <script type="module">
+    import {
+      Connection,
+      clusterApiUrl,
+      PublicKey
+    } from "https://unpkg.com/@solana/web3.js@1.84.0/lib/index.browser.mjs";
 
-  document.getElementById("close-token-modal").onclick = () => {
-    document.getElementById("token-modal").classList.add("hidden");
-  };
+    import {
+      Jupiter
+    } from "https://unpkg.com/@jup-ag/core@3.6.0/dist/index.browser.mjs";
 
-  document.getElementById("close-tx-modal").onclick = () => {
-    document.getElementById("tx-modal").classList.add("hidden");
-  };
-</script>
-<script type="module">
-  import {
-    Connection,
-    clusterApiUrl,
-    PublicKey
-  } from "https://unpkg.com/@solana/web3.js@1.84.0/lib/index.browser.mjs";
+    const state = {
+      connection: new Connection(clusterApiUrl("mainnet-beta"), "confirmed"),
+      wallet: null,
+      jupiter: null,
+      tokenList: [],
+      fromToken: null,
+      toToken: null,
+      slippage: 0.5,
+    };
 
-  import {
-    Jupiter,
-  } from "https://unpkg.com/@jup-ag/core@3.6.0/dist/index.browser.mjs";
-
-  let state = {
-    connection: null,
-    wallet: null,
-    jupiter: null,
-    tokenList: [],
-    fromToken: null,
-    toToken: null,
-    slippage: 0.5,
-  };
-
-  document.addEventListener("DOMContentLoaded", async () => {
-    state.connection = new Connection(clusterApiUrl("mainnet-beta"), "confirmed");
-
-    try {
+    async function initialize() {
       state.jupiter = await Jupiter.load({
         connection: state.connection,
-        cluster: "mainnet-beta",
+        cluster: "mainnet-beta"
       });
 
-      await loadTokens();
-      setupWalletConnect();
-      setupSearchModal();
-      setupQuote();
-      setupSwap();
-    } catch (err) {
-      console.error("Init error", err);
-      alert("Erreur d'initialisation de l'application");
-    }
-  });
+      const tokenRes = await fetch("https://token.jup.ag/strict");
+      state.tokenList = await tokenRes.json();
 
-  async function loadTokens() {
-    try {
-      const res = await fetch("https://token.jup.ag/strict");
-      const data = await res.json();
-      state.tokenList = data;
+      state.fromToken = state.tokenList.find(t => t.symbol === "SOL");
+      state.toToken = state.tokenList.find(t => t.symbol === "USDC");
 
-      console.log(`🎯 ${state.tokenList.length} tokens loaded`);
-    } catch (e) {
-      console.error("Token list load failed", e);
-    }
-  }
-
-  function setupWalletConnect() {
-    const btn = document.getElementById("wallet-button");
-    btn.addEventListener("click", async () => {
-      try {
-        const resp = await window.solana.connect();
-        state.wallet = window.solana;
-        btn.textContent = `${resp.publicKey.toString().slice(0, 4)}...${resp.publicKey.toString().slice(-4)}`;
-        document.getElementById("swap-button").disabled = false;
-      } catch (err) {
-        alert("Connexion wallet refusée");
-      }
-    });
-  }
-
-  function setupSearchModal() {
-    document.getElementById("token-search").addEventListener("input", e => {
-      const q = e.target.value.toLowerCase();
-      const list = document.getElementById("token-list");
-      list.innerHTML = "";
-
-      const found = state.tokenList.filter(t =>
-        t.symbol.toLowerCase().includes(q) ||
-        t.name.toLowerCase().includes(q) ||
-        t.address.toLowerCase().includes(q)
-      );
-
-      for (const token of found.slice(0, 30)) {
-        const div = document.createElement("div");
-        div.className = "token-item flex items-center p-3 hover:bg-gray-800 rounded-lg cursor-pointer";
-        div.innerHTML = `
-          <img src="${token.logoURI}" class="w-8 h-8 rounded-full mr-3">
-          <div>
-            <div class="font-medium">${token.symbol}</div>
-            <div class="text-xs text-gray-400">${token.name}</div>
-          </div>`;
-        div.onclick = () => {
-          document.getElementById("token-modal").classList.add("hidden");
-          state.toToken = token;
-          updatePreview();
-        };
-        list.appendChild(div);
-      }
-    });
-  }
-
-  function setupQuote() {
-    document.getElementById("from-amount").addEventListener("input", async (e) => {
-      const amt = parseFloat(e.target.value);
-      if (!state.fromToken || !state.toToken || isNaN(amt)) return;
-      await updatePreview();
-    });
-  }
-
-  async function updatePreview() {
-    const amt = parseFloat(document.getElementById("from-amount").value);
-    if (!state.fromToken || !state.toToken || isNaN(amt)) return;
-
-    const amountIn = Math.floor(amt * 10 ** state.fromToken.decimals);
-    const route = await state.jupiter.computeRoutes({
-      inputMint: new PublicKey(state.fromToken.address),
-      outputMint: new PublicKey(state.toToken.address),
-      amount: amountIn,
-      slippageBps: state.slippage * 100,
-    });
-
-    if (route.routesInfos.length === 0) {
-      document.getElementById("to-amount").value = "N/A";
-      document.getElementById("price-ratio").textContent = "No route found";
-      document.getElementById("min-received").textContent = "-";
-      return;
+      updateTokenUI();
+      updatePreview();
     }
 
-    const best = route.routesInfos[0];
-    const out = best.outAmount / 10 ** state.toToken.decimals;
-    document.getElementById("to-amount").value = out.toFixed(6);
-    document.getElementById("price-ratio").textContent = `1 ${state.fromToken.symbol} ≈ ${(out / amt).toFixed(4)} ${state.toToken.symbol}`;
-    document.getElementById("min-received").textContent = `${(out * (1 - state.slippage / 100)).toFixed(6)} ${state.toToken.symbol}`;
-  }
+    // UI update
+    function updateTokenUI() {
+      const from = document.getElementById("from-token-select");
+      const to = document.getElementById("to-token-select");
 
-  function setupSwap() {
-    document.getElementById("swap-button").addEventListener("click", async () => {
-      if (!state.wallet || !state.toToken || !state.fromToken) {
-        return alert("Veuillez connecter le wallet et sélectionner les tokens");
+      if (state.fromToken) {
+        from.querySelector("span").textContent = state.fromToken.symbol;
+        from.querySelector("img").src = state.fromToken.logoURI || "";
       }
 
+      if (state.toToken) {
+        to.querySelector("span").textContent = state.toToken.symbol;
+        to.querySelector("img").src = state.toToken.logoURI || "";
+      }
+    }
+
+    // Event Listeners
+    document.addEventListener("DOMContentLoaded", () => {
+      initialize();
+
+      document.getElementById("wallet-button").addEventListener("click", async () => {
+        if (window.solana?.isPhantom) {
+          try {
+            const resp = await window.solana.connect();
+            state.wallet = window.solana;
+            document.getElementById("wallet-button").textContent =
+              `${resp.publicKey.toString().slice(0, 4)}...${resp.publicKey.toString().slice(-4)}`;
+            document.getElementById("swap-button").disabled = false;
+          } catch (e) {
+            alert("Wallet connection rejected");
+          }
+        } else {
+          alert("Phantom Wallet not installed");
+        }
+      });
+
+      // Input events
+      document.getElementById("from-amount").addEventListener("input", () => {
+        updatePreview();
+      });
+
+      // Switch tokens
+      document.getElementById("switch-tokens").addEventListener("click", () => {
+        const temp = state.fromToken;
+        state.fromToken = state.toToken;
+        state.toToken = temp;
+        updateTokenUI();
+        updatePreview();
+      });
+
+      // Open modal
+      document.getElementById("from-token-select").addEventListener("click", () => {
+        window.currentTokenSelect = "from";
+        document.getElementById("token-modal").classList.remove("hidden");
+      });
+
+      document.getElementById("to-token-select").addEventListener("click", () => {
+        window.currentTokenSelect = "to";
+        document.getElementById("token-modal").classList.remove("hidden");
+      });
+
+      // Close modal
+      document.getElementById("close-token-modal").addEventListener("click", () => {
+        document.getElementById("token-modal").classList.add("hidden");
+      });
+
+      // Search tokens
+      document.getElementById("token-search").addEventListener("input", (e) => {
+        const q = e.target.value.toLowerCase();
+        const results = state.tokenList.filter(t =>
+          t.symbol.toLowerCase().includes(q) ||
+          t.name.toLowerCase().includes(q) ||
+          t.address.toLowerCase().includes(q)
+        );
+
+        const container = document.getElementById("token-list");
+        container.innerHTML = "";
+        results.slice(0, 30).forEach(token => {
+          const el = document.createElement("div");
+          el.className = "flex items-center p-2 rounded hover:bg-gray-800 cursor-pointer";
+          el.innerHTML = `
+            <img src="${token.logoURI}" class="w-6 h-6 rounded-full mr-3">
+            <div>
+              <div class="text-white text-sm">${token.symbol}</div>
+              <div class="text-gray-400 text-xs">${token.name}</div>
+            </div>`;
+          el.onclick = () => {
+            if (window.currentTokenSelect === "from") {
+              state.fromToken = token;
+            } else {
+              state.toToken = token;
+            }
+            updateTokenUI();
+            updatePreview();
+            document.getElementById("token-modal").classList.add("hidden");
+          };
+          container.appendChild(el);
+        });
+      });
+
+      // Close TX Modal
+      document.getElementById("close-tx-modal").addEventListener("click", () => {
+        document.getElementById("tx-modal").classList.add("hidden");
+      });
+
+      // Tabs Logic
+      document.querySelectorAll(".tab-button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("tab-active"));
+          document.querySelectorAll(".tab-section").forEach(s => s.classList.add("hidden"));
+
+          btn.classList.add("tab-active");
+          document.getElementById(`tab-${btn.dataset.tab}`).classList.remove("hidden");
+        });
+      });
+    });
+
+    async function updatePreview() {
       const amount = parseFloat(document.getElementById("from-amount").value);
-      const amountIn = Math.floor(amount * 10 ** state.fromToken.decimals);
+      if (!state.fromToken || !state.toToken || isNaN(amount)) return;
+
+      const amountIn = Math.floor(amount * (10 ** state.fromToken.decimals));
       const quote = await state.jupiter.computeRoutes({
         inputMint: new PublicKey(state.fromToken.address),
         outputMint: new PublicKey(state.toToken.address),
@@ -400,203 +384,88 @@
         slippageBps: state.slippage * 100,
       });
 
-      if (!quote || quote.routesInfos.length === 0) return alert("Aucun chemin disponible");
+      if (!quote || quote.routesInfos.length === 0) {
+        document.getElementById("to-amount").value = '';
+        document.getElementById("price-ratio").textContent = "No route";
+        document.getElementById("min-received").textContent = "-";
+        return;
+      }
+
+      const best = quote.routesInfos[0];
+      const out = best.outAmount / (10 ** state.toToken.decimals);
+
+      document.getElementById("to-amount").value = out.toFixed(6);
+      document.getElementById("price-ratio").textContent = `1 ${state.fromToken.symbol} ≈ ${(out / amount).toFixed(4)} ${state.toToken.symbol}`;
+      document.getElementById("min-received").textContent = `${(out * (1 - state.slippage / 100)).toFixed(6)} ${state.toToken.symbol}`;
+    }
+        async function executeSwap() {
+      const amount = parseFloat(document.getElementById("from-amount").value);
+      if (!state.wallet || !state.fromToken || !state.toToken || isNaN(amount)) {
+        return alert("Missing fields or wallet");
+      }
+
+      const amountIn = Math.floor(amount * (10 ** state.fromToken.decimals));
+      const quote = await state.jupiter.computeRoutes({
+        inputMint: new PublicKey(state.fromToken.address),
+        outputMint: new PublicKey(state.toToken.address),
+        amount: amountIn,
+        slippageBps: state.slippage * 100,
+      });
+
+      if (!quote || quote.routesInfos.length === 0) return alert("No route available");
 
       const { execute } = await state.jupiter.exchange({
-        routeInfo: quote.routesInfos[0],
+        routeInfo: quote.routesInfos[0]
       });
 
-      const res = await execute();
-      if (res.error) {
-        alert("Échec du swap");
+      const result = await execute();
+
+      if (result.error) {
+        alert("Swap failed");
       } else {
-        document.getElementById("tx-summary").textContent = `Swapped ${amount} ${state.fromToken.symbol} for ${document.getElementById("to-amount").value} ${state.toToken.symbol}`;
-        document.getElementById("tx-explorer-link").href = `https://solscan.io/tx/${res.txid}`;
+        document.getElementById("tx-summary").textContent = `Swapped ${amount} ${state.fromToken.symbol} to ${document.getElementById("to-amount").value} ${state.toToken.symbol}`;
+        document.getElementById("tx-explorer-link").href = `https://solscan.io/tx/${result.txid}`;
         document.getElementById("tx-modal").classList.remove("hidden");
       }
-    });
-  }
-</script>
-<script>
-  // Gérer les tabs (Swap / Limit / Perps)
-  const tabs = document.querySelectorAll(".tab-btn");
-  tabs.forEach(btn => {
-    btn.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("border-indigo-500", "text-white", "active-tab"));
-      btn.classList.add("border-indigo-500", "text-white", "active-tab");
-
-      // Simulation navigation
-      const tab = btn.dataset.tab;
-      document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
-      document.getElementById(`${tab}-tab`).classList.remove("hidden");
-    });
-  });
-
-  // Boutons Slippage
-  document.querySelectorAll("[data-slippage]").forEach(button => {
-    button.addEventListener("click", () => {
-      const value = parseFloat(button.dataset.slippage);
-      state.slippage = value;
-      document.querySelectorAll("[data-slippage]").forEach(btn => {
-        btn.classList.remove("bg-indigo-900");
-        btn.classList.add("bg-gray-700");
-      });
-      button.classList.add("bg-indigo-900");
-    });
-  });
-
-  // MAX & 50% pour montant
-  document.getElementById("from-max")?.addEventListener("click", () => {
-    document.getElementById("from-amount").value = 10; // Fake balance pour test
-    document.getElementById("from-amount").dispatchEvent(new Event("input"));
-  });
-
-  document.getElementById("from-half")?.addEventListener("click", () => {
-    document.getElementById("from-amount").value = 5;
-    document.getElementById("from-amount").dispatchEvent(new Event("input"));
-  });
-
-  // Changer direction From <-> To
-  document.getElementById("switch-tokens")?.addEventListener("click", () => {
-    const from = state.fromToken;
-    const to = state.toToken;
-    state.fromToken = to;
-    state.toToken = from;
-    updatePreview();
-  });
-
-  // Sélecteur de tokens
-  document.getElementById("from-token-select")?.addEventListener("click", () => {
-    document.getElementById("token-modal").classList.remove("hidden");
-  });
-  document.getElementById("to-token-select")?.addEventListener("click", () => {
-    document.getElementById("token-modal").classList.remove("hidden");
-  });
-
-  // Fermeture des modales
-  document.getElementById("close-token-modal")?.addEventListener("click", () => {
-    document.getElementById("token-modal").classList.add("hidden");
-  });
-  document.getElementById("close-tx-modal")?.addEventListener("click", () => {
-    document.getElementById("tx-modal").classList.add("hidden");
-  });
-
-  // Buy card (affiche une alerte Moonpay)
-  document.querySelector(".bg-gradient-to-r.from-purple-800")?.addEventListener("click", () => {
-    alert("Redirection vers MoonPay (prochaine étape 🚀)");
-  });
-</script>
-<!-- Lightweight Charts -->
-<script src="https://unpkg.com/lightweight-charts@4.0.1/dist/lightweight-charts.standalone.production.js"></script>
-
-<script>
-  function initChart() {
-    const chartContainer = document.getElementById("price-chart");
-    if (!chartContainer) return;
-
-    const chart = LightweightCharts.createChart(chartContainer, {
-      layout: {
-        backgroundColor: "#111827",
-        textColor: "#D1D5DB",
-      },
-      grid: {
-        vertLines: { color: "#1F2937" },
-        horzLines: { color: "#1F2937" },
-      },
-      crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-      timeScale: { timeVisible: true, secondsVisible: false },
-    });
-
-    const candleSeries = chart.addCandlestickSeries({
-      upColor: "#10B981",
-      downColor: "#EF4444",
-      borderDownColor: "#EF4444",
-      borderUpColor: "#10B981",
-      wickDownColor: "#EF4444",
-      wickUpColor: "#10B981",
-    });
-
-    const now = Math.floor(Date.now() / 1000);
-    const data = [];
-
-    for (let i = 30; i >= 0; i--) {
-      const t = now - i * 3600;
-      const open = 30 + Math.random() * 5;
-      const close = open + (Math.random() - 0.5) * 2;
-      const high = Math.max(open, close) + Math.random();
-      const low = Math.min(open, close) - Math.random();
-      data.push({ time: t, open, high, low, close });
     }
 
-    candleSeries.setData(data);
-  }
+    // Chart Popup Open/Close
+    document.getElementById("chart-popup-toggle").addEventListener("click", () => {
+      document.getElementById("chart-popup").classList.remove("hidden");
+    });
 
-  document.addEventListener("DOMContentLoaded", initChart);
-</script>
+    document.getElementById("close-chart-popup").addEventListener("click", () => {
+      document.getElementById("chart-popup").classList.add("hidden");
+    });
 
-<!-- Final Responsive Fix -->
-<style>
-  @media (max-width: 768px) {
-    .tab-content {
-      padding-bottom: 5rem;
-    }
+  </script>
 
-    footer {
-      font-size: 12px;
-    }
-  }
-</style>
-<!-- Confirmation Modal (TX) -->
-<div id="tx-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center hidden">
-  <div class="bg-gray-900 rounded-xl w-full max-w-md mx-4 overflow-hidden border border-gray-800">
-    <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-      <h3 class="font-medium text-white">Transaction Submitted</h3>
-      <button id="close-tx-modal" class="text-gray-400 hover:text-white">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    <div class="p-6 text-center">
-      <div class="w-16 h-16 bg-indigo-900 rounded-full flex items-center justify-center mx-auto mb-4">
-        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg>
+  <!-- Fullscreen Chart Modal -->
+  <div id="chart-popup" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center">
+    <div class="relative w-full max-w-5xl h-[90vh] bg-gray-900 border border-gray-700 rounded-xl overflow-hidden">
+      <div class="absolute top-2 right-2 z-10">
+        <button id="close-chart-popup" class="text-white text-2xl font-bold hover:text-red-500">×</button>
       </div>
-      <h4 class="text-lg font-medium text-white mb-2">Swap Completed</h4>
-      <p class="text-gray-400 mb-4" id="tx-summary">Swapped 0 SOL for 0 USDC</p>
-      <a id="tx-explorer-link" href="#" target="_blank" class="text-indigo-500 hover:text-indigo-400 text-sm">View on Solana Explorer</a>
+      <iframe
+        src="https://www.tradingview.com/embed-widget/mini-symbol-overview/?symbol=SOLUSDC&width=100%25&height=100%25&locale=en"
+        style="width: 100%; height: 100%; border: none"
+        allowtransparency="true"
+        frameborder="0"
+      ></iframe>
     </div>
   </div>
-</div>
 
-<!-- JS: Close modals -->
-<script>
-  document.getElementById("close-token-modal").addEventListener("click", () => {
-    document.getElementById("token-modal").classList.add("hidden");
-  });
-
-  document.getElementById("close-tx-modal").addEventListener("click", () => {
-    document.getElementById("tx-modal").classList.add("hidden");
-  });
-</script>
-
-<!-- Footer Navigation Buttons -->
-<footer class="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 flex justify-around py-3 text-sm z-40">
-  <a href="swap.html" class="flex flex-col items-center text-purple-400">
-    <i class="fas fa-exchange-alt text-xl"></i>
-    <span>Swap</span>
-  </a>
-  <as href="index.html" class="flex flex-col items-center text-white">
-    <i class="fas fa-bars text-xl"></i>
-    <span>Menu</span>
-  </button>
-  <as href="launchlab.html" class="flex flex-col items-center text-white">
-    <i class="fas fa-rocket text-xl"></i>
-    <span>LaunchLab</span>
-  </a>
-</footer>
-
-<!-- FIN DU FICHIER -->
+  <!-- Finalize -->
+  <script>
+    // Trading view responsive toggle future-ready
+    document.querySelectorAll("[data-interval]").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll("[data-interval]").forEach(b => {
+          b.classList.remove("bg-indigo-900");
+        });
+        button.classList.add("bg-indigo-900");
+      });
+    });
+  </script>
 </body>
 </html>
