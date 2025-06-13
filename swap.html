@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AetherSwap DEX – All‑in‑One</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AetherSwap – Dashboard = Swap</title>
 <style>
+  /* Reset & Variables */
   :root { --primary:#1e90ff; --dark:#0a0a0a; --gray:#1e1e1e; --light:#fff; --error:#ff4c4c; --success:#14f195; }
   *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
   body{background:var(--dark);color:var(--light);padding-bottom:120px;}
-  header, .bottom-nav{background:var(--gray);padding:12px;display:flex;align-items:center;}
+  button, .nav-item{cursor:pointer;}
+  .hidden{display:none;}
+  header, .bottom-nav{background:var(--gray);display:flex;align-items:center;padding:12px;}
   header{justify-content:space-between;}
-  .bottom-nav{justify-content:space-around;position:fixed;bottom:0;left:0;right:0;}
   header h1{font-size:20px;}
   header button{background:var(--primary);border:none;color:#fff;padding:6px 12px;border-radius:6px;}
   #main{padding:16px;max-width:500px;margin:0 auto;}
@@ -32,32 +34,39 @@
   .modal-content input{width:100%;padding:10px;margin-bottom:12px;background:#222;border:none;border-radius:8px;color:#fff;}
   .token-item{display:flex;justify-content:space-between;padding:8px;background:#222;border-radius:8px;margin-bottom:6px;cursor:pointer;}
   footer{padding:16px;font-size:12px;color:#aaa;text-align:center;}
-  .hidden{display:none;}
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;justify-content:space-around;}
+  .nav-item{font-size:12px;color:#aaa;text-align:center;flex:1;}
+  .nav-item.active{color:var(--primary);}
 </style>
 </head>
 <body>
 
 <header>
   <h1>AetherSwap</h1>
-  <button id="btn-connect">Connect</button>
+  <button id="btn-connect">Connect Wallet</button>
 </header>
-<div id="main">
 
-  <!-- SWAP -->
+<div id="main">
+  <!-- Dashboard = Swap -->
   <section id="swap" class="section">
-    <h2>Swap</h2>
+    <h2>Dashboard / Swap</h2>
+    <!-- Token A -->
     <div class="token-selector">
-      <input id="amt-in" type="number" placeholder="0.0">
+      <input id="amt-in" type="number" placeholder="0.0" />
       <span class="token-symbol" id="sym-in">Select</span>
       <button onclick="openModal('in')">Select Token</button>
     </div>
+    <!-- Token B -->
     <div class="token-selector">
-      <input id="amt-out" type="number" placeholder="0.0" disabled>
+      <input id="amt-out" type="number" placeholder="0.0" disabled />
       <span class="token-symbol" id="sym-out">Select</span>
       <button onclick="openModal('out')">Select Token</button>
     </div>
+    <!-- Quote info -->
     <div class="quote" id="quote-text">—</div>
+    <!-- Swap button -->
     <button id="btn-swap" class="btn-primary" disabled>Swap</button>
+    <!-- Pair info module -->
     <div id="pair-info" class="hidden">
       <h3 id="pname">PAIR</h3>
       <div><span id="pprice" class="price">0</span> <span id="pchange" class="change">(±0%)</span></div>
@@ -66,36 +75,39 @@
     </div>
   </section>
 
-  <!-- DASHBOARD -->
-  <section id="dashboard" class="section hidden"><h2>Portfolio</h2><p>Coming soon…</p></section>
-
-  <!-- SETTINGS -->
-  <section id="settings" class="section hidden"><h2>Settings</h2><p>Adjust slippage...</p></section>
-
-  <!-- LEGAL -->
+  <!-- Placeholder sections -->
+  <section id="portfolio" class="section hidden"><h2>Portfolio</h2><p>Coming soon…</p></section>
+  <section id="settings" class="section hidden"><h2>Settings</h2><p>Slippage, etc.</p></section>
   <section id="legal" class="section hidden">
     <h2>Legal</h2>
-    <p><strong>Disclaimer:</strong> AetherSwap is a non-custodial interface using Jupiter Aggregator on Solana.</p>
-    <p><strong>Risk:</strong> Crypto carries risk. DYOR.</p>
-    <p><strong>Platform fee:</strong> 0.15% per swap, sent to <code>H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw</code>.</p>
-    <p><strong>Data:</strong> Powered by Jupiter API.</p>
+    <p><strong>Disclaimer:</strong> AetherSwap is a non‑custodial interface leveraging Jupiter Aggregator on Solana.</p>
+    <p><strong>Risk:</strong> Crypto involves risk. Always do your own research (DYOR).</p>
+    <p><strong>Platform Fee:</strong> A 0.15% platform fee is automatically applied to swaps and directed to <code>H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw</code>.</p>
+    <p><strong>Data & Routing:</strong> Quotes and routes powered by Jupiter Aggregator.</p>
     <p><strong>Contact:</strong> <a href="mailto:contact@aetherswap.xyz" style="color:var(--primary);">contact@aetherswap.xyz</a></p>
     <p><strong>Version:</strong> 1.0.0</p>
   </section>
-
 </div>
 
-<!-- TOKEN MODAL -->
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+  <div class="nav-item active">💱 Swap</div>
+  <div class="nav-item">📊 Portfolio</div>
+  <div class="nav-item">⚙️ Settings</div>
+  <div class="nav-item">📜 Legal</div>
+</div>
+
+<!-- Token Modal -->
 <div id="modal-tk" class="modal">
   <div class="modal-content">
     <h3>Select Token</h3>
-    <input id="tk-search" placeholder="Paste mint or search">
+    <input id="tk-search" placeholder="Search or paste mint" />
     <div id="tk-list"></div>
     <button class="btn-primary" onclick="closeModal()">Close</button>
   </div>
 </div>
 
-<!-- CHART MODAL -->
+<!-- Chart Modal -->
 <div id="modal-chart" class="modal">
   <div class="modal-content">
     <h3>Price Chart</h3>
@@ -105,118 +117,117 @@
 </div>
 
 <footer>
-  ©2025 AetherSwap. Data from Jupiter Aggregator. Powered by Solana. | <a href="https://solscan.io" target="_blank">View on Solscan</a>
+  ©2025 AetherSwap. Data via Jupiter Aggregator. Powered by Solana. | <a href="https://solscan.io" target="_blank">Solscan</a>
 </footer>
 
 <script>
-let state = { tokens:[], in:null, out:null, wallet:null, provider:null, slippage:50, route:null };
+let state = { tokens:[], in:null, out:null, wallet:null, provider:null, slippageBps:50, route:null };
 
 document.getElementById('btn-connect').onclick = async () => {
   if(window.solana?.isPhantom){
-    const res = await solana.connect();
-    state.wallet = res.publicKey.toString();
+    let resp = await solana.connect();
+    state.wallet = resp.publicKey.toString();
     state.provider = solana;
     document.getElementById('btn-connect').innerText = state.wallet.slice(0,4)+'…'+state.wallet.slice(-4);
     updateSwap();
-  } else alert('Install Phantom');
+  } else alert('Install Phantom wallet');
 };
 
 async function loadTokens(){
-  let r = await fetch('https://quote-api.jup.ag/v6/tokens');
-  let j = await r.json();
+  let resp = await fetch('https://quote-api.jup.ag/v6/tokens');
+  let j = await resp.json();
   state.tokens = j.data;
 }
 loadTokens();
 
-let modalDir='';
+let currentDir='';
 function openModal(dir){
-  modalDir = dir;
-  document.getElementById('modal-tk').style.display = 'flex';
+  currentDir=dir;
+  document.getElementById('modal-tk').style.display='flex';
   renderTokenList();
 }
-function closeModal(){ document.getElementById('modal-tk').style.display = 'none'; }
+function closeModal(){document.getElementById('modal-tk').style.display='none';}
 
 document.getElementById('tk-search').oninput = renderTokenList;
 function renderTokenList(){
-  const q = document.getElementById('tk-search').value.toLowerCase().trim();
-  let list = state.tokens.filter(t => t.symbol.toLowerCase().includes(q) ||
-    t.name.toLowerCase().includes(q) || t.address.toLowerCase() === q);
-  document.getElementById('tk-list').innerHTML = list.slice(0,50).map(t =>
+  let q = document.getElementById('tk-search').value.trim().toLowerCase();
+  let filtered = state.tokens.filter(t =>
+    t.symbol.toLowerCase().includes(q) ||
+    t.name.toLowerCase().includes(q) ||
+    t.address.toLowerCase()===q
+  );
+  document.getElementById('tk-list').innerHTML = filtered.slice(0,50).map(t =>
     `<div class="token-item" onclick="selectToken('${t.address}')">
       <span>${t.symbol}</span><span>${t.address.slice(0,6)}…</span>
-    </div>`).join('');
+    </div>`
+  ).join('');
 }
 function selectToken(addr){
-  const t = state.tokens.find(x=>x.address===addr);
-  if(modalDir==='in'){ state.in = t; document.getElementById('sym-in').innerText = t.symbol; }
-  else { state.out = t; document.getElementById('sym-out').innerText = t.symbol; }
-  closeModal();
-  updateSwap();
+  let tok = state.tokens.find(t=>t.address===addr);
+  if(currentDir==='in'){ state.in=tok; document.getElementById('sym-in').innerText=tok.symbol; }
+  else { state.out=tok; document.getElementById('sym-out').innerText=tok.symbol; }
+  closeModal(); updateSwap();
 }
 
 document.getElementById('amt-in').oninput = updateSwap;
-
 async function updateSwap(){
-  const ai = parseFloat(document.getElementById('amt-in').value);
-  if(!state.in||!state.out||!ai||!state.wallet) {
+  let ai = parseFloat(document.getElementById('amt-in').value);
+  if(!state.in || !state.out || !ai || !state.wallet){
     document.getElementById('btn-swap').disabled = true;
-    document.getElementById('quote-text').innerText = '—';
+    document.getElementById('quote-text').innerText='—';
     return;
   }
   const amt = Math.round(ai * 10**state.in.decimals);
-  const url = `https://quote-api.jup.ag/v6/quote?inputMint=${state.in.address}&outputMint=${state.out.address}&amount=${amt}&slippageBps=${state.slippage}&feeBps=15`;
-  const j = await fetch(url).then(r=>r.json());
-  if(!j.data.length) return;
-  const rt = j.data[0];
+  const url = `https://quote-api.jup.ag/v6/quote?inputMint=${state.in.address}&outputMint=${state.out.address}&amount=${amt}&slippageBps=${state.slippageBps}&feeBps=15`;
+  let res = await fetch(url).then(r=>r.json());
+  if(!res.data || res.data.length===0) return;
+  let rt = res.data[0];
   document.getElementById('amt-out').value = (rt.outAmount/10**state.out.decimals).toFixed(6);
   document.getElementById('quote-text').innerText = `Route: ${rt.route.map(r=>r.marketName).join('→')} | Min received: ${(rt.outAmountWithSlippage/10**state.out.decimals).toFixed(6)}`;
-  document.getElementById('btn-swap').disabled = false;
-  state.route = rt;
+  document.getElementById('btn-swap').disabled=false;
+  state.route=rt;
   renderPair(rt);
 }
 
 function renderPair(rt){
-  const a = state.in, b = state.out;
-  document.getElementById('pname').innerText = `${a.symbol} / ${b.symbol}`;
-  const price = rt.outAmount/rt.inAmount;
-  document.getElementById('pprice').innerText = price.toFixed(a.decimals);
-  const diff = ((Math.random()*2-1)*2).toFixed(2);
-  const ch = diff>0?`+${diff}%`:`${diff}%`;
-  document.getElementById('pchange').innerText = `(${ch})`;
+  let a=state.in,b=state.out;
+  document.getElementById('pname').innerText=`${a.symbol} / ${b.symbol}`;
+  let price=rt.outAmount/rt.inAmount;
+  document.getElementById('pprice').innerText=price.toFixed(6);
+  let diff=(Math.random()*2-1).toFixed(2);
+  document.getElementById('pchange').innerText=`(${diff>0?'+':''}${diff}%)`;
   document.getElementById('pair-info').classList.remove('hidden');
   const ctx = document.getElementById('pchart').getContext('2d');
-  new Chart(ctx, { type:'line', data:{ labels:[], datasets:[{ data: Array.from({length:20},(_,i)=>price*(1+Math.sin(i/3)*0.01)), borderColor:'#1e90ff', fill:false }] }, options:{responsive:true, plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}} });
+  new Chart(ctx,{type:'line',data:{labels:[],datasets:[{data:Array.from({length:20},(_,i)=>price*(1+Math.sin(i/3)*0.01)),borderColor:var(--primary),fill:false,tension:0.3}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
 }
 
-document.getElementById('btn-swap').onclick = async () => {
-  const rt = state.route;
-  document.getElementById('btn-swap').innerText = 'Swapping...';
-  const body = { route:rt, userPublicKey:state.wallet, wrapUnwrapSOL:true, feeBps:15, feeAccount:"H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw" };
-  const res = await fetch('https://quote-api.jup.ag/v6/swap',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }).then(r=>r.json());
-  if(!res.swapTransaction) return alert('Swap failed');
+document.getElementById('btn-swap').onclick=async()=>{
+  let rt=state.route;
+  document.getElementById('btn-swap').innerText='Swapping...';
+  let body={route:rt,userPublicKey:state.wallet,wrapUnwrapSOL:true,feeBps:15,feeAccount:"H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw"};
+  let res=await fetch('https://quote-api.jup.ag/v6/swap',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(r=>r.json());
+  if(!res.swapTransaction){alert('Swap failed'); document.getElementById('btn-swap').innerText='Swap';return;}
   const tx = Uint8Array.from(atob(res.swapTransaction),c=>c.charCodeAt(0));
-  const signed = await state.provider.signTransaction({serialized:tx});
-  const resp = await state.provider.sendTransaction({serialized:signed.serialize()},{skipPreflight:true});
-  alert('Swap done! TxID: '+resp);
-  document.getElementById('btn-swap').innerText = 'Swap';
+  let signed = await state.provider.signTransaction({serialized:tx});
+  let resp = await state.provider.sendTransaction({serialized:signed.serialize()},{skipPreflight:true});
+  alert('Swap executed! Tx: '+resp);
+  document.getElementById('btn-swap').innerText='Swap';
 };
 
-function openChart(){ document.getElementById('modal-chart').style.display='flex'; }
-function closeChart(){ document.getElementById('modal-chart').style.display='none'; }
+function openChart(){document.getElementById('modal-chart').style.display='flex';}
+function closeChart(){document.getElementById('modal-chart').style.display='none';}
 
 document.querySelectorAll('.bottom-nav .nav-item').forEach((el,i)=>{
-  el.onclick = () => {
+  el.onclick=()=>{
     document.querySelectorAll('.bottom-nav .nav-item').forEach(n=>n.classList.remove('active'));
     el.classList.add('active');
-    ['swap','dashboard','settings','legal'].forEach((k,idx)=>{
-      document.getElementById(k).classList.toggle('hidden',idx!==i);
-    });
+    ['swap','portfolio','settings','legal'].forEach((id,j)=>document.getElementById(id).classList.toggle('hidden',i!==j));
   };
 });
 
-const chjs = document.createElement('script');
-chjs.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-document.head.appendChild(chjs);
+const s = document.createElement('script');
+s.src='https://cdn.jsdelivr.net/npm/chart.js';
+document.head.appendChild(s);
 </script>
 
 </body>
