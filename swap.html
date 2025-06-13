@@ -494,40 +494,50 @@
     }
     
     // Wallet connection
-    async function connectWallet(walletType) {
-      try {
-        elements.connectBtn.disabled = true;
-        elements.connectBtn.textContent = 'Connecting...';
-        
-        if (walletType === 'phantom' && window.solana) {
-          const response = await window.solana.connect();
-          publicKey = response.publicKey.toString();
-          wallet = 'phantom';
-        } else if (walletType === 'solflare' && window.Solflare) {
-          const provider = new window.Solflare();
-          await provider.connect();
-          publicKey = provider.publicKey.toString();
-          wallet = 'solflare';
-        } else {
-          throw new Error('Wallet not supported');
-        }
-        
-        updateWalletUI();
-        await fetchBalances();
-        elements.walletModal.style.display = 'none';
-      } catch (error) {
-        console.error("Wallet connection failed:", error);
-        showError("Wallet connection failed. Please try again.");
-        elements.connectBtn.disabled = false;
-        elements.connectBtn.textContent = 'Connect Wallet';
-      }
-    }
+  // Dans la section "Wallet connection"
+async function connectWallet(walletType) {
+  try {
+    elements.connectBtn.disabled = true;
+    elements.connectBtn.textContent = 'Connecting...';
     
-    // Update wallet UI
-    function updateWalletUI() {
-      elements.connectBtn.textContent = `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
-      elements.connectBtn.style.backgroundColor = '#333';
+    let provider;
+    
+    // Vérification du wallet
+    if (walletType === 'phantom') {
+      if (!window.solana?.isPhantom) {
+        window.open('https://phantom.app/', '_blank');
+        throw new Error('Phantom non installé');
+      }
+      provider = window.solana;
+    } else if (walletType === 'solflare') {
+      if (!window.Solflare) {
+        window.open('https://solflare.com/', '_blank');
+        throw new Error('Solflare non installé');
+      }
+      provider = new window.Solflare();
     }
+
+    // Connexion
+    await provider.connect();
+    publicKey = provider.publicKey.toString();
+    wallet = walletType;
+    
+    // Mise à jour UI
+    updateWalletUI();
+    await fetchBalances();
+    elements.walletModal.style.display = 'none';
+    
+  } catch (error) {
+    console.error("Échec connexion:", error);
+    alert(`Erreur: ${error.message}`);
+    resetWalletConnection();
+  }
+}
+
+function resetWalletConnection() {
+  elements.connectBtn.disabled = false;
+  elements.connectBtn.textContent = 'Connect Wallet';
+}
     
     // Fetch token balances
     async function fetchBalances() {
