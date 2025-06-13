@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AetherSwap DEX</title>
   <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.89.2/lib/index.iife.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@solflare-wallet/sdk@1.0.7/dist/index.iife.min.js"></script>
   <style>
+    /* Styles d'origine préservés et améliorés */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -57,12 +58,19 @@
       display: flex;
       align-items: center;
       cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    .token-info:hover {
+      background: rgba(69, 162, 158, 0.1);
     }
     .token-logo {
       width: 24px;
       height: 24px;
       margin-right: 8px;
       border-radius: 50%;
+      object-fit: contain;
     }
     input[type="number"] {
       width: 50%;
@@ -164,14 +172,6 @@
       color: #c5c6c7;
       margin-top: 5px;
     }
-    .network-selector {
-      margin-left: 10px;
-      padding: 5px;
-      border-radius: 5px;
-      background: #45a29e;
-      color: white;
-      border: none;
-    }
     .price-impact {
       margin: 10px 0;
       padding: 8px;
@@ -190,17 +190,17 @@
       background: rgba(211, 47, 47, 0.2);
       color: #d32f2f;
     }
+    .chevron-down {
+      width: 12px;
+      height: 8px;
+      margin-left: 8px;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>AetherSwap</h1>
     <div class="wallet-info">
-      <select id="network-selector" class="network-selector">
-        <option value="mainnet-beta">Mainnet</option>
-        <option value="devnet">Devnet</option>
-        <option value="testnet">Testnet</option>
-      </select>
       <div id="wallet-address" class="wallet-address" style="display:none;"></div>
       <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
     </div>
@@ -211,6 +211,9 @@
       <div class="token-info" onclick="showTokenModal('from')">
         <img id="from-logo" class="token-logo" src="" alt="" />
         <span id="from-symbol">Select Token</span>
+        <svg class="chevron-down" viewBox="0 0 12 8">
+          <path d="M1 1.5L6 6.5L11 1.5" stroke="#C5C6C7" stroke-width="2" stroke-linecap="round"/>
+        </svg>
       </div>
       <div style="display:flex; flex-direction:column; align-items:flex-end;">
         <input id="from-amount" type="number" placeholder="0.0" min="0" step="any" />
@@ -226,9 +229,13 @@
       <div class="token-info" onclick="showTokenModal('to')">
         <img id="to-logo" class="token-logo" src="" alt="" />
         <span id="to-symbol">Select Token</span>
+        <svg class="chevron-down" viewBox="0 0 12 8">
+          <path d="M1 1.5L6 6.5L11 1.5" stroke="#C5C6C7" stroke-width="2" stroke-linecap="round"/>
+        </svg>
       </div>
       <div style="display:flex; flex-direction:column; align-items:flex-end;">
-        <input id="to-amount" type="number" placeholder="0.0" min="0" step="any" />
+        <input id="to-amount" type="number" placeholder="0.0" min="0" step="any" readonly 
+               style="background: #1f2833; color: white; cursor: not-allowed;" />
         <div id="to-balance" class="balance-info"></div>
       </div>
     </div>
@@ -273,16 +280,24 @@
     </div>
   </div>
 
+  <!-- Error Modal -->
+  <div id="error-modal" class="modal">
+    <div class="modal-content">
+      <h3 id="error-title">Error</h3>
+      <p id="error-message"></p>
+      <button onclick="toggleModal('error-modal')">Close</button>
+    </div>
+  </div>
+
 <script>
 // Configuration
-const RPC_URLS = {
-  'mainnet-beta': 'https://api.mainnet-beta.solana.com',
-  'devnet': 'https://api.devnet.solana.com',
-  'testnet': 'https://api.testnet.solana.com'
-};
+const RPC_URL = 'https://api.mainnet-beta.solana.com';
+const TOKEN_LIST_URL = 'https://token-list-api.solana.cloud/v1/tokens';
+const JUPITER_QUOTE_URL = 'https://quote-api.jup.ag/v6/quote';
+const JUPITER_SWAP_URL = 'https://quote-api.jup.ag/v6/swap';
 
 // State
-let connection;
+let connection = new solanaWeb3.Connection(RPC_URL);
 let publicKey = null;
 let selectedWallet = null;
 let tokens = [];
@@ -290,34 +305,40 @@ let tokenBalances = {};
 let fromToken = null;
 let toToken = null;
 let slippage = 0.5;
-let currentNetwork = 'mainnet-beta';
 let currentModal = null;
 let currentTokenSide = null;
 let quoteRefreshInterval = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-  connection = new solanaWeb3.Connection(RPC_URLS[currentNetwork]);
   await loadTokens();
+  setupEventListeners();
   
-  // Set up network selector
-  document.getElementById('network-selector').addEventListener('change', async (e) => {
-    currentNetwork = e.target.value;
-    connection = new solanaWeb3.Connection(RPC_URLS[currentNetwork]);
-    if (publicKey) {
-      await fetchTokenBalances();
-      updateTokenUI();
-    }
-  });
-  
-  // Set up input events
+  // Check for persisted wallet connection
+  if (window.solana?.isConnected && window.solana.publicKey) {
+    publicKey = window.solana.publicKey.toString();
+    selectedWallet = 'phantom';
+    updateWalletUI();
+    await fetchTokenBalances();
+  }
+});
+
+// Setup event listeners
+function setupEventListeners() {
   document.getElementById('from-amount').addEventListener('input', () => {
     clearTimeout(quoteRefreshInterval);
     quoteRefreshInterval = setTimeout(updateQuote, 500);
   });
-});
+  
+  // From token max button
+  document.getElementById('from-balance').addEventListener('click', (e) => {
+    if (e.target.classList.contains('max-button')) {
+      setMaxAmount('from');
+    }
+  });
+}
 
-// Wallet Connection
+// Wallet functions
 async function connectWallet() {
   const connectButton = document.getElementById('connect-button');
   try {
@@ -328,49 +349,69 @@ async function connectWallet() {
       const res = await window.solana.connect();
       publicKey = res.publicKey.toString();
       selectedWallet = 'phantom';
-    } else {
+    } else if (window.Solflare) {
       const provider = new window.Solflare();
       await provider.connect();
       publicKey = provider.publicKey.toString();
       selectedWallet = 'solflare';
+    } else {
+      throw new Error('No supported wallet found');
     }
     
-    // Update UI
-    document.getElementById('connect-button').style.display = 'none';
-    const walletAddressEl = document.getElementById('wallet-address');
-    walletAddressEl.textContent = `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
-    walletAddressEl.style.display = 'block';
-    
-    // Fetch balances
+    updateWalletUI();
     await fetchTokenBalances();
-    updateTokenUI();
+    
+    // Listen for account changes
+    if (selectedWallet === 'phantom') {
+      window.solana.on('accountChanged', (newKey) => {
+        if (newKey) {
+          publicKey = newKey.toString();
+          updateWalletUI();
+          fetchTokenBalances();
+        }
+      });
+    }
     
   } catch (err) {
     console.error("Wallet connection failed:", err);
-    alert("Wallet connection failed. Please try again.");
+    showError(`Wallet connection failed: ${err.message}`);
     connectButton.disabled = false;
     connectButton.textContent = 'Connect Wallet';
   }
 }
 
-// Token Management
+function updateWalletUI() {
+  document.getElementById('connect-button').style.display = 'none';
+  const walletAddressEl = document.getElementById('wallet-address');
+  walletAddressEl.textContent = `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
+  walletAddressEl.style.display = 'block';
+}
+
+// Token functions
 async function loadTokens() {
   try {
-    const res = await fetch("https://token-list-api.solana.cloud/v1/tokens");
+    const res = await fetch(TOKEN_LIST_URL);
     tokens = await res.json();
-    // Add SOL as it's not always in the list
-    tokens.unshift({
-      address: 'So11111111111111111111111111111111111111112',
-      symbol: 'SOL',
-      name: 'Solana',
-      decimals: 9,
-      logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
-    });
+    
+    // Add SOL if not in list
+    if (!tokens.some(t => t.symbol === 'SOL')) {
+      tokens.unshift({
+        address: 'So11111111111111111111111111111111111111112',
+        symbol: 'SOL',
+        name: 'Solana',
+        decimals: 9,
+        logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
+      });
+    }
+    
+    // Set default tokens
+    fromToken = tokens.find(t => t.symbol === 'SOL');
+    toToken = tokens.find(t => t.symbol === 'USDC');
+    updateTokenUI();
+    
   } catch (err) {
     console.error("Failed to load tokens:", err);
-    // Fallback to Jupiter API if primary fails
-    const fallbackRes = await fetch("https://quote-api.jup.ag/v6/tokens");
-    tokens = await fallbackRes.json();
+    showError("Failed to load token list. Please refresh the page.");
   }
 }
 
@@ -380,7 +421,7 @@ async function fetchTokenBalances() {
   try {
     const pubkey = new solanaWeb3.PublicKey(publicKey);
     
-    // Get SOL balance first
+    // Get SOL balance
     const solBalance = await connection.getBalance(pubkey);
     tokenBalances['So11111111111111111111111111111111111111112'] = {
       amount: solBalance,
@@ -403,17 +444,17 @@ async function fetchTokenBalances() {
     updateBalanceUI();
   } catch (err) {
     console.error("Error fetching balances:", err);
+    showError("Failed to fetch token balances");
   }
 }
 
-// Modal Functions
+// Modal functions
 function toggleModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal.style.display === 'flex') {
     modal.style.display = 'none';
     currentModal = null;
   } else {
-    // Close any open modal first
     if (currentModal) {
       document.getElementById(currentModal).style.display = 'none';
     }
@@ -438,7 +479,9 @@ function renderTokenList(filter = '') {
   
   tokenListEl.innerHTML = filteredTokens.map(token => `
     <div class="modal-option" onclick="selectToken('${token.address}')">
-      <img src="${token.logoURI}" class="token-logo" onerror="this.src='https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'" />
+      <img src="${token.logoURI || 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'}" 
+           class="token-logo" 
+           onerror="this.src='https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'" />
       ${token.symbol} - ${token.name}
       <div style="margin-left:auto; font-size:0.8em;">
         ${formatBalance(tokenBalances[token.address]?.amount, token.decimals)}
@@ -456,7 +499,6 @@ function selectToken(address) {
   const token = tokens.find(t => t.address === address);
   if (currentTokenSide === 'from') {
     fromToken = token;
-    // Reset amount when changing token
     document.getElementById('from-amount').value = '';
     document.getElementById('to-amount').value = '';
   } else {
@@ -491,13 +533,31 @@ function updateBalanceUI() {
   if (fromToken) {
     const balance = tokenBalances[fromToken.address]?.amount || 0;
     const decimals = fromToken.decimals;
-    document.getElementById('from-balance').textContent = `Balance: ${formatBalance(balance, decimals)}`;
+    const formattedBalance = formatBalance(balance, decimals);
+    document.getElementById('from-balance').innerHTML = `Balance: ${formattedBalance} <span class="max-button">MAX</span>`;
   }
   
   if (toToken) {
     const balance = tokenBalances[toToken.address]?.amount || 0;
     const decimals = toToken.decimals;
     document.getElementById('to-balance').textContent = `Balance: ${formatBalance(balance, decimals)}`;
+  }
+}
+
+function formatBalance(amount, decimals) {
+  if (!amount) return '0';
+  return (Number(amount) / Math.pow(10, decimals)).toLocaleString(undefined, {
+    maximumFractionDigits: decimals
+  });
+}
+
+function setMaxAmount(side) {
+  if (side === 'from' && fromToken) {
+    const balance = tokenBalances[fromToken.address]?.amount || 0;
+    const decimals = fromToken.decimals;
+    const maxAmount = Number(balance) / Math.pow(10, decimals);
+    document.getElementById('from-amount').value = maxAmount.toFixed(decimals);
+    updateQuote();
   }
 }
 
@@ -510,27 +570,15 @@ function updateSwapButtonState() {
     return;
   }
   
-  // Check if user has sufficient balance
+  // Check balance
   const balance = tokenBalances[fromToken.address]?.amount || 0;
   const decimals = fromToken.decimals;
   const inputAmount = BigInt(fromAmount * Math.pow(10, decimals));
   
-  if (balance < inputAmount) {
-    swapButton.disabled = true;
-    return;
-  }
-  
-  swapButton.disabled = false;
+  swapButton.disabled = balance < inputAmount;
 }
 
-function formatBalance(amount, decimals) {
-  if (!amount) return '0';
-  return (Number(amount) / Math.pow(10, decimals)).toLocaleString(undefined, {
-    maximumFractionDigits: decimals
-  });
-}
-
-// Swap Functions
+// Swap functions
 function switchTokens() {
   if (!fromToken || !toToken) return;
   
@@ -551,15 +599,13 @@ async function updateQuote() {
   const fromAmount = parseFloat(document.getElementById('from-amount').value);
   
   if (!fromToken || !toToken || !fromAmount || fromAmount <= 0) {
-    document.getElementById('price-line').textContent = '-';
-    document.getElementById('price-impact').style.display = 'none';
-    updateSwapButtonState();
+    resetQuoteUI();
     return;
   }
   
   try {
     const amountSmallest = BigInt(fromAmount * Math.pow(10, fromToken.decimals));
-    const url = `https://quote-api.jup.ag/v6/quote?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${amountSmallest}&slippageBps=${slippage * 100}`;
+    const url = `${JUPITER_QUOTE_URL}?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${amountSmallest}&slippageBps=${slippage * 100}`;
     
     const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch quote');
@@ -596,11 +642,16 @@ async function updateQuote() {
     updateSwapButtonState();
   } catch (err) {
     console.error("Quote error:", err);
-    document.getElementById('to-amount').value = '';
-    document.getElementById('price-line').textContent = 'Unable to get quote';
-    document.getElementById('price-impact').style.display = 'none';
-    updateSwapButtonState();
+    resetQuoteUI();
+    showError('Failed to get price quote. Please try again.');
   }
+}
+
+function resetQuoteUI() {
+  document.getElementById('to-amount').value = '';
+  document.getElementById('price-line').textContent = '-';
+  document.getElementById('price-impact').style.display = 'none';
+  updateSwapButtonState();
 }
 
 async function executeSwap() {
@@ -608,25 +659,25 @@ async function executeSwap() {
   const statusEl = document.getElementById('tx-status');
   
   if (!publicKey || !fromToken || !toToken) {
-    alert("Please connect wallet and select tokens");
+    showError("Please connect wallet and select tokens");
     return;
   }
   
   const fromAmount = parseFloat(document.getElementById('from-amount').value);
   if (!fromAmount || fromAmount <= 0) {
-    alert("Please enter a valid amount");
+    showError("Please enter a valid amount");
     return;
   }
   
   try {
-    // Disable button and show loading
+    // UI updates
     swapButton.disabled = true;
     swapButton.innerHTML = 'Processing... <span class="loader"></span>';
     statusEl.style.display = 'block';
     statusEl.textContent = 'Preparing transaction...';
     
     const amountSmallest = BigInt(fromAmount * Math.pow(10, fromToken.decimals));
-    const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${amountSmallest}&slippageBps=${slippage * 100}`;
+    const quoteUrl = `${JUPITER_QUOTE_URL}?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${amountSmallest}&slippageBps=${slippage * 100}`;
     
     // Get quote
     const quoteRes = await fetch(quoteUrl);
@@ -638,7 +689,7 @@ async function executeSwap() {
     statusEl.textContent = 'Building transaction...';
     
     // Get swap transaction
-    const swapRes = await fetch("https://quote-api.jup.ag/v6/swap", {
+    const swapRes = await fetch(JUPITER_SWAP_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -669,14 +720,14 @@ async function executeSwap() {
     const signature = await connection.sendRawTransaction(signedTx.serialize());
     
     // Confirm transaction
-    statusEl.innerHTML = `✅ Transaction submitted. Confirming... <a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`;
+    statusEl.innerHTML = `✅ Transaction submitted. Confirming... <a href="https://solscan.io/tx/${signature}" target="_blank" style="color: #45a29e;">View on Solscan</a>`;
     
     const confirmation = await connection.confirmTransaction(signature, 'confirmed');
     if (confirmation.value.err) {
       throw new Error('Transaction failed');
     }
     
-    statusEl.innerHTML = `✅ Swap successful! <a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`;
+    statusEl.innerHTML = `✅ Swap successful! <a href="https://solscan.io/tx/${signature}" target="_blank" style="color: #45a29e;">View on Solscan</a>`;
     
     // Refresh balances
     await fetchTokenBalances();
@@ -685,13 +736,14 @@ async function executeSwap() {
   } catch (err) {
     console.error("Swap error:", err);
     statusEl.innerHTML = `❌ Swap failed: ${err.message}`;
+    showError(`Swap failed: ${err.message}`);
   } finally {
     swapButton.disabled = false;
     swapButton.textContent = 'Swap';
   }
 }
 
-// Slippage Functions
+// Slippage functions
 function setSlippage(value) {
   slippage = value;
   document.getElementById('slippage-display').textContent = value + '%';
@@ -704,16 +756,22 @@ function setCustomSlippage() {
   if (!isNaN(val) && val > 0 && val <= 50) {
     setSlippage(val);
   } else {
-    alert("Please enter a valid slippage between 0.01% and 50%");
+    showError("Please enter a valid slippage between 0.01% and 50%");
   }
 }
 
-// Chart Functions
+// Chart functions
 function updateChart(symbol) {
   if (!symbol) return;
   const tvSymbol = symbol.toUpperCase() + "USDT";
   const url = `https://s.tradingview.com/widgetembed/?symbol=${tvSymbol}&interval=15&theme=dark`;
   document.getElementById('chart-iframe').src = url;
+}
+
+// Error handling
+function showError(message) {
+  document.getElementById('error-message').textContent = message;
+  toggleModal('error-modal');
 }
 </script>
 </body>
