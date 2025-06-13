@@ -4,10 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AetherSwap DEX</title>
+  <script type="module" crossorigin src="https://esm.sh/@solana/web3.js@1.89.2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@solflare-wallet/sdk@1.0.7/dist/index.iife.min.js"></script>
   <style>
     body {
       margin: 0;
-      font-family: sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background: #0b0c10;
       color: white;
     }
@@ -17,7 +19,7 @@
       background: #1f2833;
     }
     button {
-      padding: 10px 20px;
+      padding: 10px 16px;
       background: #45a29e;
       color: white;
       border: none;
@@ -31,21 +33,58 @@
       background: #1f2833;
       border-radius: 12px;
     }
-    .token-select, .slippage-select {
-      margin-bottom: 12px;
+    .token-select {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: #0d1117;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 12px;
     }
-    input[type="number"], input[type="text"] {
-      width: 100%;
+    .token-info {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .token-logo {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      border-radius: 50%;
+    }
+    input[type="number"] {
+      width: 50%;
       padding: 10px;
       background: #c5c6c7;
       border: none;
       border-radius: 5px;
+      text-align: right;
+    }
+    .status {
+      margin-top: 15px;
+      padding: 10px;
+      background: #c5c6c7;
+      color: black;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+    #chart-container {
+      margin-top: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      height: 250px;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .slippage-row {
+      text-align: center;
       margin-bottom: 10px;
     }
-    .modal {
+    #slippage-modal {
       display: none;
       position: fixed;
       top: 0; left: 0;
@@ -53,308 +92,229 @@
       background-color: rgba(0, 0, 0, 0.6);
       justify-content: center;
       align-items: center;
+      z-index: 1000;
     }
-    .modal-content {
+    #slippage-modal .modal-content {
       background: #1f2833;
       padding: 20px;
       border-radius: 12px;
       max-width: 420px;
       width: 90%;
     }
-    .wallet-option {
-      display: block;
-      margin: 10px 0;
+    .slippage-option {
+      margin: 8px 0;
       background: #45a29e;
-      padding: 12px;
-      text-align: center;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .status {
-      margin-top: 20px;
-      font-size: 0.9em;
-      background: #c5c6c7;
-      color: black;
       padding: 10px;
-      border-radius: 5px;
-    }
-    .selected-token-label {
-      font-weight: bold;
-      font-size: 0.95em;
-      color: #66fcf1;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <header>
     <h1>AetherSwap</h1>
-    <button onclick="openModal('wallet-modal')">Connect Wallet</button>
+    <button onclick="connectWallet()">Connect Wallet</button>
   </header>
 
   <div id="swap-container">
     <div class="token-select">
-      <span>From:</span>
-      <button id="from-token-btn" onclick="openModal('token-modal', 'from')">Select Token</button>
+      <div class="token-info" onclick="selectToken('from')">
+        <img id="from-logo" class="token-logo" src="" alt="" />
+        <span id="from-symbol">Select From</span>
+      </div>
+      <input id="from-amount" type="number" placeholder="0.0" />
     </div>
-    <input id="from-amount" type="number" placeholder="Amount" />
+
+    <div style="text-align:center; margin:10px;">
+      <button onclick="switchTokens()">⇅</button>
+    </div>
 
     <div class="token-select">
-      <span>To:</span>
-      <button id="to-token-btn" onclick="openModal('token-modal', 'to')">Select Token</button>
-    </div>
-    <input id="to-amount" type="text" disabled placeholder="Estimated" style="text-align: right; font-weight: bold;" />
-
-    <div class="slippage-select">
-      <span>Slippage:</span>
-      <button onclick="openModal('slippage-modal')">0.5%</button>
+      <div class="token-info" onclick="selectToken('to')">
+        <img id="to-logo" class="token-logo" src="" alt="" />
+        <span id="to-symbol">Select To</span>
+      </div>
+      <input id="to-amount" type="number" placeholder="0.0" />
     </div>
 
+    <div class="slippage-row">
+      <button onclick="toggleSlippageModal()">Slippage: <span id="slippage-display">0.5%</span></button>
+    </div>
+
+    <div id="price-line" style="text-align:center; margin: 10px;">-</div>
     <button onclick="executeSwap()">Swap</button>
     <div id="tx-status" class="status" style="display:none;"></div>
-  </div>
 
-  <!-- Wallet Modal -->
-  <div id="wallet-modal" class="modal">
-    <div class="modal-content">
-      <div class="wallet-option" onclick="connectWallet('phantom')">Phantom</div>
-      <div class="wallet-option" onclick="connectWallet('solflare')">Solflare</div>
-      <div class="wallet-option" onclick="connectWallet('walletconnect')">WalletConnect</div>
-      <div class="wallet-option" onclick="connectWallet('torus')">Torus</div>
-      <div class="wallet-option" onclick="closeModal('wallet-modal')">Cancel</div>
+    <div id="chart-container">
+      <iframe id="chart-iframe" src="https://s.tradingview.com/widgetembed/?symbol=SOLUSDT&interval=15&theme=dark"></iframe>
     </div>
   </div>
 
-  <!-- Token Modal -->
-  <div id="token-modal" class="modal">
-    <div class="modal-content" id="token-list">Loading tokens...</div>
-  </div>
-
-  <!-- Slippage Modal -->
-  <div id="slippage-modal" class="modal">
+  <div id="slippage-modal">
     <div class="modal-content">
-      <div class="wallet-option" onclick="setSlippage(0.1)">0.1%</div>
-      <div class="wallet-option" onclick="setSlippage(0.5)">0.5%</div>
-      <div class="wallet-option" onclick="setSlippage(1.0)">1%</div>
-      <div>
-        <input type="number" step="0.01" min="0" id="custom-slippage" placeholder="Custom %" />
-        <button onclick="setSlippageCustom()">Set Custom</button>
+      <h3>Choose Slippage</h3>
+      <div class="slippage-option" onclick="setSlippage(0.1)">0.1%</div>
+      <div class="slippage-option" onclick="setSlippage(0.5)">0.5%</div>
+      <div class="slippage-option" onclick="setSlippage(1)">1%</div>
+      <div style="margin-top:10px;">
+        <input type="number" id="custom-slippage" placeholder="Custom %" min="0" step="0.01" />
+        <button onclick="setCustomSlippage()">Set Custom</button>
       </div>
-      <div class="wallet-option" onclick="closeModal('slippage-modal')">Close</div>
+      <div class="slippage-option" onclick="toggleSlippageModal()">Close</div>
     </div>
   </div>
+
+  <!-- Token modal & JavaScript logic will be injected in next part -->
+
 
 <script>
-  let selectedWallet = null;
-  let connection = null;
-  let publicKey = null;
-  let tokens = [];
-  let fromToken = null;
-  let toToken = null;
-  let slippage = 0.5;
-  let tokenModalTarget = 'from';
-  const platformFeeAccount = "H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw";
-  const platformFeeBps = 15;
-  let debounceTimer = null;
+let connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+let publicKey = null;
+let selectedWallet = null;
+let tokens = [];
+let fromToken = null;
+let toToken = null;
+let slippage = 0.5;
 
-  function openModal(id, target = null) {
-    if (target) tokenModalTarget = target;
-    document.getElementById(id).style.display = 'flex';
-  }
-  function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-  }
-  function setSlippage(value) {
-    slippage = value;
-    closeModal('slippage-modal');
-  }
-  function setSlippageCustom() {
-    const val = parseFloat(document.getElementById('custom-slippage').value);
-    if (!isNaN(val) && val > 0) {
-      setSlippage(val);
+async function connectWallet() {
+  try {
+    if (window.solana?.isPhantom) {
+      const res = await window.solana.connect();
+      publicKey = res.publicKey.toString();
+      selectedWallet = 'phantom';
+    } else {
+      const provider = new window.Solflare();
+      await provider.connect();
+      publicKey = provider.publicKey.toString();
+      selectedWallet = 'solflare';
     }
+    alert("Connected: " + publicKey);
+  } catch (err) {
+    alert("Wallet connection failed.");
   }
+}
 
-  async function connectWallet(type) {
-    try {
-      if (type === 'phantom' && window.solana?.isPhantom) {
-        const resp = await window.solana.connect();
-        publicKey = resp.publicKey.toString();
-        selectedWallet = 'phantom';
-      } else if (type === 'solflare') {
-        const provider = new window.Solflare();
-        await provider.connect();
-        publicKey = provider.publicKey.toString();
-        selectedWallet = 'solflare';
-      } else {
-        alert('Wallet not supported currently.');
-        return;
-      }
-      alert('Connected: ' + publicKey);
-      closeModal('wallet-modal');
-    } catch (e) {
-      console.error(e);
-      alert('Wallet connection failed');
-    }
+function toggleSlippageModal() {
+  const modal = document.getElementById("slippage-modal");
+  modal.style.display = modal.style.display === "flex" ? "none" : "flex";
+}
+
+function setSlippage(value) {
+  slippage = value;
+  document.getElementById("slippage-display").textContent = value + "%";
+  toggleSlippageModal();
+}
+
+function setCustomSlippage() {
+  const val = parseFloat(document.getElementById("custom-slippage").value);
+  if (!isNaN(val) && val > 0) {
+    setSlippage(val);
   }
+}
 
-  async function loadTokens() {
-    try {
-      const res = await fetch('https://quote-api.jup.ag/v6/tokens');
-      tokens = await res.json();
-      renderTokenList();
-    } catch (e) {
-      console.error(e);
-      alert('Failed to load tokens');
-    }
+function updateChart(symbol) {
+  const tvSymbol = (symbol || "SOL").toUpperCase() + "USDT";
+  const url = `https://s.tradingview.com/widgetembed/?symbol=${tvSymbol}&interval=15&theme=dark`;
+  document.getElementById("chart-iframe").src = url;
+}
+
+function switchTokens() {
+  [fromToken, toToken] = [toToken, fromToken];
+  updateTokenUI();
+  updateChart(toToken?.symbol);
+  updateQuote();
+}
+
+function updateTokenUI() {
+  if (fromToken) {
+    document.getElementById("from-symbol").textContent = fromToken.symbol;
+    document.getElementById("from-logo").src = fromToken.logoURI;
   }
-
-  function renderTokenList() {
-    const container = document.getElementById('token-list');
-    container.innerHTML = '';
-    tokens.forEach(token => {
-      const btn = document.createElement('div');
-      btn.className = 'wallet-option';
-      btn.textContent = `${token.symbol} - ${token.name}`;
-      btn.onclick = () => {
-        if (tokenModalTarget === 'from') {
-          fromToken = token;
-          document.getElementById('from-token-btn').innerHTML = `<span class="selected-token-label">${token.symbol}</span>`;
-        } else {
-          toToken = token;
-          document.getElementById('to-token-btn').innerHTML = `<span class="selected-token-label">${token.symbol}</span>`;
-        }
-        closeModal('token-modal');
-        updateQuote();
-      };
-      container.appendChild(btn);
-    });
+  if (toToken) {
+    document.getElementById("to-symbol").textContent = toToken.symbol;
+    document.getElementById("to-logo").src = toToken.logoURI;
   }
+}
 
-  async function updateQuote() {
-    const amountInput = parseFloat(document.getElementById("from-amount").value);
-    const toAmountInput = document.getElementById("to-amount");
+async function loadTokens() {
+  const res = await fetch("https://quote-api.jup.ag/v6/tokens");
+  tokens = await res.json();
+}
 
-    if (!fromToken || !toToken) {
-      toAmountInput.value = "";
-      return;
-    }
+function selectToken(side) {
+  const list = tokens.map(t => `<div class="slippage-option" onclick="setToken('${side}', '${t.address}')">${t.symbol} - ${t.name}</div>`).join("");
+  const modal = document.createElement("div");
+  modal.id = "token-selector";
+  modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;padding:20px;overflow:auto;";
+  modal.innerHTML = `<div style="background:#1f2833;padding:20px;border-radius:12px;">${list}<br><button onclick="document.body.removeChild(document.getElementById('token-selector'))">Close</button></div>`;
+  document.body.appendChild(modal);
+}
 
-    if (fromToken.address === toToken.address) {
-      toAmountInput.value = "⚠️ Same token";
-      return;
-    }
-
-    if (isNaN(amountInput) || amountInput <= 0) {
-      toAmountInput.value = "";
-      return;
-    }
-
-    try {
-      toAmountInput.value = "⏳...";
-      const amountInSmallestUnit = BigInt(amountInput * Math.pow(10, fromToken.decimals));
-      const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${amountInSmallestUnit}&slippageBps=${slippage * 100}`;
-      const res = await fetch(quoteUrl);
-      const data = await res.json();
-      const bestRoute = data.routes?.[0];
-      if (bestRoute?.outAmount) {
-        const out = Number(bestRoute.outAmount) / Math.pow(10, toToken.decimals);
-        toAmountInput.value = out.toFixed(6);
-      } else {
-        toAmountInput.value = "—";
-      }
-    } catch (e) {
-      console.error("Quote fetch error:", e);
-      toAmountInput.value = "Error";
-    }
+function setToken(side, address) {
+  const token = tokens.find(t => t.address === address);
+  if (side === 'from') fromToken = token;
+  else {
+    toToken = token;
+    updateChart(token.symbol);
   }
+  updateTokenUI();
+  updateQuote();
+  document.body.removeChild(document.getElementById('token-selector'));
+}
 
-  function debounceQuoteUpdate() {
-    if (debounceTimer) clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => updateQuote(), 400);
+async function updateQuote() {
+  const amount = parseFloat(document.getElementById("from-amount").value);
+  if (!fromToken || !toToken || !amount || amount <= 0) return;
+  const smallest = BigInt(amount * Math.pow(10, fromToken.decimals));
+  const url = `https://quote-api.jup.ag/v6/quote?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${smallest}&slippageBps=${slippage * 100}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const best = data.routes?.[0];
+  if (best?.outAmount) {
+    const out = Number(best.outAmount) / Math.pow(10, toToken.decimals);
+    document.getElementById("to-amount").value = out.toFixed(6);
+    document.getElementById("price-line").textContent = `1 ${fromToken.symbol} ≈ ${(out / amount).toFixed(6)} ${toToken.symbol}`;
   }
+}
 
-  document.getElementById("from-amount").addEventListener("input", debounceQuoteUpdate);
+async function executeSwap() {
+  if (!publicKey || !fromToken || !toToken) return alert("Connect wallet and select tokens.");
+  const amount = parseFloat(document.getElementById("from-amount").value);
+  if (!amount || amount <= 0) return alert("Invalid amount.");
+  const amountSmallest = BigInt(amount * Math.pow(10, fromToken.decimals));
+  const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${amountSmallest}&slippageBps=${slippage * 100}`;
+  const quoteRes = await fetch(quoteUrl);
+  const quoteData = await quoteRes.json();
+  const route = quoteData.routes?.[0];
+  if (!route) return alert("No route found.");
+  const swapRes = await fetch("https://quote-api.jup.ag/v6/swap", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      route,
+      userPublicKey: publicKey,
+      wrapUnwrapSOL: true,
+    }),
+  });
+  const { swapTransaction } = await swapRes.json();
+  const txBuf = Uint8Array.from(atob(swapTransaction), c => c.charCodeAt(0));
+  const tx = solanaWeb3.VersionedTransaction.deserialize(txBuf);
+  let sig;
+  if (selectedWallet === "phantom") {
+    const signed = await window.solana.signTransaction(tx);
+    sig = await connection.sendRawTransaction(signed.serialize());
+  } else {
+    const provider = new window.Solflare();
+    const signed = await provider.signTransaction(tx);
+    sig = await connection.sendRawTransaction(signed.serialize());
+  }
+  document.getElementById("tx-status").style.display = "block";
+  document.getElementById("tx-status").innerHTML = `✅ Tx sent: <a href="https://solscan.io/tx/${sig}" target="_blank">${sig}</a>`;
+}
 
-  window.onload = () => {
-    loadTokens();
-  };
+document.getElementById("from-amount").addEventListener("input", updateQuote);
+loadTokens();
 </script>
-
-<script type="module">
-  import {
-    Connection,
-    VersionedTransaction
-  } from "https://esm.sh/@solana/web3.js@1.89.2";
-
-  const RPC_URL = "https://api.mainnet-beta.solana.com";
-  connection = new Connection(RPC_URL);
-
-  window.executeSwap = async function () {
-    if (!publicKey || !fromToken || !toToken) {
-      alert("Connect your wallet and select both tokens.");
-      return;
-    }
-
-    const amountInput = parseFloat(document.getElementById("from-amount").value);
-    if (isNaN(amountInput) || amountInput <= 0) {
-      alert("Enter a valid amount.");
-      return;
-    }
-
-    if (fromToken.address === toToken.address) {
-      alert("Cannot swap the same token.");
-      return;
-    }
-
-    document.getElementById("tx-status").style.display = "block";
-    document.getElementById("tx-status").innerText = "Fetching route...";
-
-    try {
-      const amountInSmallestUnit = BigInt(amountInput * Math.pow(10, fromToken.decimals));
-      const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${amountInSmallestUnit}&slippageBps=${slippage * 100}&platformFeeBps=${platformFeeBps}&platformFeeAndAccounts[0][feeBps]=${platformFeeBps}&platformFeeAndAccounts[0][feeAccount]=${platformFeeAccount}`;
-      const quoteRes = await fetch(quoteUrl);
-      const quoteData = await quoteRes.json();
-      const route = quoteData.routes?.[0];
-      if (!route) throw new Error("No route found.");
-
-      document.getElementById("tx-status").innerText = "Building transaction...";
-
-      const swapRes = await fetch("https://quote-api.jup.ag/v6/swap", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          route,
-          userPublicKey: publicKey,
-          wrapUnwrapSOL: true,
-          platformFeeAndAccounts: [
-            { feeBps: platformFeeBps, feeAccount: platformFeeAccount }
-          ]
-        })
-      });
-
-      const swapData = await swapRes.json();
-      const swapTxBuf = Buffer.from(swapData.swapTransaction, "base64");
-      const tx = VersionedTransaction.deserialize(swapTxBuf);
-
-      let sig;
-      if (selectedWallet === "phantom") {
-        const signed = await window.solana.signTransaction(tx);
-        sig = await connection.sendRawTransaction(signed.serialize());
-      } else if (selectedWallet === "solflare") {
-        const provider = new window.Solflare();
-        const signed = await provider.signTransaction(tx);
-        sig = await connection.sendRawTransaction(signed.serialize());
-      }
-
-      document.getElementById("tx-status").innerHTML = `✅ Swap Success<br><a href="https://solscan.io/tx/${sig}" target="_blank">View on Solscan</a><br><button onclick="navigator.clipboard.writeText('${sig}')">Copy TxID</button>`;
-    } catch (e) {
-      console.error(e);
-      document.getElementById("tx-status").innerText = "❌ Transaction failed";
-    }
-  };
-</script>
-
 </body>
 </html>
