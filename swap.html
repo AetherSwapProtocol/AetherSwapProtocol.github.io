@@ -573,11 +573,13 @@ function resetWalletConnection() {
     
     // Token modal
     function openTokenModal(side) {
-      currentSelection = side;
-      document.getElementById('modal-title').textContent = `Select ${side === 'from' ? 'From' : 'To'} Token`;
-      renderTokenList();
-      elements.tokenModal.style.display = 'flex';
-    }
+  currentSelection = side;
+  const modalTitle = side === 'from' ? 'Token source' : 'Token destination';
+  document.getElementById('modal-title').textContent = modalTitle;
+  elements.tokenSearch.value = '';
+  renderTokenList();
+  elements.tokenModal.style.display = 'flex';
+}
     
     // Render token list
     function renderTokenList(filter = '') {
