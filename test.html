@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap | PURPE Swap</title>
-  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.73.0/lib/index.iife.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@jup-ag/core@3.2.0/dist/index.iife.min.js"></script>
+  <title>AetherSwap | PURPE/USDT Swap</title>
   <style>
     :root {
       --primary: #8A2BE2;
@@ -17,92 +15,206 @@
       --error: #FF3333;
     }
     
-    /* [Previous CSS remains identical] */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: var(--dark);
+      color: var(--light);
+      padding: 20px;
+    }
+    
+    .swap-container {
+      max-width: 450px;
+      margin: 0 auto;
+      background: var(--gray);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--primary);
+    }
+    
+    .token-selector {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .token-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .token-label {
+      font-size: 14px;
+      color: #AAAAAA;
+    }
+    
+    .token-value {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .token-amount {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--light);
+      font-size: 24px;
+      padding: 5px 0;
+    }
+    
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 20px 0;
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    
+    .price-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    
+    .price-change {
+      color: var(--error);
+      font-weight: 600;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      padding: 15px 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--gray);
+    }
+    
+    .nav-item {
+      color: #AAAAAA;
+      font-size: 12px;
+      text-align: center;
+    }
+    
+    .nav-item.active {
+      color: var(--primary);
+    }
   </style>
 </head>
 <body>
-  <!-- [Previous HTML structure remains identical] -->
+  <div class="swap-container">
+    <h1 class="section-title">Buy</h1>
+    
+    <div class="token-selector">
+      <div class="token-row">
+        <span class="token-label">From</span>
+        <span class="token-value">USDT</span>
+      </div>
+      <input type="number" class="token-amount" placeholder="0.0">
+    </div>
+    
+    <div class="token-selector">
+      <div class="token-row">
+        <span class="token-label">To</span>
+        <span class="token-value">PURPE</span>
+      </div>
+      <input type="number" class="token-amount" placeholder="0.0" readonly>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="info-row">
+      <span>0.5%</span>
+      <span>Max</span>
+    </div>
+    
+    <div class="info-row">
+      <span>50%</span>
+      <span>Max</span>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <button class="btn btn-secondary">Connect Wallet</button>
+    
+    <div class="price-info">
+      <span>PURPE/USDT</span>
+      <div>
+        <span>0,000052</span>
+        <span class="price-change">-0,07%</span>
+      </div>
+    </div>
+    
+    <button class="btn btn-primary">Show chart</button>
+    
+    <button class="btn btn-primary" style="margin-top: 20px;">Swap</button>
+  </div>
+  
+  <div class="bottom-nav">
+    <div class="nav-item active">Swap</div>
+    <div class="nav-item">Liquidity</div>
+    <div class="nav-item">Portfolio</div>
+    <div class="nav-item">Perpetuals</div>
+    <div class="nav-item">LaunchLab</div>
+    <div class="nav-item">More</div>
+  </div>
 
   <script>
-    // Configuration Jupiter + Fee Account
-    const JUPITER_CONFIG = {
-      feeBps: 50, // 0.5% fee
-      feeAccount: new solanaWeb3.PublicKey('VOTRE_ADRESSE_DE_FEE'), // ← À REMPLACER
-      referralAccount: new solanaWeb3.PublicKey('VOTRE_ADRESSE_REFERRAL') // ← Optionnel
-    };
-
-    // Initialisation Jupiter
-    let jupiter;
-    let wallet;
-    let connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
-
-    async function initJupiter() {
-      jupiter = await Jupiter.init({
-        connection,
-        cluster: 'mainnet-beta',
-        user: wallet?.publicKey || null,
-      });
-    }
-
-    // Gestion Wallet
-    async function connectWallet() {
-      try {
-        if (window.solana?.isPhantom) {
-          wallet = window.solana;
-          await wallet.connect();
-          document.querySelector('.btn-secondary').textContent = 'Connected';
-          await initJupiter();
-        } else {
-          alert('Phantom Wallet required');
-        }
-      } catch (error) {
-        console.error("Wallet error:", error);
-      }
-    }
-
-    // Swap via Jupiter avec frais
-    async function executeSwap() {
-      if (!wallet) return connectWallet();
-      
-      const fromToken = 'So11111111111111111111111111111111111111112'; // SOL
-      const toToken = 'ADRESSE_DU_TOKEN_PURPE'; // ← À REMPLACER
-      const amount = parseFloat(document.querySelector('.token-amount').value) * 1e9; // SOL decimals
-
-      try {
-        // 1. Get quote with fees
-        const quote = await jupiter.computeRoutes({
-          inputMint: new solanaWeb3.PublicKey(fromToken),
-          outputMint: new solanaWeb3.PublicKey(toToken),
-          amount,
-          slippageBps: 50, // 0.5% slippage
-          feeBps: JUPITER_CONFIG.feeBps,
-          feeAccount: JUPITER_CONFIG.feeAccount
-        });
-
-        // 2. Prepare swap transaction
-        const { swapTransaction } = await jupiter.exchange({
-          route: quote.routes[0]
-        });
-
-        // 3. Execute swap
-        const signedTx = await wallet.signTransaction(swapTransaction);
-        const txid = await connection.sendRawTransaction(signedTx.serialize());
-        
-        console.log("Swap success! TX:", txid);
-        alert(`Swap réussi! Vous avez gagné ${amount * 0.005} en frais`);
-
-      } catch (error) {
-        console.error("Swap failed:", error);
-        alert("Erreur: " + error.message);
-      }
-    }
-
-    // Event Listeners
-    document.querySelector('.btn-secondary').addEventListener('click', connectWallet);
-    document.querySelector('.btn-primary').addEventListener('click', executeSwap);
-
-    // Initialisation
-    window.addEventListener('load', initJupiter);
+    // Fonctionnalités JavaScript à implémenter
+    document.querySelector('.btn-secondary').addEventListener('click', function() {
+      alert('Connect wallet functionality would go here');
+    });
+    
+    document.querySelector('.btn-primary').addEventListener('click', function() {
+      alert('Swap functionality would go here');
+    });
   </script>
 </body>
 </html>
