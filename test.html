@@ -1,955 +1,219 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap DEX</title>
-  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.89.2/lib/index.iife.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@solflare-wallet/sdk@1.0.7/dist/index.iife.min.js"></script>
-  <script src="https://s3.tradingview.com/tv.js"></script>
+  <title>AetherSwap | PURPE/USDT Swap</title>
   <style>
     :root {
-      --primary: #60C2FF;
-      --secondary: #7685F5;
-      --dark: #FFFFFF;
-      --light: #0F0F0F;
-      --gray: #F5F7FB;
-      --chart-bg: #F5F7FB;
+      --primary: #8A2BE2;
+      --secondary: #9932CC;
+      --dark: #121212;
+      --light: #FFFFFF;
+      --gray: #1E1E1E;
       --success: #14F195;
-      --warning: #FF6D00;
-      --error: #FF0000;
+      --error: #FF3333;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
     }
     
     body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: var(--dark);
+      background-color: var(--dark);
       color: var(--light);
-      line-height: 1.5;
-    }
-    
-    .container {
-      max-width: 480px;
-      margin: 0 auto;
       padding: 20px;
-      padding-bottom: 80px;
-    }
-    
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 0;
-      border-bottom: 1px solid #E5E7EB;
-    }
-    
-    .nav-tabs {
-      display: flex;
-      gap: 15px;
-      margin: 20px 0;
-      overflow-x: auto;
-    }
-    
-    .nav-tabs button {
-      background: none;
-      border: none;
-      color: var(--light);
-      font-size: 16px;
-      cursor: pointer;
-      white-space: nowrap;
-      padding: 8px 0;
-    }
-    
-    .nav-tabs button.active {
-      border-bottom: 2px solid var(--primary);
     }
     
     .swap-container {
+      max-width: 450px;
+      margin: 0 auto;
       background: var(--gray);
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 20px;
-      margin-top: 10px;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--primary);
     }
     
     .token-selector {
-      background: white;
+      background: rgba(0, 0, 0, 0.3);
       border-radius: 12px;
       padding: 15px;
       margin-bottom: 15px;
-      border: 1px solid #E5E7EB;
     }
     
     .token-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 8px;
     }
     
-    .token-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
+    .token-label {
+      font-size: 14px;
+      color: #AAAAAA;
     }
     
-    .token-logo {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+    .token-value {
+      font-size: 20px;
+      font-weight: 600;
     }
     
-    input {
+    .token-amount {
+      width: 100%;
       background: transparent;
       border: none;
       color: var(--light);
       font-size: 24px;
-      text-align: right;
-      width: 60%;
+      padding: 5px 0;
     }
     
-    .balance {
-      font-size: 12px;
-      color: #888;
-      margin-top: 5px;
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 20px 0;
     }
     
-    .price-info {
-      text-align: center;
-      margin: 15px 0;
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
       font-size: 14px;
     }
     
-    .swap-btn {
+    .price-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    
+    .price-change {
+      color: var(--error);
+      font-weight: 600;
+    }
+    
+    .btn {
       width: 100%;
-      padding: 15px;
+      padding: 16px;
       border-radius: 12px;
-      background: var(--primary);
-      color: white;
       border: none;
       font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
       margin-top: 10px;
     }
     
-    .swap-btn:disabled {
-      background: #E5E7EB;
-      cursor: not-allowed;
-    }
-    
-    .warning {
-      color: var(--warning);
-      font-size: 13px;
-      margin: 10px 0;
-      text-align: center;
-    }
-    
-    .error {
-      color: var(--error);
-      font-size: 13px;
-    }
-    
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      max-width: 480px;
-      display: flex;
-      background: white;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-      z-index: 100;
-    }
-    
-    .bottom-nav button {
-      flex: 1;
-      padding: 15px;
-      border: none;
-      background: none;
-      font-weight: 500;
-    }
-    
-    .chart-container {
-      height: 300px;
-      background: var(--chart-bg);
-      margin: 15px -20px;
-      padding: 10px 0;
-    }
-    
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-      z-index: 100;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .modal-content {
-      background: white;
-      width: 90%;
-      max-width: 400px;
-      border-radius: 12px;
-      padding: 20px;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    
-    .token-search {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #E5E7EB;
-      margin-bottom: 15px;
-      background: white;
-      color: var(--light);
-    }
-    
-    .token-list {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    
-    .token-item {
-      display: flex;
-      align-items: center;
-      padding: 12px;
-      cursor: pointer;
-      border-radius: 8px;
-    }
-    
-    .token-item:hover {
-      background: var(--gray);
-    }
-    
-    .slippage-options {
-      display: flex;
-      gap: 10px;
-      margin: 15px 0;
-    }
-    
-    .slippage-option {
-      padding: 8px 12px;
-      border-radius: 8px;
-      background: var(--gray);
-      cursor: pointer;
-    }
-    
-    .slippage-option.active {
+    .btn-primary {
       background: var(--primary);
       color: white;
     }
     
-    .social-login {
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .bottom-nav {
       display: flex;
-      gap: 10px;
-      margin: 15px 0;
+      justify-content: space-around;
+      padding: 15px 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--gray);
     }
     
-    .social-btn {
-      flex: 1;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #E5E7EB;
-      background: white;
-      cursor: pointer;
+    .nav-item {
+      color: #AAAAAA;
+      font-size: 12px;
+      text-align: center;
     }
     
-    @media (max-width: 480px) {
-      .container {
-        padding: 15px;
-      }
-      
-      input {
-        font-size: 20px;
-      }
+    .nav-item.active {
+      color: var(--primary);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>AetherSwap</h1>
-      <button id="connect-wallet" class="swap-btn">Connect Wallet</button>
-    </header>
+  <div class="swap-container">
+    <h1 class="section-title">Buy</h1>
     
-    <div class="nav-tabs">
-      <button class="active">Swap</button>
-      <button>Liquidity</button>
-      <button>Portfolio</button>
+    <div class="token-selector">
+      <div class="token-row">
+        <span class="token-label">From</span>
+        <span class="token-value">USDT</span>
+      </div>
+      <input type="number" class="token-amount" placeholder="0.0">
     </div>
     
-    <div class="swap-container">
-      <div class="token-selector">
-        <div class="token-row">
-          <div class="token-info" id="from-token-select">
-            <img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" class="token-logo" id="from-logo">
-            <span id="from-symbol">SOL</span>
-          </div>
-          <input type="number" placeholder="0.0" id="from-amount" min="0">
-        </div>
-        <div class="balance">Balance: <span id="from-balance">0.0</span> <span id="from-max" style="color:var(--primary);cursor:pointer;">MAX</span></div>
+    <div class="token-selector">
+      <div class="token-row">
+        <span class="token-label">To</span>
+        <span class="token-value">PURPE</span>
       </div>
-      
-      <div style="text-align:center; margin:10px 0;">
-        <button id="switch-tokens" style="background:white; border:1px solid #E5E7EB; color:var(--light); padding:8px 12px; border-radius:8px;">↓↑</button>
-      </div>
-      
-      <div class="token-selector">
-        <div class="token-row">
-          <div class="token-info" id="to-token-select">
-            <img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png" class="token-logo" id="to-logo">
-            <span id="to-symbol">USDC</span>
-          </div>
-          <input type="number" placeholder="0.0" id="to-amount" readonly>
-        </div>
-        <div class="balance">Balance: <span id="to-balance">0.0</span></div>
-      </div>
-      
-      <div class="chart-container" id="tradingview-chart"></div>
-      
-      <div class="price-info">
-        <span id="exchange-rate">1 SOL = 0.0 USDC</span>
-        <span id="price-change" style="margin-left:5px;"></span>
-      </div>
-      
-      <div id="price-impact" class="warning" style="display:none;"></div>
-      
-      <div class="token-row" style="justify-content:center; margin:10px 0;">
-        <button id="slippage-btn" style="background:none; border:none; color:var(--primary); font-size:14px; cursor:pointer;">
-          Slippage: <span id="slippage-value">0.5%</span> ▼
-        </button>
-      </div>
-      
-      <button id="swap-button" class="swap-btn" disabled>Swap</button>
-      
-      <div id="rewards-info" style="text-align:center; margin-top:10px; font-size:14px; color:var(--primary);">
-        Earn 0.5% rewards on this swap
-      </div>
-      
-      <div id="gas-fee" style="text-align:center; font-size:12px; margin-top:10px; color:#888;">
-        Network fee: ~0.0005 SOL
+      <input type="number" class="token-amount" placeholder="0.0" readonly>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="info-row">
+      <span>0.5%</span>
+      <span>Max</span>
+    </div>
+    
+    <div class="info-row">
+      <span>50%</span>
+      <span>Max</span>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <button class="btn btn-secondary">Connect Wallet</button>
+    
+    <div class="price-info">
+      <span>PURPE/USDT</span>
+      <div>
+        <span>0,000052</span>
+        <span class="price-change">-0,07%</span>
       </div>
     </div>
+    
+    <button class="btn btn-primary">Show chart</button>
+    
+    <button class="btn btn-primary" style="margin-top: 20px;">Swap</button>
   </div>
   
   <div class="bottom-nav">
-    <button>Swap</button>
-    <button>Liquidity</button>
-    <button>Portfolio</button>
-    <button>Perpetuals</button>
-  </div>
-  
-  <!-- Token Selection Modal -->
-  <div id="token-modal" class="modal">
-    <div class="modal-content">
-      <h3>Select Token</h3>
-      <input type="text" class="token-search" placeholder="Search token name or address" id="token-search">
-      
-      <h4 style="margin:15px 0 10px 0;">Popular tokens</h4>
-      <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
-        <button class="popular-token" data-symbol="SOL">SOL</button>
-        <button class="popular-token" data-symbol="USDC">USDC</button>
-        <button class="popular-token" data-symbol="USDT">USDT</button>
-        <button class="popular-token" data-symbol="JUP">JUP</button>
-      </div>
-      
-      <div class="token-list" id="token-list"></div>
-    </div>
-  </div>
-  
-  <!-- Slippage Settings Modal -->
-  <div id="slippage-modal" class="modal">
-    <div class="modal-content">
-      <h3>Slippage Settings</h3>
-      <p style="font-size:14px; color:#666;">
-        Your transaction will be canceled if the price changes unfavorably by more than this percentage.
-      </p>
-      
-      <div class="slippage-options">
-        <div class="slippage-option" data-value="0.1">0.1%</div>
-        <div class="slippage-option active" data-value="0.5">0.5%</div>
-        <div class="slippage-option" data-value="1.0">1.0%</div>
-      </div>
-      
-      <div style="margin-top:15px;">
-        <label style="display:block; margin-bottom:5px;">Custom</label>
-        <input type="number" id="custom-slippage" 
-               value="0.5" min="0.1" max="50" step="0.1"
-               style="width:100%; padding:10px; border-radius:8px; border:1px solid #E5E7EB; color:var(--light);">
-      </div>
-      
-      <button id="save-slippage" class="swap-btn" style="margin-top:20px;">
-        Save
-      </button>
-    </div>
-  </div>
-  
-  <!-- Wallet Connection Modal -->
-  <div id="wallet-modal" class="modal">
-    <div class="modal-content">
-      <h3>Connect Wallet</h3>
-      <p style="font-size:14px; color:#666;">By connecting your wallet, you acknowledge that you have read, understand and accept the terms in the disclaimer.</p>
-      
-      <div class="social-login">
-        <button class="social-btn" data-wallet="google">Sign in with Google</button>
-        <button class="social-btn" data-wallet="apple">Sign in with Apple</button>
-      </div>
-      
-      <div style="margin-top:15px;">
-        <button class="wallet-option" data-wallet="phantom" style="width:100%; padding:15px; margin-bottom:10px; background:white; border:1px solid #E5E7EB; border-radius:8px; color:var(--light); display:flex; align-items:center; justify-content:space-between; cursor:pointer;">
-          <span>Phantom</span>
-          <small style="color:#666;">Auto Confirm</small>
-        </button>
-        
-        <button class="wallet-option" data-wallet="solflare" style="width:100%; padding:15px; margin-bottom:10px; background:white; border:1px solid #E5E7EB; border-radius:8px; color:var(--light); display:flex; align-items:center; justify-content:space-between; cursor:pointer;">
-          <span>Solflare</span>
-          <small style="color:#666;">Auto Approve</small>
-        </button>
-        
-        <button class="wallet-option" data-wallet="walletconnect" style="width:100%; padding:15px; margin-bottom:10px; background:white; border:1px solid #E5E7EB; border-radius:8px; color:var(--light); cursor:pointer;">
-          WalletConnect
-        </button>
-      </div>
-      
-      <p style="font-size:12px; text-align:center; margin-top:20px; color:#666;">
-        New here? <a href="#" style="color:var(--primary);">Get started</a>
-      </p>
-      
-      <div style="text-align:center; margin-top:15px;">
-        <a href="#" style="color:var(--primary); font-size:14px;">Buy Crypto with MoonPay</a>
-      </div>
-    </div>
+    <div class="nav-item active">Swap</div>
+    <div class="nav-item">Liquidity</div>
+    <div class="nav-item">Portfolio</div>
+    <div class="nav-item">Perpetuals</div>
+    <div class="nav-item">LaunchLab</div>
+    <div class="nav-item">More</div>
   </div>
 
   <script>
-    // Configuration
-    const config = {
-      jupiterApi: 'https://quote-api.jup.ag/v6',
-      rpcUrl: 'https://api.mainnet-beta.solana.com',
-      defaultSlippage: 0.5,
-      feeBps: 50,
-      rewardsBps: 5 // 0.5% rewards
-    };
+    // Fonctionnalités JavaScript à implémenter
+    document.querySelector('.btn-secondary').addEventListener('click', function() {
+      alert('Connect wallet functionality would go here');
+    });
     
-    // State
-    let tokens = [];
-    let fromToken = null;
-    let toToken = null;
-    let publicKey = null;
-    let wallet = null;
-    let slippage = config.defaultSlippage;
-    let connection = null;
-    let currentSelection = null;
-    let tradingViewWidget = null;
-    
-    // DOM Elements
-    const elements = {
-      connectBtn: document.getElementById('connect-wallet'),
-      fromTokenSelect: document.getElementById('from-token-select'),
-      toTokenSelect: document.getElementById('to-token-select'),
-      fromAmount: document.getElementById('from-amount'),
-      toAmount: document.getElementById('to-amount'),
-      fromBalance: document.getElementById('from-balance'),
-      toBalance: document.getElementById('to-balance'),
-      fromMax: document.getElementById('from-max'),
-      swapBtn: document.getElementById('swap-button'),
-      exchangeRate: document.getElementById('exchange-rate'),
-      priceChange: document.getElementById('price-change'),
-      priceImpact: document.getElementById('price-impact'),
-      slippageValue: document.getElementById('slippage-value'),
-      slippageBtn: document.getElementById('slippage-btn'),
-      switchBtn: document.getElementById('switch-tokens'),
-      tokenModal: document.getElementById('token-modal'),
-      slippageModal: document.getElementById('slippage-modal'),
-      walletModal: document.getElementById('wallet-modal'),
-      tokenList: document.getElementById('token-list'),
-      tokenSearch: document.getElementById('token-search'),
-      chartContainer: document.getElementById('tradingview-chart')
-    };
-    
-    // Initialize
-    async function init() {
-      connection = new solanaWeb3.Connection(config.rpcUrl);
-      await loadTokens();
-      setupEventListeners();
-      updateUI();
-      
-      // Set default tokens
-      fromToken = tokens.find(t => t.symbol === 'SOL');
-      toToken = tokens.find(t => t.symbol === 'USDC');
-      updateTokenUI();
-      initChart();
-      
-      // Configure Jupiter fee account
-      window.JUPITER_FEE = {
-        feeAccount: new solanaWeb3.PublicKey('YOUR_FEE_WALLET_ADDRESS'),
-        feeBps: config.feeBps
-      };
-    }
-    
-    // Initialize TradingView chart
-    function initChart() {
-      if (tradingViewWidget) tradingViewWidget.remove();
-      
-      tradingViewWidget = new TradingView.widget({
-        autosize: true,
-        symbol: "SOLUSDC",
-        interval: "15",
-        container_id: "tradingview-chart",
-        timezone: "Etc/UTC",
-        theme: "light",
-        style: "1",
-        locale: "en",
-        toolbar_bg: "#f1f3f6",
-        enable_publishing: false,
-        hide_top_toolbar: true,
-        hide_side_toolbar: true,
-        allow_symbol_change: false,
-        details: false,
-        studies: ["MA@tv-basic"]
-      });
-    }
-    
-    // Load tokens from Jupiter API
-    async function loadTokens() {
-      try {
-        const response = await fetch('https://token.jup.ag/strict');
-        tokens = await response.json();
-        
-        // Add SOL if not in list
-        if (!tokens.some(t => t.symbol === 'SOL')) {
-          tokens.unshift({
-            address: 'So11111111111111111111111111111111111111112',
-            symbol: 'SOL',
-            name: 'Solana',
-            decimals: 9,
-            logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
-          });
-        }
-      } catch (error) {
-        console.error("Failed to load tokens:", error);
-        showError("Failed to load token list. Please refresh the page.");
-      }
-    }
-    
-    // Setup event listeners
-    function setupEventListeners() {
-      // Token selection
-      elements.fromTokenSelect.addEventListener('click', () => openTokenModal('from'));
-      elements.toTokenSelect.addEventListener('click', () => openTokenModal('to'));
-      
-      // Wallet connection
-      elements.connectBtn.addEventListener('click', () => elements.walletModal.style.display = 'flex');
-      document.querySelectorAll('.wallet-option').forEach(btn => {
-        btn.addEventListener('click', (e) => connectWallet(e.target.dataset.wallet));
-      });
-      
-      // Social login
-      document.querySelectorAll('.social-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          alert(`${e.target.textContent} integration would go here`);
-        });
-      });
-      
-      // Token search
-      elements.tokenSearch.addEventListener('input', (e) => filterTokens(e.target.value));
-      
-      // Popular tokens
-      document.querySelectorAll('.popular-token').forEach(btn => {
-        btn.addEventListener('click', (e) => selectTokenBySymbol(e.target.dataset.symbol));
-      });
-      
-      // Slippage
-      elements.slippageBtn.addEventListener('click', () => elements.slippageModal.style.display = 'flex');
-      document.querySelectorAll('.slippage-option').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          document.querySelectorAll('.slippage-option').forEach(opt => opt.classList.remove('active'));
-          e.target.classList.add('active');
-          slippage = parseFloat(e.target.dataset.value);
-          document.getElementById('custom-slippage').value = slippage;
-          elements.slippageValue.textContent = `${slippage}%`;
-          updateQuote();
-        });
-      });
-      
-      document.getElementById('save-slippage').addEventListener('click', saveSlippage);
-      
-      // Swap
-      elements.swapBtn.addEventListener('click', executeSwap);
-      
-      // Switch tokens
-      elements.switchBtn.addEventListener('click', switchTokens);
-      
-      // Max button
-      elements.fromMax.addEventListener('click', setMaxAmount);
-      
-      // Input changes
-      elements.fromAmount.addEventListener('input', debounce(updateQuote, 500));
-      
-      // Close modals when clicking outside
-      window.addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal')) {
-          e.target.style.display = 'none';
-        }
-      });
-    }
-    
-    // Wallet connection
-    async function connectWallet(walletType) {
-      try {
-        elements.connectBtn.disabled = true;
-        elements.connectBtn.textContent = 'Connecting...';
-        
-        let provider;
-        
-        if (walletType === 'phantom') {
-          if (!window.solana?.isPhantom) {
-            window.open('https://phantom.app/', '_blank');
-            throw new Error('Phantom not installed');
-          }
-          provider = window.solana;
-        } else if (walletType === 'solflare') {
-          if (!window.Solflare) {
-            window.open('https://solflare.com/', '_blank');
-            throw new Error('Solflare not installed');
-          }
-          provider = new window.Solflare();
-        } else if (walletType === 'walletconnect') {
-          alert('WalletConnect integration would go here');
-          throw new Error('WalletConnect not implemented');
-        }
-
-        await provider.connect();
-        publicKey = provider.publicKey.toString();
-        wallet = walletType;
-        
-        updateWalletUI();
-        await fetchBalances();
-        elements.walletModal.style.display = 'none';
-        
-      } catch (error) {
-        console.error("Connection failed:", error);
-        alert(`Error: ${error.message}`);
-        resetWalletConnection();
-      }
-    }
-
-    function resetWalletConnection() {
-      elements.connectBtn.disabled = false;
-      elements.connectBtn.textContent = 'Connect Wallet';
-    }
-    
-    // Fetch token balances
-    async function fetchBalances() {
-      if (!publicKey) return;
-      
-      try {
-        // Fetch SOL balance
-        const solBalance = await connection.getBalance(new solanaWeb3.PublicKey(publicKey));
-        const solToken = tokens.find(t => t.symbol === 'SOL');
-        if (solToken) {
-          solToken.balance = solBalance / Math.pow(10, solToken.decimals);
-        }
-        
-        // Fetch SPL token balances
-        const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
-          new solanaWeb3.PublicKey(publicKey),
-          { programId: new solanaWeb3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA') }
-        );
-        
-        tokenAccounts.value.forEach(account => {
-          const info = account.account.data.parsed.info;
-          const token = tokens.find(t => t.address === info.mint);
-          if (token) {
-            token.balance = info.tokenAmount.uiAmount;
-          }
-        });
-        
-        updateTokenUI();
-      } catch (error) {
-        console.error("Error fetching balances:", error);
-      }
-    }
-    
-    // Token modal
-    function openTokenModal(side) {
-      currentSelection = side;
-      document.getElementById('modal-title').textContent = `Select ${side === 'from' ? 'From' : 'To'} Token`;
-      elements.tokenSearch.value = '';
-      renderTokenList();
-      elements.tokenModal.style.display = 'flex';
-    }
-    
-    // Render token list
-    function renderTokenList(filter = '') {
-      elements.tokenList.innerHTML = tokens
-        .filter(token => 
-          `${token.symbol} ${token.name}`.toLowerCase().includes(filter.toLowerCase())
-        )
-        .map(token => `
-          <div class="token-item" data-address="${token.address}">
-            <img src="${token.logoURI || 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'}" 
-                 class="token-logo"
-                 onerror="this.src='https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'">
-            <div style="flex:1;">
-              <div>${token.symbol}</div>
-              <small style="color:#666;">${token.name}</small>
-            </div>
-            <div style="color:#888;">
-              ${token.balance ? token.balance.toFixed(4) : '0'}
-            </div>
-          </div>
-        `).join('');
-      
-      // Add click events to token items
-      document.querySelectorAll('.token-item').forEach(item => {
-        item.addEventListener('click', () => selectToken(item.dataset.address));
-      });
-    }
-    
-    // Filter tokens
-    function filterTokens(searchTerm) {
-      renderTokenList(searchTerm);
-    }
-    
-    // Select token by symbol
-    function selectTokenBySymbol(symbol) {
-      const token = tokens.find(t => t.symbol === symbol);
-      if (token) selectToken(token.address);
-    }
-    
-    // Select token
-    function selectToken(address) {
-      const token = tokens.find(t => t.address === address);
-      
-      if (currentSelection === 'from') {
-        fromToken = token;
-        elements.fromAmount.value = '';
-      } else {
-        toToken = token;
-      }
-      
-      updateTokenUI();
-      elements.tokenModal.style.display = 'none';
-      
-      if (elements.fromAmount.value) {
-        updateQuote();
-      }
-      
-      // Update chart when tokens change
-      if (fromToken && toToken) {
-        tradingViewWidget.setSymbol(`${fromToken.symbol}${toToken.symbol}`);
-      }
-    }
-    
-    // Update token UI
-    function updateTokenUI() {
-      if (fromToken) {
-        document.getElementById('from-logo').src = fromToken.logoURI || 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png';
-        document.getElementById('from-symbol').textContent = fromToken.symbol;
-        document.getElementById('from-balance').textContent = fromToken.balance ? fromToken.balance.toFixed(4) : '0';
-      }
-      
-      if (toToken) {
-        document.getElementById('to-logo').src = toToken.logoURI || 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png';
-        document.getElementById('to-symbol').textContent = toToken.symbol;
-        document.getElementById('to-balance').textContent = toToken.balance ? toToken.balance.toFixed(4) : '0';
-      }
-      
-      updateSwapButton();
-    }
-    
-    // Set max amount
-    function setMaxAmount() {
-      if (fromToken && fromToken.balance) {
-        elements.fromAmount.value = fromToken.balance;
-        updateQuote();
-      }
-    }
-    
-    // Switch tokens
-    function switchTokens() {
-      if (!fromToken || !toToken) return;
-      
-      [fromToken, toToken] = [toToken, fromToken];
-      [elements.fromAmount.value, elements.toAmount.value] = [elements.toAmount.value, elements.fromAmount.value];
-      
-      updateTokenUI();
-      updateQuote();
-      
-      // Update chart
-      tradingViewWidget.setSymbol(`${fromToken.symbol}${toToken.symbol}`);
-    }
-    
-    // Update quote from Jupiter API
-    async function updateQuote() {
-      if (!fromToken || !toToken || !elements.fromAmount.value || parseFloat(elements.fromAmount.value) <= 0) {
-        resetQuote();
-        return;
-      }
-      
-      try {
-        const amount = Math.floor(parseFloat(elements.fromAmount.value) * Math.pow(10, fromToken.decimals));
-        const url = `${config.jupiterApi}/quote?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${amount}&slippageBps=${slippage * 100}`;
-        
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to fetch quote');
-        
-        const data = await response.json();
-        const bestRoute = data.routes?.[0];
-        
-        if (!bestRoute?.outAmount) {
-          throw new Error('No valid route found');
-        }
-        
-        const outAmount = Number(bestRoute.outAmount) / Math.pow(10, toToken.decimals);
-        elements.toAmount.value = outAmount.toFixed(toToken.decimals);
-        
-        const rate = outAmount / parseFloat(elements.fromAmount.value);
-        elements.exchangeRate.textContent = `1 ${fromToken.symbol} = ${rate.toFixed(6)} ${toToken.symbol}`;
-        
-        // Display price impact warning if > 1%
-        if (bestRoute.priceImpactPct) {
-          const impact = bestRoute.priceImpactPct * 100;
-          if (impact > 1) {
-            elements.priceImpact.textContent = `High price impact: ${impact.toFixed(2)}%`;
-            elements.priceImpact.style.display = 'block';
-          } else {
-            elements.priceImpact.style.display = 'none';
-          }
-        }
-        
-        updateSwapButton();
-      } catch (error) {
-        console.error("Quote error:", error);
-        resetQuote();
-        showError("Failed to get quote. Please try again.");
-      }
-    }
-    
-    // Reset quote display
-    function resetQuote() {
-      elements.toAmount.value = '';
-      elements.exchangeRate.textContent = `1 ${fromToken?.symbol || 'Token'} = 0.0 ${toToken?.symbol || 'Token'}`;
-      elements.priceImpact.style.display = 'none';
-      updateSwapButton();
-    }
-    
-    // Update swap button state
-    function updateSwapButton() {
-      const amount = parseFloat(elements.fromAmount.value);
-      const hasBalance = fromToken?.balance && fromToken.balance >= amount;
-      
-      elements.swapBtn.disabled = !publicKey || !fromToken || !toToken || !amount || amount <= 0 || !hasBalance;
-    }
-    
-    // Save slippage settings
-    function saveSlippage() {
-      const customValue = parseFloat(document.getElementById('custom-slippage').value);
-      if (!isNaN(customValue)) {
-        slippage = Math.min(Math.max(customValue, 0.1), 50);
-        elements.slippageValue.textContent = `${slippage}%`;
-      }
-      
-      elements.slippageModal.style.display = 'none';
-      updateQuote();
-    }
-    
-    // Execute swap
-    async function executeSwap() {
-      if (!publicKey || !fromToken || !toToken) return;
-      
-      try {
-        elements.swapBtn.disabled = true;
-        elements.swapBtn.textContent = 'Processing...';
-        
-        const amount = Math.floor(parseFloat(elements.fromAmount.value) * Math.pow(10, fromToken.decimals));
-        const quoteUrl = `${config.jupiterApi}/quote?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${amount}&slippageBps=${slippage * 100}`;
-        
-        // Get quote
-        const quoteRes = await fetch(quoteUrl);
-        if (!quoteRes.ok) throw new Error('Failed to get quote');
-        const quoteData = await quoteRes.json();
-        const route = quoteData.routes?.[0];
-        if (!route) throw new Error('No route found');
-        
-        // Get swap transaction
-        const swapRes = await fetch(`${config.jupiterApi}/swap`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            route,
-            userPublicKey: publicKey,
-            wrapUnwrapSOL: true
-          })
-        });
-        
-        if (!swapRes.ok) throw new Error('Failed to build transaction');
-        const { swapTransaction } = await swapRes.json();
-        
-        // Sign and send transaction
-        const tx = solanaWeb3.VersionedTransaction.deserialize(
-          Uint8Array.from(atob(swapTransaction), c => c.charCodeAt(0))
-        );
-        
-        let signedTx;
-        if (wallet === 'phantom') {
-          signedTx = await window.solana.signTransaction(tx);
-        } else if (wallet === 'solflare') {
-          const provider = new window.Solflare();
-          signedTx = await provider.signTransaction(tx);
-        }
-        
-        const signature = await connection.sendRawTransaction(signedTx.serialize());
-        console.log("Transaction sent:", signature);
-        
-        // Show success
-        showSuccess(`Swap successful! <a href="https://solscan.io/tx/${signature}" target="_blank" style="color:var(--primary);">View on Solscan</a>`);
-        
-        // Refresh balances
-        await fetchBalances();
-      } catch (error) {
-        console.error("Swap failed:", error);
-        showError(`Swap failed: ${error.message}`);
-      } finally {
-        elements.swapBtn.disabled = false;
-        elements.swapBtn.textContent = 'Swap';
-      }
-    }
-    
-    // Update wallet UI
-    function updateWalletUI() {
-      if (publicKey) {
-        elements.connectBtn.textContent = `${wallet} (${publicKey.slice(0, 4)}...${publicKey.slice(-4)})`;
-      }
-    }
-    
-    // Show error
-    function showError(message) {
-      alert(message);
-    }
-    
-    // Show success
-    function showSuccess(message) {
-      alert(message);
-    }
-    
-    // Debounce function
-    function debounce(func, timeout = 300) {
-      let timer;
-      return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => { func.apply(this, args); }, timeout);
-      };
-    }
-    
-    // Initialize when DOM is loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      init().catch(console.error);
+    document.querySelector('.btn-primary').addEventListener('click', function() {
+      alert('Swap functionality would go here');
     });
   </script>
 </body>
