@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AetherSwap - Jeu Officiel</title>
+  <style>
+    :root {
+      --space-cadet: #0f1923;
+      --royal-blue: #1e3a8a;
+      --azure: #3b82f6;
+      --ghost-white: #f8fafc;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --crimson: #ef4444;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--space-cadet);
+      color: var(--ghost-white);
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .app-container {
+      display: none;
+      grid-template-rows: auto 1fr auto;
+      height: 100vh;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 16px;
+      background: linear-gradient(90deg, var(--royal-blue), var(--space-cadet));
+      text-align: center;
+      position: relative;
+    }
+
+    header h1 {
+      margin: 0;
+      font-family: 'Kanit', sans-serif;
+      font-size: 24px;
+      background: linear-gradient(to right, var(--amber), var(--emerald));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    #user-balance {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.3);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    .page {
+      display: none;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .tap-button {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/5/55/Bitcoin_Logo.svg') no-repeat center center;
+      background-size: 80%;
+      border: none;
+      box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+      cursor: pointer;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .points-display {
+      font-size: 42px;
+      font-weight: bold;
+      font-family: 'Kanit';
+      background: linear-gradient(to right, var(--amber), var(--emerald));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .nav-bar {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      background: var(--royal-blue);
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--ghost-white);
+      padding: 12px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .nav-btn.active {
+      background: var(--azure);
+    }
+
+    .boost-card, .aether-card {
+      background: rgba(30, 41, 59, 0.8);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--emerald);
+    }
+
+    .btn {
+      background: var(--azure);
+      border: none;
+      color: white;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      width: 100%;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #intro-screen {
+      position: fixed;
+      z-index: 9999;
+      background: var(--space-cadet);
+      color: var(--ghost-white);
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    #intro-logo {
+      font-size: 48px;
+      font-family: 'Kanit';
+      opacity: 0;
+      transition: opacity 2s ease-in;
+    }
+
+    #language-selector {
+      margin-top: 20px;
+      display: none;
+    }
+
+    #settings-icon {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 22px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div id="intro-screen">
+  <div id="intro-logo">Aether$wap</div>
+  <div id="language-selector">
+    <button onclick="selectLang('fr')" class="btn">ð«ð· FranÃ§ais</button>
+    <button onclick="selectLang('en')" class="btn">ð¬ð§ English</button>
+  </div>
+</div>
+
+<div class="app-container" id="app-container">
+  <header>
+    <div id="settings-icon" onclick="showLanguageOptions()">âï¸</div>
+    <h1 id="title">AETHER$WAP</h1>
+    <div id="user-balance">0 $AETHER</div>
+  </header>
+
+  <main id="main">
+    <div id="tap-page" class="page active">
+      <button class="tap-button" id="tap-btn"></button>
+      <div class="points-display" id="points">0</div>
+    </div>
+
+    <div id="boosts-page" class="page">
+      <h2 data-key="boosts">Boosts</h2>
+      <div id="boost-container"></div>
+    </div>
+
+    <div id="missions-page" class="page">
+      <h2 data-key="missions">Missions Sociales</h2>
+      <div class="aether-card">
+        <p data-key="telegram">Rejoindre Telegram</p>
+        <button class="btn" data-key="verify">VÃRIFIER</button>
+      </div>
+      <div class="aether-card">
+        <p data-key="twitter">Suivre sur Twitter</p>
+        <button class="btn" data-key="verify">VÃRIFIER</button>
+      </div>
+    </div>
+
+    <div id="leaderboard-page" class="page">
+      <h2 data-key="leaderboard">Classement</h2>
+      <ul id="leaderboard">
+        <li>ð Toi â 0</li>
+        <li>ð§  Satoshi â 1 000 000</li>
+        <li>ð¦ Vitalik â 500 000</li>
+      </ul>
+    </div>
+
+    <div id="referral-page" class="page">
+      <h2 data-key="referral">RÃ©fÃ©rencement</h2>
+      <p data-key="yourlink">Ton lien :</p>
+      <input type="text" id="ref-link" readonly style="width: 100%; padding: 8px;"/>
+    </div>
+  </main>
+
+  <div class="nav-bar">
+    <button class="nav-btn active" onclick="showPage('tap-page')">â¡<span data-key="play">Jouer</span></button>
+    <button class="nav-btn" onclick="showPage('boosts-page')">ð<span data-key="boosts">Boosts</span></button>
+    <button class="nav-btn" onclick="showPage('missions-page')">ð¯<span data-key="missions">Missions</span></button>
+    <button class="nav-btn" onclick="showPage('leaderboard-page')">ð<span data-key="leaderboard">Classement</span></button>
+    <button class="nav-btn" onclick="showPage('referral-page')">ð<span data-key="referral">Referral</span></button>
+  </div>
+</div>
+
+<script>
+const translations = {
+  fr: {
+    play: "Jouer", boosts: "Boosts", missions: "Missions", leaderboard: "Classement", referral: "RÃ©fÃ©rencement",
+    telegram: "Rejoindre Telegram", twitter: "Suivre sur Twitter", verify: "VÃRIFIER", yourlink: "Ton lien :"
+  },
+  en: {
+    play: "Play", boosts: "Boosts", missions: "Missions", leaderboard: "Leaderboard", referral: "Referral",
+    telegram: "Join Telegram", twitter: "Follow on Twitter", verify: "VERIFY", yourlink: "Your link:"
+  }
+};
+
+let lang = localStorage.getItem("lang");
+
+function selectLang(selected) {
+  lang = selected;
+  localStorage.setItem("lang", selected);
+  translateUI();
+  document.getElementById('intro-screen').style.display = "none";
+  document.getElementById('app-container').style.display = "grid";
+}
+
+function translateUI() {
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    el.textContent = translations[lang][key];
+  });
+}
+
+function showLanguageOptions() {
+  localStorage.removeItem("lang");
+  location.reload();
+}
+
+window.onload = () => {
+  const logo = document.getElementById("intro-logo");
+  setTimeout(() => logo.style.opacity = 1, 500);
+  setTimeout(() => document.getElementById("language-selector").style.display = "block", 2500);
+  if (lang) selectLang(lang);
+};
+
+const state = JSON.parse(localStorage.getItem("gameState")) || {
+  points: 0, aether: 0, boostAvailable: false, multiplier: 1, lastBoostTime: 0
+};
+
+const tapBtn = document.getElementById('tap-btn');
+const pointsDisplay = document.getElementById('points');
+const userBalance = document.getElementById('user-balance');
+const boostContainer = document.getElementById('boost-container');
+const refLink = document.getElementById('ref-link');
+
+tapBtn.addEventListener('click', () => {
+  state.points += state.multiplier;
+  updateDisplay();
+  checkBoostUnlock();
+  saveState();
+});
+
+function updateDisplay() {
+  pointsDisplay.textContent = state.points.toLocaleString();
+  state.aether = Math.floor(state.points / 1000000);
+  userBalance.textContent = `${state.aether.toLocaleString()} $AETHER`;
+}
+
+function checkBoostUnlock() {
+  if (!state.boostAvailable && state.points >= 10000) {
+    state.boostAvailable = true;
+    showBoosts();
+  }
+}
+
+function showBoosts() {
+  boostContainer.innerHTML = '';
+  const boostBtn = document.createElement('button');
+  boostBtn.className = 'btn';
+  boostBtn.textContent = 'Activer x2 pendant 5 min (Cooldown: 6h)';
+  boostBtn.onclick = () => {
+    const now = Date.now();
+    if (now - state.lastBoostTime < 6 * 60 * 60 * 1000) {
+      alert('â³ Attends avant de reprendre ce boost !');
+      return;
+    }
+    state.multiplier = 2;
+    state.lastBoostTime = now;
+    setTimeout(() => { state.multiplier = 1; }, 5 * 60 * 1000);
+    saveState();
+  };
+  boostContainer.appendChild(boostBtn);
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+function saveState() {
+  localStorage.setItem("gameState", JSON.stringify(state));
+}
+
+const params = new URLSearchParams(window.location.search);
+const ref = params.get("ref") || "anonyme";
+refLink.value = `${window.location.origin}${window.location.pathname}?ref=${ref}`;
+
+updateDisplay();
+</script>
+</body>
+</html>
