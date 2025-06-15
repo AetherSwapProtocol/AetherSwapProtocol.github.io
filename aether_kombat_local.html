@@ -2,180 +2,514 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Aether Kombat PRO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherSwap - Jeu Crypto Social</title>
   <style>
+    /* 🎨 Palette Professionnelle */
+    :root {
+      --primary: #6e3bff;
+      --secondary: #00c6ff;
+      --dark: #0a0b1a;
+      --darker: #070814;
+      --light: #ffffff;
+      --accent: #00f7ff;
+      --twitter: #1DA1F2;
+      --telegram: #0088CC;
+      --discord: #5865F2;
+      --x: #000000;
+    }
+    
     body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--dark);
+      color: var(--light);
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #0b0c1a;
-      color: #fff;
+      padding: 0;
     }
-    header, footer {
-      background: #12142a;
-      padding: 10px;
+    
+    /* Structure Principale */
+    .app-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding-bottom: 80px;
+    }
+    
+    header {
+      background: var(--darker);
+      padding: 15px;
       text-align: center;
+      position: relative;
     }
-    header h1 {
-      margin: 0;
-      font-size: 24px;
-      color: #a066ff;
+    
+    .logo {
+      width: 40px;
+      height: 40px;
+      display: inline-block;
+      vertical-align: middle;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      mask: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDhDMTE5IDggOCAxMTkgOCAyNTZzMTExIDI0OCAyNDggMjQ4IDI0OC0xMTEgMjQ4LTI0OFMzOTMgOCAyNTYgOHptMCA0NDhjLTEwMS41IDAtMTg0LTgyLjUtMTg0LTE4NHM4Mi41LTE4NCAxODQtMTg0IDE4NCA4Mi41IDE4NCAxODQtODIuNSAxODQtMTg0IDE4NHptNjgtMTQ4SDE4OHYtOTZoMTM2djk2em0wLTEyNEgxODhWMTYwaDEzNnYxMjR6Ii8+PC9zdmc+') no-repeat center;
+      -webkit-mask: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDhDMTE5IDggOCAxMTkgOCAyNTZzMTExIDI0OCAyNDggMjQ4IDI0OC0xMTEgMjQ4LTI0OFMzOTMgOCAyNTYgOHptMCA0NDhjLTEwMS41IDAtMTg0LTgyLjUtMTg0LTE4NHM4Mi41LTE4NCAxODQtMTg0IDE4NCA4Mi41IDE4NCAxODQtODIuNSAxODQtMTg0IDE4NHptNjgtMTQ4SDE4OHYtOTZoMTM2djk2em0wLTEyNEgxODhWMTYwaDEzNnYxMjR6Ii8+PC9zdmc+') no-repeat center;
     }
-    nav {
+    
+    /* Navigation */
+    .nav {
       position: fixed;
       bottom: 0;
-      left: 0; right: 0;
+      left: 0;
+      right: 0;
       display: flex;
-      justify-content: space-around;
-      background: #1c1e3a;
-      border-top: 1px solid #333;
+      background: var(--darker);
+      padding: 10px 0;
     }
-    nav button {
+    
+    .nav-btn {
       flex: 1;
-      padding: 10px;
-      background: none;
-      border: none;
-      color: #aaa;
-      font-size: 14px;
+      text-align: center;
+      padding: 8px 0;
+      color: rgba(255,255,255,0.6);
+      font-size: 12px;
     }
-    nav button.active {
-      color: #a066ff;
+    
+    .nav-btn.active {
+      color: var(--accent);
     }
+    
+    .nav-icon {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    
+    /* Pages */
     .page {
       display: none;
       padding: 20px;
     }
+    
     .page.active {
       display: block;
     }
-    .btn {
-      background: #a066ff;
+    
+    /* Accueil */
+    .click-area {
+      text-align: center;
+      margin: 30px 0;
+    }
+    
+    .click-btn {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       border: none;
       color: white;
-      padding: 12px 20px;
-      margin: 10px 0;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .btn:disabled {
-      background: #444;
-    }
-    input {
-      background: #222;
-      color: #fff;
-      border: 1px solid #444;
-      padding: 8px;
-      width: 90%;
-      margin: 10px 0;
-      border-radius: 5px;
-    }
-    ul {
-      padding-left: 0;
-      list-style: none;
-    }
-    ul li {
-      background: #1f223e;
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 5px;
-    }
-    .score {
       font-size: 24px;
-      margin: 10px 0;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    
+    .click-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .balance {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 20px 0;
+      background: linear-gradient(135deg, var(--accent), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    /* Missions */
+    .mission-card {
+      background: rgba(30,31,60,0.8);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .mission-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 5px;
+    }
+    
+    .mission-twitter {
+      border-left: 4px solid var(--twitter);
+    }
+    
+    .mission-telegram {
+      border-left: 4px solid var(--telegram);
+    }
+    
+    .mission-discord {
+      border-left: 4px solid var(--discord);
+    }
+    
+    .mission-x {
+      border-left: 4px solid var(--x);
+    }
+    
+    .mission-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .mission-reward {
+      background: rgba(0,247,255,0.2);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+    
+    .mission-btn {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    /* Boosts */
+    .boost-card {
+      background: rgba(30,31,60,0.8);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .boost-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .boost-price {
+      color: var(--accent);
+    }
+    
+    /* Animations */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    .floating {
+      animation: float 2s ease-in-out infinite;
     }
   </style>
 </head>
 <body>
+  <div class="app-container">
+    <header>
+      <div class="logo"></div>
+      <h1>AetherSwap</h1>
+    </header>
+    
+    <!-- Page Accueil -->
+    <div id="accueil" class="page active">
+      <div class="click-area">
+        <button class="click-btn floating">⚡</button>
+        <div class="balance" id="balance">0 AETHER</div>
+        <div id="per-sec">+0/sec</div>
+      </div>
+      
+      <div class="stats">
+        <div>Total gagné: <span id="total-earned">0</span> AETHER</div>
+        <div>Niveau: <span id="level">1</span></div>
+      </div>
+    </div>
+    
+    <!-- Page Boosts -->
+    <div id="boosts" class="page">
+      <h2>📈 Boosts</h2>
+      
+      <div class="boost-card">
+        <div class="boost-header">
+          <h3>Multiplicateur de clic</h3>
+          <div class="boost-price" id="click-price">10 AETHER</div>
+        </div>
+        <p>+1 AETHER par clic</p>
+        <p>Niveau actuel: <span id="click-lvl">1</span></p>
+        <button class="mission-btn" onclick="buyBoost('click')">Acheter</button>
+      </div>
+      
+      <div class="boost-card">
+        <div class="boost-header">
+          <h3>Auto-Farmer</h3>
+          <div class="boost-price" id="auto-price">50 AETHER</div>
+        </div>
+        <p>+1 AETHER par seconde</p>
+        <p>Niveau actuel: <span id="auto-lvl">0</span></p>
+        <button class="mission-btn" onclick="buyBoost('auto')">Acheter</button>
+      </div>
+    </div>
+    
+    <!-- Page Missions -->
+    <div id="missions" class="page">
+      <h2>🎯 Missions Sociales</h2>
+      
+      <div class="mission-card mission-twitter">
+        <div class="mission-header">
+          <h3>Suivre sur Twitter/X</h3>
+          <div class="mission-reward">+50 AETHER</div>
+        </div>
+        <p>Suivez @AetherSwapOfficial</p>
+        <button class="mission-btn" onclick="completeMission('twitter')">Vérifier</button>
+      </div>
+      
+      <div class="mission-card mission-telegram">
+        <div class="mission-header">
+          <h3>Rejoindre Telegram</h3>
+          <div class="mission-reward">+75 AETHER</div>
+        </div>
+        <p>Rejoignez t.me/AetherSwap</p>
+        <button class="mission-btn" onclick="completeMission('telegram')">Vérifier</button>
+      </div>
+      
+      <div class="mission-card mission-discord">
+        <div class="mission-header">
+          <h3>Rejoindre Discord</h3>
+          <div class="mission-reward">+100 AETHER</div>
+        </div>
+        <p>Rejoignez discord.gg/aetherswap</p>
+        <button class="mission-btn" onclick="completeMission('discord')">Vérifier</button>
+      </div>
+      
+      <div class="mission-card mission-x">
+        <div class="mission-header">
+          <h3>Partager sur X</h3>
+          <div class="mission-reward">+150 AETHER</div>
+        </div>
+        <p>Tweetez #AetherSwap</p>
+        <button class="mission-btn" onclick="completeMission('x')">Vérifier</button>
+      </div>
+    </div>
+    
+    <!-- Page Inventaire -->
+    <div id="inventaire" class="page">
+      <h2>🎒 Inventaire</h2>
+      <p>Vos récompenses et objets</p>
+      <div id="inventory-items">
+        <p>Aucun objet pour le moment</p>
+      </div>
+    </div>
+    
+    <!-- Page Classement -->
+    <div id="classement" class="page">
+      <h2>🏆 Classement</h2>
+      <div id="leaderboard">
+        <p>Chargement du classement...</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Navigation -->
+  <div class="nav">
+    <div class="nav-btn active" onclick="showPage('accueil')">
+      <div class="nav-icon">🏠</div>
+      <div>Accueil</div>
+    </div>
+    <div class="nav-btn" onclick="showPage('boosts')">
+      <div class="nav-icon">📈</div>
+      <div>Boosts</div>
+    </div>
+    <div class="nav-btn" onclick="showPage('missions')">
+      <div class="nav-icon">🎯</div>
+      <div>Missions</div>
+    </div>
+    <div class="nav-btn" onclick="showPage('inventaire')">
+      <div class="nav-icon">🎒</div>
+      <div>Inventaire</div>
+    </div>
+    <div class="nav-btn" onclick="showPage('classement')">
+      <div class="nav-icon">🏆</div>
+      <div>Classement</div>
+    </div>
+  </div>
 
-<header>
-  <h1>Aether Kombat</h1>
-</header>
+  <script>
+    // État du jeu
+    const gameState = {
+      balance: 0,
+      totalEarned: 0,
+      level: 1,
+      clickPower: 1,
+      autoPower: 0,
+      boosts: {
+        click: { level: 1, price: 10 },
+        auto: { level: 0, price: 50 }
+      },
+      missions: {
+        twitter: false,
+        telegram: false,
+        discord: false,
+        x: false
+      },
+      inventory: []
+    };
 
-<div id="accueil" class="page active">
-  <h2>🏠 Accueil</h2>
-  <p>Bienvenue <b>@TestUser</b></p>
-  <p class="score"><span id="points">0</span> $AETHER</p>
-  <button class="btn" onclick="tap()">💸 Farmer</button>
-</div>
+    // DOM Elements
+    const balanceEl = document.getElementById('balance');
+    const totalEarnedEl = document.getElementById('total-earned');
+    const levelEl = document.getElementById('level');
+    const perSecEl = document.getElementById('per-sec');
+    const clickPriceEl = document.getElementById('click-price');
+    const clickLvlEl = document.getElementById('click-lvl');
+    const autoPriceEl = document.getElementById('auto-price');
+    const autoLvlEl = document.getElementById('auto-lvl');
+    const inventoryEl = document.getElementById('inventory-items');
 
-<div id="boosts" class="page">
-  <h2>📈 Boosts</h2>
-  <p>Améliore tes gains par clic</p>
-  <button class="btn" onclick="buyBoost()">+1 point/clic (10 pts)</button>
-</div>
-
-<div id="missions" class="page">
-  <h2>🎯 Missions</h2>
-  <ul>
-    <li>✅ Cliquer 10 fois — <i>Récompense : 5 pts</i></li>
-    <li>🔄 Partager ton lien de parrainage</li>
-    <li>🧠 Reviens demain pour +15 pts</li>
-  </ul>
-</div>
-
-<div id="referral" class="page">
-  <h2>👥 Parrainage</h2>
-  <p>Invite tes amis : +10% de leurs clics !</p>
-  <input type="text" id="refLink" readonly />
-</div>
-
-<div id="classement" class="page">
-  <h2>🏆 Classement</h2>
-  <ul>
-    <li>1. @satoshi - 9000 pts</li>
-    <li>2. @vitalik - 4200 pts</li>
-    <li>3. @TestUser - <span id="rankPoints">0</span> pts</li>
-  </ul>
-</div>
-
-<nav>
-  <button class="active" onclick="showPage('accueil')">🏠</button>
-  <button onclick="showPage('boosts')">📈</button>
-  <button onclick="showPage('missions')">🎯</button>
-  <button onclick="showPage('referral')">👥</button>
-  <button onclick="showPage('classement')">🏆</button>
-</nav>
-
-<script>
-  let points = parseInt(localStorage.getItem('aether_points') || 0);
-  let perClick = parseInt(localStorage.getItem('aether_click') || 1);
-  const ref = new URLSearchParams(window.location.search).get("ref") || "Aucun";
-
-  function updateUI() {
-    document.getElementById("points").textContent = points;
-    document.getElementById("rankPoints").textContent = points;
-    document.getElementById("refLink").value = location.origin + location.pathname + "?ref=TestUser";
-  }
-
-  function tap() {
-    points += perClick;
-    localStorage.setItem('aether_points', points);
-    updateUI();
-  }
-
-  function buyBoost() {
-    if (points >= 10) {
-      points -= 10;
-      perClick++;
-      localStorage.setItem('aether_points', points);
-      localStorage.setItem('aether_click', perClick);
-      alert("Tu gagnes maintenant " + perClick + " pts/clic !");
+    // Initialisation
+    function init() {
+      loadGame();
       updateUI();
-    } else {
-      alert("Pas assez de points !");
+      
+      // Auto-farmer
+      setInterval(() => {
+        if (gameState.autoPower > 0) {
+          addPoints(gameState.autoPower);
+        }
+      }, 1000);
     }
-  }
 
-  function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    event.target.classList.add('active');
-  }
+    // Charger la partie
+    function loadGame() {
+      const saved = localStorage.getItem('aetherswap_save');
+      if (saved) {
+        Object.assign(gameState, JSON.parse(saved));
+      }
+    }
 
-  updateUI();
-</script>
+    // Sauvegarder la partie
+    function saveGame() {
+      localStorage.setItem('aetherswap_save', JSON.stringify(gameState));
+    }
 
+    // Mettre à jour l'UI
+    function updateUI() {
+      balanceEl.textContent = `${gameState.balance} AETHER`;
+      totalEarnedEl.textContent = gameState.totalEarned;
+      levelEl.textContent = gameState.level;
+      perSecEl.textContent = `+${gameState.autoPower}/sec`;
+      
+      // Boosts
+      clickPriceEl.textContent = `${gameState.boosts.click.price} AETHER`;
+      clickLvlEl.textContent = gameState.boosts.click.level;
+      autoPriceEl.textContent = `${gameState.boosts.auto.price} AETHER`;
+      autoLvlEl.textContent = gameState.boosts.auto.level;
+      
+      // Inventaire
+      if (gameState.inventory.length > 0) {
+        inventoryEl.innerHTML = gameState.inventory.map(item => 
+          `<div class="mission-card">${item}</div>`
+        ).join('');
+      }
+    }
+
+    // Ajouter des points
+    function addPoints(amount) {
+      gameState.balance += amount;
+      gameState.totalEarned += amount;
+      
+      // Niveau up
+      if (gameState.totalEarned >= gameState.level * 1000) {
+        gameState.level++;
+        gameState.inventory.push(`Niveau ${gameState.level} atteint!`);
+        alert(`Félicitations! Vous êtes maintenant niveau ${gameState.level}`);
+      }
+      
+      updateUI();
+      saveGame();
+    }
+
+    // Acheter un boost
+    function buyBoost(type) {
+      const boost = gameState.boosts[type];
+      
+      if (gameState.balance >= boost.price) {
+        gameState.balance -= boost.price;
+        boost.level++;
+        
+        if (type === 'click') {
+          gameState.clickPower = boost.level;
+          boost.price = Math.floor(10 * Math.pow(1.2, boost.level - 1));
+        } else if (type === 'auto') {
+          gameState.autoPower = boost.level;
+          boost.price = Math.floor(50 * Math.pow(1.3, boost.level));
+        }
+        
+        updateUI();
+        saveGame();
+        alert(`Boost ${type} amélioré au niveau ${boost.level}!`);
+      } else {
+        alert("Pas assez d'AETHER!");
+      }
+    }
+
+    // Compléter une mission
+    function completeMission(platform) {
+      if (!gameState.missions[platform]) {
+        let reward = 0;
+        
+        switch (platform) {
+          case 'twitter': reward = 50; break;
+          case 'telegram': reward = 75; break;
+          case 'discord': reward = 100; break;
+          case 'x': reward = 150; break;
+        }
+        
+        gameState.missions[platform] = true;
+        addPoints(reward);
+        gameState.inventory.push(`Mission ${platform} complétée`);
+        
+        // Ouvrir le lien
+        let url = '';
+        switch (platform) {
+          case 'twitter': url = 'https://twitter.com/AetherSwapOfficial'; break;
+          case 'telegram': url = 'https://t.me/AetherSwap'; break;
+          case 'discord': url = 'https://discord.gg/aetherswap'; break;
+          case 'x': url = 'https://x.com/intent/tweet?text=Je%20joue%20à%20%23AetherSwap%20!'; break;
+        }
+        
+        window.open(url, '_blank');
+      } else {
+        alert('Mission déjà complétée!');
+      }
+    }
+
+    // Changer de page
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      document.getElementById(pageId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    // Gestion du clic
+    document.querySelector('.click-btn').addEventListener('click', () => {
+      addPoints(gameState.clickPower);
+    });
+
+    // Démarrer le jeu
+    window.onload = init;
+  </script>
 </body>
 </html>
