@@ -177,14 +177,14 @@
 <div id="intro-screen">
   <div id="intro-logo">Aether$wap</div>
   <div id="language-selector">
-    <button onclick="selectLang('fr')" class="btn">ð«ð· FranÃ§ais</button>
-    <button onclick="selectLang('en')" class="btn">ð¬ð§ English</button>
+    <button onclick="selectLang('fr')" class="btn">🇫🇷 Français</button>
+    <button onclick="selectLang('en')" class="btn">🇬🇧 English</button>
   </div>
 </div>
 
 <div class="app-container" id="app-container">
   <header>
-    <div id="settings-icon" onclick="showLanguageOptions()">âï¸</div>
+    <div id="settings-icon" onclick="showLanguageOptions()">⚙️</div>
     <h1 id="title">AETHER$WAP</h1>
     <div id="user-balance">0 $AETHER</div>
   </header>
@@ -204,44 +204,44 @@
       <h2 data-key="missions">Missions Sociales</h2>
       <div class="aether-card">
         <p data-key="telegram">Rejoindre Telegram</p>
-        <button class="btn" data-key="verify">VÃRIFIER</button>
+        <button class="btn" data-key="verify">VÉRIFIER</button>
       </div>
       <div class="aether-card">
         <p data-key="twitter">Suivre sur Twitter</p>
-        <button class="btn" data-key="verify">VÃRIFIER</button>
+        <button class="btn" data-key="verify">VÉRIFIER</button>
       </div>
     </div>
 
     <div id="leaderboard-page" class="page">
       <h2 data-key="leaderboard">Classement</h2>
       <ul id="leaderboard">
-        <li>ð Toi â 0</li>
-        <li>ð§  Satoshi â 1 000 000</li>
-        <li>ð¦ Vitalik â 500 000</li>
+        <li>🚀 Toi ― 0</li>
+        <li>👨 Satoshi ― 1 000 000</li>
+        <li>🦊 Vitalik ― 500 000</li>
       </ul>
     </div>
 
     <div id="referral-page" class="page">
-      <h2 data-key="referral">RÃ©fÃ©rencement</h2>
+      <h2 data-key="referral">Référencement</h2>
       <p data-key="yourlink">Ton lien :</p>
       <input type="text" id="ref-link" readonly style="width: 100%; padding: 8px;"/>
     </div>
   </main>
 
   <div class="nav-bar">
-    <button class="nav-btn active" onclick="showPage('tap-page')">â¡<span data-key="play">Jouer</span></button>
-    <button class="nav-btn" onclick="showPage('boosts-page')">ð<span data-key="boosts">Boosts</span></button>
-    <button class="nav-btn" onclick="showPage('missions-page')">ð¯<span data-key="missions">Missions</span></button>
-    <button class="nav-btn" onclick="showPage('leaderboard-page')">ð<span data-key="leaderboard">Classement</span></button>
-    <button class="nav-btn" onclick="showPage('referral-page')">ð<span data-key="referral">Referral</span></button>
+    <button class="nav-btn active" onclick="showPage('tap-page', event)">⚡<span data-key="play">Jouer</span></button>
+    <button class="nav-btn" onclick="showPage('boosts-page', event)">🚀<span data-key="boosts">Boosts</span></button>
+    <button class="nav-btn" onclick="showPage('missions-page', event)">🎯<span data-key="missions">Missions</span></button>
+    <button class="nav-btn" onclick="showPage('leaderboard-page', event)">🏆<span data-key="leaderboard">Classement</span></button>
+    <button class="nav-btn" onclick="showPage('referral-page', event)">🔗<span data-key="referral">Referral</span></button>
   </div>
 </div>
 
 <script>
 const translations = {
   fr: {
-    play: "Jouer", boosts: "Boosts", missions: "Missions", leaderboard: "Classement", referral: "RÃ©fÃ©rencement",
-    telegram: "Rejoindre Telegram", twitter: "Suivre sur Twitter", verify: "VÃRIFIER", yourlink: "Ton lien :"
+    play: "Jouer", boosts: "Boosts", missions: "Missions", leaderboard: "Classement", referral: "Référencement",
+    telegram: "Rejoindre Telegram", twitter: "Suivre sur Twitter", verify: "VÉRIFIER", yourlink: "Ton lien :"
   },
   en: {
     play: "Play", boosts: "Boosts", missions: "Missions", leaderboard: "Leaderboard", referral: "Referral",
@@ -273,9 +273,23 @@ function showLanguageOptions() {
 
 window.onload = () => {
   const logo = document.getElementById("intro-logo");
+  const languageSelector = document.getElementById("language-selector");
+  
+  // Animation du logo
   setTimeout(() => logo.style.opacity = 1, 500);
-  setTimeout(() => document.getElementById("language-selector").style.display = "block", 2500);
-  if (lang) selectLang(lang);
+  
+  // Affichage du choix de langue après 2.5s
+  setTimeout(() => {
+    languageSelector.style.display = "block";
+    
+    // Si une langue est déjà choisie, on cache l'intro après un délai
+    if (lang) {
+      setTimeout(() => {
+        document.getElementById('intro-screen').style.display = "none";
+        document.getElementById('app-container').style.display = "grid";
+      }, 1000);
+    }
+  }, 2500);
 };
 
 const state = JSON.parse(localStorage.getItem("gameState")) || {
@@ -316,22 +330,28 @@ function showBoosts() {
   boostBtn.onclick = () => {
     const now = Date.now();
     if (now - state.lastBoostTime < 6 * 60 * 60 * 1000) {
-      alert('â³ Attends avant de reprendre ce boost !');
+      alert('⏳ Attends avant de reprendre ce boost !');
       return;
     }
     state.multiplier = 2;
     state.lastBoostTime = now;
-    setTimeout(() => { state.multiplier = 1; }, 5 * 60 * 1000);
+    setTimeout(() => { 
+      state.multiplier = 1;
+      updateDisplay();
+      saveState();
+    }, 5 * 60 * 1000);
     saveState();
   };
   boostContainer.appendChild(boostBtn);
 }
 
-function showPage(id) {
+function showPage(id, event) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  if (event) {
+    event.currentTarget.classList.add('active');
+  }
 }
 
 function saveState() {
