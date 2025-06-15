@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aether Kombat (Test Local)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Orbitron", sans-serif;
+      background: radial-gradient(circle, #0d0d0d, #111122);
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #A066FF;
+    }
+    #points {
+      font-size: 2.5em;
+      margin: 20px 0;
+    }
+    .btn {
+      background: #A066FF;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      margin: 10px;
+      transition: 0.2s;
+    }
+    .btn:hover {
+      background: #8833FF;
+    }
+    .boosts, .referral, .leaderboard {
+      margin-top: 30px;
+    }
+    .boost {
+      margin: 10px 0;
+    }
+    .referral input {
+      width: 80%;
+      padding: 8px;
+      margin-top: 10px;
+      background: #222;
+      color: #fff;
+      border: 1px solid #A066FF;
+      border-radius: 5px;
+    }
+    .leaderboard ul {
+      list-style: none;
+      padding: 0;
+    }
+    .leaderboard li {
+      background: #1a1a2e;
+      margin: 5px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Aether Kombat</h1>
+  <p>Fais prospérer ton empire DeFi et gagne des $AETHER !</p>
+
+  <div id="points">0 AetherPoints</div>
+  <button class="btn" onclick="tap()">💸 TAPER POUR GAGNER</button>
+
+  <div class="boosts">
+    <h2>🧪 Boosts</h2>
+    <div class="boost">
+      <button class="btn" onclick="buyBoost()">+1 point / clic (10 pts)</button>
+    </div>
+  </div>
+
+  <div class="referral">
+    <h2>🎯 Parrainage</h2>
+    <p>Invite tes amis et gagne 10% de leurs clics !</p>
+    <input type="text" readonly id="refLink" />
+  </div>
+
+  <div class="leaderboard">
+    <h2>🏆 Classement</h2>
+    <ul id="lb">
+      <li>1. @cryptowhale - 4200 pts</li>
+      <li>2. @ethbull - 3200 pts</li>
+      <li>3. @TestUser - <span id="myScore">0</span> pts</li>
+    </ul>
+  </div>
+
+  <script>
+    // Simule un pseudo local
+    const user = "TestUser";
+    let points = parseInt(localStorage.getItem("aether_points") || 0);
+    let perClick = parseInt(localStorage.getItem("aether_click") || 1);
+    const referredBy = new URLSearchParams(window.location.search).get("ref");
+
+    function updateDisplay() {
+      document.getElementById("points").textContent = points + " AetherPoints";
+      document.getElementById("refLink").value =
+        location.origin + location.pathname + "?ref=" + user;
+      document.getElementById("myScore").textContent = points;
+    }
+
+    function tap() {
+      points += perClick;
+      localStorage.setItem("aether_points", points);
+      updateDisplay();
+    }
+
+    function buyBoost() {
+      if (points >= 10) {
+        perClick++;
+        points -= 10;
+        localStorage.setItem("aether_points", points);
+        localStorage.setItem("aether_click", perClick);
+        updateDisplay();
+        alert("Boost activé ! Tu gagnes maintenant " + perClick + " pts/clic.");
+      } else {
+        alert("Pas assez de points.");
+      }
+    }
+
+    if (referredBy) {
+      console.log("Simulé : Parrainé par " + referredBy);
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>
