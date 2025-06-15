@@ -3,410 +3,213 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap - Jeu Officiel</title>
+  <title>AetherSwap Farming Bot</title>
   <style>
     :root {
-      --space-cadet: #0f1923;
-      --royal-blue: #1e3a8a;
-      --azure: #3b82f6;
-      --ghost-white: #f8fafc;
-      --emerald: #10b981;
-      --amber: #f59e0b;
-      --crimson: #ef4444;
+      --space-dark: #0f172a;
+      --crypto-blue: #3b82f6;
+      --neon-green: #00ff9d;
+      --terminal-text: #e2e8f0;
     }
-
+    
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--space-cadet);
-      color: var(--ghost-white);
+      font-family: 'Courier New', monospace;
+      background: var(--space-dark);
+      color: var(--terminal-text);
       margin: 0;
-      padding: 0;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .app-container {
-      display: none;
-      grid-template-rows: auto 1fr auto;
-      height: 100vh;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    header {
-      padding: 16px;
-      background: linear-gradient(90deg, var(--royal-blue), var(--space-cadet));
-      text-align: center;
-      position: relative;
-    }
-
-    header h1 {
-      margin: 0;
-      font-family: 'Kanit', sans-serif;
-      font-size: 24px;
-      background: linear-gradient(to right, var(--amber), var(--emerald));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    #user-balance {
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,0.3);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 14px;
-    }
-
-    .page {
-      display: none;
       padding: 20px;
-      overflow-y: auto;
-      position: relative;
+      text-align: center;
     }
-
-    .page.active {
-      display: block;
+    
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      border: 1px solid var(--crypto-blue);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     }
-
-    .tap-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 60vh;
-    }
-
-    .tap-button {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: url('https://upload.wikimedia.org/wikipedia/commons/5/55/Bitcoin_Logo.svg') no-repeat center center;
-      background-size: 80%;
+    
+    .miner-btn {
+      background: linear-gradient(45deg, var(--space-dark), var(--crypto-blue));
+      color: white;
       border: none;
-      box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 50px;
       cursor: pointer;
-      transition: transform 0.1s;
+      margin: 20px 0;
+      width: 80%;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s;
     }
-
-    .tap-button:active {
+    
+    .miner-btn:active {
       transform: scale(0.95);
     }
-
-    .aether-label {
-      font-family: 'Kanit', sans-serif;
-      font-size: 24px;
-      color: var(--azure);
-      text-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
-      margin-top: 10px;
-    }
-
+    
     .points-display {
-      font-size: 42px;
-      font-weight: bold;
-      font-family: 'Kanit';
-      background: linear-gradient(to right, var(--amber), var(--emerald));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      margin-top: 20px;
+      font-size: 24px;
+      margin: 20px 0;
+      color: var(--neon-green);
     }
-
-    @keyframes float {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-150px) scale(0.2); opacity: 0; }
+    
+    .badge {
+      display: inline-block;
+      background: rgba(59, 130, 246, 0.2);
+      padding: 5px 10px;
+      border-radius: 20px;
+      margin: 5px;
+      font-size: 12px;
     }
-
-    .bubble {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: radial-gradient(circle, var(--azure), rgba(59, 130, 246, 0.3));
-      border-radius: 50%;
-      animation: float 1.5s ease-out forwards;
-      pointer-events: none;
-      z-index: 10;
+    
+    .progress-bar {
+      height: 10px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 5px;
+      margin: 20px 0;
+      overflow: hidden;
     }
-
-    .nav-bar {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      background: var(--royal-blue);
-    }
-
-    .nav-btn {
-      background: none;
-      border: none;
-      color: var(--ghost-white);
-      padding: 12px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .nav-btn.active {
-      background: var(--azure);
-    }
-
-    /* Intro Screen */
-    #intro-screen {
-      position: fixed;
-      z-index: 9999;
-      background: var(--space-cadet);
-      color: var(--ghost-white);
-      height: 100vh;
-      width: 100vw;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-
-    #intro-logo {
-      font-size: 48px;
-      font-family: 'Kanit';
-      opacity: 0;
-      transition: opacity 2s ease-in;
-      background: linear-gradient(to right, var(--amber), var(--emerald));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    #language-selector {
-      margin-top: 20px;
-      display: none;
-      flex-direction: column;
-      gap: 10px;
+    
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, var(--crypto-blue), var(--neon-green));
+      width: 0%;
+      transition: width 0.5s;
     }
   </style>
 </head>
 <body>
-  <!-- Écran d'introduction -->
-  <div id="intro-screen">
-    <div id="intro-logo">Aether$wap</div>
-    <div id="language-selector">
-      <button onclick="selectLang('fr')" class="btn">🇫🇷 Français</button>
-      <button onclick="selectLang('en')" class="btn">🇬🇧 English</button>
+  <div class="container">
+    <h1>🧬 AetherSwap Miner</h1>
+    <p>Farm tes points pour l'airdrop futur!</p>
+    
+    <div class="points-display" id="points">0 pts</div>
+    
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
     </div>
-  </div>
-
-  <!-- Application principale -->
-  <div class="app-container" id="app-container">
-    <header>
-      <div id="settings-icon" onclick="showLanguageOptions()">⚙️</div>
-      <h1 id="title">AETHER$WAP</h1>
-      <div id="user-balance">0 $AETHER</div>
-    </header>
-
-    <main id="main">
-      <!-- Page 1: Tap -->
-      <div id="tap-page" class="page active">
-        <div class="tap-container">
-          <button class="tap-button" id="tap-btn"></button>
-          <div class="aether-label">$AETHER</div>
-          <div class="points-display" id="points">0</div>
-        </div>
-      </div>
-
-      <!-- Page 2: Boosts -->
-      <div id="boosts-page" class="page">
-        <h2>Boosts</h2>
-        <div id="boost-container"></div>
-      </div>
-
-      <!-- Page 3: Missions -->
-      <div id="missions-page" class="page">
-        <h2>Missions Sociales</h2>
-        <div class="aether-card">
-          <p>Rejoindre Telegram</p>
-          <button class="btn">VÉRIFIER</button>
-        </div>
-        <div class="aether-card">
-          <p>Suivre sur Twitter</p>
-          <button class="btn">VÉRIFIER</button>
-        </div>
-      </div>
-
-      <!-- Page 4: Classement -->
-      <div id="leaderboard-page" class="page">
-        <h2>Classement</h2>
-        <ul id="leaderboard">
-          <li>🚀 Toi ― 0</li>
-          <li>👨 Satoshi ― 1 000 000</li>
-          <li>🦊 Vitalik ― 500 000</li>
-        </ul>
-      </div>
-
-      <!-- Page 5: Référencement -->
-      <div id="referral-page" class="page">
-        <h2>Référencement</h2>
-        <p>Ton lien :</p>
-        <input type="text" id="ref-link" readonly style="width: 100%; padding: 8px;">
-      </div>
-    </main>
-
-    <!-- Barre de navigation -->
-    <div class="nav-bar">
-      <button class="nav-btn active" onclick="showPage('tap-page', event)">⚡<span>Jouer</span></button>
-      <button class="nav-btn" onclick="showPage('boosts-page', event)">🚀<span>Boosts</span></button>
-      <button class="nav-btn" onclick="showPage('missions-page', event)">🎯<span>Missions</span></button>
-      <button class="nav-btn" onclick="showPage('leaderboard-page', event)">🏆<span>Classement</span></button>
-      <button class="nav-btn" onclick="showPage('referral-page', event)">🔗<span>Referral</span></button>
+    
+    <button class="miner-btn" id="mineBtn">⚡ MINER</button>
+    
+    <div>
+      <div class="badge" id="level">Niveau: 1</div>
+      <div class="badge" id="nextAirdrop">Prochain airdrop: 1000 pts</div>
+    </div>
+    
+    <div style="margin-top: 30px; text-align: left;">
+      <h3>📊 Ton Stats:</h3>
+      <p id="stats">Points/jour: 0 | Rang: #-</p>
+      <p id="referral">Lien de parrainage: chargement...</p>
     </div>
   </div>
 
   <script>
-    // Traductions
-    const translations = {
-      fr: {
-        play: "Jouer", boosts: "Boosts", missions: "Missions", leaderboard: "Classement", referral: "Référencement",
-        telegram: "Rejoindre Telegram", twitter: "Suivre sur Twitter", verify: "VÉRIFIER", yourlink: "Ton lien :"
-      },
-      en: {
-        play: "Play", boosts: "Boosts", missions: "Missions", leaderboard: "Leaderboard", referral: "Referral",
-        telegram: "Join Telegram", twitter: "Follow on Twitter", verify: "VERIFY", yourlink: "Your link:"
-      }
+    // Stockage local des données
+    let state = JSON.parse(localStorage.getItem('aetherState')) || {
+      points: 0,
+      level: 1,
+      lastMine: 0,
+      referrals: []
     };
 
-    let lang = localStorage.getItem("lang");
-
-    // Gestion de la langue
-    function selectLang(selected) {
-      lang = selected;
-      localStorage.setItem("lang", selected);
-      translateUI();
-      document.getElementById('intro-screen').style.display = "none";
-      document.getElementById('app-container').style.display = "grid";
-    }
-
-    function translateUI() {
-      document.querySelectorAll("[data-key]").forEach(el => {
-        const key = el.getAttribute("data-key");
-        if (translations[lang] && translations[lang][key]) {
-          el.textContent = translations[lang][key];
-        }
-      });
-    }
-
-    function showLanguageOptions() {
-      localStorage.removeItem("lang");
-      location.reload();
-    }
-
-    // Animation d'intro
-    window.onload = () => {
-      const logo = document.getElementById("intro-logo");
-      const languageSelector = document.getElementById("language-selector");
-      
-      setTimeout(() => logo.style.opacity = 1, 500);
-      setTimeout(() => languageSelector.style.display = "flex", 2500);
-      
-      if (lang) {
-        setTimeout(() => {
-          document.getElementById('intro-screen').style.opacity = 0;
-          setTimeout(() => {
-            document.getElementById('intro-screen').style.display = "none";
-            document.getElementById('app-container').style.display = "grid";
-          }, 1000);
-        }, 3500);
-      }
-    };
-
-    // État du jeu
-    const state = JSON.parse(localStorage.getItem("gameState")) || {
-      points: 0, aether: 0, boostAvailable: false, multiplier: 1, lastBoostTime: 0
-    };
-
-    const tapBtn = document.getElementById('tap-btn');
+    // Éléments DOM
     const pointsDisplay = document.getElementById('points');
-    const userBalance = document.getElementById('user-balance');
-    const boostContainer = document.getElementById('boost-container');
-    const refLink = document.getElementById('ref-link');
+    const mineBtn = document.getElementById('mineBtn');
+    const progressBar = document.getElementById('progress');
+    const levelBadge = document.getElementById('level');
+    const nextAirdropBadge = document.getElementById('nextAirdrop');
+    const statsDisplay = document.getElementById('stats');
+    const referralDisplay = document.getElementById('referral');
 
-    // Gestion du clic
-    tapBtn.addEventListener('click', () => {
-      state.points += state.multiplier;
-      updateDisplay();
-      createBubble();
-      checkBoostUnlock();
-      saveState();
+    // Config
+    const LEVELS = [
+      { pts: 0, reward: 1 },
+      { pts: 100, reward: 2 },
+      { pts: 500, reward: 3 },
+      { pts: 2000, reward: 5 },
+      { pts: 5000, reward: 8 }
+    ];
+
+    // Mise à jour de l'interface
+    function updateUI() {
+      pointsDisplay.textContent = `${state.points} pts`;
+      
+      // Niveau actuel
+      let currentLevel = 1;
+      for (let i = LEVELS.length - 1; i >= 0; i--) {
+        if (state.points >= LEVELS[i].pts) {
+          currentLevel = i + 1;
+          break;
+        }
+      }
+      state.level = currentLevel;
+      
+      // Progression vers le prochain niveau
+      const nextLevel = LEVELS[currentLevel] || { pts: Infinity };
+      const progress = Math.min(100, (state.points / nextLevel.pts) * 100);
+      progressBar.style.width = `${progress}%`;
+      
+      levelBadge.textContent = `Niveau: ${currentLevel}`;
+      nextAirdropBadge.textContent = `Prochain lvl: ${nextLevel.pts} pts`;
+      
+      // Stats
+      const ptsPerDay = Math.floor(LEVELS[currentLevel - 1].reward * 200); // Estimation
+      const rank = state.points < 100 ? '#' : `Top ${Math.max(1, Math.floor(100000 / state.points))}%`;
+      statsDisplay.textContent = `Points/jour: ~${ptsPerDay} | Rang: ${rank}`;
+      
+      // Référencement
+      referralDisplay.textContent = `Lien de parrainage: https://t.me/AetherSwapBot?start=ref_${btoa(state.points.toString())}`;
+      
+      // Sauvegarde
+      localStorage.setItem('aetherState', JSON.stringify(state));
+    }
+
+    // Mining
+    mineBtn.addEventListener('click', () => {
+      const now = Date.now();
+      const cooldown = 1000; // 1 sec
+      
+      if (now - state.lastMine > cooldown) {
+        const reward = LEVELS[state.level - 1].reward;
+        state.points += reward;
+        state.lastMine = now;
+        
+        // Animation
+        mineBtn.textContent = `+${reward} pts!`;
+        setTimeout(() => {
+          mineBtn.textContent = '⚡ MINER';
+        }, 500);
+        
+        updateUI();
+      } else {
+        mineBtn.textContent = '⏳ Patience...';
+        setTimeout(() => {
+          mineBtn.textContent = '⚡ MINER';
+        }, 300);
+      }
     });
 
-    // Création des bulles
-    function createBubble() {
-      const bubble = document.createElement('div');
-      bubble.className = 'bubble';
-      bubble.style.left = `${50 + (Math.random() * 60 - 30)}%`;
-      bubble.style.top = `${50 + (Math.random() * 40 - 20)}%`;
-      document.getElementById('tap-page').appendChild(bubble);
-      setTimeout(() => bubble.remove(), 1500);
-    }
-
-    function updateDisplay() {
-      pointsDisplay.textContent = state.points.toLocaleString();
-      state.aether = Math.floor(state.points / 1000000);
-      userBalance.textContent = `${state.aether.toLocaleString()} $AETHER`;
-    }
-
-    function checkBoostUnlock() {
-      if (!state.boostAvailable && state.points >= 10000) {
-        state.boostAvailable = true;
-        showBoosts();
+    // Missions quotidiennes simulées
+    function checkDailyMissions() {
+      const today = new Date().toDateString();
+      if (localStorage.getItem('lastDaily') !== today) {
+        state.points += 50; // Bonus quotidien
+        localStorage.setItem('lastDaily', today);
+        alert('🎉 Bonus quotidien: +50 pts!');
+        updateUI();
       }
     }
-
-    function showBoosts() {
-      boostContainer.innerHTML = '';
-      const boostBtn = document.createElement('button');
-      boostBtn.className = 'btn';
-      boostBtn.textContent = 'Activer x2 pendant 5 min (Cooldown: 6h)';
-      boostBtn.onclick = () => {
-        const now = Date.now();
-        if (now - state.lastBoostTime < 6 * 60 * 60 * 1000) {
-          alert('⏳ Attends avant de reprendre ce boost !');
-          return;
-        }
-        state.multiplier = 2;
-        state.lastBoostTime = now;
-        setTimeout(() => { 
-          state.multiplier = 1;
-          updateDisplay();
-          saveState();
-        }, 5 * 60 * 1000);
-        saveState();
-      };
-      boostContainer.appendChild(boostBtn);
-    }
-
-    // Navigation
-    function showPage(id, event) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-      if (event) {
-        event.currentTarget.classList.add('active');
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem("gameState", JSON.stringify(state));
-    }
-
-    // Référencement
-    const params = new URLSearchParams(window.location.search);
-    const ref = params.get("ref") || "anonyme";
-    refLink.value = `${window.location.origin}${window.location.pathname}?ref=${ref}`;
 
     // Initialisation
-    if (lang) translateUI();
-    updateDisplay();
+    updateUI();
+    checkDailyMissions();
+    
+    // Simuler un leaderboard (pour démo)
+    setInterval(() => {
+      state.points += LEVELS[state.level - 1].reward * 0.2; // Gains passifs
+      updateUI();
+    }, 10000);
   </script>
 </body>
 </html>
