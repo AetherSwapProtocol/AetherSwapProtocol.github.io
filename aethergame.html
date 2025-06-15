@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AetherSwap - Jeu Officiel</title>
   <style>
     :root {
@@ -65,10 +65,19 @@
       display: none;
       padding: 20px;
       overflow-y: auto;
+      position: relative;
     }
 
     .page.active {
       display: block;
+    }
+
+    .tap-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 60vh;
     }
 
     .tap-button {
@@ -80,8 +89,19 @@
       border: none;
       box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
       cursor: pointer;
-      position: relative;
-      margin: 0 auto;
+      transition: transform 0.1s;
+    }
+
+    .tap-button:active {
+      transform: scale(0.95);
+    }
+
+    .aether-label {
+      font-family: 'Kanit', sans-serif;
+      font-size: 24px;
+      color: var(--azure);
+      text-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
+      margin-top: 10px;
     }
 
     .points-display {
@@ -92,8 +112,23 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      text-align: center;
       margin-top: 20px;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-150px) scale(0.2); opacity: 0; }
+    }
+
+    .bubble {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, var(--azure), rgba(59, 130, 246, 0.3));
+      border-radius: 50%;
+      animation: float 1.5s ease-out forwards;
+      pointer-events: none;
+      z-index: 10;
     }
 
     .nav-bar {
@@ -119,26 +154,7 @@
       background: var(--azure);
     }
 
-    .boost-card, .aether-card {
-      background: rgba(30, 41, 59, 0.8);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      border-left: 4px solid var(--emerald);
-    }
-
-    .btn {
-      background: var(--azure);
-      border: none;
-      color: white;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 8px;
-      width: 100%;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
+    /* Intro Screen */
     #intro-screen {
       position: fixed;
       z-index: 9999;
@@ -157,212 +173,240 @@
       font-family: 'Kanit';
       opacity: 0;
       transition: opacity 2s ease-in;
+      background: linear-gradient(to right, var(--amber), var(--emerald));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
     #language-selector {
       margin-top: 20px;
       display: none;
-    }
-
-    #settings-icon {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 22px;
-      cursor: pointer;
+      flex-direction: column;
+      gap: 10px;
     }
   </style>
 </head>
 <body>
-<div id="intro-screen">
-  <div id="intro-logo">Aether$wap</div>
-  <div id="language-selector">
-    <button onclick="selectLang('fr')" class="btn">🇫🇷 Français</button>
-    <button onclick="selectLang('en')" class="btn">🇬🇧 English</button>
+  <!-- Écran d'introduction -->
+  <div id="intro-screen">
+    <div id="intro-logo">Aether$wap</div>
+    <div id="language-selector">
+      <button onclick="selectLang('fr')" class="btn">🇫🇷 Français</button>
+      <button onclick="selectLang('en')" class="btn">🇬🇧 English</button>
+    </div>
   </div>
-</div>
 
-<div class="app-container" id="app-container">
-  <header>
-    <div id="settings-icon" onclick="showLanguageOptions()">⚙️</div>
-    <h1 id="title">AETHER$WAP</h1>
-    <div id="user-balance">0 $AETHER</div>
-  </header>
+  <!-- Application principale -->
+  <div class="app-container" id="app-container">
+    <header>
+      <div id="settings-icon" onclick="showLanguageOptions()">⚙️</div>
+      <h1 id="title">AETHER$WAP</h1>
+      <div id="user-balance">0 $AETHER</div>
+    </header>
 
-  <main id="main">
-    <div id="tap-page" class="page active">
-      <button class="tap-button" id="tap-btn"></button>
-      <div class="points-display" id="points">0</div>
-    </div>
-
-    <div id="boosts-page" class="page">
-      <h2 data-key="boosts">Boosts</h2>
-      <div id="boost-container"></div>
-    </div>
-
-    <div id="missions-page" class="page">
-      <h2 data-key="missions">Missions Sociales</h2>
-      <div class="aether-card">
-        <p data-key="telegram">Rejoindre Telegram</p>
-        <button class="btn" data-key="verify">VÉRIFIER</button>
+    <main id="main">
+      <!-- Page 1: Tap -->
+      <div id="tap-page" class="page active">
+        <div class="tap-container">
+          <button class="tap-button" id="tap-btn"></button>
+          <div class="aether-label">$AETHER</div>
+          <div class="points-display" id="points">0</div>
+        </div>
       </div>
-      <div class="aether-card">
-        <p data-key="twitter">Suivre sur Twitter</p>
-        <button class="btn" data-key="verify">VÉRIFIER</button>
+
+      <!-- Page 2: Boosts -->
+      <div id="boosts-page" class="page">
+        <h2>Boosts</h2>
+        <div id="boost-container"></div>
       </div>
-    </div>
 
-    <div id="leaderboard-page" class="page">
-      <h2 data-key="leaderboard">Classement</h2>
-      <ul id="leaderboard">
-        <li>🚀 Toi ― 0</li>
-        <li>👨 Satoshi ― 1 000 000</li>
-        <li>🦊 Vitalik ― 500 000</li>
-      </ul>
-    </div>
+      <!-- Page 3: Missions -->
+      <div id="missions-page" class="page">
+        <h2>Missions Sociales</h2>
+        <div class="aether-card">
+          <p>Rejoindre Telegram</p>
+          <button class="btn">VÉRIFIER</button>
+        </div>
+        <div class="aether-card">
+          <p>Suivre sur Twitter</p>
+          <button class="btn">VÉRIFIER</button>
+        </div>
+      </div>
 
-    <div id="referral-page" class="page">
-      <h2 data-key="referral">Référencement</h2>
-      <p data-key="yourlink">Ton lien :</p>
-      <input type="text" id="ref-link" readonly style="width: 100%; padding: 8px;"/>
-    </div>
-  </main>
+      <!-- Page 4: Classement -->
+      <div id="leaderboard-page" class="page">
+        <h2>Classement</h2>
+        <ul id="leaderboard">
+          <li>🚀 Toi ― 0</li>
+          <li>👨 Satoshi ― 1 000 000</li>
+          <li>🦊 Vitalik ― 500 000</li>
+        </ul>
+      </div>
 
-  <div class="nav-bar">
-    <button class="nav-btn active" onclick="showPage('tap-page', event)">⚡<span data-key="play">Jouer</span></button>
-    <button class="nav-btn" onclick="showPage('boosts-page', event)">🚀<span data-key="boosts">Boosts</span></button>
-    <button class="nav-btn" onclick="showPage('missions-page', event)">🎯<span data-key="missions">Missions</span></button>
-    <button class="nav-btn" onclick="showPage('leaderboard-page', event)">🏆<span data-key="leaderboard">Classement</span></button>
-    <button class="nav-btn" onclick="showPage('referral-page', event)">🔗<span data-key="referral">Referral</span></button>
+      <!-- Page 5: Référencement -->
+      <div id="referral-page" class="page">
+        <h2>Référencement</h2>
+        <p>Ton lien :</p>
+        <input type="text" id="ref-link" readonly style="width: 100%; padding: 8px;">
+      </div>
+    </main>
+
+    <!-- Barre de navigation -->
+    <div class="nav-bar">
+      <button class="nav-btn active" onclick="showPage('tap-page', event)">⚡<span>Jouer</span></button>
+      <button class="nav-btn" onclick="showPage('boosts-page', event)">🚀<span>Boosts</span></button>
+      <button class="nav-btn" onclick="showPage('missions-page', event)">🎯<span>Missions</span></button>
+      <button class="nav-btn" onclick="showPage('leaderboard-page', event)">🏆<span>Classement</span></button>
+      <button class="nav-btn" onclick="showPage('referral-page', event)">🔗<span>Referral</span></button>
+    </div>
   </div>
-</div>
 
-<script>
-const translations = {
-  fr: {
-    play: "Jouer", boosts: "Boosts", missions: "Missions", leaderboard: "Classement", referral: "Référencement",
-    telegram: "Rejoindre Telegram", twitter: "Suivre sur Twitter", verify: "VÉRIFIER", yourlink: "Ton lien :"
-  },
-  en: {
-    play: "Play", boosts: "Boosts", missions: "Missions", leaderboard: "Leaderboard", referral: "Referral",
-    telegram: "Join Telegram", twitter: "Follow on Twitter", verify: "VERIFY", yourlink: "Your link:"
-  }
-};
+  <script>
+    // Traductions
+    const translations = {
+      fr: {
+        play: "Jouer", boosts: "Boosts", missions: "Missions", leaderboard: "Classement", referral: "Référencement",
+        telegram: "Rejoindre Telegram", twitter: "Suivre sur Twitter", verify: "VÉRIFIER", yourlink: "Ton lien :"
+      },
+      en: {
+        play: "Play", boosts: "Boosts", missions: "Missions", leaderboard: "Leaderboard", referral: "Referral",
+        telegram: "Join Telegram", twitter: "Follow on Twitter", verify: "VERIFY", yourlink: "Your link:"
+      }
+    };
 
-let lang = localStorage.getItem("lang");
+    let lang = localStorage.getItem("lang");
 
-function selectLang(selected) {
-  lang = selected;
-  localStorage.setItem("lang", selected);
-  translateUI();
-  document.getElementById('intro-screen').style.display = "none";
-  document.getElementById('app-container').style.display = "grid";
-}
-
-function translateUI() {
-  document.querySelectorAll("[data-key]").forEach(el => {
-    const key = el.getAttribute("data-key");
-    el.textContent = translations[lang][key];
-  });
-}
-
-function showLanguageOptions() {
-  localStorage.removeItem("lang");
-  location.reload();
-}
-
-window.onload = () => {
-  const logo = document.getElementById("intro-logo");
-  const languageSelector = document.getElementById("language-selector");
-  
-  // Animation du logo
-  setTimeout(() => logo.style.opacity = 1, 500);
-  
-  // Affichage du choix de langue après 2.5s
-  setTimeout(() => {
-    languageSelector.style.display = "block";
-    
-    // Si une langue est déjà choisie, on cache l'intro après un délai
-    if (lang) {
-      setTimeout(() => {
-        document.getElementById('intro-screen').style.display = "none";
-        document.getElementById('app-container').style.display = "grid";
-      }, 1000);
+    // Gestion de la langue
+    function selectLang(selected) {
+      lang = selected;
+      localStorage.setItem("lang", selected);
+      translateUI();
+      document.getElementById('intro-screen').style.display = "none";
+      document.getElementById('app-container').style.display = "grid";
     }
-  }, 2500);
-};
 
-const state = JSON.parse(localStorage.getItem("gameState")) || {
-  points: 0, aether: 0, boostAvailable: false, multiplier: 1, lastBoostTime: 0
-};
-
-const tapBtn = document.getElementById('tap-btn');
-const pointsDisplay = document.getElementById('points');
-const userBalance = document.getElementById('user-balance');
-const boostContainer = document.getElementById('boost-container');
-const refLink = document.getElementById('ref-link');
-
-tapBtn.addEventListener('click', () => {
-  state.points += state.multiplier;
-  updateDisplay();
-  checkBoostUnlock();
-  saveState();
-});
-
-function updateDisplay() {
-  pointsDisplay.textContent = state.points.toLocaleString();
-  state.aether = Math.floor(state.points / 1000000);
-  userBalance.textContent = `${state.aether.toLocaleString()} $AETHER`;
-}
-
-function checkBoostUnlock() {
-  if (!state.boostAvailable && state.points >= 10000) {
-    state.boostAvailable = true;
-    showBoosts();
-  }
-}
-
-function showBoosts() {
-  boostContainer.innerHTML = '';
-  const boostBtn = document.createElement('button');
-  boostBtn.className = 'btn';
-  boostBtn.textContent = 'Activer x2 pendant 5 min (Cooldown: 6h)';
-  boostBtn.onclick = () => {
-    const now = Date.now();
-    if (now - state.lastBoostTime < 6 * 60 * 60 * 1000) {
-      alert('⏳ Attends avant de reprendre ce boost !');
-      return;
+    function translateUI() {
+      document.querySelectorAll("[data-key]").forEach(el => {
+        const key = el.getAttribute("data-key");
+        if (translations[lang] && translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
     }
-    state.multiplier = 2;
-    state.lastBoostTime = now;
-    setTimeout(() => { 
-      state.multiplier = 1;
+
+    function showLanguageOptions() {
+      localStorage.removeItem("lang");
+      location.reload();
+    }
+
+    // Animation d'intro
+    window.onload = () => {
+      const logo = document.getElementById("intro-logo");
+      const languageSelector = document.getElementById("language-selector");
+      
+      setTimeout(() => logo.style.opacity = 1, 500);
+      setTimeout(() => languageSelector.style.display = "flex", 2500);
+      
+      if (lang) {
+        setTimeout(() => {
+          document.getElementById('intro-screen').style.opacity = 0;
+          setTimeout(() => {
+            document.getElementById('intro-screen').style.display = "none";
+            document.getElementById('app-container').style.display = "grid";
+          }, 1000);
+        }, 3500);
+      }
+    };
+
+    // État du jeu
+    const state = JSON.parse(localStorage.getItem("gameState")) || {
+      points: 0, aether: 0, boostAvailable: false, multiplier: 1, lastBoostTime: 0
+    };
+
+    const tapBtn = document.getElementById('tap-btn');
+    const pointsDisplay = document.getElementById('points');
+    const userBalance = document.getElementById('user-balance');
+    const boostContainer = document.getElementById('boost-container');
+    const refLink = document.getElementById('ref-link');
+
+    // Gestion du clic
+    tapBtn.addEventListener('click', () => {
+      state.points += state.multiplier;
       updateDisplay();
+      createBubble();
+      checkBoostUnlock();
       saveState();
-    }, 5 * 60 * 1000);
-    saveState();
-  };
-  boostContainer.appendChild(boostBtn);
-}
+    });
 
-function showPage(id, event) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-  if (event) {
-    event.currentTarget.classList.add('active');
-  }
-}
+    // Création des bulles
+    function createBubble() {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.style.left = `${50 + (Math.random() * 60 - 30)}%`;
+      bubble.style.top = `${50 + (Math.random() * 40 - 20)}%`;
+      document.getElementById('tap-page').appendChild(bubble);
+      setTimeout(() => bubble.remove(), 1500);
+    }
 
-function saveState() {
-  localStorage.setItem("gameState", JSON.stringify(state));
-}
+    function updateDisplay() {
+      pointsDisplay.textContent = state.points.toLocaleString();
+      state.aether = Math.floor(state.points / 1000000);
+      userBalance.textContent = `${state.aether.toLocaleString()} $AETHER`;
+    }
 
-const params = new URLSearchParams(window.location.search);
-const ref = params.get("ref") || "anonyme";
-refLink.value = `${window.location.origin}${window.location.pathname}?ref=${ref}`;
+    function checkBoostUnlock() {
+      if (!state.boostAvailable && state.points >= 10000) {
+        state.boostAvailable = true;
+        showBoosts();
+      }
+    }
 
-updateDisplay();
-</script>
+    function showBoosts() {
+      boostContainer.innerHTML = '';
+      const boostBtn = document.createElement('button');
+      boostBtn.className = 'btn';
+      boostBtn.textContent = 'Activer x2 pendant 5 min (Cooldown: 6h)';
+      boostBtn.onclick = () => {
+        const now = Date.now();
+        if (now - state.lastBoostTime < 6 * 60 * 60 * 1000) {
+          alert('⏳ Attends avant de reprendre ce boost !');
+          return;
+        }
+        state.multiplier = 2;
+        state.lastBoostTime = now;
+        setTimeout(() => { 
+          state.multiplier = 1;
+          updateDisplay();
+          saveState();
+        }, 5 * 60 * 1000);
+        saveState();
+      };
+      boostContainer.appendChild(boostBtn);
+    }
+
+    // Navigation
+    function showPage(id, event) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      if (event) {
+        event.currentTarget.classList.add('active');
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem("gameState", JSON.stringify(state));
+    }
+
+    // Référencement
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref") || "anonyme";
+    refLink.value = `${window.location.origin}${window.location.pathname}?ref=${ref}`;
+
+    // Initialisation
+    if (lang) translateUI();
+    updateDisplay();
+  </script>
 </body>
 </html>
