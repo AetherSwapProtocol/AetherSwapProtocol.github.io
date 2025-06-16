@@ -1,233 +1,366 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap - Jeu Officiel</title>
-  <style>
-    /* 🔥 Design Ultra-Moderne */
-    :root {
-      --space-cadet: #0f1923;
-      --royal-blue: #1e3a8a;
-      --azure: #3b82f6;
-      --ghost-white: #f8fafc;
-      --emerald: #10b981;
-      --amber: #f59e0b;
-      --crimson: #ef4444;
-    }
-    
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--space-cadet);
-      color: var(--ghost-white);
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      overflow: hidden;
-      touch-action: manipulation;
-    }
-    
-    /* 🛠️ Structure Professionnelle */
-    .app-container {
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      height: 100vh;
-      position: fixed;
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-      left: 0;
-      right: 0;
-    }
-    
-    /* 🎮 Game Engine */
-    .click-engine {
-      position: relative;
-      height: 100%;
-      overflow: hidden;
-    }
-    
-    .particle {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background: var(--azure);
-      border-radius: 50%;
-      pointer-events: none;
-      opacity: 0;
-    }
-    
-    /* 📊 Composants Pro */
-    .aether-card {
-      background: rgba(30, 41, 59, 0.8);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AetherSwap | Elite Tap-to-Earn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6e3aff;
+            --secondary: #00f0ff;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --light: #e0e0ff;
+            --accent: #ff00f0;
+            --energy: #ffcc00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark);
+            color: var(--light);
+            overflow: hidden;
+        }
+
+        /* === CINEMATIC INTRO === */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .intro-animation {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            border-radius: 50%;
+            position: relative;
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.7; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+
+        .intro-logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 30px 0;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-in 0.5s forwards;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 3px;
+            animation: loadProgress 2.5s ease-in-out forwards;
+        }
+
+        /* === MAIN APP CONTAINER === */
+        .app-container {
+            display: none;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: linear-gradient(to right, var(--primary), var(--darker));
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* === SCREEN 1: TAP-TO-EARN === */
+        .energy-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .energy-fill {
+            height: 10px;
+            background: linear-gradient(to right, var(--energy), #ff9900);
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+
+        .tap-area {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            border: 2px dashed rgba(110, 58, 255, 0.3);
+        }
+
+        /* === SCREEN 2: BOOSTS === */
+        .boosts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .boost-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid var(--primary);
+        }
+
+        /* === SCREEN 3: MISSIONS & REFERRAL === */
+        .mission-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* === SCREEN 4: LEADERBOARD === */
+        .podium {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: rgba(0,0,0,0.5);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
 </head>
 <body>
-  <!-- 🌌 Effets Visuels Dynamiques -->
-  <div id="particles"></div>
-  
-  <div class="app-container">
-    <!-- 🚀 Header Animé -->
-    <header style="padding: 16px; background: linear-gradient(90deg, var(--royal-blue), var(--space-cadet)); text-align: center; position: relative;">
-      <h1 style="margin: 0; font-family: 'Kanit', sans-serif; font-size: 24px; background: linear-gradient(to right, var(--amber), var(--emerald)); -webkit-background-clip: text; background-clip: text; color: transparent;">
-        AETHER$WAP
-      </h1>
-      <div id="user-balance" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 20px; font-size: 14px;">
-        0 $AETHER
-      </div>
-    </header>
-
-    <!-- 🎯 Core Game -->
-    <main class="click-engine">
-      <!-- Page 1: Tap Interface -->
-      <div id="tap-interface" class="page active">
-        <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-          <button id="aether-tap" style="width: 180px; height: 180px; border-radius: 50%; background: linear-gradient(145deg, var(--azure), var(--royal-blue)); border: none; color: white; font-size: 32px; cursor: pointer; box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); transition: all 0.1s; position: relative; overflow: hidden;">
-            <div style="position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
-              ⚡
-            </div>
-          </button>
-          <div style="margin-top: 30px; text-align: center;">
-            <div style="font-size: 42px; font-weight: bold; font-family: 'Kanit'; background: linear-gradient(to right, var(--amber), var(--emerald)); -webkit-background-clip: text; background-clip: text; color: transparent;" id="aether-points">
-              0
-            </div>
-            <div style="opacity: 0.8; margin-top: 8px;">Points</div>
-          </div>
+    <!-- === CINEMATIC INTRO === -->
+    <div class="intro-screen" id="introScreen">
+        <div class="intro-animation"></div>
+        <div class="intro-logo">AETHER$WAP</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
         </div>
-      </div>
-      
-      <!-- Page 2: Missions -->
-      <div id="missions-page" class="page" style="display: none; padding: 16px; overflow-y: auto;">
-        <h2 style="font-family: 'Kanit'; margin-top: 0;">Missions Sociales</h2>
-        
-        <div class="aether-card" style="border-left: 4px solid var(--amber);">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin: 0;">Rejoindre Telegram</h3>
-            <div style="background: rgba(16, 185, 129, 0.2); padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: bold;">
-              +100 $AETHER
-            </div>
-          </div>
-          <p style="opacity: 0.8; font-size: 14px;">Connectez-vous pour vérifier</p>
-          <button class="mission-btn" style="background: linear-gradient(to right, var(--royal-blue), var(--azure)); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; margin-top: 12px; font-weight: bold; cursor: pointer;">
-            VÉRIFIER
-          </button>
-        </div>
-      </div>
-    </main>
-
-    <!-- 📲 Navigation -->
-    <div style="display: grid; grid-template-columns: repeat(5, 1fr); background: var(--royal-blue); padding: 12px 0;">
-      <button class="nav-btn active" onclick="showPage('tap-interface')" style="background: none; border: none; color: var(--ghost-white); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-        <div style="font-size: 20px;">⚡</div>
-        <div style="font-size: 12px;">Jouer</div>
-      </button>
-      <button class="nav-btn" onclick="showPage('missions-page')" style="background: none; border: none; color: var(--ghost-white); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-        <div style="font-size: 20px;">🎯</div>
-        <div style="font-size: 12px;">Missions</div>
-      </button>
     </div>
-  </div>
 
-  <script>
-    // 💎 Game State
-    const gameState = {
-      points: 0,
-      aether: 0,
-      level: 1,
-      missions: {
-        telegram: false,
-        twitter: false
-      },
-      conversionRate: 1000000 // 1M points = 1 $AETHER
-    };
+    <!-- === MAIN APP === -->
+    <div class="app-container" id="appContainer">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="logo">AETHER$WAP</div>
+            <div class="wallet" id="walletBtn">
+                <i class="fas fa-wallet"></i>
+            </div>
+        </div>
 
-    // 🌌 Effets Visuels
-    function createParticles(x, y) {
-      for (let i = 0; i < 10; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = `${x}px`;
-        particle.style.top = `${y}px`;
-        document.getElementById('particles').appendChild(particle);
-        
-        // Animation
-        const angle = Math.random() * Math.PI * 2;
-        const velocity = 2 + Math.random() * 3;
-        const lifetime = 500 + Math.random() * 500;
-        
-        const startTime = Date.now();
-        
-        function update() {
-          const elapsed = Date.now() - startTime;
-          const progress = elapsed / lifetime;
-          
-          if (progress >= 1) {
-            particle.remove();
-            return;
-          }
-          
-          const distance = velocity * elapsed / 20;
-          particle.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
-          particle.style.opacity = 1 - progress;
-          requestAnimationFrame(update);
+        <!-- SCREEN 1: TAP-TO-EARN -->
+        <div class="tab-content active" id="tapScreen">
+            <div class="energy-bar">
+                <span>Energy: </span>
+                <div class="energy-fill" id="energyBar" style="width: 100%;"></div>
+            </div>
+            
+            <div class="tap-area" id="tapArea">
+                <div class="tap-icon"><i class="fas fa-hand-pointer"></i></div>
+                <div class="tap-counter" id="tapCounter">0</div>
+                <div class="tap-value">+<span id="tapValue">10</span> AETH</div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: BOOSTS -->
+        <div class="tab-content" id="boostsScreen">
+            <div class="boosts-grid" id="boostsGrid">
+                <!-- Boost cards injected via JS -->
+            </div>
+        </div>
+
+        <!-- SCREEN 3: MISSIONS -->
+        <div class="tab-content" id="missionsScreen">
+            <div class="mission-list" id="missionList">
+                <!-- Missions injected via JS -->
+            </div>
+        </div>
+
+        <!-- SCREEN 4: LEADERBOARD -->
+        <div class="tab-content" id="leaderboardScreen">
+            <div class="podium">
+                <!-- Podium injected via JS -->
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <button class="tab-btn active" data-tab="tap">
+                <i class="fas fa-hand-pointer"></i>
+            </button>
+            <button class="tab-btn" data-tab="boosts">
+                <i class="fas fa-bolt"></i>
+            </button>
+            <button class="tab-btn" data-tab="missions">
+                <i class="fas fa-tasks"></i>
+            </button>
+            <button class="tab-btn" data-tab="leaderboard">
+                <i class="fas fa-trophy"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ======================
+        // GAME STATE (OFFLINE-FIRST)
+        // ======================
+        const gameState = {
+            balance: localStorage.getItem('balance') || 0,
+            taps: localStorage.getItem('taps') || 0,
+            energy: localStorage.getItem('energy') || 100,
+            boosts: JSON.parse(localStorage.getItem('boosts')) || [],
+            missions: JSON.parse(localStorage.getItem('missions')) || [],
+            referrals: JSON.parse(localStorage.getItem('referrals')) || []
+        };
+
+        // ======================
+        // TELEGRAM WEBAPP INTEGRATION
+        // ======================
+        function initTelegram() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tgUser = Telegram.WebApp.initDataUnsafe.user;
+                if (tgUser) {
+                    // Save Telegram user data
+                    gameState.userId = tgUser.id;
+                    gameState.username = tgUser.username;
+                    
+                    // Check for referral
+                    const refCode = new URLSearchParams(window.location.search).get('ref');
+                    if (refCode && !gameState.referrals.includes(refCode)) {
+                        gameState.referrals.push(refCode);
+                        gameState.balance += 1000; // Referral bonus
+                        saveGameState();
+                    }
+                }
+            }
         }
-        
-        requestAnimationFrame(update);
-      }
-    }
 
-    // 🎮 Core Gameplay
-    document.getElementById('aether-tap').addEventListener('click', (e) => {
-      // Points
-      gameState.points += gameState.level;
-      document.getElementById('aether-points').textContent = gameState.points.toLocaleString();
-      
-      // Conversion
-      gameState.aether = Math.floor(gameState.points / gameState.conversionRate);
-      document.getElementById('user-balance').textContent = `${gameState.aether.toLocaleString()} $AETHER`;
-      
-      // Effets
-      createParticles(e.clientX, e.clientY);
-      e.target.style.transform = 'scale(0.95)';
-      setTimeout(() => {
-        e.target.style.transform = 'scale(1)';
-      }, 100);
-    });
+        // ======================
+        // INITIALIZATION
+        // ======================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hide intro after loading
+            setTimeout(() => {
+                document.getElementById('introScreen').style.opacity = 0;
+                setTimeout(() => {
+                    document.getElementById('introScreen').style.display = 'none';
+                    document.getElementById('appContainer').style.display = 'flex';
+                    
+                    // Initialize Telegram
+                    initTelegram();
+                    
+                    // Load game data
+                    updateUI();
+                }, 500);
+            }, 3500);
 
-    // 🔄 Navigation
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(page => {
-        page.style.display = 'none';
-      });
-      document.getElementById(pageId).style.display = 'block';
-      
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      event.currentTarget.classList.add('active');
-    }
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.getAttribute('data-tab');
+                    switchTab(tab);
+                });
+            });
 
-    // 📡 Intégration Telegram
-    if (window.Telegram && window.Telegram.WebApp) {
-      Telegram.WebApp.expand();
-      Telegram.WebApp.enableClosingConfirmation();
-      
-      // Thème
-      Telegram.WebApp.setHeaderColor('#1e3a8a');
-      Telegram.WebApp.setBackgroundColor('#0f1923');
-      
-      // User Data
-      const tgUser = Telegram.WebApp.initDataUnsafe.user;
-      if (tgUser) {
-        console.log(`User connected: ${tgUser.username}`);
-      }
-    }
-  </script>
+            // Tap handler
+            document.getElementById('tapArea').addEventListener('click', handleTap);
+        });
+
+        function switchTab(tab) {
+            // Update active tab button
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+            
+            // Update active tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tab + 'Screen').classList.add('active');
+        }
+
+        function handleTap() {
+            if (gameState.energy <= 0) return;
+            
+            gameState.taps++;
+            gameState.balance += 10;
+            gameState.energy -= 2;
+            
+            saveGameState();
+            updateUI();
+        }
+
+        function saveGameState() {
+            localStorage.setItem('balance', gameState.balance);
+            localStorage.setItem('taps', gameState.taps);
+            localStorage.setItem('energy', gameState.energy);
+            localStorage.setItem('boosts', JSON.stringify(gameState.boosts));
+            localStorage.setItem('missions', JSON.stringify(gameState.missions));
+            localStorage.setItem('referrals', JSON.stringify(gameState.referrals));
+        }
+
+        function updateUI() {
+            document.getElementById('tapCounter').textContent = gameState.taps;
+            document.getElementById('energyBar').style.width = `${gameState.energy}%`;
+        }
+    </script>
 </body>
 </html>
