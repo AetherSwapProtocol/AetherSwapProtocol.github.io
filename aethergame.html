@@ -1,134 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mini GTA</title>
+  <meta charset="UTF-8">
+  <title>Aether Clicker</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: #222;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background: black;
       color: white;
-      font-family: monospace;
     }
-    canvas {
-      display: block;
-      background: #444;
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: url('A_2D_digital_illustration_features_a_futuristic,_h.png') no-repeat center center;
+      background-size: cover;
     }
-    #hud {
+
+    #score {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 10px;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2em;
+      font-weight: bold;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+
+    #boost-selector {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1em;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid #00ffcc;
+      color: white;
+      padding: 5px;
       border-radius: 5px;
-      font-size: 14px;
+    }
+
+    #tap-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 180px;
+      height: 180px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .coin {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: radial-gradient(circle, gold, orange);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: fly 1s ease-out forwards;
+    }
+
+    @keyframes fly {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-100px); }
     }
   </style>
 </head>
 <body>
-<canvas id="gameCanvas" width="800" height="600"></canvas>
-<div id="hud">
-  <div><strong>Mode:</strong> <span id="mode">WALKING</span></div>
-  <div><strong>Vehicle nearby:</strong> <span id="vehicleStatus">YES</span></div>
-  <div><strong>Press E to Enter/Exit Vehicle</strong></div>
-</div>
-<script>
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
+  <div id="game-container">
+    <div id="score">Score : 0</div>
+    <select id="boost-selector">
+      <option value="1">Boost x1 (+1)</option>
+      <option value="3">Boost x3 (+3)</option>
+      <option value="6">Boost x6 (+6)</option>
+    </select>
+    <button id="tap-button" aria-label="Tap to earn"></button>
+  </div>
 
-  const keys = {};
-  window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
-  window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
+  <script>
+    let score = 0;
 
-  const player = {
-    x: 100,
-    y: 100,
-    size: 20,
-    speed: 2,
-    color: 'white',
-    inVehicle: false
-  };
+    const scoreDisplay = document.getElementById("score");
+    const button = document.getElementById("tap-button");
+    const boostSelector = document.getElementById("boost-selector");
+    const container = document.getElementById("game-container");
 
-  const vehicle = {
-    x: 300,
-    y: 300,
-    width: 40,
-    height: 20,
-    speed: 3,
-    color: 'lime'
-  };
+    button.addEventListener("click", (e) => {
+      const boost = parseInt(boostSelector.value);
+      score += boost;
+      scoreDisplay.textContent = "Score : " + score;
 
-  function drawMap() {
-    ctx.fillStyle = '#2c2c2c';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // Draw road
-    ctx.fillStyle = '#666';
-    ctx.fillRect(200, 0, 200, canvas.height);
-    // Draw house
-    ctx.fillStyle = '#993';
-    ctx.fillRect(600, 100, 80, 80);
-  }
-
-  function drawVehicle() {
-    ctx.fillStyle = vehicle.color;
-    ctx.fillRect(vehicle.x, vehicle.y, vehicle.width, vehicle.height);
-  }
-
-  function drawPlayer() {
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.x, player.y, player.size, player.size);
-  }
-
-  function isNearVehicle() {
-    const px = player.x + player.size/2;
-    const py = player.y + player.size/2;
-    return (
-      px > vehicle.x - 20 &&
-      px < vehicle.x + vehicle.width + 20 &&
-      py > vehicle.y - 20 &&
-      py < vehicle.y + vehicle.height + 20
-    );
-  }
-
-  function gameLoop() {
-    drawMap();
-
-    if (!player.inVehicle) {
-      if (keys['arrowup']) player.y -= player.speed;
-      if (keys['arrowdown']) player.y += player.speed;
-      if (keys['arrowleft']) player.x -= player.speed;
-      if (keys['arrowright']) player.x += player.speed;
-    } else {
-      if (keys['arrowup']) vehicle.y -= vehicle.speed;
-      if (keys['arrowdown']) vehicle.y += vehicle.speed;
-      if (keys['arrowleft']) vehicle.x -= vehicle.speed;
-      if (keys['arrowright']) vehicle.x += vehicle.speed;
-
-      player.x = vehicle.x + vehicle.width / 2 - player.size / 2;
-      player.y = vehicle.y + vehicle.height / 2 - player.size / 2;
-    }
-
-    drawVehicle();
-    drawPlayer();
-
-    // HUD update
-    document.getElementById('mode').innerText = player.inVehicle ? 'DRIVING' : 'WALKING';
-    document.getElementById('vehicleStatus').innerText = isNearVehicle() ? 'YES' : 'NO';
-
-    if (keys['e']) {
-      if (isNearVehicle()) {
-        player.inVehicle = !player.inVehicle;
-        keys['e'] = false; // prevent repeat toggle
+      for (let i = 0; i < boost; i++) {
+        const coin = document.createElement("div");
+        coin.className = "coin";
+        coin.style.left = (e.clientX - 15 + Math.random() * 30) + "px";
+        coin.style.top = (e.clientY - 15 + Math.random() * 30) + "px";
+        container.appendChild(coin);
+        setTimeout(() => coin.remove(), 1000);
       }
-    }
-
-    requestAnimationFrame(gameLoop);
-  }
-
-  gameLoop();
-</script>
+    });
+  </script>
 </body>
 </html>
