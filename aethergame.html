@@ -1,90 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>AetherFarm</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AetherTap</title>
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
+      background-color: #000;
       overflow: hidden;
-      background: #0a0a0a;
-      height: 100vh;
       font-family: Arial, sans-serif;
-      color: #fff;
     }
 
-    #game {
+    #game-container {
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       position: relative;
-      width: 100%;
-      height: 100%;
-      background: url("BUTTON_BACKGROUND_IMAGE_URL") no-repeat center center;
-      background-size: cover;
     }
 
-    #main-btn {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 180px;
-      height: 180px;
-      background: url("BUTTON_IMAGE_URL") no-repeat center;
+    #tap-button {
+      background-image: url('data:image/png;base64,{{BASE64}}');
       background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      width: 250px;
+      height: 250px;
       border: none;
-      transform: translate(-50%, -50%);
+      outline: none;
       cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    #tap-button:active {
+      transform: scale(0.95);
     }
 
     #score {
       position: absolute;
       top: 20px;
       left: 20px;
-      font-size: 22px;
+      font-size: 24px;
+      color: #0f0;
     }
 
-    .coin {
+    .floating {
       position: absolute;
-      width: 30px;
-      height: 30px;
-      background: url("https://i.imgur.com/eYV1XKJ.png") no-repeat center;
-      background-size: contain;
-      pointer-events: none;
-      animation: fall 1s ease-out forwards;
+      color: #0f0;
+      font-weight: bold;
+      font-size: 24px;
+      animation: floatUp 1s ease-out forwards;
     }
 
-    @keyframes fall {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(100px) scale(0.5); opacity: 0; }
+    @keyframes floatUp {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-80px); }
     }
   </style>
 </head>
 <body>
-  <div id="game">
-    <div id="score">💰 0</div>
-    <button id="main-btn"></button>
+  <div id="game-container">
+    <div id="score">Points : 0</div>
+    <button id="tap-button"></button>
   </div>
 
   <script>
+    const tapBtn = document.getElementById("tap-button");
+    const scoreText = document.getElementById("score");
     let score = 0;
-    let boost = 1; // Peut être 1, 3, ou 6 selon ton système
 
-    const scoreDisplay = document.getElementById("score");
-    const mainBtn = document.getElementById("main-btn");
-    const game = document.getElementById("game");
+    const boost = [1, 3, 6]; // simulate random boost levels
 
-    mainBtn.addEventListener("click", () => {
-      // Ajoute points
-      score += boost;
-      scoreDisplay.textContent = `💰 ${score}`;
+    tapBtn.addEventListener("click", (e) => {
+      const boostVal = boost[Math.floor(Math.random() * boost.length)];
+      score += boostVal;
+      scoreText.textContent = "Points : " + score;
 
-      // Animation pièce
-      const coin = document.createElement("div");
-      coin.className = "coin";
-      coin.style.left = `${mainBtn.offsetLeft + 80}px`;
-      coin.style.top = `${mainBtn.offsetTop + 80}px`;
-      game.appendChild(coin);
+      const float = document.createElement("div");
+      float.textContent = "+" + boostVal;
+      float.className = "floating";
+      float.style.left = `${e.clientX}px`;
+      float.style.top = `${e.clientY}px`;
+      document.body.appendChild(float);
 
-      setTimeout(() => coin.remove(), 1000);
+      setTimeout(() => float.remove(), 1000);
     });
   </script>
 </body>
