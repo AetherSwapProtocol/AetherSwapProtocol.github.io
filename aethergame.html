@@ -7,54 +7,55 @@
   <style>
     :root {
       --bg: #0d0f1a;
-      --panel: #1e2235;
-      --accent: #14F195;
-      --accent-alt: #9945FF;
+      --panel: #1a1c29;
+      --accent: #10E8F8;
+      --accent-alt: #943DFF;
       --text: #ffffff;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-    body { background: var(--bg); color: var(--text); }
-
-    #loading-screen {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle at center, #000014, #000);
-      display: flex; align-items: center; justify-content: center; flex-direction: column;
-      z-index: 1000; transition: opacity 1.5s ease-in-out;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', 'Orbitron', sans-serif;
     }
-
-    #intro-title {
-      font-size: 3rem;
+    body {
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+    button {
+      background: var(--accent);
+      border: none;
+      padding: 12px 20px;
+      margin: 10px 0;
+      font-size: 16px;
       font-weight: bold;
-      background: linear-gradient(45deg, var(--accent-alt), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 20px rgba(20,241,149,0.5);
-      opacity: 0;
-      animation: fadeIn 2s forwards 0.5s;
+      color: #000;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.3s ease;
     }
-
-    @keyframes fadeIn {
-      to { opacity: 1; transform: scale(1.05); }
+    button:hover {
+      background: var(--accent-alt);
+      color: #fff;
     }
-
-    header {
-      padding: 10px 20px;
-      background: var(--panel);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    button:active {
+      transform: scale(0.96);
+      box-shadow: 0 0 10px var(--accent-alt);
     }
-
     .screen {
       display: none;
       padding: 20px;
+      padding-bottom: 80px;
     }
-
-    .active {
+    .screen.active {
       display: block;
     }
-
     nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -63,144 +64,217 @@
       justify-content: space-around;
       padding: 10px 0;
       border-top: 1px solid #333;
+      z-index: 10;
     }
-
     nav button {
       background: none;
       border: none;
       color: #aaa;
-      font-size: 14px;
+      font-size: 13px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      cursor: pointer;
     }
-
     nav button.active {
       color: var(--accent);
     }
-
-    .svg-icon {
+    nav button svg {
       width: 24px;
       height: 24px;
-      fill: var(--accent);
-      margin-bottom: 4px;
+      fill: currentColor;
+      margin-bottom: 3px;
     }
-
-    button {
-      background: var(--accent);
-      color: #000;
-      border: none;
-      padding: 10px 20px;
-      margin: 15px 0;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
     .card-tabs {
       display: flex;
       gap: 10px;
-      margin-bottom: 10px;
+      margin: 20px 0 10px 0;
     }
-
     .card-tabs button {
-      padding: 8px 12px;
+      flex: 1;
       background: var(--panel);
       color: var(--accent);
       border: 1px solid var(--accent);
     }
-
-    .card-category { display: none; }
-
-    .info { font-size: 14px; color: #aaa; margin-top: 10px; }
+    .card-category {
+      display: none;
+      padding: 10px;
+      border: 1px solid #333;
+      border-radius: 6px;
+      background: var(--panel);
+    }
+    .card-category.active {
+      display: block;
+    }
+    header {
+      background: var(--panel);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #aaa;
+      border-bottom: 1px solid #333;
+    }
+    #xp-bar {
+      background: #333;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    #xp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-alt), var(--accent));
+      width: 0%;
+      transition: width 0.5s ease-in-out;
+    }
+    #loading-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, #0d0f1a, #000);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      flex-direction: column;
+      animation: fadeOut 3s ease-in-out 2.5s forwards;
+    }
+    #loading-screen h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(45deg, var(--accent), var(--accent-alt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px var(--accent-alt);
+    }
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
   </style>
 </head>
 <body>
 
+<!-- Écran de chargement -->
 <div id="loading-screen">
-  <h1 id="intro-title">Aether$wap</h1>
+  <h1>Aether$wap</h1>
 </div>
 
+<!-- HUD -->
 <header>
   <div id="user-id">User: guest</div>
-  <div id="stats">Lvl 1 • XP 0 • Taps 0</div>
+  <div>
+    <div>Lvl <span id="user-level">1</span> • XP <span id="user-xp">0</span></div>
+    <div id="xp-bar"><div id="xp-fill"></div></div>
+  </div>
 </header>
 
+<!-- Onglet TAP -->
 <div id="screen-tap" class="screen active">
   <h2>Tap to Earn</h2>
   <button onclick="tap()">TAP</button>
+  <p>Taps: <span id="tap-count">0</span></p>
 </div>
 
+<!-- Missions -->
 <div id="screen-missions" class="screen">
   <h2>Missions</h2>
   <button onclick="connectWallet()">Connect Wallet +500 XP</button>
-  <p class="info">Join <a href="https://t.me/AetherSwapOfficial" target="_blank">Telegram</a> +500 XP</p>
+  <p>Rejoins <a href="https://t.me/AetherSwapOfficial" target="_blank">Telegram</a> pour +500 XP</p>
+  <h3 style="margin-top: 20px;">Récompense quotidienne</h3>
+  <button id="daily-reward-btn" onclick="claimDailyReward()">Réclamer +100 XP</button>
+  <p id="daily-status" style="font-size: 13px; color: #999;"></p>
 </div>
 
+<!-- Parrainage -->
 <div id="screen-referral" class="screen">
-  <h2>Referral</h2>
-  <input type="text" id="ref-link" readonly style="width:100%; padding:5px;">
+  <h2>Parrainage</h2>
+  <input type="text" id="ref-link" readonly style="width:100%; padding: 6px;" />
 </div>
 
+<!-- Cartes -->
 <div id="screen-cards" class="screen">
-  <h2>Collection</h2>
+  <h2>Collection de Cartes</h2>
   <div class="card-tabs">
     <button onclick="showCardCategory('solana')">Solana</button>
     <button onclick="showCardCategory('ethereum')">Ethereum</button>
     <button onclick="showCardCategory('memecoins')">MemeCoins</button>
   </div>
-  <div id="cards-solana" class="card-category">Locked</div>
-  <div id="cards-ethereum" class="card-category">Locked</div>
-  <div id="cards-memecoins" class="card-category">Locked</div>
+  <div id="cards-solana" class="card-category active">Aucune carte Solana débloquée</div>
+  <div id="cards-ethereum" class="card-category">Aucune carte Ethereum débloquée</div>
+  <div id="cards-memecoins" class="card-category">Aucune carte MemeCoins débloquée</div>
 </div>
 
+<!-- Navigation -->
 <nav>
   <button onclick="showScreen('tap', event)" class="active">
-    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M7 2v11H3l9 9 9-9h-4V2z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M7 2v11H3l9 9 9-9h-4V2z"/></svg>
     Tap
   </button>
   <button onclick="showScreen('missions', event)">
-    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 3h18v2H3V3zm0 4h12v2H3V7zm0 4h18v2H3v-2zm0 4h12v2H3v-2z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M3 3h18v2H3V3zm0 4h12v2H3V7zm0 4h18v2H3v-2zm0 4h12v2H3v-2z"/></svg>
     Missions
   </button>
   <button onclick="showScreen('referral', event)">
-    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M10 3v2h4V3h-4zM3 9v2h18V9H3zm0 4v2h12v-2H3zm0 4v2h6v-2H3z"/></svg>
-    Referral
+    <svg viewBox="0 0 24 24"><path d="M10 3v2h4V3h-4zM3 9v2h18V9H3zm0 4v2h12v-2H3zm0 4v2h6v-2H3z"/></svg>
+    Parrainage
   </button>
   <button onclick="showScreen('cards', event)">
-    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M2 4h20v16H2z"/></svg>
-    Cards
+    <svg viewBox="0 0 24 24"><path d="M2 4h20v16H2z"/></svg>
+    Cartes
   </button>
 </nav>
 
+<!-- Script -->
 <script>
   const params = new URLSearchParams(location.search);
   const userId = params.get("start") || "guest";
-  const key = "aetherswap_user_" + userId;
-  const data = JSON.parse(localStorage.getItem(key)) || { taps: 0, xp: 0, level: 1 };
+  const storageKey = "aetherswap_user_" + userId;
+  const userData = JSON.parse(localStorage.getItem(storageKey)) || {
+    taps: 0,
+    xp: 0,
+    level: 1,
+    lastDaily: 0,
+    cardsUnlocked: { solana: [], ethereum: [], memecoins: [] }
+  };
+
   document.getElementById("user-id").innerText = "User: " + userId;
   document.getElementById("ref-link").value = "https://t.me/AetherSwapBot?start=" + userId;
 
-  function updateStats() {
-    document.getElementById("stats").innerText = `Lvl ${data.level} • XP ${data.xp} • Taps ${data.taps}`;
-    localStorage.setItem(key, JSON.stringify(data));
-  }
-
   function tap() {
-    data.taps++;
-    data.xp++;
-    if (data.xp >= data.level * 100) {
-      data.level++;
-      data.xp = 0;
-      alert("Level up! Level " + data.level);
+    userData.taps++;
+    userData.xp++;
+    const needed = userData.level * 100;
+    if (userData.xp >= needed) {
+      userData.level++;
+      userData.xp = 0;
+      alert("Niveau supérieur ! Niveau " + userData.level);
     }
-    updateStats();
+    saveData();
+    updateUI();
   }
 
   function connectWallet() {
-    data.xp += 500;
-    updateStats();
-    alert("Wallet connected! +500 XP");
+    userData.xp += 500;
+    alert("Wallet connecté ! +500 XP");
+    saveData();
+    updateUI();
+  }
+
+  function updateUI() {
+    document.getElementById("tap-count").innerText = userData.taps;
+    document.getElementById("user-xp").innerText = userData.xp;
+    document.getElementById("user-level").innerText = userData.level;
+    const pct = Math.min(100, (userData.xp / (userData.level * 100)) * 100);
+    document.getElementById("xp-fill").style.width = pct + "%";
+    checkDailyReward();
+  }
+
+  function saveData() {
+    localStorage.setItem(storageKey, JSON.stringify(userData));
   }
 
   function showScreen(id, e) {
@@ -211,18 +285,47 @@
   }
 
   function showCardCategory(cat) {
-    document.querySelectorAll(".card-category").forEach(c => c.style.display = "none");
-    document.getElementById("cards-" + cat).style.display = "block";
+    document.querySelectorAll(".card-category").forEach(c => c.classList.remove("active"));
+    document.getElementById("cards-" + cat).classList.add("active");
   }
 
-  updateStats();
+  function claimDailyReward() {
+    const now = new Date();
+    const last = new Date(userData.lastDaily || 0);
+    const hoursSince = (now - last) / (1000 * 60 * 60);
+    if (hoursSince >= 24) {
+      userData.xp += 100;
+      userData.lastDaily = now;
+      alert("Bravo ! +100 XP");
+      saveData();
+      updateUI();
+    } else {
+      alert("Déjà réclamé aujourd'hui !");
+    }
+  }
 
-  // Hide loading
-  setTimeout(() => {
-    document.getElementById("loading-screen").style.opacity = 0;
-    setTimeout(() => document.getElementById("loading-screen").remove(), 1500);
-  }, 2500);
+  function checkDailyReward() {
+    const now = new Date();
+    const last = new Date(userData.lastDaily || 0);
+    const hoursSince = (now - last) / (1000 * 60 * 60);
+    const btn = document.getElementById("daily-reward-btn");
+    const msg = document.getElementById("daily-status");
+    if (hoursSince >= 24) {
+      btn.disabled = false;
+      msg.innerText = "Disponible aujourd’hui !";
+    } else {
+      btn.disabled = true;
+      const remaining = Math.ceil(24 - hoursSince);
+      msg.innerText = `Reviens dans ${remaining}h`;
+    }
+  }
+
+  window.addEventListener("load", () => {
+    updateUI();
+    setTimeout(() => {
+      document.getElementById("loading-screen").style.display = "none";
+    }, 2500);
+  });
 </script>
-
 </body>
 </html>
