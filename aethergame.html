@@ -83,6 +83,21 @@
             cursor: pointer;
             box-shadow: 0 0 30px #ff9500;
             animation: pulse 2s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        .coin::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(45deg);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .coin:active::after {
+            opacity: 1;
         }
         @keyframes pulse {
             0% { transform: scale(1); }
@@ -100,6 +115,35 @@
             border-radius: 8px;
             width: 30%;
             text-align: center;
+        }
+        /* Upgrade Section */
+        .upgrade-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s;
+        }
+        .upgrade-card:hover {
+            transform: translateY(-5px);
+        }
+        .upgrade-btn {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        /* Leaderboard */
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         /* Responsive */
         @media (max-width: 480px) {
@@ -149,27 +193,56 @@
 
         <div class="panel" id="upgradePanel">
             <h3>Upgrades</h3>
-            <p>Coming soon...</p>
+            <div class="upgrade-card">
+                <div>
+                    <strong>Auto-Tapper</strong>
+                    <p>1 $AETH/sec</p>
+                </div>
+                <button class="upgrade-btn" id="buyAutoTap">50 $AETH</button>
+            </div>
+            <div class="upgrade-card">
+                <div>
+                    <strong>XP Multiplier</strong>
+                    <p>+20% XP per tap</p>
+                </div>
+                <button class="upgrade-btn" id="buyXpMultiplier">100 $AETH</button>
+            </div>
         </div>
 
         <div class="panel" id="leaderboardPanel">
             <h3>Leaderboard</h3>
-            <p>Coming soon...</p>
+            <div id="leaderboard">
+                <div class="leaderboard-item">
+                    <span>1. @Player1</span>
+                    <span>1,024 Taps</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span>2. @Player2</span>
+                    <span>872 Taps</span>
+                </div>
+            </div>
         </div>
 
         <div class="panel" id="airdropPanel">
             <h3>Airdrop</h3>
             <div id="referralLink">Generating referral link...</div>
+            <div id="referralCount">0 friends joined</div>
+            <button class="upgrade-btn" id="claimAirdrop" style="margin-top: 20px; width: 100%;">CLAIM AIRDROP</button>
         </div>
     </div>
 
     <script>
-        // Game State
+        // Enhanced Game State
         const gameState = {
             xp: 0,
             taps: 0,
             level: 1,
-            referralCount: 0,
+            aether: 0,
+            referrals: 0,
+            upgrades: {
+                autoTap: 0,
+                xpMultiplier: 1
+            },
             lastTap: 0
         };
 
@@ -180,8 +253,12 @@
         const levelDisplay = document.getElementById('level');
         const userInfo = document.getElementById('userInfo');
         const referralLink = document.getElementById('referralLink');
+        const referralCount = document.getElementById('referralCount');
         const tabs = document.querySelectorAll('.tab');
         const panels = document.querySelectorAll('.panel');
+        const buyAutoTap = document.getElementById('buyAutoTap');
+        const buyXpMultiplier = document.getElementById('buyXpMultiplier');
+        const claimAirdrop = document.getElementById('claimAirdrop');
 
         // Load saved game
         function loadGame() {
@@ -202,6 +279,7 @@
             xpDisplay.textContent = gameState.xp;
             tapsDisplay.textContent = gameState.taps;
             levelDisplay.textContent = gameState.level;
+            referralCount.textContent = `${gameState.referrals} friends joined`;
         }
 
         // Handle tap
@@ -210,7 +288,8 @@
             if (now - gameState.lastTap < 100) return; // Anti-spam
             
             gameState.taps++;
-            gameState.xp += 1 + Math.floor(gameState.level / 5);
+            gameState.xp += Math.floor(1 * gameState.upgrades.xpMultiplier);
+            gameState.aether += 1;
             gameState.lastTap = now;
             
             // Check level up
@@ -228,6 +307,17 @@
             saveGame();
         }
 
+        // Auto-tap logic
+        function startAutoTap() {
+            setInterval(() => {
+                if (gameState.upgrades.autoTap > 0) {
+                    gameState.aether += gameState.upgrades.autoTap;
+                    updateDisplays();
+                    saveGame();
+                }
+            }, 1000);
+        }
+
         // Detect Telegram user
         function detectTelegramUser() {
             if (window.Telegram && Telegram.WebApp) {
@@ -243,6 +333,14 @@
                         Your referral link:<br>
                         <code>https://t.me/YourBot?start=${user.id}</code>
                     `;
+                    
+                    // Check for referral in URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const ref = urlParams.get('ref');
+                    if (ref && ref !== user.id.toString()) {
+                        gameState.referrals++;
+                        saveGame();
+                    }
                     return;
                 }
             }
@@ -260,26 +358,38 @@
             });
         });
 
-        // Coin animation
-        coin.addEventListener('mousedown', () => {
-            coin.style.transform = 'scale(0.95)';
-        });
-        coin.addEventListener('mouseup', () => {
-            coin.style.transform = 'scale(1)';
-        });
-        coin.addEventListener('touchstart', () => {
-            coin.style.transform = 'scale(0.95)';
-        });
-        coin.addEventListener('touchend', () => {
-            coin.style.transform = 'scale(1)';
-        });
-
         // Initialize
         coin.addEventListener('click', handleTap);
         coin.addEventListener('touchstart', handleTap, { passive: true });
+        buyAutoTap.addEventListener('click', () => {
+            if (gameState.aether >= 50) {
+                gameState.aether -= 50;
+                gameState.upgrades.autoTap += 1;
+                buyAutoTap.textContent = `${50 + (gameState.upgrades.autoTap * 25)} $AETH`;
+                updateDisplays();
+                saveGame();
+            }
+        });
+        buyXpMultiplier.addEventListener('click', () => {
+            if (gameState.aether >= 100) {
+                gameState.aether -= 100;
+                gameState.upgrades.xpMultiplier += 0.2;
+                buyXpMultiplier.textContent = `${100 + (gameState.upgrades.xpMultiplier * 50)} $AETH`;
+                updateDisplays();
+                saveGame();
+            }
+        });
+        claimAirdrop.addEventListener('click', () => {
+            alert(`Airdrop claimed: ${gameState.referrals * 10} $AETH!`);
+            gameState.aether += gameState.referrals * 10;
+            updateDisplays();
+            saveGame();
+        });
+
         window.addEventListener('load', () => {
             loadGame();
             detectTelegramUser();
+            startAutoTap();
         });
     </script>
 </body>
