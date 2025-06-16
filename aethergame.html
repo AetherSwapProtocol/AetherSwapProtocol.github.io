@@ -1,96 +1,56 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aether Tap Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>AetherSwap TapBot</title>
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      background-color: #000;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
+      background-color: black;
+      color: lime;
       font-family: Arial, sans-serif;
+      text-align: center;
+      overflow: hidden;
     }
-
-    #game-container {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #000;
+    #points {
+      font-size: 24px;
+      margin: 20px;
     }
-
-    #tap-button {
+    #tapButton {
+      background-image: url("data:image/png;base64,INSERT_BASE64_HERE");
+      background-size: cover;
       width: 200px;
       height: 200px;
-      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAYACAIAAABn4K39AAEAAElEQVR4nHT925I2O44sBjoQWZJmm+ZG3dv0/g8pm7GuDEAXcHcgcvXOXv1XHuJjkCCODhAM4D/BrwYAZKJLPwaiEUAF0EgAQAEAws8DDTQQ/n0AzR+hP7WefwLV5/NAR0');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
+      margin: 50px auto;
       border: none;
-      outline: none;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 255, 0, 0.5);
       cursor: pointer;
       transition: transform 0.1s;
+      touch-action: manipulation;
     }
-
-    #tap-button:active {
+    #tapButton:active {
       transform: scale(0.95);
-    }
-
-    #score {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      color: #00ff99;
-      font-size: 24px;
-    }
-
-    .floating {
-      position: absolute;
-      color: gold;
-      font-weight: bold;
-      font-size: 22px;
-      animation: floatUp 1s ease-out forwards;
-      pointer-events: none;
-    }
-
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-60px); }
+      box-shadow: 0 4px 10px rgba(0, 255, 0, 0.2);
     }
   </style>
 </head>
 <body>
-  <div id="game-container">
-    <div id="score">Points : 0</div>
-    <button id="tap-button"></button>
-  </div>
+  <div id="points">Points : 0</div>
+  <button id="tapButton"></button>
 
   <script>
-    const tapButton = document.getElementById("tap-button");
-    const scoreText = document.getElementById("score");
-    let score = 0;
+    let points = 0;
+    const button = document.getElementById('tapButton');
+    const display = document.getElementById('points');
 
-    const boostLevels = [1, 3, 6]; // bonus selon le boost activé
+    // Change this value to simulate boost: 1, 3, 6...
+    let boost = 1;
 
-    tapButton.addEventListener("click", (e) => {
-      const boost = boostLevels[Math.floor(Math.random() * boostLevels.length)];
-      score += boost;
-      scoreText.textContent = "Points : " + score;
-
-      const float = document.createElement("div");
-      float.className = "floating";
-      float.textContent = "+" + boost;
-      float.style.left = `${e.clientX - 10}px`;
-      float.style.top = `${e.clientY - 20}px`;
-      document.body.appendChild(float);
-
-      setTimeout(() => float.remove(), 1000);
+    button.addEventListener('click', () => {
+      points += boost;
+      display.textContent = "Points : " + points;
     });
   </script>
 </body>
