@@ -34,10 +34,59 @@
 </head>
 <body>
   <!-- Loading Cinematic -->
-  <div id="loading-screen">
-    <div id="logo-cube"></div>
-    <h1 style="margin-top:20px;">Loading Aether$wap...</h1>
+  <!-- Nouvelle cinématique futuriste -->
+<div id="loading-screen" style="
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+  background: radial-gradient(circle at center, #0d0f1a 0%, #000 100%);
+  display: flex; justify-content: center; align-items: center; 
+  flex-direction: column; z-index: 9999; font-family: 'Arial', sans-serif;
+">
+  <!-- Cube Solana 3D -->
+  <div id="solana-cube" style="
+    width: 120px; height: 120px; position: relative;
+    transform-style: preserve-3d; animation: rotate 8s infinite linear;
+  ">
+    <!-- Faces du cube avec couleurs Solana -->
+    <div class="cube-face" style="background: rgba(153, 69, 255, 0.3); border: 2px solid #9945FF; transform: rotateY(0deg) translateZ(60px);"></div>
+    <div class="cube-face" style="background: rgba(20, 241, 149, 0.3); border: 2px solid #14F195; transform: rotateY(90deg) translateZ(60px);"></div>
+    <div class="cube-face" style="background: rgba(153, 69, 255, 0.3); border: 2px solid #9945FF; transform: rotateY(180deg) translateZ(60px);"></div>
+    <div class="cube-face" style="background: rgba(20, 241, 149, 0.3); border: 2px solid #14F195; transform: rotateY(270deg) translateZ(60px);"></div>
+    <div class="cube-face" style="background: rgba(153, 69, 255, 0.3); border: 2px solid #9945FF; transform: rotateX(90deg) translateZ(60px);"></div>
+    <div class="cube-face" style="background: rgba(20, 241, 149, 0.3); border: 2px solid #14F195; transform: rotateX(-90deg) translateZ(60px);"></div>
   </div>
+
+  <!-- Ton nom qui apparaît avec un effet futuriste -->
+  <h1 id="cinematic-text" style="
+    margin-top: 40px; font-size: 2rem; background: linear-gradient(45deg, #9945FF, #14F195);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0;
+    text-shadow: 0 0 10px rgba(153, 69, 255, 0.5);
+  ">[TON NOM]</h1>
+</div>
+
+<!-- Animation dans le CSS -->
+<style>
+  @keyframes rotate {
+    from { transform: rotateX(20deg) rotateY(20deg); }
+    to { transform: rotateX(380deg) rotateY(380deg); }
+  }
+</style>
+
+<script>
+  // Animation du texte après 2s
+  setTimeout(() => {
+    const text = document.getElementById('cinematic-text');
+    text.style.transition = 'opacity 1.5s ease-out';
+    text.style.opacity = 1;
+    
+    // Disparition après 5s (ajuste le timing si besoin)
+    setTimeout(() => {
+      document.getElementById('loading-screen').style.opacity = 0;
+      setTimeout(() => {
+        document.getElementById('loading-screen').style.display = 'none';
+      }, 1000);
+    }, 5000);
+  }, 2000);
+</script>
 
   <!-- Screens -->
   <div id="screen-tap" class="screen active">
