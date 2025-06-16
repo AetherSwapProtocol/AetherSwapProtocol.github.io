@@ -33,60 +33,78 @@
   </style>
 </head>
 <body>
-  <!-- Loading Cinematic -->
-  <!-- Nouvelle cinématique futuriste -->
-<div id="loading-screen" style="
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-  background: radial-gradient(circle at center, #0d0f1a 0%, #000 100%);
-  display: flex; justify-content: center; align-items: center; 
-  flex-direction: column; z-index: 9999; font-family: 'Arial', sans-serif;
-">
-  <!-- Cube Solana 3D -->
-  <div id="solana-cube" style="
-    width: 120px; height: 120px; position: relative;
-    transform-style: preserve-3d; animation: rotate 8s infinite linear;
-  ">
-    <!-- Faces du cube avec couleurs Solana -->
-    <div class="cube-face" style="background: rgba(153, 69, 255, 0.3); border: 2px solid #9945FF; transform: rotateY(0deg) translateZ(60px);"></div>
-    <div class="cube-face" style="background: rgba(20, 241, 149, 0.3); border: 2px solid #14F195; transform: rotateY(90deg) translateZ(60px);"></div>
-    <div class="cube-face" style="background: rgba(153, 69, 255, 0.3); border: 2px solid #9945FF; transform: rotateY(180deg) translateZ(60px);"></div>
-    <div class="cube-face" style="background: rgba(20, 241, 149, 0.3); border: 2px solid #14F195; transform: rotateY(270deg) translateZ(60px);"></div>
-    <div class="cube-face" style="background: rgba(153, 69, 255, 0.3); border: 2px solid #9945FF; transform: rotateX(90deg) translateZ(60px);"></div>
-    <div class="cube-face" style="background: rgba(20, 241, 149, 0.3); border: 2px solid #14F195; transform: rotateX(-90deg) translateZ(60px);"></div>
+  <div id="loading-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at center,#000014,#000);overflow:hidden;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:'Orbitron',sans-serif;">
+
+  <canvas id="vortex-canvas" style="position:absolute;width:100%;height:100%;z-index:0;"></canvas>
+
+  <div id="solana-cube" style="width:150px;height:150px;transform-style:preserve-3d;animation:rotate 5s linear infinite;z-index:2;filter:drop-shadow(0 0 30px #9945FF);">
+    <div class="cube-face" style="position:absolute;width:100%;height:100%;background:linear-gradient(145deg,#9945FF88,#14F19588);border:1px solid #14F195;transform:rotateY(0deg) translateZ(75px);"></div>
+    <div class="cube-face" style="position:absolute;width:100%;height:100%;background:linear-gradient(145deg,#14F19588,#9945FF88);border:1px solid #9945FF;transform:rotateY(90deg) translateZ(75px);"></div>
+    <div class="cube-face" style="position:absolute;width:100%;height:100%;background:linear-gradient(145deg,#9945FF88,#14F19588);border:1px solid #14F195;transform:rotateY(180deg) translateZ(75px);"></div>
+    <div class="cube-face" style="position:absolute;width:100%;height:100%;background:linear-gradient(145deg,#14F19588,#9945FF88);border:1px solid #9945FF;transform:rotateY(270deg) translateZ(75px);"></div>
+    <div class="cube-face" style="position:absolute;width:100%;height:100%;background:linear-gradient(145deg,#9945FF88,#14F19588);border:1px solid #14F195;transform:rotateX(90deg) translateZ(75px);"></div>
+    <div class="cube-face" style="position:absolute;width:100%;height:100%;background:linear-gradient(145deg,#14F19588,#9945FF88);border:1px solid #9945FF;transform:rotateX(-90deg) translateZ(75px);"></div>
   </div>
 
-  <!-- Ton nom qui apparaît avec un effet futuriste -->
-  <h1 id="cinematic-text" style="
-    margin-top: 40px; font-size: 2rem; background: linear-gradient(45deg, #9945FF, #14F195);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0;
-    text-shadow: 0 0 10px rgba(153, 69, 255, 0.5);
-  ">[Aether$wap]</h1>
-</div>
+  <h1 id="cinematic-text" style="opacity:0;font-size:3rem;margin-top:200px;z-index:2;background:linear-gradient(45deg,#9945FF,#14F195);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 20px rgba(153,69,255,0.7);transition:opacity 2s ease-in-out;">Aether$wap</h1>
 
-<!-- Animation dans le CSS -->
-<style>
-  @keyframes rotate {
-    from { transform: rotateX(20deg) rotateY(20deg); }
-    to { transform: rotateX(380deg) rotateY(380deg); }
-  }
-</style>
+  <style>
+    @keyframes rotate {
+      from {transform:rotateX(0deg) rotateY(0deg);}
+      to {transform:rotateX(360deg) rotateY(360deg);}
+    }
+  </style>
 
-<script>
-  // Animation du texte après 2s
-  setTimeout(() => {
+  <script>
     const text = document.getElementById('cinematic-text');
-    text.style.transition = 'opacity 1.5s ease-out';
-    text.style.opacity = 1;
-    
-    // Disparition après 5s (ajuste le timing si besoin)
-    setTimeout(() => {
-      document.getElementById('loading-screen').style.opacity = 0;
+    window.addEventListener('load', () => {
+      setTimeout(() => { text.style.opacity = 1; }, 1500);
       setTimeout(() => {
-        document.getElementById('loading-screen').style.display = 'none';
-      }, 1000);
-    }, 5000);
-  }, 2000);
-</script>
+        document.getElementById('loading-screen').style.opacity = 0;
+        document.getElementById('loading-screen').style.transition = 'opacity 2s ease';
+        setTimeout(() => {
+          document.getElementById('loading-screen').remove();
+        }, 2000);
+      }, 4000);
+    });
+
+    // Vortex canvas animation
+    const canvas = document.getElementById('vortex-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    for (let i = 0; i < 100; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5,
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#14F195';
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = '#9945FF';
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+
+</div>
 
   <!-- Screens -->
   <div id="screen-tap" class="screen active">
