@@ -3,153 +3,132 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NFTrig - Trigonométrie & NFTs</title>
+  <title>Mini GTA</title>
   <style>
-    body {
+    html, body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #0d0d0d;
-      color: #fff;
-    }
-    header {
-      background: #111;
-      padding: 20px;
-      text-align: center;
-      border-bottom: 1px solid #222;
-    }
-    .container {
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-    .btn {
-      background: #6f42c1;
+      padding: 0;
+      overflow: hidden;
+      background: #222;
       color: white;
-      border: none;
-      padding: 15px 25px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 15px;
+      font-family: monospace;
     }
-    .btn:hover {
-      background: #8e57e6;
+    canvas {
+      display: block;
+      background: #444;
     }
-    .card-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
-      justify-content: center;
-    }
-    .card {
-      background: #1a1a1a;
-      border: 1px solid #333;
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.5);
       padding: 10px;
-      width: 120px;
-      text-align: center;
-      border-radius: 8px;
+      border-radius: 5px;
       font-size: 14px;
     }
-    .rare-common { border-color: #aaa; }
-    .rare-uncommon { border-color: #4ea1d3; }
-    .rare-rare { border-color: #b041ff; }
-    .rare-legendary { border-color: #f4d03f; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>NFTrig</h1>
-    <p>Trigonométrie sur la Blockchain</p>
-  </header>
-  <div class="container">
-    <button class="btn" onclick="connectWallet()">🔗 Connect Wallet</button>
-    <p><strong>User ID:</strong> <span id="userId">Loading...</span></p>
-    <p><strong>Taps:</strong> <span id="tapCount">0</span></p>
-    <button class="btn" onclick="earnTap()">👆 Tap to Earn</button>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<div id="hud">
+  <div><strong>Mode:</strong> <span id="mode">WALKING</span></div>
+  <div><strong>Vehicle nearby:</strong> <span id="vehicleStatus">YES</span></div>
+  <div><strong>Press E to Enter/Exit Vehicle</strong></div>
+</div>
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
 
-    <div class="card-list" id="cardList"></div>
+  const keys = {};
+  window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+  window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
 
-    <button class="btn" onclick="combineCards()">⚗️ Combiner Sin & Cos</button>
-  </div>
+  const player = {
+    x: 100,
+    y: 100,
+    size: 20,
+    speed: 2,
+    color: 'white',
+    inVehicle: false
+  };
 
-  <script>
-    let userId = 'unknown';
-    let tapCount = 0;
-    let cards = [];
+  const vehicle = {
+    x: 300,
+    y: 300,
+    width: 40,
+    height: 20,
+    speed: 3,
+    color: 'lime'
+  };
 
-    // Chargement Telegram WebApp ID
-    window.Telegram.WebApp.ready();
-    const tg = window.Telegram.WebApp;
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-      userId = tg.initDataUnsafe.user.id;
-      document.getElementById('userId').textContent = userId;
+  function drawMap() {
+    ctx.fillStyle = '#2c2c2c';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Draw road
+    ctx.fillStyle = '#666';
+    ctx.fillRect(200, 0, 200, canvas.height);
+    // Draw house
+    ctx.fillStyle = '#993';
+    ctx.fillRect(600, 100, 80, 80);
+  }
+
+  function drawVehicle() {
+    ctx.fillStyle = vehicle.color;
+    ctx.fillRect(vehicle.x, vehicle.y, vehicle.width, vehicle.height);
+  }
+
+  function drawPlayer() {
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x, player.y, player.size, player.size);
+  }
+
+  function isNearVehicle() {
+    const px = player.x + player.size/2;
+    const py = player.y + player.size/2;
+    return (
+      px > vehicle.x - 20 &&
+      px < vehicle.x + vehicle.width + 20 &&
+      py > vehicle.y - 20 &&
+      py < vehicle.y + vehicle.height + 20
+    );
+  }
+
+  function gameLoop() {
+    drawMap();
+
+    if (!player.inVehicle) {
+      if (keys['arrowup']) player.y -= player.speed;
+      if (keys['arrowdown']) player.y += player.speed;
+      if (keys['arrowleft']) player.x -= player.speed;
+      if (keys['arrowright']) player.x += player.speed;
+    } else {
+      if (keys['arrowup']) vehicle.y -= vehicle.speed;
+      if (keys['arrowdown']) vehicle.y += vehicle.speed;
+      if (keys['arrowleft']) vehicle.x -= vehicle.speed;
+      if (keys['arrowright']) vehicle.x += vehicle.speed;
+
+      player.x = vehicle.x + vehicle.width / 2 - player.size / 2;
+      player.y = vehicle.y + vehicle.height / 2 - player.size / 2;
     }
 
-    // Chargement localStorage
-    if (localStorage.getItem('nftrig_taps_' + userId)) {
-      tapCount = parseInt(localStorage.getItem('nftrig_taps_' + userId));
-      cards = JSON.parse(localStorage.getItem('nftrig_cards_' + userId)) || [];
-      updateUI();
-    }
+    drawVehicle();
+    drawPlayer();
 
-    function connectWallet() {
-      if (typeof window.ethereum !== 'undefined') {
-        ethereum.request({ method: 'eth_requestAccounts' })
-          .then(accounts => alert('Wallet connecté: ' + accounts[0]))
-          .catch(err => alert('Erreur connexion wallet'));
-      } else {
-        alert('MetaMask requis');
+    // HUD update
+    document.getElementById('mode').innerText = player.inVehicle ? 'DRIVING' : 'WALKING';
+    document.getElementById('vehicleStatus').innerText = isNearVehicle() ? 'YES' : 'NO';
+
+    if (keys['e']) {
+      if (isNearVehicle()) {
+        player.inVehicle = !player.inVehicle;
+        keys['e'] = false; // prevent repeat toggle
       }
     }
 
-    function earnTap() {
-      tapCount++;
-      localStorage.setItem('nftrig_taps_' + userId, tapCount);
-      // Toutes les 5 taps : gagner une carte
-      if (tapCount % 5 === 0) {
-        const card = mintRandomCard();
-        cards.push(card);
-        localStorage.setItem('nftrig_cards_' + userId, JSON.stringify(cards));
-      }
-      updateUI();
-    }
+    requestAnimationFrame(gameLoop);
+  }
 
-    function mintRandomCard() {
-      const types = ['Sin(x)', 'Cos(x)'];
-      const rarities = ['common', 'uncommon', 'rare', 'legendary'];
-      const card = {
-        type: types[Math.floor(Math.random() * types.length)],
-        rarity: rarities[Math.floor(Math.random() * rarities.length)]
-      };
-      return card;
-    }
-
-    function combineCards() {
-      const hasSin = cards.find(c => c.type === 'Sin(x)');
-      const hasCos = cards.find(c => c.type === 'Cos(x)');
-      if (hasSin && hasCos) {
-        cards = cards.filter(c => !(c.type === 'Sin(x)' || c.type === 'Cos(x)'));
-        cards.push({ type: 'Tan(x)', rarity: 'rare' });
-        alert('✨ Tan(x) créé à partir de Sin × Cos');
-        localStorage.setItem('nftrig_cards_' + userId, JSON.stringify(cards));
-        updateUI();
-      } else {
-        alert('Tu dois avoir Sin(x) et Cos(x) pour combiner.');
-      }
-    }
-
-    function updateUI() {
-      document.getElementById('tapCount').textContent = tapCount;
-      const list = document.getElementById('cardList');
-      list.innerHTML = '';
-      cards.forEach(card => {
-        const div = document.createElement('div');
-        div.className = 'card rare-' + card.rarity;
-        div.innerHTML = `<strong>${card.type}</strong><br><em>${card.rarity}</em>`;
-        list.appendChild(div);
-      });
-    }
-  </script>
+  gameLoop();
+</script>
 </body>
 </html>
