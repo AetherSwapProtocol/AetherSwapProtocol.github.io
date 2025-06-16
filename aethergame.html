@@ -1,1590 +1,228 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aether$wap | Tap-to-Earn Crypto Adventure</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #6e3aff;
-            --secondary: #00f0ff;
-            --dark: #0a0a1a;
-            --darker: #050510;
-            --light: #e0e0ff;
-            --accent: #ff00f0;
-            --energy: #ffcc00;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-            user-select: none;
-        }
-
-        body {
-            background-color: var(--dark);
-            color: var(--light);
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Animation d'introduction */
-        .intro-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            transition: opacity 1s ease-out;
-        }
-
-        .rocket-container {
-            position: relative;
-            width: 200px;
-            height: 300px;
-            margin-bottom: 30px;
-        }
-
-        .rocket {
-            width: 100px;
-            height: 200px;
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: takeoff 3s ease-in forwards;
-            filter: drop-shadow(0 0 20px var(--secondary));
-        }
-
-        .exhaust {
-            position: absolute;
-            bottom: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 100px;
-            background: linear-gradient(to top, var(--secondary), transparent);
-            border-radius: 50%;
-            animation: exhaust 3s ease-in forwards;
-            opacity: 0.8;
-        }
-
-        .logo-intro {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-top: 20px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            opacity: 0;
-            animation: fadeIn 2s ease-in 1.5s forwards;
-        }
-
-        .loading-bar {
-            width: 200px;
-            height: 5px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            margin-top: 30px;
-            overflow: hidden;
-            opacity: 0;
-            animation: fadeIn 1s ease-in 2s forwards;
-        }
-
-        .loading-progress {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            border-radius: 5px;
-            animation: loadProgress 2s ease-in 2s forwards;
-        }
-
-        @keyframes takeoff {
-            0% { transform: translate(-50%, 0) scale(1); opacity: 1; }
-            50% { transform: translate(-50%, -100px) scale(1.1); opacity: 1; }
-            100% { transform: translate(-50%, -500px) scale(0.5); opacity: 0; }
-        }
-
-        @keyframes exhaust {
-            0% { height: 100px; opacity: 0.8; }
-            50% { height: 150px; opacity: 0.6; }
-            100% { height: 0px; opacity: 0; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes loadProgress {
-            from { width: 0%; }
-            to { width: 100%; }
-        }
-
-        /* Interface principale */
-        .container {
-            display: none;
-            max-width: 450px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            border: 2px solid var(--secondary);
-        }
-
-        .language-selector {
-            position: relative;
-            margin-left: 10px;
-        }
-
-        .language-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .language-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: var(--darker);
-            border-radius: 5px;
-            padding: 5px 0;
-            width: 120px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            display: none;
-            z-index: 100;
-        }
-
-        .language-dropdown.show {
-            display: block;
-        }
-
-        .language-option {
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .language-option:hover {
-            background: var(--primary);
-        }
-
-        .language-option.active {
-            background: var(--primary);
-            font-weight: bold;
-        }
-
-        /* Section principale de jeu */
-        .game-area {
-            background: linear-gradient(145deg, #121230 0%, #0a0a1a 100%);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(110, 58, 255, 0.3);
-        }
-
-        .energy-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-        }
-
-        .energy-progress {
-            flex-grow: 1;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            margin: 0 10px;
-            overflow: hidden;
-        }
-
-        .energy-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(to right, var(--energy), #ff9900);
-            border-radius: 5px;
-            transition: width 0.3s ease;
-        }
-
-        .tap-area {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 15px;
-            position: relative;
-            cursor: pointer;
-            border: 2px dashed rgba(110, 58, 255, 0.5);
-            transition: transform 0.1s;
-        }
-
-        .tap-area:active {
-            transform: scale(0.98);
-        }
-
-        .tap-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            color: var(--secondary);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .tap-counter {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .tap-value {
-            font-size: 1rem;
-            color: var(--secondary);
-        }
-
-        .balance-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-        }
-
-        .balance-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .balance-amount {
-            font-size: 1.3rem;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-            color: var(--secondary);
-        }
-
-        .daily-limit {
-            font-size: 0.8rem;
-            text-align: right;
-            opacity: 0.7;
-        }
-
-        /* Boosts section */
-        .boosts-section {
-            margin-top: 20px;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .boosts-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .boost-card {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            transition: all 0.3s;
-            border: 1px solid rgba(110, 58, 255, 0.3);
-            cursor: pointer;
-        }
-
-        .boost-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(110, 58, 255, 0.2);
-        }
-
-        .boost-card.locked {
-            opacity: 0.5;
-            filter: grayscale(70%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .boost-card.locked::after {
-            content: "🔒";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem;
-            opacity: 0.7;
-        }
-
-        .boost-icon {
-            font-size: 1.5rem;
-            color: var(--accent);
-            margin-bottom: 5px;
-        }
-
-        .boost-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .boost-description {
-            font-size: 0.8rem;
-            opacity: 0.8;
-            margin-bottom: 10px;
-        }
-
-        .boost-price {
-            font-size: 0.9rem;
-            color: var(--secondary);
-            font-weight: bold;
-        }
-
-        /* Missions section */
-        .missions-section {
-            margin-top: 30px;
-        }
-
-        .missions-tabs {
-            display: flex;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 15px;
-        }
-
-        .mission-tab {
-            padding: 8px 15px;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: all 0.3s;
-            border-bottom: 2px solid transparent;
-        }
-
-        .mission-tab.active {
-            opacity: 1;
-            border-bottom: 2px solid var(--primary);
-        }
-
-        .mission-card {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border: 1px solid rgba(110, 58, 255, 0.3);
-        }
-
-        .mission-icon {
-            font-size: 1.5rem;
-            color: var(--primary);
-            min-width: 30px;
-        }
-
-        .mission-info {
-            flex-grow: 1;
-        }
-
-        .mission-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .mission-description {
-            font-size: 0.8rem;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
-
-        .mission-progress {
-            height: 5px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-
-        .mission-progress-fill {
-            height: 100%;
-            background: linear-gradient(to right, var(--primary), var(--accent));
-            border-radius: 5px;
-            width: 0%;
-        }
-
-        .mission-reward {
-            font-size: 0.9rem;
-            color: var(--secondary);
-            font-weight: bold;
-            min-width: 60px;
-            text-align: right;
-        }
-
-        .mission-btn {
-            background: var(--primary);
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .mission-btn.completed {
-            background: var(--secondary);
-            color: var(--dark);
-        }
-
-        .mission-btn:hover {
-            transform: scale(1.05);
-        }
-
-        /* Leaderboard section */
-        .leaderboard-section {
-            margin-top: 30px;
-        }
-
-        .leaderboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .leaderboard-tabs {
-            display: flex;
-            gap: 10px;
-        }
-
-        .leaderboard-tab {
-            padding: 5px 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-
-        .leaderboard-tab.active {
-            background: var(--primary);
-        }
-
-        .leaderboard-container {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            border: 1px solid rgba(110, 58, 255, 0.3);
-        }
-
-        .leaderboard-top3 {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-
-        .podium-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .podium-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #ffcc00, #ff9900);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-            position: relative;
-        }
-
-        .podium-avatar::after {
-            content: "🥇";
-            position: absolute;
-            bottom: -10px;
-            font-size: 1.5rem;
-        }
-
-        .podium-avatar.second::after {
-            content: "🥈";
-        }
-
-        .podium-avatar.third::after {
-            content: "🥉";
-        }
-
-        .podium-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .podium-score {
-            color: var(--secondary);
-            font-weight: bold;
-        }
-
-        .leaderboard-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .leaderboard-rank {
-            width: 30px;
-            text-align: center;
-            font-weight: bold;
-            opacity: 0.7;
-        }
-
-        .leaderboard-user {
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .leaderboard-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .leaderboard-score {
-            color: var(--secondary);
-            font-weight: bold;
-        }
-
-        .player-position {
-            background: rgba(110, 58, 255, 0.2);
-            border-left: 3px solid var(--primary);
-            padding-left: 10px;
-        }
-
-        /* Référal section */
-        .referral-section {
-            margin-top: 30px;
-            background: linear-gradient(145deg, rgba(110, 58, 255, 0.1), rgba(0, 240, 255, 0.1));
-            border-radius: 10px;
-            padding: 20px;
-            border: 1px solid rgba(110, 58, 255, 0.3);
-        }
-
-        .referral-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .referral-code {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 5px;
-            padding: 10px 15px;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .referral-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .referral-stat {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 5px;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .referral-stat-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--secondary);
-            margin-bottom: 5px;
-        }
-
-        .referral-stat-label {
-            font-size: 0.8rem;
-            opacity: 0.8;
-        }
-
-        .referral-btn {
-            background: var(--primary);
-            border: none;
-            color: white;
-            width: 100%;
-            padding: 12px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .referral-btn:hover {
-            background: #5a2bd6;
-            transform: translateY(-2px);
-        }
-
-        /* Airdrop notification */
-        .airdrop-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(145deg, rgba(255, 0, 240, 0.9), rgba(110, 58, 255, 0.9));
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(255, 0, 240, 0.3);
-            z-index: 100;
-            display: none;
-            animation: slideIn 0.5s ease-out;
-            cursor: pointer;
-            max-width: 300px;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-
-        .airdrop-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .airdrop-title {
-            font-weight: bold;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .airdrop-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            opacity: 0.7;
-        }
-
-        .airdrop-timer {
-            font-size: 0.9rem;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* Audio controls */
-        .audio-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            display: flex;
-            gap: 10px;
-            z-index: 90;
-        }
-
-        .audio-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.5);
-            border: none;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .audio-btn:hover {
-            background: var(--primary);
-            transform: scale(1.1);
-        }
-
-        /* Responsive */
-        @media (max-width: 500px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .boosts-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .leaderboard-top3 {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .podium-item {
-                flex-direction: row;
-                justify-content: center;
-                gap: 15px;
-            }
-            
-            .podium-avatar {
-                margin-bottom: 0;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aether$wap</title>
+  <style>
+    :root {
+      --bg: #0d0f1a;
+      --panel: #1e2235;
+      --accent: #14F195;
+      --accent-alt: #9945FF;
+      --text: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background: var(--bg); color: var(--text); }
+
+    #loading-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #000014, #000);
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+      z-index: 1000; transition: opacity 1.5s ease-in-out;
+    }
+
+    #intro-title {
+      font-size: 3rem;
+      font-weight: bold;
+      background: linear-gradient(45deg, var(--accent-alt), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(20,241,149,0.5);
+      opacity: 0;
+      animation: fadeIn 2s forwards 0.5s;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; transform: scale(1.05); }
+    }
+
+    header {
+      padding: 10px 20px;
+      background: var(--panel);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .screen {
+      display: none;
+      padding: 20px;
+    }
+
+    .active {
+      display: block;
+    }
+
+    nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--panel);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      border-top: 1px solid #333;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    nav button.active {
+      color: var(--accent);
+    }
+
+    .svg-icon {
+      width: 24px;
+      height: 24px;
+      fill: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    button {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 15px 0;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .card-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .card-tabs button {
+      padding: 8px 12px;
+      background: var(--panel);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .card-category { display: none; }
+
+    .info { font-size: 14px; color: #aaa; margin-top: 10px; }
+  </style>
 </head>
 <body>
-    <!-- Écran d'introduction -->
-    <div class="intro-screen">
-        <div class="rocket-container">
-            <div class="exhaust"></div>
-            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMjAwIj48c3R5bGU+LnN0MHtmaWxsOiNmZmY7fS5zdDF7ZmlsbDojMDAwO308L3N0eWxlPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MCAxODBjLTE1IDAtMzAtNS0zMC0xNXYtMTQ1YzAtMTAgMTUtMTUgMzAtMTVzMzAgNSAzMCAxNXYxNDVDODAgMTc1IDY1IDE4MCA1MCAxODB6Ii8+PHBhdGggY2xhc3M9InN0MSIgZD0iTTUwIDE3MGMtMTAgMC0yMC0zLTIwLTV2LTEzNWMwLTIgMTAtNSAyMC01czIwIDMgMjAgNXYxMzVDNzAgMTY3IDYwIDE3MCA1MCAxNzB6Ii8+PHBhdGggY2xhc3M9InN0MCIgZD0iTTQwIDE4MGgyMHYyMGgtMjB6Ii8+PHBhdGggY2xhc3M9InN0MCIgZD0iTTMwIDQwbDQwIDAgMC0xMC0zNSAwIDAgMTB6Ii8+PC9zdmc+" class="rocket" alt="Rocket">
-        </div>
-        <div class="logo-intro">Aether$wap</div>
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
-        </div>
-    </div>
 
-    <!-- Interface principale -->
-    <div class="container">
-        <header class="header">
-            <div class="logo">Aether$wap</div>
-            <div class="user-info">
-                <div class="avatar">U</div>
-                <div class="language-selector">
-                    <button class="language-btn" id="languageBtn">
-                        <span class="flag-icon">🇫🇷</span>
-                        <span>FR</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="language-dropdown" id="languageDropdown">
-                        <div class="language-option active" data-lang="fr" data-i18n="lang_fr">
-                            <span class="flag-icon">🇫🇷</span> Français
-                        </div>
-                        <div class="language-option" data-lang="en" data-i18n="lang_en">
-                            <span class="flag-icon">🇬🇧</span> English
-                        </div>
-                        <div class="language-option" data-lang="es" data-i18n="lang_es">
-                            <span class="flag-icon">🇪🇸</span> Español
-                        </div>
-                        <div class="language-option" data-lang="de" data-i18n="lang_de">
-                            <span class="flag-icon">🇩🇪</span> Deutsch
-                        </div>
-                        <div class="language-option" data-lang="ru" data-i18n="lang_ru">
-                            <span class="flag-icon">🇷🇺</span> Русский
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
+<div id="loading-screen">
+  <h1 id="intro-title">Aether$wap</h1>
+</div>
 
-        <!-- Zone de jeu principale -->
-        <section class="game-area">
-            <div class="energy-bar">
-                <span data-i18n="energy">Énergie:</span>
-                <div class="energy-progress">
-                    <div class="energy-fill" id="energyFill" style="width: 100%;"></div>
-                </div>
-                <span id="energyText">100/100</span>
-            </div>
+<header>
+  <div id="user-id">User: guest</div>
+  <div id="stats">Lvl 1 • XP 0 • Taps 0</div>
+</header>
 
-            <div class="tap-area" id="tapArea">
-                <div class="tap-icon">🚀</div>
-                <div class="tap-counter" id="tapCounter">0</div>
-                <div class="tap-value" data-i18n="tap_value">+10 AETH par clic</div>
-            </div>
+<div id="screen-tap" class="screen active">
+  <h2>Tap to Earn</h2>
+  <button onclick="tap()">TAP</button>
+</div>
 
-            <div class="balance-container">
-                <div>
-                    <div class="balance-label" data-i18n="balance">Solde AETH</div>
-                    <div class="balance-amount" id="balance">0</div>
-                </div>
-                <div>
-                    <div class="daily-limit" data-i18n="daily_limit">Limite quotidienne: <span id="dailyLimit">0</span>/10,000</div>
-                </div>
-            </div>
+<div id="screen-missions" class="screen">
+  <h2>Missions</h2>
+  <button onclick="connectWallet()">Connect Wallet +500 XP</button>
+  <p class="info">Join <a href="https://t.me/AetherSwapOfficial" target="_blank">Telegram</a> +500 XP</p>
+</div>
 
-            <!-- Section Boosts -->
-            <div class="boosts-section">
-                <h2 class="section-title">
-                    <i class="fas fa-bolt"></i>
-                    <span data-i18n="boosts">Boosts</span>
-                </h2>
-                <div class="boosts-grid">
-                    <div class="boost-card">
-                        <div class="boost-icon">⚡</div>
-                        <div class="boost-name" data-i18n="boost1_name">Turbo Clic</div>
-                        <div class="boost-description" data-i18n="boost1_desc">Double votre gain par clic pendant 30 minutes</div>
-                        <div class="boost-price" data-i18n="price">500 AETH</div>
-                    </div>
-                    <div class="boost-card locked">
-                        <div class="boost-icon">⏱️</div>
-                        <div class="boost-name" data-i18n="boost2_name">Auto-Clic</div>
-                        <div class="boost-description" data-i18n="boost2_desc">Gagnez 5 AETH toutes les 5 secondes</div>
-                        <div class="boost-price" data-i18n="price">1,500 AETH</div>
-                    </div>
-                    <div class="boost-card locked">
-                        <div class="boost-icon">💎</div>
-                        <div class="boost-name" data-i18n="boost3_name">Multiplicateur</div>
-                        <div class="boost-description" data-i18n="boost3_desc">x2 Multiplicateur permanent</div>
-                        <div class="boost-price" data-i18n="price">3,000 AETH</div>
-                    </div>
-                    <div class="boost-card locked">
-                        <div class="boost-icon">🏆</div>
-                        <div class="boost-name" data-i18n="boost4_name">Bonus VIP</div>
-                        <div class="boost-description" data-i18n="boost4_desc">+50% à tous vos gains</div>
-                        <div class="boost-price" data-i18n="price">5,000 AETH</div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<div id="screen-referral" class="screen">
+  <h2>Referral</h2>
+  <input type="text" id="ref-link" readonly style="width:100%; padding:5px;">
+</div>
 
-        <!-- Section Missions -->
-        <section class="missions-section">
-            <h2 class="section-title">
-                <i class="fas fa-tasks"></i>
-                <span data-i18n="missions">Missions</span>
-            </h2>
-            <div class="missions-tabs">
-                <div class="mission-tab active" data-tab="social" data-i18n="social_missions">Social</div>
-                <div class="mission-tab" data-tab="daily" data-i18n="daily_missions">Quotidiennes</div>
-                <div class="mission-tab" data-tab="special" data-i18n="special_missions">Spéciales</div>
-            </div>
-            <div class="mission-tab-content" id="socialMissions">
-                <div class="mission-card">
-                    <div class="mission-icon"><i class="fab fa-telegram"></i></div>
-                    <div class="mission-info">
-                        <div class="mission-title" data-i18n="mission1_title">Rejoignez notre Telegram</div>
-                        <div class="mission-description" data-i18n="mission1_desc">Rejoignez le groupe officiel Aether$wap</div>
-                        <div class="mission-progress">
-                            <div class="mission-progress-fill" style="width: 0%;"></div>
-                        </div>
-                    </div>
-                    <div class="mission-reward">+500 AETH</div>
-                    <button class="mission-btn" data-i18n="start">Commencer</button>
-                </div>
-                <div class="mission-card">
-                    <div class="mission-icon"><i class="fab fa-twitter"></i></div>
-                    <div class="mission-info">
-                        <div class="mission-title" data-i18n="mission2_title">Suivez-nous sur X</div>
-                        <div class="mission-description" data-i18n="mission2_desc">Suivez @AetherSwap sur Twitter/X</div>
-                        <div class="mission-progress">
-                            <div class="mission-progress-fill" style="width: 0%;"></div>
-                        </div>
-                    </div>
-                    <div class="mission-reward">+300 AETH</div>
-                    <button class="mission-btn" data-i18n="start">Commencer</button>
-                </div>
-                <div class="mission-card">
-                    <div class="mission-icon"><i class="fas fa-retweet"></i></div>
-                    <div class="mission-info">
-                        <div class="mission-title" data-i18n="mission3_title">Partagez notre tweet</div>
-                        <div class="mission-description" data-i18n="mission3_desc">Retweetez notre dernier post</div>
-                        <div class="mission-progress">
-                            <div class="mission-progress-fill" style="width: 0%;"></div>
-                        </div>
-                    </div>
-                    <div class="mission-reward">+200 AETH</div>
-                    <button class="mission-btn" data-i18n="start">Commencer</button>
-                </div>
-            </div>
-            <div class="mission-tab-content" id="dailyMissions" style="display: none;">
-                <!-- Contenu des missions quotidiennes -->
-            </div>
-            <div class="mission-tab-content" id="specialMissions" style="display: none;">
-                <!-- Contenu des missions spéciales -->
-            </div>
-        </section>
+<div id="screen-cards" class="screen">
+  <h2>Collection</h2>
+  <div class="card-tabs">
+    <button onclick="showCardCategory('solana')">Solana</button>
+    <button onclick="showCardCategory('ethereum')">Ethereum</button>
+    <button onclick="showCardCategory('memecoins')">MemeCoins</button>
+  </div>
+  <div id="cards-solana" class="card-category">Locked</div>
+  <div id="cards-ethereum" class="card-category">Locked</div>
+  <div id="cards-memecoins" class="card-category">Locked</div>
+</div>
 
-        <!-- Leaderboard -->
-        <section class="leaderboard-section">
-            <div class="leaderboard-header">
-                <h2 class="section-title">
-                    <i class="fas fa-trophy"></i>
-                    <span data-i18n="leaderboard">Classement</span>
-                </h2>
-                <div class="leaderboard-tabs">
-                    <div class="leaderboard-tab active" data-i18n="daily">Quotidien</div>
-                    <div class="leaderboard-tab" data-i18n="weekly">Hebdomadaire</div>
-                    <div class="leaderboard-tab" data-i18n="all_time">Global</div>
-                </div>
-            </div>
-            <div class="leaderboard-container">
-                <div class="leaderboard-top3">
-                    <div class="podium-item">
-                        <div class="podium-avatar second">2</div>
-                        <div class="podium-name">CryptoQueen</div>
-                        <div class="podium-score">8,742 AETH</div>
-                    </div>
-                    <div class="podium-item">
-                        <div class="podium-avatar">1</div>
-                        <div class="podium-name">BitLord</div>
-                        <div class="podium-score">9,856 AETH</div>
-                    </div>
-                    <div class="podium-item">
-                        <div class="podium-avatar third">3</div>
-                        <div class="podium-name">AetherPro</div>
-                        <div class="podium-score">7,921 AETH</div>
-                    </div>
-                </div>
-                <div class="leaderboard-list">
-                    <!-- Top 4-50 -->
-                    <div class="leaderboard-item">
-                        <div class="leaderboard-rank">4</div>
-                        <div class="leaderboard-user">
-                            <div class="leaderboard-avatar">S</div>
-                            <div class="leaderboard-name">Satosh1</div>
-                        </div>
-                        <div class="leaderboard-score">6,543 AETH</div>
-                    </div>
-                    <div class="leaderboard-item">
-                        <div class="leaderboard-rank">5</div>
-                        <div class="leaderboard-user">
-                            <div class="leaderboard-avatar">M</div>
-                            <div class="leaderboard-name">MoonLamb0</div>
-                        </div>
-                        <div class="leaderboard-score">5,987 AETH</div>
-                    </div>
-                    <!-- ... autres joueurs ... -->
-                    <div class="leaderboard-item player-position">
-                        <div class="leaderboard-rank">27</div>
-                        <div class="leaderboard-user">
-                            <div class="leaderboard-avatar">U</div>
-                            <div class="leaderboard-name">Vous</div>
-                        </div>
-                        <div class="leaderboard-score">1,234 AETH</div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<nav>
+  <button onclick="showScreen('tap', event)" class="active">
+    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M7 2v11H3l9 9 9-9h-4V2z"/></svg>
+    Tap
+  </button>
+  <button onclick="showScreen('missions', event)">
+    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 3h18v2H3V3zm0 4h12v2H3V7zm0 4h18v2H3v-2zm0 4h12v2H3v-2z"/></svg>
+    Missions
+  </button>
+  <button onclick="showScreen('referral', event)">
+    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M10 3v2h4V3h-4zM3 9v2h18V9H3zm0 4v2h12v-2H3zm0 4v2h6v-2H3z"/></svg>
+    Referral
+  </button>
+  <button onclick="showScreen('cards', event)">
+    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M2 4h20v16H2z"/></svg>
+    Cards
+  </button>
+</nav>
 
-        <!-- Section Référal -->
-        <section class="referral-section">
-            <h2 class="referral-title">
-                <i class="fas fa-users"></i>
-                <span data-i18n="referral_program">Programme de parrainage</span>
-            </h2>
-            <div class="referral-code">
-                <span data-i18n="your_referral_code">Votre code de parrainage:</span>
-                <strong>https://t.me/AetherSwapBot?start=ABC123</strong>
-            </div>
-            <div class="referral-stats">
-                <div class="referral-stat">
-                    <div class="referral-stat-value">5</div>
-                    <div class="referral-stat-label" data-i18n="referrals">Filleuls</div>
-                </div>
-                <div class="referral-stat">
-                    <div class="referral-stat-value">1,250</div>
-                    <div class="referral-stat-label" data-i18n="earned">AETH gagnés</div>
-                </div>
-            </div>
-            <button class="referral-btn" data-i18n="invite_friends">
-                <i class="fas fa-share-alt"></i> Inviter des amis
-            </button>
-        </section>
-    </div>
+<script>
+  const params = new URLSearchParams(location.search);
+  const userId = params.get("start") || "guest";
+  const key = "aetherswap_user_" + userId;
+  const data = JSON.parse(localStorage.getItem(key)) || { taps: 0, xp: 0, level: 1 };
+  document.getElementById("user-id").innerText = "User: " + userId;
+  document.getElementById("ref-link").value = "https://t.me/AetherSwapBot?start=" + userId;
 
-    <!-- Notification Airdrop -->
-    <div class="airdrop-notification" id="airdropNotification">
-        <div class="airdrop-header">
-            <div class="airdrop-title">
-                <i class="fas fa-gift"></i>
-                <span data-i18n="airdrop_alert">Alerte Airdrop!</span>
-            </div>
-            <button class="airdrop-close" id="airdropClose">&times;</button>
-        </div>
-        <div class="airdrop-message" data-i18n="airdrop_message">Un airdrop surprise arrive dans:</div>
-        <div class="airdrop-timer">
-            <i class="fas fa-clock"></i>
-            <span id="airdropTimer">12:34:56</span>
-        </div>
-    </div>
+  function updateStats() {
+    document.getElementById("stats").innerText = `Lvl ${data.level} • XP ${data.xp} • Taps ${data.taps}`;
+    localStorage.setItem(key, JSON.stringify(data));
+  }
 
-    <!-- Contrôles audio -->
-    <div class="audio-controls">
-        <button class="audio-btn" id="musicToggle">
-            <i class="fas fa-music"></i>
-        </button>
-        <button class="audio-btn" id="soundToggle">
-            <i class="fas fa-volume-up"></i>
-        </button>
-    </div>
+  function tap() {
+    data.taps++;
+    data.xp++;
+    if (data.xp >= data.level * 100) {
+      data.level++;
+      data.xp = 0;
+      alert("Level up! Level " + data.level);
+    }
+    updateStats();
+  }
 
-    <!-- Audio Elements -->
-    <audio id="backgroundMusic" loop>
-        <source src="https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="tapSound">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="rocketSound">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-spaceship-in-rocket-launch-1564.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="coinSound">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-coins-handling-1939.mp3" type="audio/mpeg">
-    </audio>
+  function connectWallet() {
+    data.xp += 500;
+    updateStats();
+    alert("Wallet connected! +500 XP");
+  }
 
-    <script>
-        // Gestion des langues
-        const translations = {
-            fr: {
-                title: "Aether$wap | Aventure Crypto Tap-to-Earn",
-                energy: "Énergie:",
-                tap_value: "+10 AETH par clic",
-                balance: "Solde AETH",
-                daily_limit: "Limite quotidienne:",
-                boosts: "Boosts",
-                boost1_name: "Turbo Clic",
-                boost1_desc: "Double votre gain par clic pendant 30 minutes",
-                boost2_name: "Auto-Clic",
-                boost2_desc: "Gagnez 5 AETH toutes les 5 secondes",
-                boost3_name: "Multiplicateur",
-                boost3_desc: "x2 Multiplicateur permanent",
-                boost4_name: "Bonus VIP",
-                boost4_desc: "+50% à tous vos gains",
-                price: "Prix",
-                missions: "Missions",
-                social_missions: "Social",
-                daily_missions: "Quotidiennes",
-                special_missions: "Spéciales",
-                mission1_title: "Rejoignez notre Telegram",
-                mission1_desc: "Rejoignez le groupe officiel Aether$wap",
-                mission2_title: "Suivez-nous sur X",
-                mission2_desc: "Suivez @AetherSwap sur Twitter/X",
-                mission3_title: "Partagez notre tweet",
-                mission3_desc: "Retweetez notre dernier post",
-                start: "Commencer",
-                leaderboard: "Classement",
-                daily: "Quotidien",
-                weekly: "Hebdomadaire",
-                all_time: "Global",
-                referral_program: "Programme de parrainage",
-                your_referral_code: "Votre code de parrainage:",
-                referrals: "Filleuls",
-                earned: "AETH gagnés",
-                invite_friends: "Inviter des amis",
-                airdrop_alert: "Alerte Airdrop!",
-                airdrop_message: "Un airdrop surprise arrive dans:",
-                lang_fr: "Français",
-                lang_en: "English",
-                lang_es: "Español",
-                lang_de: "Deutsch",
-                lang_ru: "Русский"
-            },
-            en: {
-                title: "Aether$wap | Crypto Tap-to-Earn Adventure",
-                energy: "Energy:",
-                tap_value: "+10 AETH per tap",
-                balance: "AETH Balance",
-                daily_limit: "Daily limit:",
-                boosts: "Boosts",
-                boost1_name: "Turbo Tap",
-                boost1_desc: "Double your tap value for 30 minutes",
-                boost2_name: "Auto-Tapper",
-                boost2_desc: "Earn 5 AETH every 5 seconds",
-                boost3_name: "Multiplier",
-                boost3_desc: "Permanent x2 Multiplier",
-                boost4_name: "VIP Bonus",
-                boost4_desc: "+50% to all earnings",
-                price: "Price",
-                missions: "Missions",
-                social_missions: "Social",
-                daily_missions: "Daily",
-                special_missions: "Special",
-                mission1_title: "Join our Telegram",
-                mission1_desc: "Join the official Aether$wap group",
-                mission2_title: "Follow us on X",
-                mission2_desc: "Follow @AetherSwap on Twitter/X",
-                mission3_title: "Share our tweet",
-                mission3_desc: "Retweet our latest post",
-                start: "Start",
-                leaderboard: "Leaderboard",
-                daily: "Daily",
-                weekly: "Weekly",
-                all_time: "All Time",
-                referral_program: "Referral Program",
-                your_referral_code: "Your referral code:",
-                referrals: "Referrals",
-                earned: "AETH Earned",
-                invite_friends: "Invite Friends",
-                airdrop_alert: "Airdrop Alert!",
-                airdrop_message: "Surprise airdrop arriving in:",
-                lang_fr: "Français",
-                lang_en: "English",
-                lang_es: "Español",
-                lang_de: "Deutsch",
-                lang_ru: "Русский"
-            },
-            es: {
-                title: "Aether$wap | Aventura Crypto Tap-to-Earn",
-                energy: "Energía:",
-                tap_value: "+10 AETH por toque",
-                balance: "Saldo AETH",
-                daily_limit: "Límite diario:",
-                boosts: "Mejoras",
-                boost1_name: "Toque Turbo",
-                boost1_desc: "Doble tus ganancias por toque durante 30 minutos",
-                boost2_name: "Auto-Toque",
-                boost2_desc: "Gana 5 AETH cada 5 segundos",
-                boost3_name: "Multiplicador",
-                boost3_desc: "Multiplicador x2 permanente",
-                boost4_name: "Bonus VIP",
-                boost4_desc: "+50% a todas tus ganancias",
-                price: "Precio",
-                missions: "Misiones",
-                social_missions: "Sociales",
-                daily_missions: "Diarias",
-                special_missions: "Especiales",
-                mission1_title: "Únete a nuestro Telegram",
-                mission1_desc: "Únete al grupo oficial de Aether$wap",
-                mission2_title: "Síguenos en X",
-                mission2_desc: "Sigue a @AetherSwap en Twitter/X",
-                mission3_title: "Comparte nuestro tweet",
-                mission3_desc: "Retwittea nuestra última publicación",
-                start: "Comenzar",
-                leaderboard: "Clasificación",
-                daily: "Diario",
-                weekly: "Semanal",
-                all_time: "Global",
-                referral_program: "Programa de referidos",
-                your_referral_code: "Tu código de referido:",
-                referrals: "Referidos",
-                earned: "AETH Ganados",
-                invite_friends: "Invitar Amigos",
-                airdrop_alert: "¡Alerta de Airdrop!",
-                airdrop_message: "Airdrop sorpresa llegando en:",
-                lang_fr: "Français",
-                lang_en: "English",
-                lang_es: "Español",
-                lang_de: "Deutsch",
-                lang_ru: "Русский"
-            },
-            de: {
-                title: "Aether$wap | Crypto Tap-to-Earn Abenteuer",
-                energy: "Energie:",
-                tap_value: "+10 AETH pro Tap",
-                balance: "AETH Guthaben",
-                daily_limit: "Tägliches Limit:",
-                boosts: "Boosts",
-                boost1_name: "Turbo-Tap",
-                boost1_desc: "Verdoppelt deinen Tap-Wert für 30 Minuten",
-                boost2_name: "Auto-Tapper",
-                boost2_desc: "Verdiene 5 AETH alle 5 Sekunden",
-                boost3_name: "Multiplikator",
-                boost3_desc: "Permanenter x2 Multiplikator",
-                boost4_name: "VIP-Bonus",
-                boost4_desc: "+50% auf alle Einnahmen",
-                price: "Preis",
-                missions: "Missionen",
-                social_missions: "Sozial",
-                daily_missions: "Täglich",
-                special_missions: "Spezial",
-                mission1_title: "Trete unserem Telegram bei",
-                mission1_desc: "Trete der offiziellen Aether$wap Gruppe bei",
-                mission2_title: "Folge uns auf X",
-                mission2_desc: "Folge @AetherSwap auf Twitter/X",
-                mission3_title: "Teile unseren Tweet",
-                mission3_desc: "Retweete unseren letzten Beitrag",
-                start: "Starten",
-                leaderboard: "Bestenliste",
-                daily: "Täglich",
-                weekly: "Wöchentlich",
-                all_time: "Gesamt",
-                referral_program: "Empfehlungsprogramm",
-                your_referral_code: "Dein Empfehlungscode:",
-                referrals: "Empfehlungen",
-                earned: "AETH Verdient",
-                invite_friends: "Freunde einladen",
-                airdrop_alert: "Airdrop-Alarm!",
-                airdrop_message: "Überraschungs-Airdrop kommt in:",
-                lang_fr: "Français",
-                lang_en: "English",
-                lang_es: "Español",
-                lang_de: "Deutsch",
-                lang_ru: "Русский"
-            },
-            ru: {
-                title: "Aether$wap | Крипто-игра Tap-to-Earn",
-                energy: "Энергия:",
-                tap_value: "+10 AETH за тап",
-                balance: "Баланс AETH",
-                daily_limit: "Дневной лимит:",
-                boosts: "Улучшения",
-                boost1_name: "Турбо-тап",
-                boost1_desc: "Удваивает доход за тап на 30 минут",
-                boost2_name: "Авто-тап",
-                boost2_desc: "5 AETH каждые 5 секунд",
-                boost3_name: "Множитель",
-                boost3_desc: "Постоянный x2 множитель",
-                boost4_name: "VIP-бонус",
-                boost4_desc: "+50% ко всем доходам",
-                price: "Цена",
-                missions: "Миссии",
-                social_missions: "Социальные",
-                daily_missions: "Ежедневные",
-                special_missions: "Специальные",
-                mission1_title: "Присоединяйтесь к Telegram",
-                mission1_desc: "Вступите в официальную группу Aether$wap",
-                mission2_title: "Подпишитесь на X",
-                mission2_desc: "Подпишитесь на @AetherSwap в Twitter/X",
-                mission3_title: "Поделитесь твитом",
-                mission3_desc: "Ретвитните наш последний пост",
-                start: "Начать",
-                leaderboard: "Рейтинг",
-                daily: "День",
-                weekly: "Неделя",
-                all_time: "Все время",
-                referral_program: "Реферальная программа",
-                your_referral_code: "Ваш реферальный код:",
-                referrals: "Рефералы",
-                earned: "Заработано AETH",
-                invite_friends: "Пригласить друзей",
-                airdrop_alert: "Оповещение о Airdrop!",
-                airdrop_message: "Сюрприз airdrop через:",
-                lang_fr: "Français",
-                lang_en: "English",
-                lang_es: "Español",
-                lang_de: "Deutsch",
-                lang_ru: "Русский"
-            }
-        };
+  function showScreen(id, e) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById("screen-" + id).classList.add("active");
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+    e.target.closest("button").classList.add("active");
+  }
 
-        // État du jeu
-        const gameState = {
-            balance: 0,
-            taps: 0,
-            energy: 100,
-            dailyLimit: 0,
-            tapValue: 10,
-            boosts: {
-                turbo: { active: false, price: 500, duration: 1800 },
-                autoClick: { active: false, price: 1500, interval: null },
-                multiplier: { active: false, price: 3000 },
-                vip: { active: false, price: 5000 }
-            },
-            language: 'fr'
-        };
+  function showCardCategory(cat) {
+    document.querySelectorAll(".card-category").forEach(c => c.style.display = "none");
+    document.getElementById("cards-" + cat).style.display = "block";
+  }
 
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', () => {
-            // Cache l'intro après 3s
-            setTimeout(() => {
-                document.querySelector('.intro-screen').style.opacity = 0;
-                setTimeout(() => {
-                    document.querySelector('.intro-screen').style.display = 'none';
-                    document.querySelector('.container').style.display = 'block';
-                }, 1000);
-            }, 3000);
+  updateStats();
 
-            // Gestion des clics
-            const tapArea = document.getElementById('tapArea');
-            tapArea.addEventListener('click', handleTap);
+  // Hide loading
+  setTimeout(() => {
+    document.getElementById("loading-screen").style.opacity = 0;
+    setTimeout(() => document.getElementById("loading-screen").remove(), 1500);
+  }, 2500);
+</script>
 
-            // Gestion des boosts
-            document.querySelectorAll('.boost-card').forEach(card => {
-                if (card.classList.contains('locked')) return;
-                
-                card.addEventListener('click', () => {
-                    const boostName = card.querySelector('.boost-name').textContent.toLowerCase();
-                    const boostKey = Object.keys(gameState.boosts).find(key => 
-                        boostName.includes(key)
-                    );
-                    
-                    if (boostKey && gameState.balance >= gameState.boosts[boostKey].price) {
-                        activateBoost(boostKey);
-                    }
-                });
-            });
-
-            // Gestion des langues
-            const languageBtn = document.getElementById('languageBtn');
-            const languageDropdown = document.getElementById('languageDropdown');
-            
-            languageBtn.addEventListener('click', () => {
-                languageDropdown.classList.toggle('show');
-            });
-
-            document.querySelectorAll('.language-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    const lang = option.getAttribute('data-lang');
-                    changeLanguage(lang);
-                    languageDropdown.classList.remove('show');
-                });
-            });
-
-            // Gestion audio
-            const musicToggle = document.getElementById('musicToggle');
-            const soundToggle = document.getElementById('soundToggle');
-            const backgroundMusic = document.getElementById('backgroundMusic');
-            
-            musicToggle.addEventListener('click', () => {
-                if (backgroundMusic.paused) {
-                    backgroundMusic.play();
-                    musicToggle.innerHTML = '<i class="fas fa-music"></i>';
-                } else {
-                    backgroundMusic.pause();
-                    musicToggle.innerHTML = '<i class="fas fa-music-slash"></i>';
-                }
-            });
-
-            soundToggle.addEventListener('click', () => {
-                const tapSound = document.getElementById('tapSound');
-                tapSound.muted = !tapSound.muted;
-                soundToggle.innerHTML = tapSound.muted 
-                    ? '<i class="fas fa-volume-mute"></i>' 
-                    : '<i class="fas fa-volume-up"></i>';
-            });
-
-            // Airdrop aléatoire
-            setInterval(() => {
-                if (Math.random() < 0.3) { // 30% de chance
-                    triggerAirdrop();
-                }
-            }, 300000); // Toutes les 5 minutes
-
-            // Recharge d'énergie
-            setInterval(() => {
-                if (gameState.energy < 100) {
-                    gameState.energy += 1;
-                    updateEnergyBar();
-                }
-            }, 3000);
-        });
-
-        function handleTap() {
-            if (gameState.energy <= 0) return;
-
-            // Dépense d'énergie
-            gameState.energy -= 2;
-            if (gameState.energy < 0) gameState.energy = 0;
-            updateEnergyBar();
-
-            // Calcul des gains
-            let earned = gameState.tapValue;
-            if (gameState.boosts.turbo.active) earned *= 2;
-            if (gameState.boosts.multiplier.active) earned *= 2;
-            if (gameState.boosts.vip.active) earned *= 1.5;
-
-            // Mise à jour de l'état
-            gameState.balance += earned;
-            gameState.taps++;
-            gameState.dailyLimit += earned;
-
-            // Mise à jour de l'UI
-            document.getElementById('tapCounter').textContent = gameState.taps;
-            document.getElementById('balance').textContent = Math.floor(gameState.balance).toLocaleString();
-            document.getElementById('dailyLimit').textContent = Math.floor(gameState.dailyLimit).toLocaleString();
-
-            // Son et animation
-            const tapSound = document.getElementById('tapSound');
-            tapSound.currentTime = 0;
-            if (!tapSound.muted) tapSound.play();
-
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => { this.style.transform = 'scale(1)'; }, 100);
-        }
-
-        function updateEnergyBar() {
-            const energyFill = document.getElementById('energyFill');
-            const energyText = document.getElementById('energyText');
-            
-            energyFill.style.width = `${gameState.energy}%`;
-            energyText.textContent = `${gameState.energy}/100`;
-        }
-
-        function activateBoost(boostKey) {
-            const boost = gameState.boosts[boostKey];
-            
-            // Vérifie le solde
-            if (gameState.balance < boost.price) return;
-            
-            gameState.balance -= boost.price;
-            document.getElementById('balance').textContent = Math.floor(gameState.balance).toLocaleString();
-
-            // Active le boost
-            boost.active = true;
-            
-            // Gestion spécifique par boost
-            switch (boostKey) {
-                case 'turbo':
-                    setTimeout(() => {
-                        boost.active = false;
-                    }, boost.duration * 1000);
-                    break;
-                    
-                case 'autoClick':
-                    boost.interval = setInterval(() => {
-                        gameState.balance += 5;
-                        document.getElementById('balance').textContent = Math.floor(gameState.balance).toLocaleString();
-                    }, 5000);
-                    break;
-                    
-                case 'multiplier':
-                    // Permanent jusqu'à reset
-                    break;
-                    
-                case 'vip':
-                    // Permanent jusqu'à reset
-                    break;
-            }
-
-            // Déverrouille visuellement
-            document.querySelectorAll(`.boost-card:contains("${boostKey}")`).forEach(card => {
-                card.classList.remove('locked');
-            });
-        }
-
-        function triggerAirdrop() {
-            const airdrop = document.getElementById('airdropNotification');
-            const airdropClose = document.getElementById('airdropClose');
-            
-            // Affiche la notification
-            airdrop.style.display = 'block';
-            
-            // Timer de 30 secondes
-            let seconds = 30;
-            const timer = setInterval(() => {
-                seconds--;
-                document.getElementById('airdropTimer').textContent = `00:00:${seconds.toString().padStart(2, '0')}`;
-                
-                if (seconds <= 0) {
-                    clearInterval(timer);
-                    airdrop.style.display = 'none';
-                    
-                    // Récompense
-                    gameState.balance += 1000;
-                    document.getElementById('balance').textContent = Math.floor(gameState.balance).toLocaleString();
-                    
-                    // Son
-                    const coinSound = document.getElementById('coinSound');
-                    coinSound.currentTime = 0;
-                    if (!coinSound.muted) coinSound.play();
-                }
-            }, 1000);
-            
-            // Fermeture manuelle
-            airdropClose.addEventListener('click', () => {
-                clearInterval(timer);
-                airdrop.style.display = 'none';
-            });
-        }
-
-        function changeLanguage(lang) {
-            gameState.language = lang;
-            
-            // Met à jour tous les éléments avec data-i18n
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang] && translations[lang][key]) {
-                    el.textContent = translations[lang][key];
-                }
-            });
-            
-            // Met à jour le bouton de langue
-            const languageBtn = document.getElementById('languageBtn');
-            languageBtn.innerHTML = `
-                <span class="flag-icon">${lang === 'fr' ? '🇫🇷' : lang === 'en' ? '🇬🇧' : lang === 'es' ? '🇪🇸' : lang === 'de' ? '🇩🇪' : '🇷🇺'}</span>
-                <span>${lang.toUpperCase()}</span>
-                <i class="fas fa-chevron-down"></i>
-            `;
-            
-            // Met à jour les options actives
-            document.querySelectorAll('.language-option').forEach(option => {
-                option.classList.toggle('active', option.getAttribute('data-lang') === lang);
-            });
-        }
-    </script>
 </body>
 </html>
