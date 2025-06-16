@@ -1,84 +1,128 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>AetherSwap Game</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body { background: #0a0a0a; color: white; font-family: 'Orbitron', sans-serif; margin: 0; overflow: hidden; }
-        #loadingScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            display: flex; align-items: center; justify-content: center;
-            flex-direction: column; z-index: 9999;
-        }
-        #tapArea { text-align: center; padding-top: 100px; }
-        #coinCount { font-size: 3em; margin-top: 20px; }
-        button { font-size: 2em; padding: 20px 40px; background: #00f0ff; border: none; border-radius: 10px; color: black; cursor: pointer; }
-        .section { display: none; }
-        .active { display: block; }
-        nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #111; padding: 10px 0; }
-        nav button { font-size: 1em; background: none; border: none; color: white; cursor: pointer; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aether$wap - Crypto Tap Game</title>
+  <style>
+    /* Reset + base */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background-color: #0d0f1a; color: #ffffff; overflow: hidden; }
+
+    /* Layout */
+    .screen { display: none; padding: 20px; height: 100vh; overflow-y: auto; }
+    .active { display: block; }
+
+    nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #333; }
+    nav button { background: none; border: none; color: #aaa; font-size: 14px; }
+    nav button.active { color: #fff; font-weight: bold; }
+
+    /* Loading / Cinematic */
+    #loading-screen {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: #000; display: flex; justify-content: center; align-items: center;
+      flex-direction: column; z-index: 9999;
+    }
+    #logo-cube { width: 120px; height: 120px; background: url('data:image/png;base64,...') no-repeat center/contain; animation: spin 2s linear infinite; }
+    @keyframes spin { 0% { transform: rotateY(0); } 100% { transform: rotateY(360deg); } }
+
+    /* Cards Tabs */
+    .card-tabs { display: flex; gap: 10px; margin: 10px 0; }
+    .card-tabs button { padding: 5px 10px; background: #222; color: #ccc; border: 1px solid #444; cursor: pointer; }
+    .card-category { display: none; }
+  </style>
 </head>
 <body>
-    <div id="loadingScreen">
-        <h1>Launching AetherSwap...</h1>
-        <p>Initializing cryptoverse</p>
+  <!-- Loading Cinematic -->
+  <div id="loading-screen">
+    <div id="logo-cube"></div>
+    <h1 style="margin-top:20px;">Loading Aether$wap...</h1>
+  </div>
+
+  <!-- Screens -->
+  <div id="screen-tap" class="screen active">
+    <h2>Tap to Earn</h2>
+    <button onclick="tap()" style="margin-top:30px; padding:20px 40px; font-size:20px;">TAP</button>
+    <p id="tap-count">Taps: 0</p>
+  </div>
+
+  <div id="screen-missions" class="screen">
+    <h2>Missions</h2>
+    <ul>
+      <li><button onclick="connectWallet()">Connect Wallet</button> +500</li>
+      <li><a href="https://t.me/AetherSwapOfficial" target="_blank">Join Telegram</a> +500</li>
+    </ul>
+  </div>
+
+  <div id="screen-referral" class="screen">
+    <h2>Referral</h2>
+    <p>Your referral link:</p>
+    <input type="text" value="https://t.me/AetherSwapBot?start=123456" readonly style="width: 100%;"/>
+    <div id="referral-stats"></div>
+  </div>
+
+  <div id="screen-cards" class="screen">
+    <h2>Collection Cards</h2>
+    <div class="card-tabs">
+      <button onclick="showCardCategory('solana')">Solana</button>
+      <button onclick="showCardCategory('ethereum')">Ethereum</button>
+      <button onclick="showCardCategory('memecoins')">MemeCoins</button>
     </div>
 
-    <div id="mainGame" style="display:none;">
-        <div id="tapSection" class="section active">
-            <div id="tapArea">
-                <button onclick="tap()">TAP</button>
-                <div id="coinCount">0</div>
-            </div>
-        </div>
-
-        <div id="boostSection" class="section">
-            <h2 style="text-align:center;">Boosts</h2>
-            <p style="text-align:center;">Coming soon...</p>
-        </div>
-
-        <div id="missionsSection" class="section">
-            <h2 style="text-align:center;">Missions</h2>
-            <p style="text-align:center;">Join Telegram, Connect Wallet</p>
-        </div>
-
-        <div id="cardsSection" class="section">
-            <h2 style="text-align:center;">Cards</h2>
-            <p style="text-align:center;">Loading cards from external file...</p>
-        </div>
-
-        <nav>
-            <button onclick="showSection('tapSection')">Tap</button>
-            <button onclick="showSection('boostSection')">Boosts</button>
-            <button onclick="showSection('missionsSection')">Missions</button>
-            <button onclick="showSection('cardsSection')">Cards</button>
-        </nav>
+    <div id="cards-solana" class="card-category">
+      <p>Solana cards coming soon...</p>
     </div>
+    <div id="cards-ethereum" class="card-category">
+      <p>Ethereum cards coming soon...</p>
+    </div>
+    <div id="cards-memecoins" class="card-category">
+      <p>MemeCoins cards coming soon...</p>
+    </div>
+  </div>
 
-    <script>
-        let coins = 0;
-        const coinDisplay = document.getElementById("coinCount");
+  <!-- Navigation -->
+  <nav>
+    <button onclick="showScreen('tap')" class="active">Tap</button>
+    <button onclick="showScreen('missions')">Missions</button>
+    <button onclick="showScreen('referral')">Referral</button>
+    <button onclick="showScreen('cards')">Cards</button>
+  </nav>
 
-        function tap() {
-            coins++;
-            coinDisplay.textContent = coins;
-        }
+  <script>
+    // Logic de base
+    let taps = parseInt(localStorage.getItem('taps') || "0");
+    document.getElementById("tap-count").innerText = "Taps: " + taps;
 
-        function showSection(sectionId) {
-            document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
-            document.getElementById(sectionId).classList.add("active");
-        }
+    function tap() {
+      if (taps >= 10000) return;
+      taps++;
+      localStorage.setItem('taps', taps);
+      document.getElementById("tap-count").innerText = "Taps: " + taps;
+    }
 
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById("loadingScreen").style.display = "none";
-                document.getElementById("mainGame").style.display = "block";
-            }, 2000);
-        };
-    </script>
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+      document.getElementById("screen-" + id).classList.add("active");
+      event.target.classList.add("active");
+    }
+
+    function showCardCategory(cat) {
+      document.querySelectorAll(".card-category").forEach(c => c.style.display = "none");
+      document.getElementById("cards-" + cat).style.display = "block";
+    }
+
+    function connectWallet() {
+      taps += 500;
+      localStorage.setItem('taps', taps);
+      document.getElementById("tap-count").innerText = "Taps: " + taps;
+      alert("Wallet connected! +500 Taps");
+    }
+
+    // Simuler lâintro
+    setTimeout(() => {
+      document.getElementById("loading-screen").style.display = "none";
+    }, 3000);
+  </script>
 </body>
 </html>
