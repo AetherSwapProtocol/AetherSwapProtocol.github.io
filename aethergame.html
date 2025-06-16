@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
   <title>Aether$wap</title>
   <style>
     :root {
@@ -21,18 +21,16 @@
     body {
       background: var(--bg);
       color: var(--text);
-      overflow-x: hidden;
+      overflow: hidden;
     }
-    h2 {
-      font-size: 24px;
-      margin-bottom: 10px;
+    h2, h3 {
       color: var(--accent);
+      margin-bottom: 10px;
     }
     button {
       background: var(--accent);
       border: none;
       padding: 12px 20px;
-      margin: 10px 0;
       font-size: 16px;
       font-weight: bold;
       color: #000;
@@ -46,19 +44,12 @@
     }
     button:active {
       transform: scale(0.96);
-      box-shadow: 0 0 10px var(--accent-alt);
-    }
-    .screen {
-      display: none;
-      padding: 20px;
-      padding-bottom: 80px;
-    }
-    .screen.active {
-      display: block;
     }
     nav {
       position: fixed;
-      bottom: 0; left: 0; right: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background: var(--panel);
       display: flex;
       justify-content: space-around;
@@ -78,36 +69,17 @@
     nav button.active {
       color: var(--accent);
     }
-    nav button svg {
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
-      margin-bottom: 3px;
-    }
-    .card-tabs {
-      display: flex;
-      gap: 10px;
-      margin: 20px 0 10px 0;
-    }
-    .card-tabs button {
-      flex: 1;
-      background: var(--panel);
-      color: var(--accent);
-      border: 1px solid var(--accent);
-    }
-    .card-category {
+    .screen {
       display: none;
-      padding: 10px;
-      border: 1px solid #333;
-      border-radius: 6px;
-      background: var(--panel);
+      padding: 20px;
+      padding-bottom: 80px;
     }
-    .card-category.active {
+    .screen.active {
       display: block;
     }
     header {
       background: var(--panel);
-      padding: 12px 20px;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -120,7 +92,7 @@
       height: 8px;
       border-radius: 4px;
       overflow: hidden;
-      margin-top: 6px;
+      margin-top: 4px;
     }
     #xp-fill {
       height: 100%;
@@ -139,193 +111,142 @@
       align-items: center;
       z-index: 999;
       flex-direction: column;
-      animation: fadeOut 3s ease-in-out 2.5s forwards;
     }
     #loading-screen h1 {
       font-size: 2.5rem;
       background: linear-gradient(45deg, var(--accent), var(--accent-alt));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 20px var(--accent-alt);
-    }
-    @keyframes fadeOut {
-      to {
-        opacity: 0;
-        visibility: hidden;
-      }
     }
   </style>
 </head>
 <body>
-
-<!-- Écran de chargement -->
-<div id="loading-screen">
-  <h1>Aether$wap</h1>
-</div>
-
-<!-- HUD -->
-<header>
-  <div id="user-id">User: guest</div>
-  <div>
-    <div>Lvl <span id="user-level">1</span> • XP <span id="user-xp">0</span></div>
-    <div id="xp-bar"><div id="xp-fill"></div></div>
+  <div id="loading-screen"><h1>Aether$wap</h1></div>
+  <header>
+    <div id="user-id">User: guest</div>
+    <div>
+      <div>Lvl <span id="user-level">1</span> â¢ XP <span id="user-xp">0</span></div>
+      <div id="xp-bar"><div id="xp-fill"></div></div>
+    </div>
+  </header>
+  <div id="screen-tap" class="screen active">
+    <h2>Tap to Earn</h2>
+    <button onclick="tap()">TAP</button>
+    <p>Taps: <span id="tap-count">0</span></p>
   </div>
-</header>
-
-<!-- Onglet TAP -->
-<div id="screen-tap" class="screen active">
-  <h2>Tap to Earn</h2>
-  <button onclick="tap()">TAP</button>
-  <p>Taps: <span id="tap-count">0</span></p>
-</div>
-
-<!-- Missions -->
-<div id="screen-missions" class="screen">
-  <h2>Missions</h2>
-  <button onclick="connectWallet()">Connect Wallet +500 XP</button>
-  <p>Rejoins <a href="https://t.me/AetherSwapOfficial" target="_blank">Telegram</a> pour +500 XP</p>
-  <h3 style="margin-top: 20px;">Récompense quotidienne</h3>
-  <button id="daily-reward-btn" onclick="claimDailyReward()">Réclamer +100 XP</button>
-  <p id="daily-status" style="font-size: 13px; color: #999;"></p>
-</div>
-
-<!-- Parrainage -->
-<div id="screen-referral" class="screen">
-  <h2>Parrainage</h2>
-  <input type="text" id="ref-link" readonly style="width:100%; padding: 6px;" />
-</div>
-
-<!-- Cartes -->
-<div id="screen-cards" class="screen">
-  <h2>Collection de Cartes</h2>
-  <div class="card-tabs">
+  <div id="screen-missions" class="screen">
+    <h2>Missions</h2>
+    <button onclick="connectWallet()">Connect Wallet +500 XP</button>
+    <h3>Daily Reward</h3>
+    <button id="daily-reward-btn" onclick="claimDailyReward()">Claim +100 XP</button>
+    <p id="daily-status" style="font-size: 13px; color: #999;"></p>
+  </div>
+  <div id="screen-referral" class="screen">
+    <h2>Invite tes amis & Gagne ðª</h2>
+    <p style="color:#aaa;">10% des rÃ©compenses de tes invitÃ©s, 5% de leurs invitÃ©s.</p>
+    <div style="background:#12141f; border-radius:12px; padding:15px; margin:15px 0;">
+      <p>Disponible Ã  rÃ©clamer</p>
+      <h3 id="claimable-xp">0 XP</h3>
+      <button onclick="claimReferralXP()" id="claim-btn">RÃ©clamer</button>
+    </div>
+    <h3>Tes Parrainages</h3>
+    <p id="ref-count">ð¥ 0 amis invitÃ©s</p>
+    <p id="ref-earned">0 XP total</p>
+    <input type="text" id="ref-link" readonly style="width:100%; padding:6px;"/>
+    <button onclick="copyReferralLink()">Copier</button>
+  </div>
+  <div id="screen-cards" class="screen">
+    <h2>Cartes</h2>
     <button onclick="showCardCategory('solana')">Solana</button>
     <button onclick="showCardCategory('ethereum')">Ethereum</button>
     <button onclick="showCardCategory('memecoins')">MemeCoins</button>
+    <div id="cards-solana" class="card-category">Solana: aucune carte dÃ©bloquÃ©e</div>
+    <div id="cards-ethereum" class="card-category" style="display:none;">Ethereum: aucune carte dÃ©bloquÃ©e</div>
+    <div id="cards-memecoins" class="card-category" style="display:none;">MemeCoins: aucune carte dÃ©bloquÃ©e</div>
   </div>
-  <div id="cards-solana" class="card-category active">Aucune carte Solana débloquée</div>
-  <div id="cards-ethereum" class="card-category">Aucune carte Ethereum débloquée</div>
-  <div id="cards-memecoins" class="card-category">Aucune carte MemeCoins débloquée</div>
-</div>
+  <nav>
+    <button onclick="showScreen('tap', event)" class="active">Tap</button>
+    <button onclick="showScreen('missions', event)">Missions</button>
+    <button onclick="showScreen('referral', event)">Referral</button>
+    <button onclick="showScreen('cards', event)">Cartes</button>
+  </nav>
+  <script>
+    let username = "guest";
+    try {
+      if (Telegram.WebApp && Telegram.WebApp.initDataUnsafe.user) {
+        const u = Telegram.WebApp.initDataUnsafe.user;
+        username = u.username || u.first_name || "ID" + u.id;
+      }
+    } catch(e) {}
+    document.getElementById("user-id").innerText = "ð¤ " + username;
+    const key = "aetherswap_" + username;
+    const userData = JSON.parse(localStorage.getItem(key)) || { taps: 0, xp: 0, level: 1, lastDaily: 0 };
+    const referralStats = { invited: 0, claimableXP: 0, totalXP: 0 };
+    document.getElementById("ref-link").value = "https://t.me/AetherSwapBot?start=" + username;
 
-<!-- Navigation -->
-<nav>
-  <button onclick="showScreen('tap', event)" class="active">
-    <svg viewBox="0 0 24 24"><path d="M7 2v11H3l9 9 9-9h-4V2z"/></svg>
-    Tap
-  </button>
-  <button onclick="showScreen('missions', event)">
-    <svg viewBox="0 0 24 24"><path d="M3 3h18v2H3V3zm0 4h12v2H3V7zm0 4h18v2H3v-2zm0 4h12v2H3v-2z"/></svg>
-    Missions
-  </button>
-  <button onclick="showScreen('referral', event)">
-    <svg viewBox="0 0 24 24"><path d="M10 3v2h4V3h-4zM3 9v2h18V9H3zm0 4v2h12v-2H3zm0 4v2h6v-2H3z"/></svg>
-    Parrainage
-  </button>
-  <button onclick="showScreen('cards', event)">
-    <svg viewBox="0 0 24 24"><path d="M2 4h20v16H2z"/></svg>
-    Cartes
-  </button>
-</nav>
-
-<!-- Script -->
-<script>
-  const params = new URLSearchParams(location.search);
-  const userId = params.get("start") || "guest";
-  const storageKey = "aetherswap_user_" + userId;
-  const userData = JSON.parse(localStorage.getItem(storageKey)) || {
-    taps: 0,
-    xp: 0,
-    level: 1,
-    lastDaily: 0,
-    cardsUnlocked: { solana: [], ethereum: [], memecoins: [] }
-  };
-
-  document.getElementById("user-id").innerText = "User: " + userId;
-  document.getElementById("ref-link").value = "https://t.me/AetherSwapBot?start=" + userId;
-
-  function tap() {
-    userData.taps++;
-    userData.xp++;
-    const needed = userData.level * 100;
-    if (userData.xp >= needed) {
-      userData.level++;
-      userData.xp = 0;
-      alert("Niveau supérieur ! Niveau " + userData.level);
+    function saveData() { localStorage.setItem(key, JSON.stringify(userData)); }
+    function updateUI() {
+      document.getElementById("tap-count").innerText = userData.taps;
+      document.getElementById("user-xp").innerText = userData.xp;
+      document.getElementById("user-level").innerText = userData.level;
+      document.getElementById("xp-fill").style.width = (userData.xp / (userData.level * 100)) * 100 + "%";
+      document.getElementById("ref-count").innerText = `ð¥ ${referralStats.invited} amis invitÃ©s`;
+      document.getElementById("ref-earned").innerText = `${referralStats.totalXP} XP total`;
+      document.getElementById("claimable-xp").innerText = `${referralStats.claimableXP} XP`;
+      document.getElementById("claim-btn").disabled = referralStats.claimableXP <= 0;
+      checkDailyReward();
     }
-    saveData();
-    updateUI();
-  }
-
-  function connectWallet() {
-    userData.xp += 500;
-    alert("Wallet connecté ! +500 XP");
-    saveData();
-    updateUI();
-  }
-
-  function updateUI() {
-    document.getElementById("tap-count").innerText = userData.taps;
-    document.getElementById("user-xp").innerText = userData.xp;
-    document.getElementById("user-level").innerText = userData.level;
-    const pct = Math.min(100, (userData.xp / (userData.level * 100)) * 100);
-    document.getElementById("xp-fill").style.width = pct + "%";
-    checkDailyReward();
-  }
-
-  function saveData() {
-    localStorage.setItem(storageKey, JSON.stringify(userData));
-  }
-
-  function showScreen(id, e) {
-    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-    document.getElementById("screen-" + id).classList.add("active");
-    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
-    e.target.closest("button").classList.add("active");
-  }
-
-  function showCardCategory(cat) {
-    document.querySelectorAll(".card-category").forEach(c => c.classList.remove("active"));
-    document.getElementById("cards-" + cat).classList.add("active");
-  }
-
-  function claimDailyReward() {
-    const now = new Date();
-    const last = new Date(userData.lastDaily || 0);
-    const hoursSince = (now - last) / (1000 * 60 * 60);
-    if (hoursSince >= 24) {
-      userData.xp += 100;
-      userData.lastDaily = now;
-      alert("Bravo ! +100 XP");
-      saveData();
-      updateUI();
-    } else {
-      alert("Déjà réclamé aujourd'hui !");
+    function tap() {
+      userData.taps++; userData.xp++;
+      if (userData.xp >= userData.level * 100) { userData.level++; userData.xp = 0; }
+      saveData(); updateUI();
     }
-  }
-
-  function checkDailyReward() {
-    const now = new Date();
-    const last = new Date(userData.lastDaily || 0);
-    const hoursSince = (now - last) / (1000 * 60 * 60);
-    const btn = document.getElementById("daily-reward-btn");
-    const msg = document.getElementById("daily-status");
-    if (hoursSince >= 24) {
-      btn.disabled = false;
-      msg.innerText = "Disponible aujourd’hui !";
-    } else {
-      btn.disabled = true;
-      const remaining = Math.ceil(24 - hoursSince);
-      msg.innerText = `Reviens dans ${remaining}h`;
+    function connectWallet() {
+      userData.xp += 500;
+      alert("Wallet connectÃ© ! +500 XP");
+      saveData(); updateUI();
     }
-  }
-
-  window.addEventListener("load", () => {
+    function showScreen(id, e) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById("screen-" + id).classList.add("active");
+      document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+      e.target.closest("button").classList.add("active");
+    }
+    function showCardCategory(cat) {
+      document.querySelectorAll(".card-category").forEach(c => c.style.display = "none");
+      document.getElementById("cards-" + cat).style.display = "block";
+    }
+    function claimDailyReward() {
+      const now = new Date(); const last = new Date(userData.lastDaily || 0);
+      const hours = (now - last) / (1000 * 60 * 60);
+      if (hours >= 24) {
+        userData.xp += 100;
+        userData.lastDaily = now;
+        alert("+100 XP gagnÃ© !");
+        saveData(); updateUI();
+      } else alert("DÃ©jÃ  rÃ©clamÃ© aujourd'hui !");
+    }
+    function checkDailyReward() {
+      const now = new Date(); const last = new Date(userData.lastDaily || 0);
+      const hours = (now - last) / (1000 * 60 * 60);
+      const btn = document.getElementById("daily-reward-btn");
+      const msg = document.getElementById("daily-status");
+      btn.disabled = hours < 24;
+      msg.innerText = hours < 24 ? `Reviens dans ${Math.ceil(24 - hours)}h` : "Disponible !";
+    }
+    function claimReferralXP() {
+      userData.xp += referralStats.claimableXP;
+      referralStats.totalXP += referralStats.claimableXP;
+      referralStats.claimableXP = 0;
+      saveData(); updateUI();
+      alert("+XP ajoutÃ© !");
+    }
+    function copyReferralLink() {
+      navigator.clipboard.writeText(document.getElementById("ref-link").value);
+      alert("Lien copiÃ© !");
+    }
+    setTimeout(() => document.getElementById("loading-screen").style.display = "none", 2500);
     updateUI();
-    setTimeout(() => {
-      document.getElementById("loading-screen").style.display = "none";
-    }, 2500);
-  });
-</script>
+  </script>
 </body>
 </html>
