@@ -1,396 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aether$wap | Web3 Tap-to-Earn</title>
-    <style>
-        :root {
-            --primary: #6e45e2;
-            --secondary: #88d3ce;
-            --dark: #0f0b21;
-            --light: #f0f4ff;
-            --accent: #ff5e7d;
-            --font: 'Arial', sans-serif;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: var(--font);
-            background: var(--dark);
-            color: var(--light);
-            overflow-x: hidden;
-            touch-action: manipulation;
-        }
-        .container {
-            max-width: 430px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin: 10px 0;
-        }
-        .tabs {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-        .tab {
-            padding: 10px 15px;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-        .tab.active {
-            background: rgba(110, 69, 226, 0.2);
-            border-bottom: 2px solid var(--primary);
-        }
-        .panel {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
-        .panel.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        /* Tap Section */
-        .tap-area {
-            text-align: center;
-            margin: 30px 0;
-        }
-        .coin {
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, #ffd700, #ff9500);
-            border-radius: 50%;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 0 30px #ff9500;
-            animation: pulse 2s infinite;
-            position: relative;
-            overflow: hidden;
-        }
-        .coin::after {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
-            transform: rotate(45deg);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .coin:active::after {
-            opacity: 1;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .stat-box {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            width: 30%;
-            text-align: center;
-        }
-        /* Upgrade Section */
-        .upgrade-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: transform 0.3s;
-        }
-        .upgrade-card:hover {
-            transform: translateY(-5px);
-        }
-        .upgrade-btn {
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            border: none;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        /* Leaderboard */
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        /* Responsive */
-        @media (max-width: 480px) {
-            .container {
-                padding: 10px;
-            }
-            .coin {
-                width: 100px;
-                height: 100px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NFTrig - Trigonométrie & NFTs</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d0d0d;
+      color: #fff;
+    }
+    header {
+      background: #111;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #222;
+    }
+    .container {
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    .btn {
+      background: #6f42c1;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    .btn:hover {
+      background: #8e57e6;
+    }
+    .card-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: center;
+    }
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      padding: 10px;
+      width: 120px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .rare-common { border-color: #aaa; }
+    .rare-uncommon { border-color: #4ea1d3; }
+    .rare-rare { border-color: #b041ff; }
+    .rare-legendary { border-color: #f4d03f; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">Aether$wap</div>
-            <div class="user-info" id="userInfo">Loading Telegram data...</div>
-        </header>
+  <header>
+    <h1>NFTrig</h1>
+    <p>Trigonométrie sur la Blockchain</p>
+  </header>
+  <div class="container">
+    <button class="btn" onclick="connectWallet()">🔗 Connect Wallet</button>
+    <p><strong>User ID:</strong> <span id="userId">Loading...</span></p>
+    <p><strong>Taps:</strong> <span id="tapCount">0</span></p>
+    <button class="btn" onclick="earnTap()">👆 Tap to Earn</button>
 
-        <div class="tabs">
-            <div class="tab active" data-tab="tap">TAP</div>
-            <div class="tab" data-tab="upgrade">UPGRADE</div>
-            <div class="tab" data-tab="leaderboard">LEADERBOARD</div>
-            <div class="tab" data-tab="airdrop">AIRDROP</div>
-        </div>
+    <div class="card-list" id="cardList"></div>
 
-        <div class="panel active" id="tapPanel">
-            <div class="tap-area">
-                <div class="coin" id="coin">$AETH</div>
-                <div class="stats">
-                    <div class="stat-box">
-                        <div>XP</div>
-                        <div id="xp">0</div>
-                    </div>
-                    <div class="stat-box">
-                        <div>TAPS</div>
-                        <div id="taps">0</div>
-                    </div>
-                    <div class="stat-box">
-                        <div>LEVEL</div>
-                        <div id="level">1</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <button class="btn" onclick="combineCards()">⚗️ Combiner Sin & Cos</button>
+  </div>
 
-        <div class="panel" id="upgradePanel">
-            <h3>Upgrades</h3>
-            <div class="upgrade-card">
-                <div>
-                    <strong>Auto-Tapper</strong>
-                    <p>1 $AETH/sec</p>
-                </div>
-                <button class="upgrade-btn" id="buyAutoTap">50 $AETH</button>
-            </div>
-            <div class="upgrade-card">
-                <div>
-                    <strong>XP Multiplier</strong>
-                    <p>+20% XP per tap</p>
-                </div>
-                <button class="upgrade-btn" id="buyXpMultiplier">100 $AETH</button>
-            </div>
-        </div>
+  <script>
+    let userId = 'unknown';
+    let tapCount = 0;
+    let cards = [];
 
-        <div class="panel" id="leaderboardPanel">
-            <h3>Leaderboard</h3>
-            <div id="leaderboard">
-                <div class="leaderboard-item">
-                    <span>1. @Player1</span>
-                    <span>1,024 Taps</span>
-                </div>
-                <div class="leaderboard-item">
-                    <span>2. @Player2</span>
-                    <span>872 Taps</span>
-                </div>
-            </div>
-        </div>
+    // Chargement Telegram WebApp ID
+    window.Telegram.WebApp.ready();
+    const tg = window.Telegram.WebApp;
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      userId = tg.initDataUnsafe.user.id;
+      document.getElementById('userId').textContent = userId;
+    }
 
-        <div class="panel" id="airdropPanel">
-            <h3>Airdrop</h3>
-            <div id="referralLink">Generating referral link...</div>
-            <div id="referralCount">0 friends joined</div>
-            <button class="upgrade-btn" id="claimAirdrop" style="margin-top: 20px; width: 100%;">CLAIM AIRDROP</button>
-        </div>
-    </div>
+    // Chargement localStorage
+    if (localStorage.getItem('nftrig_taps_' + userId)) {
+      tapCount = parseInt(localStorage.getItem('nftrig_taps_' + userId));
+      cards = JSON.parse(localStorage.getItem('nftrig_cards_' + userId)) || [];
+      updateUI();
+    }
 
-    <script>
-        // Enhanced Game State
-        const gameState = {
-            xp: 0,
-            taps: 0,
-            level: 1,
-            aether: 0,
-            referrals: 0,
-            upgrades: {
-                autoTap: 0,
-                xpMultiplier: 1
-            },
-            lastTap: 0
-        };
+    function connectWallet() {
+      if (typeof window.ethereum !== 'undefined') {
+        ethereum.request({ method: 'eth_requestAccounts' })
+          .then(accounts => alert('Wallet connecté: ' + accounts[0]))
+          .catch(err => alert('Erreur connexion wallet'));
+      } else {
+        alert('MetaMask requis');
+      }
+    }
 
-        // DOM Elements
-        const coin = document.getElementById('coin');
-        const xpDisplay = document.getElementById('xp');
-        const tapsDisplay = document.getElementById('taps');
-        const levelDisplay = document.getElementById('level');
-        const userInfo = document.getElementById('userInfo');
-        const referralLink = document.getElementById('referralLink');
-        const referralCount = document.getElementById('referralCount');
-        const tabs = document.querySelectorAll('.tab');
-        const panels = document.querySelectorAll('.panel');
-        const buyAutoTap = document.getElementById('buyAutoTap');
-        const buyXpMultiplier = document.getElementById('buyXpMultiplier');
-        const claimAirdrop = document.getElementById('claimAirdrop');
+    function earnTap() {
+      tapCount++;
+      localStorage.setItem('nftrig_taps_' + userId, tapCount);
+      // Toutes les 5 taps : gagner une carte
+      if (tapCount % 5 === 0) {
+        const card = mintRandomCard();
+        cards.push(card);
+        localStorage.setItem('nftrig_cards_' + userId, JSON.stringify(cards));
+      }
+      updateUI();
+    }
 
-        // Load saved game
-        function loadGame() {
-            const saved = localStorage.getItem('aetherSwapGame');
-            if (saved) {
-                Object.assign(gameState, JSON.parse(saved));
-                updateDisplays();
-            }
-        }
+    function mintRandomCard() {
+      const types = ['Sin(x)', 'Cos(x)'];
+      const rarities = ['common', 'uncommon', 'rare', 'legendary'];
+      const card = {
+        type: types[Math.floor(Math.random() * types.length)],
+        rarity: rarities[Math.floor(Math.random() * rarities.length)]
+      };
+      return card;
+    }
 
-        // Save game
-        function saveGame() {
-            localStorage.setItem('aetherSwapGame', JSON.stringify(gameState));
-        }
+    function combineCards() {
+      const hasSin = cards.find(c => c.type === 'Sin(x)');
+      const hasCos = cards.find(c => c.type === 'Cos(x)');
+      if (hasSin && hasCos) {
+        cards = cards.filter(c => !(c.type === 'Sin(x)' || c.type === 'Cos(x)'));
+        cards.push({ type: 'Tan(x)', rarity: 'rare' });
+        alert('✨ Tan(x) créé à partir de Sin × Cos');
+        localStorage.setItem('nftrig_cards_' + userId, JSON.stringify(cards));
+        updateUI();
+      } else {
+        alert('Tu dois avoir Sin(x) et Cos(x) pour combiner.');
+      }
+    }
 
-        // Update all displays
-        function updateDisplays() {
-            xpDisplay.textContent = gameState.xp;
-            tapsDisplay.textContent = gameState.taps;
-            levelDisplay.textContent = gameState.level;
-            referralCount.textContent = `${gameState.referrals} friends joined`;
-        }
-
-        // Handle tap
-        function handleTap() {
-            const now = Date.now();
-            if (now - gameState.lastTap < 100) return; // Anti-spam
-            
-            gameState.taps++;
-            gameState.xp += Math.floor(1 * gameState.upgrades.xpMultiplier);
-            gameState.aether += 1;
-            gameState.lastTap = now;
-            
-            // Check level up
-            if (gameState.xp >= gameState.level * 100) {
-                gameState.xp = 0;
-                gameState.level++;
-                // Animation
-                coin.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    coin.style.transform = 'scale(1)';
-                }, 200);
-            }
-            
-            updateDisplays();
-            saveGame();
-        }
-
-        // Auto-tap logic
-        function startAutoTap() {
-            setInterval(() => {
-                if (gameState.upgrades.autoTap > 0) {
-                    gameState.aether += gameState.upgrades.autoTap;
-                    updateDisplays();
-                    saveGame();
-                }
-            }, 1000);
-        }
-
-        // Detect Telegram user
-        function detectTelegramUser() {
-            if (window.Telegram && Telegram.WebApp) {
-                const user = Telegram.WebApp.initDataUnsafe.user;
-                if (user) {
-                    userInfo.innerHTML = `
-                        👤 <strong>${user.username || 'Anonymous'}</strong>
-                        <br>ID: ${user.id}
-                    `;
-                    
-                    // Generate referral link
-                    referralLink.innerHTML = `
-                        Your referral link:<br>
-                        <code>https://t.me/YourBot?start=${user.id}</code>
-                    `;
-                    
-                    // Check for referral in URL
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const ref = urlParams.get('ref');
-                    if (ref && ref !== user.id.toString()) {
-                        gameState.referrals++;
-                        saveGame();
-                    }
-                    return;
-                }
-            }
-            userInfo.textContent = "Not in Telegram? Some features limited.";
-        }
-
-        // Tab switching
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                panels.forEach(p => p.classList.remove('active'));
-                
-                tab.classList.add('active');
-                document.getElementById(`${tab.dataset.tab}Panel`).classList.add('active');
-            });
-        });
-
-        // Initialize
-        coin.addEventListener('click', handleTap);
-        coin.addEventListener('touchstart', handleTap, { passive: true });
-        buyAutoTap.addEventListener('click', () => {
-            if (gameState.aether >= 50) {
-                gameState.aether -= 50;
-                gameState.upgrades.autoTap += 1;
-                buyAutoTap.textContent = `${50 + (gameState.upgrades.autoTap * 25)} $AETH`;
-                updateDisplays();
-                saveGame();
-            }
-        });
-        buyXpMultiplier.addEventListener('click', () => {
-            if (gameState.aether >= 100) {
-                gameState.aether -= 100;
-                gameState.upgrades.xpMultiplier += 0.2;
-                buyXpMultiplier.textContent = `${100 + (gameState.upgrades.xpMultiplier * 50)} $AETH`;
-                updateDisplays();
-                saveGame();
-            }
-        });
-        claimAirdrop.addEventListener('click', () => {
-            alert(`Airdrop claimed: ${gameState.referrals * 10} $AETH!`);
-            gameState.aether += gameState.referrals * 10;
-            updateDisplays();
-            saveGame();
-        });
-
-        window.addEventListener('load', () => {
-            loadGame();
-            detectTelegramUser();
-            startAutoTap();
-        });
-    </script>
+    function updateUI() {
+      document.getElementById('tapCount').textContent = tapCount;
+      const list = document.getElementById('cardList');
+      list.innerHTML = '';
+      cards.forEach(card => {
+        const div = document.createElement('div');
+        div.className = 'card rare-' + card.rarity;
+        div.innerHTML = `<strong>${card.type}</strong><br><em>${card.rarity}</em>`;
+        list.appendChild(div);
+      });
+    }
+  </script>
 </body>
 </html>
