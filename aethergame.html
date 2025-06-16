@@ -1,169 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Aether$wap</title>
   <style>
     :root {
       --bg: #0d0f1a;
-      --panel: #1a1c29;
-      --accent: #10E8F8;
-      --accent-alt: #943DFF;
+      --panel: #181b2e;
+      --accent: #14F195;
+      --accent-alt: #9945FF;
       --text: #ffffff;
     }
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', 'Orbitron', sans-serif;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
-    body {
+    html, body {
       background: var(--bg);
       color: var(--text);
       overflow: hidden;
+      touch-action: manipulation;
+    }
+    body.loaded #loading-screen {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.2s ease-in-out;
+    }
+    #loading-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #0d0f1a, #000);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 999;
+    }
+    #loading-screen h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(45deg, var(--accent-alt), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeIn 2s ease-in-out infinite alternate;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0.3; }
+      to { opacity: 1; }
     }
     header {
+      padding: 12px 20px;
       background: var(--panel);
-      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #ccc;
       border-bottom: 1px solid #333;
     }
-    button {
-      background: var(--accent);
-      color: #000;
-      border: none;
-      padding: 10px 15px;
-      font-weight: bold;
-      cursor: pointer;
-      margin: 5px 0;
+    #xp-bar {
+      background: #333;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    #xp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-alt), var(--accent));
+      width: 0%;
+      transition: width 0.3s ease;
     }
     .screen {
       display: none;
       padding: 20px;
-      padding-bottom: 70px;
+      padding-bottom: 80px;
     }
     .screen.active {
       display: block;
     }
+    .tap-area {
+      margin: 40px auto;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-alt), var(--accent));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      font-weight: bold;
+      color: #000;
+      box-shadow: 0 0 30px var(--accent);
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
     nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       background: var(--panel);
       display: flex;
       justify-content: space-around;
       padding: 10px 0;
       border-top: 1px solid #333;
+      z-index: 10;
     }
-    #xp-bar {
-      background: #333;
-      height: 5px;
-      margin-top: 5px;
+    nav button {
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
     }
-    #xp-fill {
-      height: 100%;
+    nav button.active {
+      color: var(--accent);
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 8px;
+      background: #0e111d;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #fff;
+    }
+    button {
       background: var(--accent);
-      width: 0%;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      margin: 10px 0;
+      cursor: pointer;
     }
+    .card-tabs button {
+      margin-right: 10px;
+    }
+    .card-category { display: none; }
   </style>
 </head>
 <body>
+  <div id="loading-screen"><h1>Aether$wap</h1></div>
+
   <header>
-    <div>USER: GUEST</div>
+    <div id="user-id">Loading...</div> <!-- Dynamically replaced -->
     <div>
-      <div>LVL <span id="user-level">1</span> | XP <span id="user-xp">0</span></div>
+      <div>Lvl <span id="level">1</span> • XP <span id="xp">0</span></div>
       <div id="xp-bar"><div id="xp-fill"></div></div>
     </div>
   </header>
 
-  <!-- Screens -->
-  <div id="screen-tap" class="screen active">
-    <h2>TAP TO EARN</h2>
-    <button onclick="tap()">TAP</button>
-    <div>TAPS: <span id="tap-count">0</span></div>
-  </div>
-
-  <div id="screen-missions" class="screen">
-    <h2>MISSIONS</h2>
-    <button onclick="connectWallet()">CONNECT WALLET (+500 XP)</button>
-    <h3>DAILY REWARD</h3>
-    <button id="daily-reward-btn" onclick="claimDailyReward()">CLAIM (+100 XP)</button>
-  </div>
-
-  <div id="screen-referral" class="screen">
-    <h2>REFERRAL PROGRAM</h2>
-    <p>Earn 10% from referrals, 5% from their referrals.</p>
-    <div>
-      <p>AVAILABLE:</p>
-      <h3 id="claimable-xp">0 XP</h3>
-      <button onclick="claimReferralXP()">CLAIM</button>
-    </div>
-    <input type="text" id="ref-link" readonly style="width:100%; padding:8px; background:#1a1c29; border:1px solid #333; color:white;">
-    <button onclick="copyReferralLink()">COPY LINK</button>
-  </div>
-
-  <div id="screen-cards" class="screen">
-    <h2>CARDS</h2>
-    <button onclick="showCardCategory('solana')">SOLANA</button>
-    <button onclick="showCardCategory('ethereum')">ETHEREUM</button>
-    <button onclick="showCardCategory('memecoins')">MEMECOINS</button>
-    <div id="cards-solana">SOLANA: NO CARDS</div>
-    <div id="cards-ethereum" style="display:none;">ETHEREUM: NO CARDS</div>
-    <div id="cards-memecoins" style="display:none;">MEMECOINS: NO CARDS</div>
-  </div>
-
-  <nav>
-    <button onclick="showScreen('tap', event)" class="active">TAP</button>
-    <button onclick="showScreen('missions', event)">MISSIONS</button>
-    <button onclick="showScreen('referral', event)">REFERRAL</button>
-    <button onclick="showScreen('cards', event)">CARDS</button>
-  </nav>
-
+  <!-- rest of app continues… (écrans, nav, etc.) -->
   <script>
-    // Raw data - no bullshit
-    const user = {
-      taps: 0,
-      xp: 0,
-      level: 1,
-      lastDaily: 0
-    };
+  Telegram.WebApp.ready();
 
-    const ref = {
-      invited: 0,
-      claimableXP: 0,
-      totalXP: 0
-    };
+  let username = "Anonymous";
+  let userId = null;
 
-    // Core functions
-    function tap() {
-      user.taps++;
-      user.xp++;
-      if (user.xp >= user.level * 100) {
-        user.level++;
-        user.xp = 0;
-      }
-      updateUI();
+  try {
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    if (user) {
+      username = user.username || user.first_name || "Anonymous";
+      userId = user.id;
+    } else {
+      const urlParams = new URLSearchParams(window.location.search);
+      username = urlParams.get("start") || "Anonymous";
+    }
+  } catch (e) {
+    const urlParams = new URLSearchParams(window.location.search);
+    username = urlParams.get("start") || "Anonymous";
+  }
+
+  document.getElementById("user-id").innerText = "@" + username;
+
+  const userKey = "aetherswap_" + (userId || username);
+  let userData = JSON.parse(localStorage.getItem(userKey)) || {
+    taps: 0,
+    xp: 0,
+    level: 1,
+    lastDaily: 0,
+    referrals: 0,
+    referralXP: 0
+  };
+
+  function save() {
+    localStorage.setItem(userKey, JSON.stringify(userData));
+  }
+
+  function updateUI() {
+    document.getElementById("tap-count").innerText = userData.taps;
+    document.getElementById("xp").innerText = userData.xp;
+    document.getElementById("level").innerText = userData.level;
+
+    const progress = (userData.xp / (userData.level * 100)) * 100;
+    document.getElementById("xp-fill").style.width = Math.min(progress, 100) + "%";
+
+    document.getElementById("ref-link").value = `https://t.me/YOUR_BOT_USERNAME?start=${username}`;
+    document.getElementById("ref-count").innerText = userData.referrals + " invites";
+    document.getElementById("ref-earned").innerText = userData.referralXP + " XP earned";
+
+    checkDailyReward();
+    save();
+  }
+
+  function tap() {
+    userData.taps += 1;
+    userData.xp += 1;
+
+    if (userData.xp >= userData.level * 100) {
+      userData.level += 1;
+      userData.xp = 0;
+      alert("Level up! You reached level " + userData.level);
     }
 
-    function updateUI() {
-      document.getElementById("tap-count").textContent = user.taps;
-      document.getElementById("user-xp").textContent = user.xp;
-      document.getElementById("user-level").textContent = user.level;
-      document.getElementById("xp-fill").style.width = `${(user.xp / (user.level * 100)) * 100}%`;
-      document.getElementById("claimable-xp").textContent = `${ref.claimableXP} XP`;
-    }
-
-    function showScreen(id, event) {
-      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-      document.getElementById(`screen-${id}`).classList.add("active");
-      event.target.classList.add("active");
-    }
-
-    // Initialize
     updateUI();
-  </script>
+  }
+
+  function connectWallet() {
+    userData.xp += 500;
+    alert("Wallet connected! +500 XP");
+    updateUI();
+  }
+
+  function claimDaily() {
+    const now = Date.now();
+    const hours = (now - userData.lastDaily) / (1000 * 60 * 60);
+
+    if (hours >= 24) {
+      userData.xp += 100;
+      userData.lastDaily = now;
+      alert("+100 XP claimed!");
+    } else {
+      alert("You already claimed your daily reward.");
+    }
+
+    updateUI();
+  }
+
+  function checkDailyReward() {
+    const now = Date.now();
+    const hours = (now - userData.lastDaily) / (1000 * 60 * 60);
+    const status = document.getElementById("daily-status");
+    const btn = document.getElementById("daily-reward-btn");
+
+    if (hours >= 24) {
+      btn.disabled = false;
+      status.innerText = "Available now";
+    } else {
+      btn.disabled = true;
+      const remaining = Math.ceil(24 - hours);
+      status.innerText = "Come back in " + remaining + "h";
+    }
+  }
+
+  function copyReferral() {
+    const ref = document.getElementById("ref-link").value;
+    navigator.clipboard.writeText(ref);
+    alert("Referral link copied.");
+  }
+
+  function showCategory(cat) {
+    document.querySelectorAll(".card-category").forEach(c => c.style.display = "none");
+    document.getElementById("cards-" + cat).style.display = "block";
+  }
+
+  function navigate(id, e) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById("screen-" + id).classList.add("active");
+
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+    e.target.closest("button").classList.add("active");
+  }
+
+  setTimeout(() => {
+    document.body.classList.add("loaded");
+  }, 2000);
+
+  updateUI();
+</script>
 </body>
 </html>
