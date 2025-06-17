@@ -1,310 +1,710 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AetherSwap TapBot</title>
-  <style>
-    :root {
-      --primary-color: #00ffd5;
-      --secondary-color: #ff0058;
-      --text-light: #ffffff;
-      --text-dimmed: #aaaaaa;
-      --bg-dark: #0f0f23;
-      --bg-darker: #000000;
-      --card-bg: rgba(30, 30, 47, 0.7);
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aetherien Combat - Jeu Web3</title>
+<style>
+  /* RESET & BASE */
+  * {
+    margin:0; padding:0; box-sizing: border-box;
+    user-select:none;
+  }
+  body, html {
+    height:100%; width:100%;
+    background: linear-gradient(135deg, #0f1123, #15182e);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color:#cdf9ff;
+    display:flex; flex-direction: column;
+  }
+  #app {
+    flex-grow:1; display:flex; flex-direction: column;
+    max-width: 480px;
+    margin: auto;
+    border: 1px solid #111629;
+    border-radius: 14px;
+    background: #121827;
+    box-shadow: 0 0 20px #0ff9ff88;
+    overflow: hidden;
+  }
+  header {
+    background: #0f1123;
+    padding: 12px 16px;
+    display:flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid #1c223f;
+  }
+  header h1 {
+    font-weight: 900;
+    font-size: 1.3rem;
+    color:#00fff7;
+  }
+  header .points {
+    background: linear-gradient(135deg,#0ff, #0bb);
+    padding: 6px 14px;
+    font-weight: 900;
+    border-radius: 9999px;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    box-shadow: 0 0 6px #0ff;
+    user-select:none;
+    min-width: 110px;
+    text-align: center;
+  }
+  main {
+    flex-grow:1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 16px 16px 16px;
+    background: linear-gradient(145deg, #121827, #0c1124);
+  }
+
+  /* Navigation Tabs */
+  nav.bottom-nav {
+    height: 58px;
+    background: #0c1124;
+    border-top: 1px solid #1c223f;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    color: #2fe9ffcc;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  nav.bottom-nav .nav-item {
+    flex-grow: 1;
+    text-align: center;
+    cursor: pointer;
+    padding: 6px 0;
+    transition: color 0.3s ease;
+    user-select:none;
+  }
+  nav.bottom-nav .nav-item.active {
+    color: #00ffff;
+    font-weight: 900;
+    text-shadow: 0 0 5px #0ff;
+  }
+  nav.bottom-nav .nav-item svg, nav.bottom-nav .nav-item img {
+    height: 20px;
+    margin-bottom: 2px;
+    filter: drop-shadow(0 0 1px #0ff);
+  }
+
+  /* Central Button (Mascotte Aetherien) */
+  #central-button {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    margin: 0 auto;
+    background: radial-gradient(circle at center, #00ffe3, #00445b);
+    box-shadow:
+      0 0 15px #00fff7,
+      inset 0 0 20px #00ffd8,
+      0 8px 20px rgba(0,255,255,0.7);
+    position: relative;
+    cursor: pointer;
+    user-select:none;
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  #central-button:active {
+    transform: scale(0.9);
+    box-shadow:
+      0 0 8px #00ffff,
+      inset 0 0 12px #00ccc0,
+      0 4px 10px rgba(0,255,255,0.4);
+  }
+  #central-button svg.aetherien {
+    width: 110px;
+    height: 110px;
+    filter: drop-shadow(0 0 6px #00fff7);
+  }
+
+  /* Points animation popup */
+  .click-effect {
+    position: fixed;
+    color: #0ff;
+    font-weight: 900;
+    font-size: 1.2rem;
+    pointer-events: none;
+    animation: floatUp 1s ease forwards;
+    text-shadow: 0 0 6px #0ff;
+    user-select:none;
+    z-index: 9999;
+  }
+  @keyframes floatUp {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: radial-gradient(var(--bg-dark), var(--bg-darker));
-      color: var(--text-light);
-      overflow-x: hidden;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+    100% {
+      opacity: 0;
+      transform: translateY(-50px) scale(1.3);
     }
-    .game-container {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 20px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .game-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    .player-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .progress-container {
-      flex: 1;
-      margin: 0 12px;
-    }
-    .level-info {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-    }
-    .progress-bar {
-      width: 100%;
-      height: 6px;
-      background: #333;
-      border-radius: 3px;
-      overflow: hidden;
-      margin-top: 4px;
-    }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-      transition: width 0.3s ease;
-    }
-    .profit-info {
-      font-size: 12px;
-      color: var(--primary-color);
-    }
-    .daily-rewards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-    .reward-card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 10px;
-      text-align: center;
-      font-size: 12px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(0, 255, 213, 0.2);
-    }
-    .reward-card p {
-      margin: 4px 0;
-      color: var(--text-dimmed);
-    }
-    .reward-card span {
-      font-weight: bold;
-      color: var(--primary-color);
-    }
-    .main-game-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .points-display {
-      text-align: center;
-      font-size: 32px;
-      font-weight: bold;
-      margin: 10px 0;
-      color: var(--text-light);
-      text-shadow: 0 0 10px var(--primary-color);
-    }
-    .character-circle {
-      width: 180px;
-      height: 180px;
-      margin: 20px auto;
-      border-radius: 50%;
-      background: linear-gradient(145deg, #1c1c3a, #2a2a4a);
-      box-shadow: 0 0 30px rgba(0, 255, 213, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: transform 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .character-circle::before {
-      content: '';
-      position: absolute;
-      width: 150%;
-      height: 150%;
-      background: radial-gradient(circle, rgba(0,255,213,0.1) 0%, transparent 70%);
-      animation: rotate 20s linear infinite;
-    }
-    .character-inner img {
-      width: 100px;
-      z-index: 2;
-      position: relative;
-    }
-    .bottom-nav {
-      background: rgba(20, 20, 35, 0.8);
-      border-radius: 20px;
-      padding: 12px 0;
-      display: flex;
-      justify-content: space-around;
-      margin-top: auto;
-    }
-    .nav-item {
-      text-align: center;
-      font-size: 11px;
-      color: var(--text-dimmed);
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    .nav-item.active {
-      color: var(--primary-color);
-      transform: translateY(-5px);
-    }
-    .nav-item span {
-      display: block;
-      margin-top: 4px;
-    }
-    .click-effect {
-      position: absolute;
-      color: #00ff88;
-      font-weight: bold;
-      font-size: 18px;
-      animation: floatUp 0.8s ease-out forwards;
-      pointer-events: none;
-      z-index: 1000;
-      text-shadow: 0 0 8px rgba(0, 255, 136, 0.7);
-    }
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-60px); }
-    }
-    @keyframes rotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  </style>
+  }
+
+  /* Progress bar container */
+  #level-progress-container {
+    margin-top: 12px;
+    height: 14px;
+    background: #001f2d;
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+  #level-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00ffe3, #009bbf);
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 6px #00fff7;
+  }
+
+  /* Level & profit display */
+  #level-info {
+    margin-top: 6px;
+    font-weight: 700;
+    font-size: 1rem;
+    display:flex;
+    justify-content: space-between;
+  }
+  #profit-display {
+    margin-top: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #44ffffaa;
+  }
+
+  /* Section containers */
+  section {
+    margin-top: 20px;
+  }
+  /* Missions */
+  #missions-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #006677;
+    border-radius: 12px;
+    padding: 10px;
+    background: #082229cc;
+  }
+  .mission {
+    background: #004d66;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 8px #00ccff77;
+  }
+  .mission .desc {
+    flex-grow: 1;
+    font-weight: 700;
+    font-size: 0.9rem;
+    user-select:none;
+  }
+  .mission .btn {
+    background: #00ffd3;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 900;
+    color: #004040;
+    cursor: pointer;
+    user-select:none;
+    transition: background-color 0.3s ease;
+  }
+  .mission .btn.claim {
+    background: #22bb22;
+    color: #e5ffe5;
+  }
+  .mission .btn:disabled {
+    background: #004d4d;
+    cursor: default;
+    color: #99cccc;
+  }
+
+  /* Shop */
+  #shop-list {
+    max-height: 230px;
+    overflow-y: auto;
+    border: 1px solid #006677;
+    border-radius: 12px;
+    padding: 10px;
+    background: #082229cc;
+  }
+  .shop-item {
+    background: #003d55;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 10px #00ffff55;
+  }
+  .shop-item .desc {
+    flex-grow: 1;
+    font-weight: 700;
+    font-size: 0.9rem;
+    user-select:none;
+  }
+  .shop-item .price {
+    font-weight: 900;
+    font-size: 1rem;
+    margin-right: 12px;
+    color: #0ff;
+  }
+  .shop-item button {
+    background: #00fff7;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 900;
+    color: #004040;
+    cursor: pointer;
+    user-select:none;
+    transition: background-color 0.3s ease;
+  }
+  .shop-item button:disabled {
+    background: #004d4d;
+    cursor: default;
+    color: #99cccc;
+  }
+
+  /* Daily Rewards */
+  #daily-rewards {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+  }
+  .daily-reward-card {
+    background: #004554cc;
+    border-radius: 12px;
+    width: 100px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 0 8px #0ff;
+    user-select:none;
+  }
+  .daily-reward-card .label {
+    font-weight: 800;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+  .daily-reward-card .timer {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #33ffffdd;
+  }
+
+  /* Scrollbar style for missions and shop */
+  #missions-list::-webkit-scrollbar,
+  #shop-list::-webkit-scrollbar {
+    width: 6px;
+  }
+  #missions-list::-webkit-scrollbar-thumb,
+  #shop-list::-webkit-scrollbar-thumb {
+    background-color: #00bbbbee;
+    border-radius: 10px;
+  }
+
+</style>
 </head>
 <body>
-  <div class="game-container">
-    <div class="game-header">
-      <div class="player-info">
-        <span>🦾 Aetherien</span>
-      </div>
-      <div class="progress-container">
-        <div class="level-info">
-          <span id="levelName">Silver</span>
-          <span id="levelProgress">2 / 10</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" id="levelProgressBar" style="width: 20%"></div></div>
-      </div>
-      <div class="profit-info">
-        <span id="profitValue">+126.42K</span>
-      </div>
+<div id="app">
+  <header>
+    <h1>Aetherien Combat</h1>
+    <div class="points" id="pointsDisplay">0</div>
+  </header>
+  <main>
+    <!-- Level + Progress -->
+    <div id="level-info">
+      <span id="levelName">Bronze</span>
+      <span id="levelProgress">0 / 10</span>
+    </div>
+    <div id="level-progress-container">
+      <div id="level-progress-bar"></div>
+    </div>
+    <div id="profit-display">Profit: +0</div>
+
+    <!-- Central clickable mascot -->
+    <div id="central-button" title="Clique moi!">
+      <svg class="aetherien" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#0ff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round">
+        <circle cx="256" cy="256" r="220" stroke="#00fff7" stroke-width="12" fill="url(#grad1)" />
+        <defs>
+          <radialGradient id="grad1" cx="0.5" cy="0.5" r="0.8">
+            <stop offset="0%" stop-color="#00fff7" stop-opacity="0.8" />
+            <stop offset="100%" stop-color="#003344" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+        <path d="M180 160c10-10 60-25 90-25s80 20 90 25" />
+        <circle cx="200" cy="280" r="40" />
+        <circle cx="310" cy="280" r="40" />
+        <path d="M170 380c30 10 70 10 90 0" />
+        <path d="M240 330c10 10 40 10 50 0" />
+      </svg>
     </div>
 
-    <div class="daily-rewards">
-      <div class="reward-card">
-        <p>Daily</p>
-        <span id="dailyRewardTime">05:07</span>
+    <!-- Daily Rewards -->
+    <section id="daily-rewards">
+      <div class="daily-reward-card">
+        <div class="label">Daily Reward</div>
+        <div class="timer" id="dailyRewardTimer">--:--</div>
       </div>
-      <div class="reward-card">
-        <p>Cipher</p>
-        <span id="dailyCipherTime">00:07</span>
+      <div class="daily-reward-card">
+        <div class="label">Daily Cipher</div>
+        <div class="timer" id="dailyCipherTimer">--:--</div>
       </div>
-      <div class="reward-card">
-        <p>Combo</p>
-        <span id="dailyComboTime">17:07</span>
+      <div class="daily-reward-card">
+        <div class="label">Daily Combo</div>
+        <div class="timer" id="dailyComboTimer">--:--</div>
       </div>
-    </div>
+    </section>
 
-    <div class="main-game-area">
-      <div class="points-display">
-        <span id="pointsValue">17,216</span>
-      </div>
+    <!-- Missions (hidden by default) -->
+    <section id="missions" style="display:none;">
+      <h2>Missions</h2>
+      <div id="missions-list"></div>
+    </section>
 
-      <div class="character-circle" id="mainCharacter">
-        <div class="character-inner"><img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Aetherien" /></div>
-      </div>
-    </div>
+    <!-- Shop (hidden by default) -->
+    <section id="shop" style="display:none;">
+      <h2>Shop</h2>
+      <div id="shop-list"></div>
+    </section>
 
-    <div class="bottom-nav">
-      <div class="nav-item active"><span>Exchange</span></div>
-      <div class="nav-item"><span>Mine</span></div>
-      <div class="nav-item"><span>Friends</span></div>
-      <div class="nav-item"><span>Earn</span></div>
-      <div class="nav-item"><span>Airdrop</span></div>
-    </div>
-  </div>
+  </main>
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-tab="main">🏠</div>
+    <div class="nav-item" data-tab="missions">🎯</div>
+    <div class="nav-item" data-tab="shop">🛒</div>
+  </nav>
+</div>
 
-  <script>
-    const levelNames = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Epic", "Legendary", "Master", "GrandMaster", "Lord"];
-    const levelMinPoints = [0, 5000, 25000, 100000, 1000000, 2000000, 10000000, 50000000, 100000000, 1000000000];
+<script>
+(() => {
+  // --- GAME DATA ---
+  const levelNames = [
+    "Bronze", "Silver", "Gold", "Platinum", "Diamond",
+    "Epic", "Legendary", "Master", "GrandMaster", "Lord"
+  ];
 
-    let levelIndex = 1; // Silver = niveau 2
-    let points = parseInt(localStorage.getItem("points")) || 17216;
-    const pointsToAdd = 11;
-    const profitPerHour = 126420;
+  const levelMinPoints = [
+    0, 5000, 25000, 100000, 1000000,
+    2000000, 10000000, 50000000, 100000000, 1000000000
+  ];
 
-    const levelNameEl = document.getElementById('levelName');
-    const levelProgressEl = document.getElementById('levelProgress');
-    const levelProgressBarEl = document.getElementById('levelProgressBar');
-    const profitValueEl = document.getElementById('profitValue');
-    const pointsValueEl = document.getElementById('pointsValue');
-    const mainCharacterEl = document.getElementById('mainCharacter');
-    const navItems = document.querySelectorAll('.nav-item');
+  const boostsData = [
+    { id: 'boost1', name: "Turbo Click", price: 5000, multiplier: 2, description: "Double les points par clic" },
+    { id: 'boost2', name: "Auto Clicker", price: 30000, multiplier: 5, description: "Ajoute 1 point par seconde" },
+    { id: 'boost3', name: "Mega Booster", price: 100000, multiplier: 10, description: "Multiplie tout par 10" }
+  ];
 
-    function updateLevelInfo() {
-      levelNameEl.textContent = levelNames[levelIndex];
-      levelProgressEl.textContent = (levelIndex + 1) + " / " + levelNames.length;
-      levelProgressBarEl.style.width = calculateProgress() + "%";
+  const missionsData = [
+    { id: 'mission1', desc: "Clique 100 fois", target: 100, reward: 10000 },
+    { id: 'mission2', desc: "Gagne 1 million de points", target: 1000000, reward: 50000 },
+    { id: 'mission3', desc: "Achète un boost", target: 1, reward: 25000 }
+  ];
+
+  // --- STATE ---
+  let points = 0;
+  let levelIndex = 0;
+  let profitPerHour = 0;
+  let pointsPerClickBase = 10;
+  let pointsPerSecondBase = 0;
+  let boostsOwned = {};
+  let missionsProgress = {};
+  let missionsCompleted = {};
+
+  // --- DOM ---
+  const pointsDisplay = document.getElementById('pointsDisplay');
+  const levelNameEl = document.getElementById('levelName');
+  const levelProgressEl = document.getElementById('levelProgress');
+  const levelProgressBarEl = document.getElementById('level-progress-bar');
+  const profitDisplay = document.getElementById('profit-display');
+  const centralButton = document.getElementById('central-button');
+
+  const dailyRewardTimer = document.getElementById('dailyRewardTimer');
+  const dailyCipherTimer = document.getElementById('dailyCipherTimer');
+  const dailyComboTimer = document.getElementById('dailyComboTimer');
+
+  const missionsSection = document.getElementById('missions');
+  const missionsList = document.getElementById('missions-list');
+
+  const shopSection = document.getElementById('shop');
+  const shopList = document.getElementById('shop-list');
+
+  const navItems = document.querySelectorAll('nav.bottom-nav .nav-item');
+
+  // --- UTILITIES ---
+  function saveGame() {
+    const saveData = {
+      points, levelIndex, boostsOwned, missionsProgress, missionsCompleted
+    };
+    localStorage.setItem('aetherien_save', JSON.stringify(saveData));
+  }
+  function loadGame() {
+    const saved = localStorage.getItem('aetherien_save');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        points = data.points || 0;
+        levelIndex = data.levelIndex || 0;
+        boostsOwned = data.boostsOwned || {};
+        missionsProgress = data.missionsProgress || {};
+        missionsCompleted = data.missionsCompleted || {};
+      } catch(e) { /* no-op */ }
     }
+  }
 
-    function calculateProgress() {
-      if (levelIndex >= levelNames.length - 1) return 100;
-      const current = points - levelMinPoints[levelIndex];
-      const next = levelMinPoints[levelIndex + 1] - levelMinPoints[levelIndex];
-      return Math.min((current / next) * 100, 100);
+  function formatNumber(n) {
+    if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+    if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+    if (n >= 1e3) return (n/1e3).toFixed(2) + 'K';
+    return n.toString();
+  }
+
+  function calculateLevel() {
+    for (let i = levelMinPoints.length - 1; i >= 0; i--) {
+      if (points >= levelMinPoints[i]) return i;
     }
+    return 0;
+  }
+  function calculateProgress() {
+    if (levelIndex >= levelNames.length - 1) return 100;
+    const current = points - levelMinPoints[levelIndex];
+    const next = levelMinPoints[levelIndex + 1] - levelMinPoints[levelIndex];
+    return Math.min((current / next) * 100, 100);
+  }
+  function updateLevelUI() {
+    levelNameEl.textContent = levelNames[levelIndex];
+    levelProgressEl.textContent = `${levelIndex + 1} / ${levelNames.length}`;
+    levelProgressBarEl.style.width = calculateProgress() + '%';
+  }
+  function updateProfit() {
+    profitPerHour = pointsPerSecondBase * 3600 * (boostsOwned['boost3'] ? boostsData[2].multiplier : 1);
+    profitDisplay.textContent = 'Profit: +' + formatNumber(profitPerHour) + ' /h';
+  }
 
-    function updatePointsDisplay() {
-      pointsValueEl.textContent = points.toLocaleString("fr-FR");
-      profitValueEl.textContent = `+${(profitPerHour/1000).toFixed(2)}K`;
-      localStorage.setItem("points", points);
+  // --- CLICKS & POINTS ---
+  function addPoints(n) {
+    points += n;
+    updatePointsDisplay();
+    checkLevelUp();
+    updateProfit();
+    saveGame();
+    updateMissionsProgress('click', n);
+  }
+  function updatePointsDisplay() {
+    pointsDisplay.textContent = formatNumber(points);
+  }
+
+  // --- LEVEL UP ---
+  function checkLevelUp() {
+    const newLevel = calculateLevel();
+    if (newLevel !== levelIndex) {
+      levelIndex = newLevel;
+      updateLevelUI();
     }
+  }
 
-    function handleCharacterClick(e) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      e.currentTarget.style.transform = `perspective(1000px) rotateX(${-y/10}deg) rotateY(${x/10}deg) scale(1.05)`;
-      
-      points += pointsToAdd;
-      updatePointsDisplay();
-      checkLevelUp();
-      showClickEffect(e);
-      
-      setTimeout(() => {
-        e.currentTarget.style.transform = "";
-      }, 200);
+  // --- CLICK HANDLER ---
+  centralButton.addEventListener('click', () => {
+    let multiplier = 1;
+    if (boostsOwned['boost1']) multiplier *= boostsData[0].multiplier;
+    if (boostsOwned['boost3']) multiplier *= boostsData[2].multiplier;
+
+    const gained = pointsPerClickBase * multiplier;
+    addPoints(gained);
+
+    showClickEffect('+' + gained);
+  });
+
+  // --- Click effect animation ---
+  function showClickEffect(text) {
+    const effect = document.createElement('div');
+    effect.className = 'click-effect';
+    effect.textContent = text;
+    document.body.appendChild(effect);
+
+    const rect = centralButton.getBoundingClientRect();
+    effect.style.left = (rect.left + rect.width / 2) + 'px';
+    effect.style.top = (rect.top + rect.height / 2) + 'px';
+
+    setTimeout(() => {
+      effect.remove();
+    }, 1000);
+  }
+
+  // --- AUTO POINTS PER SECOND ---
+  function applyAutoPoints() {
+    let autoPoints = 0;
+    if (boostsOwned['boost2']) autoPoints += boostsData[1].multiplier;
+    if (boostsOwned['boost3']) autoPoints *= boostsData[2].multiplier;
+
+    if (autoPoints > 0) {
+      addPoints(autoPoints);
+      updateMissionsProgress('auto', autoPoints);
     }
+  }
+  setInterval(applyAutoPoints, 1000);
 
-    function showClickEffect(e) {
-      const effect = document.createElement('div');
-      effect.className = 'click-effect';
-      effect.textContent = `+${pointsToAdd}`;
-      effect.style.left = e.pageX + 'px';
-      effect.style.top = e.pageY + 'px';
-      document.body.appendChild(effect);
-      effect.addEventListener('animationend', () => effect.remove());
+  // --- NAVIGATION ---
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      navItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      const tab = item.getAttribute('data-tab');
+
+      if (tab === 'main') {
+        missionsSection.style.display = 'none';
+        shopSection.style.display = 'none';
+        centralButton.style.display = 'flex';
+      } else if (tab === 'missions') {
+        missionsSection.style.display = 'block';
+        shopSection.style.display = 'none';
+        centralButton.style.display = 'none';
+      } else if (tab === 'shop') {
+        missionsSection.style.display = 'none';
+        shopSection.style.display = 'block';
+        centralButton.style.display = 'none';
+      }
+    });
+  });
+
+  // --- Missions ---
+  function renderMissions() {
+    missionsList.innerHTML = '';
+    missionsData.forEach(m => {
+      if (missionsCompleted[m.id]) return; // skip completed
+
+      const missionEl = document.createElement('div');
+      missionEl.className = 'mission';
+
+      const desc = document.createElement('div');
+      desc.className = 'desc';
+      desc.textContent = `${m.desc} (${missionsProgress[m.id] || 0} / ${m.target})`;
+
+      const btn = document.createElement('button');
+      btn.textContent = (missionsProgress[m.id] >= m.target) ? 'Claim' : 'Start';
+      btn.disabled = missionsProgress[m.id] < m.target;
+      btn.className = btn.disabled ? '' : 'claim';
+
+      btn.addEventListener('click', () => {
+        if (btn.disabled) return;
+        claimMission(m.id);
+      });
+
+      missionEl.appendChild(desc);
+      missionEl.appendChild(btn);
+      missionsList.appendChild(missionEl);
+    });
+  }
+  function updateMissionsProgress(type, amount) {
+    missionsData.forEach(m => {
+      if (missionsCompleted[m.id]) return;
+
+      if (m.id === 'mission1' && type === 'click') {
+        missionsProgress[m.id] = (missionsProgress[m.id] || 0) + amount;
+      } else if (m.id === 'mission2' && type === 'auto') {
+        missionsProgress[m.id] = (missionsProgress[m.id] || 0) + amount;
+      } else if (m.id === 'mission3' && type === 'boost') {
+        missionsProgress[m.id] = (missionsProgress[m.id] || 0) + amount;
+      }
+      if (missionsProgress[m.id] > m.target) missionsProgress[m.id] = m.target;
+    });
+    renderMissions();
+    saveGame();
+  }
+  function claimMission(id) {
+    const mission = missionsData.find(m => m.id === id);
+    if (!mission) return;
+    points += mission.reward;
+    missionsCompleted[id] = true;
+    updatePointsDisplay();
+    renderMissions();
+    saveGame();
+  }
+
+  // --- Shop ---
+  function renderShop() {
+    shopList.innerHTML = '';
+    boostsData.forEach(boost => {
+      const itemEl = document.createElement('div');
+      itemEl.className = 'shop-item';
+
+      const desc = document.createElement('div');
+      desc.className = 'desc';
+      desc.textContent = boost.name + ": " + boost.description;
+
+      const price = document.createElement('div');
+      price.className = 'price';
+      price.textContent = formatNumber(boost.price);
+
+      const btn = document.createElement('button');
+      btn.textContent = boostsOwned[boost.id] ? 'Owned' : 'Buy';
+      btn.disabled = boostsOwned[boost.id] || points < boost.price;
+
+      btn.addEventListener('click', () => {
+        if (points >= boost.price && !boostsOwned[boost.id]) {
+          points -= boost.price;
+          boostsOwned[boost.id] = true;
+          btn.textContent = 'Owned';
+          btn.disabled = true;
+          updatePointsDisplay();
+          updateProfit();
+          updateMissionsProgress('boost', 1);
+          saveGame();
+        }
+      });
+
+      itemEl.appendChild(desc);
+      itemEl.appendChild(price);
+      itemEl.appendChild(btn);
+      shopList.appendChild(itemEl);
+    });
+  }
+
+  // --- Daily timers (simple) ---
+  function startDailyTimers() {
+    function updateTimers() {
+      const now = new Date();
+      const nextMidnight = new Date();
+      nextMidnight.setHours(24,0,0,0);
+      const diff = nextMidnight - now;
+
+      function formatDiff(ms) {
+        const s = Math.floor(ms/1000) % 60;
+        const m = Math.floor(ms/(1000*60)) % 60;
+        const h = Math.floor(ms/(1000*3600));
+        return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+      }
+
+      dailyRewardTimer.textContent = formatDiff(diff);
+      dailyCipherTimer.textContent = formatDiff(diff);
+      dailyComboTimer.textContent = formatDiff(diff);
     }
+    updateTimers();
+    setInterval(updateTimers, 1000);
+  }
 
-    function handleNavClick(e) {
-      navItems.forEach(item => item.classList.remove('active'));
-      e.currentTarget.classList.add('active');
-    }
+  // --- Init ---
+  function init() {
+    loadGame();
+    updatePointsDisplay();
+    checkLevelUp();
+    updateProfit();
+    renderMissions();
+    renderShop();
+    startDailyTimers();
+  }
 
-    function initGame() {
-      updateLevelInfo();
-      updatePointsDisplay();
-      mainCharacterEl.addEventListener("click", handleCharacterClick);
-      navItems.forEach(item => item.addEventListener("click", handleNavClick));
-    }
-
-    document.addEventListener("DOMContentLoaded", initGame);
-  </script>
+  init();
+})();
+</script>
 </body>
 </html>
