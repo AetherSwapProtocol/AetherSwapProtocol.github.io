@@ -1,504 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hamster Combat X</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Swap Kombat X100</title>
   <style>
-    :root {
-      --main-color: #FF6B00;
-      --secondary-color: #FFD700;
-      --bg-dark: #1A1A2E;
-      --bg-light: #f9fafb;
-      --text-light: #FFFFFF;
-      --text-dark: #16213E;
-      --health-color: #FF0000;
-      --energy-color: #00FF00;
-    }
-
     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      background: var(--bg-dark);
-      color: var(--text-light);
-      touch-action: manipulation;
+      font-family: 'Segoe UI', sans-serif;
+      background: #121212;
+      color: #fff;
+      overflow: hidden;
       user-select: none;
-      overflow-x: hidden;
+      touch-action: manipulation;
     }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 15px;
-      background: linear-gradient(to right, #16213E, #0F3460);
-      border-bottom: 3px solid var(--main-color);
-    }
-
-    .combat-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .hamster-arena {
-      width: 300px;
-      height: 300px;
-      background: url('https://i.imgur.com/JqYeZZn.png') center/cover;
-      border-radius: 15px;
-      position: relative;
-      margin: 20px auto;
-      box-shadow: 0 0 30px rgba(255, 107, 0, 0.5);
-      border: 5px solid var(--main-color);
-    }
-
-    #hamster {
-      width: 120px;
-      height: 120px;
-      position: absolute;
-      bottom: 50px;
-      left: 50%;
-      transform: translateX(-50%);
-      transition: transform 0.1s;
-      background: url('https://i.imgur.com/XWQz3ZS.png') center/contain no-repeat;
-    }
-
-    #hamster:active {
-      transform: translateX(-50%) scale(0.95);
-    }
-
-    .stats-bar {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      margin-top: 15px;
-    }
-
-    .stat {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .stat-label {
+    header {
+      background: linear-gradient(to right, #ff6b00, #ffd700);
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
       font-weight: bold;
-      color: var(--secondary-color);
+      color: #121212;
     }
-
-    .progress-container {
-      width: 70%;
+    #arena {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 2rem;
+    }
+    #enemy {
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle at center, #ff6b00 20%, #660000 80%);
+      border-radius: 50%;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 20px #ff6b00;
+    }
+    #log {
+      width: 90%;
+      height: 100px;
+      background: #1e1e1e;
+      margin: 1rem auto;
+      padding: 1rem;
+      overflow-y: auto;
+      font-family: monospace;
+      border: 1px solid #ff6b00;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background: #ff6b00;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      color: black;
+    }
+    .bar-container {
+      width: 80%;
+      margin: 10px auto;
+    }
+    .bar {
       height: 20px;
-      background: #333;
+      background: #444;
       border-radius: 10px;
       overflow: hidden;
     }
-
-    .progress-fill {
+    .fill {
       height: 100%;
-      border-radius: 10px;
       transition: width 0.3s;
     }
-
-    #health-bar {
-      background: linear-gradient(to right, #FF0000, #FF6B00);
-    }
-
-    #energy-bar {
-      background: linear-gradient(to right, #00AA00, #00FF00);
-    }
-
-    .combat-controls {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .combat-btn {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 50px;
-      font-weight: bold;
-      font-size: 16px;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    #attack-btn {
-      background: var(--health-color);
-      color: white;
-    }
-
-    #heal-btn {
-      background: var(--energy-color);
-      color: var(--text-dark);
-    }
-
-    #upgrade-btn {
-      background: var(--secondary-color);
-      color: var(--text-dark);
-    }
-
-    .combat-log {
-      width: 90%;
-      height: 100px;
-      margin: 20px auto;
-      padding: 10px;
-      background: rgba(0,0,0,0.5);
-      border-radius: 10px;
-      overflow-y: auto;
-      font-family: monospace;
-      border: 2px solid var(--main-color);
-    }
-
-    .shop-items {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      padding: 15px;
-    }
-
-    .shop-item {
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px;
-      padding: 10px;
-      text-align: center;
-      border: 1px solid var(--main-color);
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .shop-item:hover {
-      transform: scale(1.05);
-    }
-
-    .damage-effect {
-      position: absolute;
-      font-size: 24px;
-      font-weight: bold;
-      color: #FF0000;
-      animation: floatUp 1s forwards;
-    }
-
-    @keyframes floatUp {
-      0% { transform: translateY(0); opacity: 1; }
-      100% { transform: translateY(-50px); opacity: 0; }
-    }
-
-    /* Mobile responsive */
-    @media (max-width: 600px) {
-      .hamster-arena {
-        width: 250px;
-        height: 250px;
-      }
-      
-      #hamster {
-        width: 100px;
-        height: 100px;
-      }
-    }
+    .health { background: linear-gradient(to right, red, darkred); }
+    .xp { background: linear-gradient(to right, lime, green); }
   </style>
 </head>
 <body>
-  <div class="header">
-    <div id="username">Hamster Fighter</div>
-    <div id="coins">🪙 0</div>
+  <header>ð¥ SWAP KOMBAT X100 ð¥</header>
+  <div id="arena">
+    <div id="enemy"></div>
+    <div class="bar-container">
+      <div class="bar"><div id="health-fill" class="fill health" style="width:100%"></div></div>
+    </div>
+    <div class="bar-container">
+      <div class="bar"><div id="xp-fill" class="fill xp" style="width:0%"></div></div>
+    </div>
+    <div>
+      <button onclick="attack()">Swap âï¸</button>
+      <button onclick="special()">Mint ð¥</button>
+      <button onclick="heal()">Stake ð</button>
+    </div>
+    <div id="log">> Game started</div>
   </div>
 
-  <div class="combat-container">
-    <div class="hamster-arena">
-      <div id="hamster" onclick="attack()"></div>
-    </div>
-
-    <div class="stats-bar">
-      <div class="stat">
-        <span class="stat-label">❤ Health:</span>
-        <div class="progress-container">
-          <div id="health-bar" class="progress-fill" style="width: 100%"></div>
-        </div>
-      </div>
-      <div class="stat">
-        <span class="stat-label">⚡ Energy:</span>
-        <div class="progress-container">
-          <div id="energy-bar" class="progress-fill" style="width: 100%"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="combat-controls">
-      <button id="attack-btn" class="combat-btn" onclick="attack()">ATTACK</button>
-      <button id="heal-btn" class="combat-btn" onclick="heal()">HEAL (50⚡)</button>
-      <button id="upgrade-btn" class="combat-btn" onclick="showShop()">UPGRADE</button>
-    </div>
-
-    <div class="combat-log" id="combat-log">
-      > Welcome to Hamster Combat!
-      > Tap ATTACK to fight enemies!
-    </div>
-  </div>
-
-  <div id="shop" style="display: none;">
-    <h2 style="text-align: center; color: var(--secondary-color);">HAMSTER SHOP</h2>
-    <div class="shop-items">
-      <div class="shop-item" onclick="buyUpgrade('strength')">
-        <h3>💪 Strength</h3>
-        <p>+5 Attack Power</p>
-        <p>Cost: 100 🪙</p>
-      </div>
-      <div class="shop-item" onclick="buyUpgrade('health')">
-        <h3>❤ Max Health</h3>
-        <p>+20 Health</p>
-        <p>Cost: 150 🪙</p>
-      </div>
-      <div class="shop-item" onclick="buyUpgrade('energy')">
-        <h3>⚡ Max Energy</h3>
-        <p>+10 Energy</p>
-        <p>Cost: 120 🪙</p>
-      </div>
-      <div class="shop-item" onclick="buyUpgrade('critical')">
-        <h3>🎯 Critical Hit</h3>
-        <p>5% Crit Chance</p>
-        <p>Cost: 200 🪙</p>
-      </div>
-    </div>
-    <button style="display: block; margin: 15px auto;" onclick="hideShop()">BACK TO BATTLE</button>
-  </div>
-
-  <audio id="attack-sound" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_e50e4b57a3.mp3?filename=punch-140236.mp3"></audio>
-  <audio id="heal-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3a8e9f0c7f.mp3?filename=magic-spell-6767.mp3"></audio>
-  <audio id="coin-sound" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_3a8e9f0c7f.mp3?filename=coins-13692.mp3"></audio>
+  <audio id="snd-attack" src="data:audio/mp3;base64,RkFLRUFVRElP"></audio>
+  <audio id="snd-heal" src="data:audio/mp3;base64,RkFLRUFVRElP"></audio>
+  <audio id="snd-coin" src="data:audio/mp3;base64,RkFLRUFVRElP"></audio>
 
   <script>
-    // Game State
-    const game = {
-      coins: 0,
-      level: 1,
-      health: 100,
-      maxHealth: 100,
-      energy: 100,
-      maxEnergy: 100,
-      strength: 10,
-      criticalChance: 0,
-      enemiesDefeated: 0,
-      currentEnemy: createEnemy(1),
-      upgrades: {
-        strength: 0,
-        health: 0,
-        energy: 0,
-        critical: 0
-      }
+    const log = (msg) => {
+      const logBox = document.getElementById('log');
+      logBox.innerHTML += '<br>> ' + msg;
+      logBox.scrollTop = logBox.scrollHeight;
     };
 
-    // Enemy System
-    function createEnemy(level) {
-      const baseHealth = 50 + (level * 20);
-      const basePower = 5 + (level * 2);
-      
-      return {
-        health: baseHealth,
-        maxHealth: baseHealth,
-        power: basePower,
-        level: level,
-        name: ["Ratty", "Squeaker", "Nibbles", "Whiskers", "Fuzzy"][Math.floor(Math.random() * 5)]
-      };
+    let game = {
+      hp: 100,
+      maxHp: 100,
+      xp: 0,
+      level: 1
+    };
+
+    function updateUI() {
+      document.getElementById('health-fill').style.width = (game.hp / game.maxHp * 100) + '%';
+      document.getElementById('xp-fill').style.width = (game.xp % 100) + '%';
     }
 
-    // Combat System
     function attack() {
-      if (game.energy < 10) {
-        addLog("> Not enough energy!");
-        return;
+      const snd = document.getElementById('snd-attack'); snd.play();
+      let dmg = 10 + Math.floor(Math.random() * 5);
+      game.xp += dmg;
+      log("Swap Attack deals " + dmg + " XP!");
+      if (game.xp >= game.level * 100) {
+        game.level++;
+        log("LEVEL UP! You reached level " + game.level);
+        document.getElementById('snd-coin').play();
       }
+      updateUI();
+    }
 
-      // Player attack
-      game.energy -= 10;
-      let damage = game.strength;
-      
-      // Critical hit chance
-      if (Math.random() * 100 < game.criticalChance) {
-        damage *= 2;
-        showDamage(damage, true);
-        addLog(`> CRITICAL HIT! ${damage} damage!`);
-      } else {
-        showDamage(damage);
-        addLog(`> You hit for ${damage} damage!`);
-      }
-      
-      game.currentEnemy.health -= damage;
-      document.getElementById('attack-sound').play();
-      
-      // Check if enemy defeated
-      if (game.currentEnemy.health <= 0) {
-        const coinsEarned = 10 + (game.currentEnemy.level * 5);
-        game.coins += coinsEarned;
-        game.enemiesDefeated++;
-        
-        addLog(`> Enemy defeated! +${coinsEarned} coins!`);
-        document.getElementById('coin-sound').play();
-        
-        // Create new enemy
-        game.level = Math.floor(game.enemiesDefeated / 5) + 1;
-        game.currentEnemy = createEnemy(game.level);
-        addLog(`> New enemy: ${game.currentEnemy.name} (Lvl ${game.currentEnemy.level})`);
-      } else {
-        // Enemy counter attack
-        setTimeout(() => {
-          const enemyDamage = Math.max(1, game.currentEnemy.power - Math.floor(game.level / 2));
-          game.health -= enemyDamage;
-          showDamage(enemyDamage, false, true);
-          addLog(`> ${game.currentEnemy.name} hits you for ${enemyDamage} damage!`);
-          updateBars();
-          
-          // Check if player defeated
-          if (game.health <= 0) {
-            game.health = game.maxHealth;
-            addLog("> You were defeated! Health restored.");
-          }
-        }, 500);
-      }
-      
-      updateBars();
+    function special() {
+      const crit = Math.random() < 0.3;
+      const dmg = crit ? 50 : 20;
+      game.xp += dmg;
+      log(crit ? 'MINT CRIT!! ð¥ 50 XP' : 'Mint deals 20 XP');
+      document.getElementById('snd-attack').play();
+      updateUI();
     }
 
     function heal() {
-      if (game.energy < 50) {
-        addLog("> Not enough energy to heal!");
-        return;
-      }
-      
-      if (game.health >= game.maxHealth) {
-        addLog("> Health already full!");
-        return;
-      }
-      
-      game.energy -= 50;
-      const healAmount = Math.min(30, game.maxHealth - game.health);
-      game.health += healAmount;
-      
-      addLog(`> Healed for ${healAmount} health!`);
-      document.getElementById('heal-sound').play();
-      updateBars();
-    }
-
-    // Visual Effects
-    function showDamage(amount, isCritical = false, isEnemyAttack = false) {
-      const hamster = document.getElementById('hamster');
-      const damageText = document.createElement('div');
-      damageText.className = 'damage-effect';
-      damageText.textContent = amount;
-      damageText.style.color = isCritical ? '#FFD700' : (isEnemyAttack ? '#FF0000' : '#FFFFFF');
-      damageText.style.fontSize = isCritical ? '28px' : '24px';
-      damageText.style.left = isEnemyAttack ? '70%' : '30%';
-      
-      hamster.appendChild(damageText);
-      setTimeout(() => damageText.remove(), 1000);
-      
-      // Shake effect
-      hamster.style.animation = 'none';
-      void hamster.offsetWidth; // Trigger reflow
-      hamster.style.animation = isEnemyAttack ? 'shake 0.5s' : 'punch 0.3s';
-    }
-
-    // Shop System
-    function showShop() {
-      document.querySelector('.combat-container').style.display = 'none';
-      document.getElementById('shop').style.display = 'block';
-    }
-
-    function hideShop() {
-      document.querySelector('.combat-container').style.display = 'flex';
-      document.getElementById('shop').style.display = 'none';
-    }
-
-    function buyUpgrade(type) {
-      const costs = {
-        strength: 100 + (game.upgrades.strength * 50),
-        health: 150 + (game.upgrades.health * 60),
-        energy: 120 + (game.upgrades.energy * 40),
-        critical: 200 + (game.upgrades.critical * 100)
-      };
-      
-      if (game.coins >= costs[type]) {
-        game.coins -= costs[type];
-        game.upgrades[type]++;
-        
-        switch(type) {
-          case 'strength':
-            game.strength += 5;
-            addLog("> Strength increased!");
-            break;
-          case 'health':
-            game.maxHealth += 20;
-            game.health += 20;
-            addLog("> Max health increased!");
-            break;
-          case 'energy':
-            game.maxEnergy += 10;
-            game.energy += 10;
-            addLog("> Max energy increased!");
-            break;
-          case 'critical':
-            game.criticalChance += 5;
-            addLog("> Critical chance increased!");
-            break;
-        }
-        
-        document.getElementById('coin-sound').play();
+      if (game.hp < game.maxHp) {
+        game.hp = Math.min(game.maxHp, game.hp + 30);
+        document.getElementById('snd-heal').play();
+        log('You staked and healed 30 HP');
         updateUI();
       } else {
-        addLog("> Not enough coins!");
+        log('Health already full!');
       }
     }
 
-    // UI Updates
-    function updateBars() {
-      document.getElementById('health-bar').style.width = `${(game.health / game.maxHealth) * 100}%`;
-      document.getElementById('energy-bar').style.width = `${(game.energy / game.maxEnergy) * 100}%`;
-    }
-
-    function updateUI() {
-      document.getElementById('coins').textContent = `🪙 ${game.coins}`;
-      updateBars();
-    }
-
-    function addLog(message) {
-      const log = document.getElementById('combat-log');
-      log.innerHTML += `<br>${message}`;
-      log.scrollTop = log.scrollHeight;
-    }
-
-    // Energy Regeneration
-    setInterval(() => {
-      if (game.energy < game.maxEnergy) {
-        game.energy = Math.min(game.maxEnergy, game.energy + 2);
-        updateBars();
-      }
-    }, 1000);
-
-    // Initialize
-    addLog(`> Enemy encountered: ${game.currentEnemy.name} (Lvl ${game.currentEnemy.level})`);
     updateUI();
-
-    // CSS Animations
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes shake {
-        0%, 100% { transform: translateX(-50%) translateY(0); }
-        20%, 60% { transform: translateX(-50%) translateY(-5px); }
-        40%, 80% { transform: translateX(-50%) translateY(5px); }
-      }
-      
-      @keyframes punch {
-        0% { transform: translateX(-50%) scale(1); }
-        50% { transform: translateX(-50%) scale(1.1); }
-        100% { transform: translateX(-50%) scale(1); }
-      }
-    `;
-    document.head.appendChild(style);
   </script>
 </body>
 </html>
