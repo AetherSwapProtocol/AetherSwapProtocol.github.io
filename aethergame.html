@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>⚡ AetherSwap TapWar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherSwap TapWar</title>
   <style>
     :root {
       --main-color: #00d9ff;
@@ -16,7 +16,7 @@
       font-family: 'Segoe UI', sans-serif;
       background: var(--bg-dark);
       color: white;
-      height: 100dvh;
+      height: 100vh;
       overflow: hidden;
       touch-action: manipulation;
     }
@@ -26,6 +26,14 @@
       padding: 15px;
       background: var(--bg-panel);
       border-bottom: 1px solid var(--main-color);
+    }
+    #language-switcher {
+      background: none;
+      border: 1px solid var(--main-color);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
     }
     #tap-area {
       width: 200px;
@@ -53,21 +61,33 @@
       margin: 0 20px;
       border-radius: 10px;
     }
-    .nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      background: var(--bg-panel);
-      border-top: 1px solid var(--main-color);
+    .progress-bar {
+      height: 10px;
+      background: #222;
+      border-radius: 5px;
+      margin: 10px 20px;
     }
-    .nav button {
-      flex: 1;
-      padding: 15px;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.2rem;
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #00ffaa, var(--main-color));
+      border-radius: 5px;
+      transition: width 0.3s;
+    }
+    .badge {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(145deg, #1e293b, #334155);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .badge svg {
+      width: 40px;
+      height: 40px;
     }
     .panel {
       display: none;
@@ -82,18 +102,6 @@
       padding: 15px;
       overflow-y: auto;
     }
-    .progress-bar {
-      height: 10px;
-      background: #222;
-      border-radius: 5px;
-      margin: 10px 0;
-    }
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(to right, #00ffaa, var(--main-color));
-      border-radius: 5px;
-    }
     .toast {
       position: fixed;
       top: 20px;
@@ -104,8 +112,8 @@
       padding: 8px 15px;
       border-radius: 20px;
       font-weight: bold;
-      z-index: 100;
       animation: fadeInOut 2s;
+      z-index: 100;
     }
     @keyframes fadeInOut {
       0%, 100% { opacity: 0; }
@@ -115,135 +123,116 @@
 </head>
 <body>
   <div class="header">
-    <div id="username">@AetherWarrior</div>
-    <div id="aeth-balance">⚡ 0 AETH</div>
+    <div id="username">Player</div>
+    <button id="language-switcher">EN/FR</button>
   </div>
 
   <div class="progress-bar">
     <div id="xp-fill" class="progress-fill"></div>
   </div>
 
-  <div id="tap-area" onclick="tap()">TAP</div>
+  <div id="tap-area">TAP</div>
 
   <div class="hud">
-    <div>🆙 Nv. <span id="level">1</span></div>
+    <div>🆙 <span id="level">1</span></div>
     <div>💥 +<span id="tap-power">1</span>/tap</div>
     <div>🤖 +<span id="auto-power">0</span>/s</div>
   </div>
 
-  <div class="nav">
-    <button onclick="openPanel('home')">🏠</button>
-    <button onclick="openPanel('shop')">🛒</button>
-    <button onclick="openPanel('leaderboard')">🏆</button>
-    <button onclick="openPanel('missions')">🎯</button>
+  <!-- Dashboard Panels -->
+  <div id="dashboard" class="panel">
+    <h2 id="dashboard-title">DASHBOARD</h2>
+    <div id="badges-container" style="display: flex; flex-wrap: wrap;"></div>
   </div>
 
-  <!-- Panel Shop -->
-  <div id="shop" class="panel">
-    <h2>🛒 UPGRADES</h2>
-    <div class="upgrade" onclick="buyUpgrade('tap')">
-      <h3>💥 Power Tap</h3>
-      <p>+1 AETH par tap</p>
-      <p>💰 Prix : <span id="tap-price">50</span> AETH</p>
-    </div>
-    <div class="upgrade" onclick="buyUpgrade('auto')">
-      <h3>🤖 Auto-Clicker</h3>
-      <p>+1 AETH par seconde</p>
-      <p>💰 Prix : <span id="auto-price">150</span> AETH</p>
-    </div>
-  </div>
-
-  <!-- Panel Leaderboard -->
-  <div id="leaderboard" class="panel">
-    <h2>🏆 CLASSEMENT</h2>
-    <div id="top-players">
-      Chargement...
-    </div>
-    <button onclick="share()">📢 Partager mon score</button>
-  </div>
-
-  <!-- Panel Missions -->
-  <div id="missions" class="panel">
-    <h2>🎯 MISSIONS</h2>
-    <div class="mission" onclick="claimMission('join')">
-      <h3>👥 Rejoindre Telegram</h3>
-      <p>+50 AETH</p>
-    </div>
-    <div class="mission" onclick="claimMission('social')">
-      <h3>🔗 Partager sur X</h3>
-      <p>+100 AETH</p>
-    </div>
-  </div>
+  <button onclick="openPanel('dashboard')" style="position: fixed; bottom: 20px; right: 20px; padding: 10px; background: var(--main-color); border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 1.5rem;">📊</button>
 
   <script>
     // Game Data
-    let game = {
-      aeth: Number(localStorage.getItem("aeth")) || 0,
-      level: Number(localStorage.getItem("level")) || 1,
-      xp: Number(localStorage.getItem("xp")) || 0,
-      tapPower: Number(localStorage.getItem("tapPower")) || 1,
-      autoPower: Number(localStorage.getItem("autoPower")) || 0,
-      missions: JSON.parse(localStorage.getItem("missions")) || {},
-      leaderboard: JSON.parse(localStorage.getItem("leaderboard")) || []
+    const game = {
+      aeth: 0,
+      level: 1,
+      xp: 0,
+      tapPower: 1,
+      autoPower: 0,
+      badges: []
     };
+
+    // Translations
+    const translations = {
+      en: {
+        username: "Player",
+        level: "Level",
+        tapPower: "Tap Power",
+        autoPower: "Auto Power",
+        dashboard: "DASHBOARD",
+        badges: ["Miner", "Trader", "Champion", "Whale"]
+      },
+      fr: {
+        username: "Joueur",
+        level: "Niveau",
+        tapPower: "Puissance",
+        autoPower: "Auto",
+        dashboard: "TABLEAU DE BORD",
+        badges: ["Mineur", "Trader", "Champion", "Baleine"]
+      }
+    };
+    let currentLang = "en";
 
     // DOM Elements
     const elements = {
-      aethBalance: document.getElementById("aeth-balance"),
-      tapArea: document.getElementById("tap-area"),
+      username: document.getElementById("username"),
       level: document.getElementById("level"),
       tapPower: document.getElementById("tap-power"),
       autoPower: document.getElementById("auto-power"),
-      xpFill: document.getElementById("xp-fill")
+      xpFill: document.getElementById("xp-fill"),
+      tapArea: document.getElementById("tap-area"),
+      badgesContainer: document.getElementById("badges-container")
     };
 
     // Initialize
     updateUI();
+    generateBadges();
     startAutoClicker();
 
-    // Main Tap Function
+    // Language Switcher
+    document.getElementById("language-switcher").addEventListener("click", () => {
+      currentLang = currentLang === "en" ? "fr" : "en";
+      translateUI();
+    });
+
+    function translateUI() {
+      const t = translations[currentLang];
+      elements.username.textContent = t.username;
+      document.getElementById("dashboard-title").textContent = t.dashboard;
+      // Update other elements as needed
+    }
+
+    // Badge Generator
+    function generateBadges() {
+      const badges = [
+        `<svg viewBox="0 0 100 100"><path d="M50 20 L80 50 L50 80 L20 50 Z" fill="#00d9ff"/><circle cx="50" cy="50" r="15" fill="#ffcc00"/></svg>`,
+        `<svg viewBox="0 0 100 100"><path d="M30 30 L70 30 L70 70 L30 70 Z" fill="#00ffaa"/><path d="M40 40 L60 60 M60 40 L40 60" stroke="white" stroke-width="4"/></svg>`,
+        `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#ff9500"/><path d="M50 20 L60 45 L85 45 L65 65 L75 90 L50 75 L25 90 L35 65 L15 45 L40 45 Z" fill="white"/></svg>`,
+        `<svg viewBox="0 0 100 100"><path d="M20 50 Q50 10 80 50 Q50 70 20 50 Z" fill="#6b46c1"/><circle cx="35" cy="40" r="5" fill="white"/><circle cx="65" cy="40" r="5" fill="white"/></svg>`
+      ];
+
+      elements.badgesContainer.innerHTML = badges.map((badge, i) => `
+        <div class="badge" title="${translations[currentLang].badges[i]}">
+          ${badge}
+        </div>
+      `).join("");
+    }
+
+    // Game Functions
     function tap() {
       game.aeth += game.tapPower;
-      game.xp += game.tapPower * 2;
+      game.xp += 10;
       updateUI();
       showToast(`+${game.tapPower} AETH!`);
-      
-      // Animation
-      elements.tapArea.style.transform = "scale(0.95)";
-      setTimeout(() => elements.tapArea.style.transform = "scale(1)", 100);
     }
 
-    // Auto Clicker
-    function startAutoClicker() {
-      setInterval(() => {
-        if (game.autoPower > 0) {
-          game.aeth += game.autoPower;
-          updateUI();
-        }
-      }, 1000);
-    }
-
-    // Buy Upgrades
-    function buyUpgrade(type) {
-      const prices = {
-        tap: 50 * Math.pow(1.3, game.tapPower - 1),
-        auto: 150 * Math.pow(1.5, game.autoPower)
-      };
-
-      if (game.aeth >= prices[type]) {
-        game.aeth -= prices[type];
-        if (type === 'tap') game.tapPower++;
-        if (type === 'auto') game.autoPower++;
-        updateUI();
-        showToast("Upgrade acheté!");
-      } else {
-        showToast("Pas assez d'AETH!");
-      }
-    }
-
-    // Update UI
     function updateUI() {
-      elements.aethBalance.textContent = `⚡ ${game.aeth} AETH`;
       elements.level.textContent = game.level;
       elements.tapPower.textContent = game.tapPower;
       elements.autoPower.textContent = game.autoPower;
@@ -256,23 +245,27 @@
       if (game.xp >= xpNeeded) {
         game.level++;
         game.xp = 0;
-        showToast(`Niveau ${game.level} atteint!`);
+        showToast(`LEVEL UP! ${game.level}`);
       }
       
-      // Save
-      saveGame();
+      // Save to localStorage
+      localStorage.setItem("aetherGame", JSON.stringify(game));
     }
 
-    // Save Game
-    function saveGame() {
-      localStorage.setItem("aeth", game.aeth);
-      localStorage.setItem("level", game.level);
-      localStorage.setItem("xp", game.xp);
-      localStorage.setItem("tapPower", game.tapPower);
-      localStorage.setItem("autoPower", game.autoPower);
+    function startAutoClicker() {
+      setInterval(() => {
+        if (game.autoPower > 0) {
+          game.aeth += game.autoPower;
+          updateUI();
+        }
+      }, 1000);
     }
 
-    // Show Toast
+    function openPanel(panelId) {
+      document.querySelectorAll(".panel").forEach(p => p.style.display = "none");
+      document.getElementById(panelId).style.display = "block";
+    }
+
     function showToast(message) {
       const toast = document.createElement("div");
       toast.className = "toast";
@@ -281,67 +274,12 @@
       setTimeout(() => toast.remove(), 2000);
     }
 
-    // Open Panel
-    function openPanel(panelId) {
-      document.querySelectorAll(".panel").forEach(panel => {
-        panel.style.display = "none";
-      });
-      document.getElementById(panelId).style.display = "block";
-      
-      // Update Leaderboard
-      if (panelId === "leaderboard") {
-        updateLeaderboard();
-      }
+    // Load saved game
+    function loadGame() {
+      const saved = localStorage.getItem("aetherGame");
+      if (saved) Object.assign(game, JSON.parse(saved));
     }
-
-    // Leaderboard
-    function updateLeaderboard() {
-      // Add current player
-      const playerName = document.getElementById("username").textContent;
-      game.leaderboard.push({
-        name: playerName,
-        score: game.aeth
-      });
-      
-      // Sort and keep top 10
-      game.leaderboard.sort((a, b) => b.score - a.score);
-      game.leaderboard = game.leaderboard.slice(0, 10);
-      localStorage.setItem("leaderboard", JSON.stringify(game.leaderboard));
-      
-      // Display
-      document.getElementById("top-players").innerHTML = game.leaderboard
-        .map((player, index) => 
-          `${index + 1}. ${player.name} - ${player.score} AETH`
-        )
-        .join("<br>");
-    }
-
-    // Share Function
-    function share() {
-      const shareUrl = `https://t.me/AetherSwapBot?startapp=${game.aeth}`;
-      navigator.clipboard.writeText(shareUrl);
-      showToast("Lien copié! Partage-le pour défier tes amis!");
-    }
-
-    // Missions
-    function claimMission(type) {
-      if (!game.missions[type]) {
-        game.missions[type] = true;
-        game.aeth += type === 'join' ? 50 : 100;
-        updateUI();
-        showToast("Mission accomplie!");
-      } else {
-        showToast("Déjà fait!");
-      }
-      localStorage.setItem("missions", JSON.stringify(game.missions));
-    }
-
-    // Telegram Integration
-    const tg = window.Telegram?.WebApp;
-    if (tg?.initDataUnsafe?.user) {
-      const user = tg.initDataUnsafe.user;
-      document.getElementById("username").textContent = `@${user.username || user.first_name}`;
-    }
+    loadGame();
   </script>
 </body>
 </html>
