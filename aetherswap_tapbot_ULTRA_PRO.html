@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aetherien Combat</title>
+  <title>AetherSwap TapBot</title>
   <style>
     body {
       margin: 0;
@@ -47,7 +47,7 @@
     }
     .progress-fill {
       height: 100%;
-      background: #00ffd5;
+      background: linear-gradient(90deg, #ff8a00, #ff0058);
       transition: width 0.3s ease;
     }
     .profit-info {
@@ -55,93 +55,130 @@
       align-items: center;
       gap: 8px;
       font-size: 12px;
+      color: #00ff88;
     }
     .points-display {
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 8px;
-      font-size: 22px;
+      font-size: 28px;
       font-weight: bold;
       margin: 16px 0;
-      color: #00ffd5;
+      color: #fff;
+      text-shadow: 0 0 10px #00ffd5;
     }
     .character-circle {
-      width: 160px;
-      height: 160px;
+      width: 180px;
+      height: 180px;
       margin: auto;
       border-radius: 50%;
-      background: #1c1c3a;
-      box-shadow: 0 0 20px #00ffd5;
+      background: linear-gradient(145deg, #1c1c3a, #2a2a4a);
+      box-shadow: 0 0 30px rgba(0, 255, 213, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.1s;
+      transition: transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .character-circle::before {
+      content: '';
+      position: absolute;
+      width: 150%;
+      height: 150%;
+      background: radial-gradient(circle, rgba(0,255,213,0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
     }
     .character-inner img {
-      width: 90px;
+      width: 100px;
+      z-index: 2;
+      position: relative;
     }
     .daily-rewards {
       display: flex;
       justify-content: space-between;
       gap: 8px;
+      margin-bottom: 24px;
     }
     .reward-card {
       flex: 1;
-      background: #1e1e2f;
-      border-radius: 10px;
-      padding: 8px;
+      background: rgba(30, 30, 47, 0.7);
+      border-radius: 12px;
+      padding: 10px;
       text-align: center;
       font-size: 12px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(0, 255, 213, 0.2);
     }
     .reward-card img {
-      width: 40px;
-      margin-bottom: 4px;
+      width: 32px;
+      margin-bottom: 6px;
+      filter: drop-shadow(0 0 5px #00ffd5);
+    }
+    .reward-card p {
+      margin: 4px 0;
+      color: #aaa;
+    }
+    .reward-card span {
+      font-weight: bold;
+      color: #00ffd5;
     }
     .bottom-nav {
       margin-top: 24px;
       justify-content: space-around;
+      background: rgba(20, 20, 35, 0.8);
+      border-radius: 20px;
+      padding: 12px 0;
     }
     .nav-item {
       text-align: center;
-      font-size: 10px;
+      font-size: 11px;
       color: #aaa;
+      cursor: pointer;
+      transition: all 0.3s;
     }
     .nav-item.active {
       color: #00ffd5;
+      transform: translateY(-5px);
+    }
+    .nav-item span {
+      display: block;
+      margin-top: 4px;
     }
     .click-effect {
       position: absolute;
       color: #00ff88;
       font-weight: bold;
-      font-size: 16px;
-      animation: floatUp 1s ease-out forwards;
+      font-size: 18px;
+      animation: floatUp 0.8s ease-out forwards;
       pointer-events: none;
       z-index: 1000;
+      text-shadow: 0 0 8px rgba(0, 255, 136, 0.7);
     }
     @keyframes floatUp {
-      0% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-50px);
-      }
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-60px); }
+    }
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
   <div class="game-container">
     <div class="game-header">
-      <div class="player-info"><span>ð¤ Aetherien</span></div>
+      <div class="player-info">
+        <span>🦾 Aetherien</span>
+      </div>
       <div class="progress-container">
         <div class="level-info">
-          <span id="levelName">Legendary</span>
-          <span id="levelProgress">7 / 10</span>
+          <span id="levelName">Bronze</span>
+          <span id="levelProgress">1 / 10</span>
         </div>
-        <div class="progress-bar"><div class="progress-fill" id="levelProgressBar"></div></div>
+        <div class="progress-bar"><div class="progress-fill" id="levelProgressBar" style="width: 10%"></div></div>
       </div>
       <div class="profit-info">
         <span id="profitValue">+126.42K</span>
@@ -149,17 +186,29 @@
     </div>
 
     <div class="daily-rewards">
-      <div class="reward-card"><img src="" alt=""><p>Daily</p><span id="dailyRewardTime">00:00</span></div>
-      <div class="reward-card"><img src="" alt=""><p>Cipher</p><span id="dailyCipherTime">19:00</span></div>
-      <div class="reward-card"><img src="" alt=""><p>Combo</p><span id="dailyComboTime">12:00</span></div>
+      <div class="reward-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/3132/3132693.png" alt="Daily">
+        <p>Daily</p>
+        <span id="dailyRewardTime">05:07</span>
+      </div>
+      <div class="reward-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/4213/4213756.png" alt="Cipher">
+        <p>Cipher</p>
+        <span id="dailyCipherTime">00:07</span>
+      </div>
+      <div class="reward-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/924/924915.png" alt="Combo">
+        <p>Combo</p>
+        <span id="dailyComboTime">17:07</span>
+      </div>
     </div>
 
     <div class="points-display">
-      <span id="pointsValue">22,749,365</span>
+      <span id="pointsValue">3,597</span>
     </div>
 
     <div class="character-circle" id="mainCharacter">
-      <div class="character-inner"><img src="" alt="Aetherien Bot" /></div>
+      <div class="character-inner"><img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Aetherien Bot" /></div>
     </div>
 
     <div class="bottom-nav">
@@ -175,8 +224,8 @@
     const levelNames = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Epic", "Legendary", "Master", "GrandMaster", "Lord"];
     const levelMinPoints = [0, 5000, 25000, 100000, 1000000, 2000000, 10000000, 50000000, 100000000, 1000000000];
 
-    let levelIndex = 6;
-    let points = parseInt(localStorage.getItem("points")) || 22749365;
+    let levelIndex = 0;
+    let points = parseInt(localStorage.getItem("points")) || 3597;
     const pointsToAdd = 11;
     const profitPerHour = 126420;
 
@@ -189,6 +238,7 @@
     const dailyCipherTimeEl = document.getElementById('dailyCipherTime');
     const dailyComboTimeEl = document.getElementById('dailyComboTime');
     const mainCharacterEl = document.getElementById('mainCharacter');
+    const navItems = document.querySelectorAll('.nav-item');
 
     function updateLevelInfo() {
       levelNameEl.textContent = levelNames[levelIndex];
@@ -205,15 +255,8 @@
 
     function updatePointsDisplay() {
       pointsValueEl.textContent = points.toLocaleString("fr-FR");
-      profitValueEl.textContent = formatProfit(profitPerHour);
+      profitValueEl.textContent = `+${(profitPerHour/1000).toFixed(2)}K`;
       localStorage.setItem("points", points);
-    }
-
-    function formatProfit(profit) {
-      if (profit >= 1e9) return "+" + (profit / 1e9).toFixed(2) + "B";
-      if (profit >= 1e6) return "+" + (profit / 1e6).toFixed(2) + "M";
-      if (profit >= 1e3) return "+" + (profit / 1e3).toFixed(2) + "K";
-      return "+" + profit;
     }
 
     function startPassiveIncome() {
@@ -239,29 +282,15 @@
       }
     }
 
-    function updateDailyTimers() {
-      dailyRewardTimeEl.textContent = calculateTimeLeft(0);
-      dailyCipherTimeEl.textContent = calculateTimeLeft(19);
-      dailyComboTimeEl.textContent = calculateTimeLeft(12);
-    }
-
-    function calculateTimeLeft(targetHour) {
-      const now = new Date();
-      const target = new Date(now);
-      target.setUTCHours(targetHour, 0, 0, 0);
-      if (now.getUTCHours() >= targetHour) target.setUTCDate(target.getUTCDate() + 1);
-      const diff = target - now;
-      const hours = String(Math.floor(diff / 3600000)).padStart(2, '0');
-      const minutes = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-      return hours + ":" + minutes;
-    }
-
     function handleCharacterClick(e) {
       const rect = e.currentTarget.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
-      e.currentTarget.style.transform = `perspective(1000px) rotateX(${-y / 10}deg) rotateY(${x / 10}deg)`;
-      setTimeout(() => e.currentTarget.style.transform = "", 100);
+      e.currentTarget.style.transform = `perspective(1000px) rotateX(${-y/10}deg) rotateY(${x/10}deg) scale(1.05)`;
+      setTimeout(() => {
+        e.currentTarget.style.transform = "";
+      }, 200);
+      
       points += pointsToAdd;
       updatePointsDisplay();
       checkLevelUp();
@@ -278,13 +307,18 @@
       effect.addEventListener('animationend', () => effect.remove());
     }
 
+    function handleNavClick(e) {
+      navItems.forEach(item => item.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      // Ici vous pourriez ajouter le changement de vue
+    }
+
     function initGame() {
       updateLevelInfo();
       updatePointsDisplay();
       startPassiveIncome();
-      updateDailyTimers();
-      setInterval(updateDailyTimers, 60000);
       mainCharacterEl.addEventListener("click", handleCharacterClick);
+      navItems.forEach(item => item.addEventListener("click", handleNavClick));
     }
 
     document.addEventListener("DOMContentLoaded", initGame);
