@@ -1,36 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aetherien</title>
   <style>
+    :root {
+      --primary: #00ffd5;
+      --secondary: #0088cc;
+      --dark: #0f0f23;
+      --darker: #000;
+      --card-bg: rgba(15, 15, 35, 0.8);
+      --text-light: #ffffff;
+      --text-dim: #aaaaaa;
+    }
+    
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', system-ui, sans-serif;
     }
+    
     body {
-      background: radial-gradient(circle at center, #0f0f23, #000);
-      color: white;
+      background: radial-gradient(circle at center, var(--dark), var(--darker));
+      color: var(--text-light);
       overflow: hidden;
+      height: 100vh;
     }
+    
+    #language-selector {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 5px;
+      background: var(--card-bg);
+      border: 1px solid var(--primary);
+      color: var(--text-light);
+      border-radius: 4px;
+      z-index: 100;
+    }
+    
     header {
       position: fixed;
       top: 0;
       width: 100%;
-      padding: 10px 20px;
+      padding: 15px 20px;
       text-align: center;
       background: rgba(0, 0, 0, 0.7);
       font-size: 24px;
       font-weight: bold;
       z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
     }
+    
+    .currency {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
     #score {
-      color: #7effff;
+      color: var(--primary);
       font-size: 26px;
     }
+    
     #game-container {
       position: absolute;
       top: 60px;
@@ -38,41 +75,123 @@
       right: 0;
       bottom: 60px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
+      padding: 20px;
     }
+    
     #click-area {
       width: 180px;
       height: 180px;
       border-radius: 50%;
-      background: linear-gradient(145deg, #00ffd5, #0088cc);
-      box-shadow: 0 0 40px #00ffd5;
+      background: linear-gradient(145deg, var(--primary), var(--secondary));
+      box-shadow: 0 0 40px var(--primary);
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
       transition: transform 0.1s;
-      position: relative;
+      margin-bottom: 30px;
     }
+    
     #click-area:active {
       transform: scale(0.95);
     }
-    #robot {
+    
+    #main-icon {
       width: 100px;
       height: 100px;
-      background: url('Logo-Web3.PNG') no-repeat center/contain;
+      pointer-events: none;
     }
-    #floating-points {
+    
+    #floating-text {
       position: absolute;
       font-size: 20px;
       font-weight: bold;
-      color: #00ffd5;
+      color: var(--primary);
       animation: floatUp 1s ease-out forwards;
+      pointer-events: none;
     }
+    
     @keyframes floatUp {
       0% { opacity: 1; transform: translateY(0); }
       100% { opacity: 0; transform: translateY(-50px); }
     }
+    
+    .tab {
+      position: absolute;
+      top: 60px;
+      bottom: 60px;
+      left: 0;
+      right: 0;
+      padding: 20px;
+      overflow-y: auto;
+      display: none;
+    }
+    
+    .tab.active {
+      display: block;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid rgba(0, 255, 213, 0.3);
+      box-shadow: 0 0 10px rgba(0, 255, 213, 0.1);
+    }
+    
+    .card h3 {
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+    
+    .card p {
+      color: var(--text-dim);
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    
+    .progress-container {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      height: 10px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    button {
+      background: linear-gradient(145deg, var(--primary), var(--secondary));
+      border: none;
+      color: var(--darker);
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    button:disabled {
+      background: #555;
+      color: #999;
+      cursor: not-allowed;
+    }
+    
+    button:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+    
     nav {
       position: fixed;
       bottom: 0;
@@ -81,121 +200,467 @@
       background: rgba(0, 0, 0, 0.8);
       justify-content: space-around;
       padding: 10px 0;
+      border-top: 1px solid rgba(0, 255, 213, 0.2);
     }
+    
     nav button {
       background: none;
       border: none;
-      color: white;
-      font-size: 16px;
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      padding: 5px;
     }
-    .tab {
-      display: none;
-      position: absolute;
-      top: 60px;
-      bottom: 60px;
-      left: 0;
-      right: 0;
-      padding: 20px;
-      overflow-y: auto;
+    
+    nav button.active {
+      color: var(--primary);
     }
-    .tab.active {
-      display: block;
+    
+    .icon {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
     }
-    .card, .mission {
-      background: #111;
-      border-radius: 10px;
-      padding: 15px;
+    
+    .upgrade-info {
+      display: flex;
+      justify-content: space-between;
       margin-bottom: 10px;
-      box-shadow: 0 0 10px #00ffd5;
     }
-    .mission button {
-      margin-top: 10px;
-      background: #00ffd5;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      color: #000;
+    
+    .upgrade-level {
+      color: var(--primary);
     }
   </style>
 </head>
 <body>
+  <select id="language-selector">
+    <option value="en">English</option>
+    <option value="fr">Français</option>
+    <option value="es">Español</option>
+  </select>
+
   <header>
-    Aether$ : <span id="score">0</span>
+    <div class="currency">
+      <svg class="icon" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+      </svg>
+      <span id="score">0</span>
+    </div>
   </header>
 
   <div id="game-container">
     <div id="click-area">
-      <div id="robot"></div>
+      <svg id="main-icon" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+      </svg>
     </div>
   </div>
 
   <div id="tab-missions" class="tab">
-    <div class="mission">
-      <div>Invite 3 friends</div>
-      <button onclick="completeMission(this)">Start</button>
+    <div class="card">
+      <h3 data-i18n="mission_click_title">Click Master</h3>
+      <p data-i18n="mission_click_desc">Perform 100 clicks to earn rewards</p>
+      <div class="progress-container">
+        <div class="progress-bar" id="mission-click-progress"></div>
+      </div>
+      <button id="mission-click-claim" data-i18n="claim" disabled onclick="claimMission('click')">Claim</button>
     </div>
-    <div class="mission">
-      <div>Follow our X channel</div>
-      <button onclick="completeMission(this)">Start</button>
+    
+    <div class="card">
+      <h3 data-i18n="mission_earn_title">Wealth Accumulator</h3>
+      <p data-i18n="mission_earn_desc">Earn 500 Aether$ in total</p>
+      <div class="progress-container">
+        <div class="progress-bar" id="mission-earn-progress"></div>
+      </div>
+      <button id="mission-earn-claim" data-i18n="claim" disabled onclick="claimMission('earn')">Claim</button>
     </div>
   </div>
 
-  <div id="tab-cards" class="tab">
-    <div class="card">Auto Farm +1/sec - Cost: 100</div>
-    <div class="card">Boost x2 tap - Cost: 200</div>
+  <div id="tab-upgrades" class="tab">
+    <div class="card">
+      <div class="upgrade-info">
+        <h3 data-i18n="upgrade_auto_title">Auto-Clicker</h3>
+        <span class="upgrade-level" id="auto-clicker-level">Level 0</span>
+      </div>
+      <p data-i18n="upgrade_auto_desc">Automatically generates 1 Aether$ per second</p>
+      <div class="progress-container">
+        <div class="progress-bar" style="width: 100%"></div>
+      </div>
+      <button id="upgrade-auto" onclick="buyUpgrade('autoClicker')" data-i18n="upgrade_cost">Cost: 100</button>
+    </div>
+    
+    <div class="card">
+      <div class="upgrade-info">
+        <h3 data-i18n="upgrade_multiplier_title">Click Multiplier</h3>
+        <span class="upgrade-level" id="click-multiplier-level">Level 0</span>
+      </div>
+      <p data-i18n="upgrade_multiplier_desc">Increases value of each click</p>
+      <div class="progress-container">
+        <div class="progress-bar" style="width: 100%"></div>
+      </div>
+      <button id="upgrade-multiplier" onclick="buyUpgrade('clickMultiplier')" data-i18n="upgrade_cost">Cost: 200</button>
+    </div>
   </div>
 
-  <div id="tab-shop" class="tab">
-    <div class="card">Buy skin - 300</div>
-    <div class="card">Energy refill - 150</div>
+  <div id="tab-daily" class="tab">
+    <div class="card">
+      <h3 data-i18n="daily_rewards_title">Daily Rewards</h3>
+      <p data-i18n="daily_rewards_desc">Come back daily to claim bonuses</p>
+      <div class="progress-container">
+        <div class="progress-bar" id="daily-progress"></div>
+      </div>
+      <button id="daily-claim" data-i18n="claim" disabled onclick="claimDaily()">Claim</button>
+    </div>
   </div>
 
   <nav>
-    <button onclick="showTab('game')">Home</button>
-    <button onclick="showTab('tab-missions')">Missions</button>
-    <button onclick="showTab('tab-cards')">Cards</button>
-    <button onclick="showTab('tab-shop')">Shop</button>
+    <button onclick="showTab('game')" class="active">
+      <svg class="icon" viewBox="0 0 24 24">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      <span data-i18n="home">Home</span>
+    </button>
+    <button onclick="showTab('tab-missions')">
+      <svg class="icon" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+      </svg>
+      <span data-i18n="missions">Missions</span>
+    </button>
+    <button onclick="showTab('tab-upgrades')">
+      <svg class="icon" viewBox="0 0 24 24">
+        <path d="M12 6l-2-2H2v16h20V6H12zm2 10h-2v2h-2v-2H8v-2h2v-2h2v2h2v2zm-3-4V8h2v4h-2z"/>
+      </svg>
+      <span data-i18n="upgrades">Upgrades</span>
+    </button>
+    <button onclick="showTab('tab-daily')">
+      <svg class="icon" viewBox="0 0 24 24">
+        <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
+      </svg>
+      <span data-i18n="daily">Daily</span>
+    </button>
   </nav>
 
   <script>
-    let score = parseInt(localStorage.getItem("aetherScore") || "0");
-    let scoreEl = document.getElementById("score");
-    scoreEl.innerText = score;
+    // Game State
+    const gameState = {
+      score: 0,
+      clickValue: 1,
+      autoClicker: 0,
+      clickMultiplier: 1,
+      lastDailyClaim: null,
+      missions: {
+        click: { target: 100, progress: 0, claimed: false },
+        earn: { target: 500, progress: 0, claimed: false }
+      },
+      upgrades: {
+        autoClicker: { level: 0, cost: 100 },
+        clickMultiplier: { level: 0, cost: 200 }
+      },
+      language: 'en'
+    };
 
-    const area = document.getElementById("click-area");
+    // Localization
+    const translations = {
+      en: {
+        home: "Home",
+        missions: "Missions",
+        upgrades: "Upgrades",
+        daily: "Daily",
+        claim: "Claim",
+        mission_click_title: "Click Master",
+        mission_click_desc: "Perform 100 clicks to earn rewards",
+        mission_earn_title: "Wealth Accumulator",
+        mission_earn_desc: "Earn 500 Aether$ in total",
+        upgrade_auto_title: "Auto-Clicker",
+        upgrade_auto_desc: "Automatically generates 1 Aether$ per second",
+        upgrade_multiplier_title: "Click Multiplier",
+        upgrade_multiplier_desc: "Increases value of each click",
+        daily_rewards_title: "Daily Rewards",
+        daily_rewards_desc: "Come back daily to claim bonuses",
+        upgrade_cost: "Cost: "
+      },
+      fr: {
+        home: "Accueil",
+        missions: "Missions",
+        upgrades: "Améliorations",
+        daily: "Quotidien",
+        claim: "Réclamer",
+        mission_click_title: "Maître du Clic",
+        mission_click_desc: "Effectuez 100 clics pour gagner des récompenses",
+        mission_earn_title: "Accumulateur de Richesse",
+        mission_earn_desc: "Gagnez 500 Aether$ au total",
+        upgrade_auto_title: "Auto-Clic",
+        upgrade_auto_desc: "Génère automatiquement 1 Aether$ par seconde",
+        upgrade_multiplier_title: "Multiplicateur",
+        upgrade_multiplier_desc: "Augmente la valeur de chaque clic",
+        daily_rewards_title: "Récompenses Quotidiennes",
+        daily_rewards_desc: "Revenez chaque jour pour des bonus",
+        upgrade_cost: "Coût : "
+      },
+      es: {
+        home: "Inicio",
+        missions: "Misiones",
+        upgrades: "Mejoras",
+        daily: "Diario",
+        claim: "Reclamar",
+        mission_click_title: "Maestro del Clic",
+        mission_click_desc: "Realiza 100 clics para ganar recompensas",
+        mission_earn_title: "Acumulador de Riqueza",
+        mission_earn_desc: "Gana 500 Aether$ en total",
+        upgrade_auto_title: "Auto-Clic",
+        upgrade_auto_desc: "Genera 1 Aether$ automáticamente por segundo",
+        upgrade_multiplier_title: "Multiplicador",
+        upgrade_multiplier_desc: "Aumenta el valor de cada clic",
+        daily_rewards_title: "Recompensas Diarias",
+        daily_rewards_desc: "Vuelve cada día para reclamar bonificaciones",
+        upgrade_cost: "Costo: "
+      }
+    };
 
-    area.addEventListener("click", () => {
-      score += 1;
-      scoreEl.innerText = score;
-      localStorage.setItem("aetherScore", score);
-      const point = document.createElement("div");
-      point.innerText = "+1";
-      point.className = "floating-point";
-      point.id = "floating-points";
-      point.style.left = "50%";
-      point.style.top = "30%";
-      document.body.appendChild(point);
-      setTimeout(() => point.remove(), 1000);
-    });
+    // DOM Elements
+    const scoreElement = document.getElementById('score');
+    const clickArea = document.getElementById('click-area');
+    const languageSelector = document.getElementById('language-selector');
 
-    function showTab(id) {
-      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-      if (id !== 'game') {
-        document.getElementById(id).classList.add("active");
+    // Initialize the game
+    function initGame() {
+      loadGame();
+      updateUI();
+      startGameLoop();
+      setupEventListeners();
+      
+      // Set language from saved state or browser preference
+      if (gameState.language) {
+        languageSelector.value = gameState.language;
+        updateLanguage();
+      } else {
+        const browserLang = navigator.language.substring(0, 2);
+        if (translations[browserLang]) {
+          gameState.language = browserLang;
+          languageSelector.value = browserLang;
+          updateLanguage();
+        }
       }
     }
 
-    function completeMission(btn) {
-      btn.innerText = "Claimed";
-      btn.disabled = true;
+    // Game loop for auto-clickers
+    function startGameLoop() {
+      setInterval(() => {
+        if (gameState.autoClicker > 0) {
+          const earnings = gameState.autoClicker * gameState.clickMultiplier;
+          addScore(earnings);
+          updateMissionProgress('earn', earnings);
+        }
+      }, 1000);
     }
 
-    // Auto-farm every 3 sec
-    setInterval(() => {
-      score += 1;
-      scoreEl.innerText = score;
-      localStorage.setItem("aetherScore", score);
-    }, 3000);
+    // Event Listeners
+    function setupEventListeners() {
+      clickArea.addEventListener('click', handleClick);
+      languageSelector.addEventListener('change', handleLanguageChange);
+    }
+
+    function handleClick() {
+      addScore(gameState.clickValue);
+      showFloatingText(`+${gameState.clickValue}`);
+      updateMissionProgress('click', 1);
+    }
+
+    function handleLanguageChange() {
+      gameState.language = languageSelector.value;
+      updateLanguage();
+      saveGame();
+    }
+
+    // Game Functions
+    function addScore(amount) {
+      gameState.score += amount;
+      updateUI();
+      saveGame();
+    }
+
+    function showFloatingText(text) {
+      const floatingText = document.createElement('div');
+      floatingText.id = 'floating-text';
+      floatingText.textContent = text;
+      
+      // Position near the click area
+      const clickAreaRect = clickArea.getBoundingClientRect();
+      floatingText.style.left = `${clickAreaRect.left + clickAreaRect.width/2}px`;
+      floatingText.style.top = `${clickAreaRect.top + clickAreaRect.height/2}px`;
+      
+      document.body.appendChild(floatingText);
+      
+      // Remove after animation
+      setTimeout(() => {
+        floatingText.remove();
+      }, 1000);
+    }
+
+    function buyUpgrade(type) {
+      const upgrade = gameState.upgrades[type];
+      
+      if (gameState.score >= upgrade.cost) {
+        gameState.score -= upgrade.cost;
+        upgrade.level++;
+        
+        // Increase cost for next level
+        upgrade.cost = Math.floor(upgrade.cost * 1.5);
+        
+        // Apply upgrade effects
+        if (type === 'autoClicker') {
+          gameState.autoClicker = upgrade.level;
+        } else if (type === 'clickMultiplier') {
+          gameState.clickMultiplier = 1 + (upgrade.level * 0.5);
+        }
+        
+        updateUI();
+        saveGame();
+      }
+    }
+
+    function claimMission(type) {
+      const mission = gameState.missions[type];
+      
+      if (!mission.claimed && mission.progress >= mission.target) {
+        const reward = type === 'click' ? 50 : 100;
+        addScore(reward);
+        mission.claimed = true;
+        updateUI();
+        saveGame();
+      }
+    }
+
+    function claimDaily() {
+      const today = new Date().toDateString();
+      
+      if (gameState.lastDailyClaim !== today) {
+        gameState.lastDailyClaim = today;
+        addScore(200);
+        updateUI();
+        saveGame();
+      }
+    }
+
+    function updateMissionProgress(type, amount) {
+      const mission = gameState.missions[type];
+      
+      if (!mission.claimed) {
+        mission.progress += amount;
+        if (mission.progress > mission.target) {
+          mission.progress = mission.target;
+        }
+        updateUI();
+        saveGame();
+      }
+    }
+
+    // UI Updates
+    function updateUI() {
+      // Update score
+      scoreElement.textContent = Math.floor(gameState.score);
+      
+      // Update mission progress
+      updateMissionUI('click');
+      updateMissionUI('earn');
+      
+      // Update upgrades
+      updateUpgradeUI('autoClicker');
+      updateUpgradeUI('clickMultiplier');
+      
+      // Update daily rewards
+      updateDailyUI();
+    }
+
+    function updateMissionUI(type) {
+      const mission = gameState.missions[type];
+      const progressElement = document.getElementById(`mission-${type}-progress`);
+      const claimButton = document.getElementById(`mission-${type}-claim`);
+      
+      const progressPercent = (mission.progress / mission.target) * 100;
+      progressElement.style.width = `${progressPercent}%`;
+      
+      claimButton.disabled = mission.claimed || mission.progress < mission.target;
+    }
+
+    function updateUpgradeUI(type) {
+      const upgrade = gameState.upgrades[type];
+      const levelElement = document.getElementById(`${type}-level`);
+      const upgradeButton = document.getElementById(`upgrade-${type.split('C')[0].toLowerCase()}`);
+      
+      levelElement.textContent = `Level ${upgrade.level}`;
+      upgradeButton.textContent = translations[gameState.language].upgrade_cost + upgrade.cost;
+      upgradeButton.disabled = gameState.score < upgrade.cost;
+    }
+
+    function updateDailyUI() {
+      const today = new Date().toDateString();
+      const dailyButton = document.getElementById('daily-claim');
+      const dailyProgress = document.getElementById('daily-progress');
+      
+      if (gameState.lastDailyClaim === today) {
+        dailyButton.disabled = true;
+        dailyProgress.style.width = '100%';
+      } else {
+        dailyButton.disabled = false;
+        dailyProgress.style.width = '0%';
+      }
+    }
+
+    function updateLanguage() {
+      const elements = document.querySelectorAll('[data-i18n]');
+      
+      elements.forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[gameState.language][key]) {
+          element.textContent = translations[gameState.language][key];
+        }
+      });
+    }
+
+    // Tab Navigation
+    function showTab(tabId) {
+      // Hide all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Deactivate all nav buttons
+      document.querySelectorAll('nav button').forEach(button => {
+        button.classList.remove('active');
+      });
+      
+      // Show selected tab
+      if (tabId === 'game') {
+        document.getElementById('game-container').style.display = 'flex';
+      } else {
+        document.getElementById('game-container').style.display = 'none';
+        document.getElementById(tabId).classList.add('active');
+        
+        // Activate corresponding nav button
+        document.querySelector(`nav button[onclick="showTab('${tabId}')"]`).classList.add('active');
+      }
+    }
+
+    // Save/Load Game
+    function saveGame() {
+      localStorage.setItem('aetherienSave', JSON.stringify(gameState));
+    }
+
+    function loadGame() {
+      const savedGame = localStorage.getItem('aetherienSave');
+      if (savedGame) {
+        const parsed = JSON.parse(savedGame);
+        Object.assign(gameState, parsed);
+      }
+    }
+
+    // Initialize the game when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initGame);
   </script>
 </body>
 </html>
