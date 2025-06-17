@@ -1,715 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Aetherien Combat</title>
-  <style>
-    :root {
-      --primary: #00ffd5;
-      --secondary: #0088cc;
-      --dark: #0f0f23;
-      --darker: #000;
-      --card-bg: rgba(15, 15, 35, 0.8);
-      --text-light: #ffffff;
-      --text-dim: #aaaaaa;
-      --enemy-health: #ff3366;
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-    
-    body {
-      background: radial-gradient(circle at center, var(--dark), var(--darker));
-      color: var(--text-light);
-      overflow: hidden;
-      height: 100vh;
-      touch-action: manipulation;
-    }
-    
-    #language-selector {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      padding: 5px;
-      background: var(--card-bg);
-      border: 1px solid var(--primary);
-      color: var(--text-light);
-      border-radius: 4px;
-      z-index: 100;
-    }
-    
-    header {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      padding: 15px 20px;
-      text-align: center;
-      background: rgba(0, 0, 0, 0.7);
-      font-size: 24px;
-      font-weight: bold;
-      z-index: 10;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-    }
-    
-    .currency {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    
-    #aether-credits {
-      color: var(--primary);
-      font-size: 26px;
-    }
-    
-    #game-container {
-      position: absolute;
-      top: 60px;
-      left: 0;
-      right: 0;
-      bottom: 60px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    
-    #combat-zone {
-      width: 220px;
-      height: 220px;
-      border-radius: 15px;
-      background: linear-gradient(145deg, var(--dark), var(--darker));
-      box-shadow: 0 0 30px rgba(0, 255, 213, 0.3);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px;
-      margin-bottom: 20px;
-      border: 2px solid var(--primary);
-    }
-    
-    #enemy-display {
-      width: 120px;
-      height: 120px;
-      background-color: var(--card-bg);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid var(--enemy-health);
-      box-shadow: 0 0 20px rgba(255, 51, 102, 0.3);
-    }
-    
-    #enemy-icon {
-      width: 80px;
-      height: 80px;
-    }
-    
-    .progress-container {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 5px;
-      height: 10px;
-      margin: 10px 0;
-      overflow: hidden;
-    }
-    
-    #enemy-health-bar {
-      height: 100%;
-      background: linear-gradient(90deg, var(--enemy-health), #cc0033);
-      border-radius: 5px;
-      width: 100%;
-      transition: width 0.3s ease;
-    }
-    
-    #enemy-name {
-      color: var(--primary);
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    
-    .combat-controls {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-    }
-    
-    .combat-btn {
-      flex: 1;
-      background: linear-gradient(145deg, var(--primary), var(--secondary));
-      border: none;
-      color: var(--darker);
-      padding: 10px;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .combat-btn:active {
-      transform: scale(0.95);
-    }
-    
-    .tab {
-      position: absolute;
-      top: 60px;
-      bottom: 60px;
-      left: 0;
-      right: 0;
-      padding: 20px;
-      overflow-y: auto;
-      display: none;
-    }
-    
-    .tab.active {
-      display: block;
-    }
-    
-    .card {
-      background: var(--card-bg);
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-      border: 1px solid rgba(0, 255, 213, 0.3);
-      box-shadow: 0 0 10px rgba(0, 255, 213, 0.1);
-    }
-    
-    .card h3 {
-      margin-bottom: 10px;
-      color: var(--primary);
-    }
-    
-    .card p {
-      color: var(--text-dim);
-      margin-bottom: 10px;
-      font-size: 14px;
-    }
-    
-    button {
-      background: linear-gradient(145deg, var(--primary), var(--secondary));
-      border: none;
-      color: var(--darker);
-      padding: 8px 15px;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    button:disabled {
-      background: #555;
-      color: #999;
-      cursor: not-allowed;
-    }
-    
-    .upgrade-info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-    
-    .upgrade-level {
-      color: var(--primary);
-    }
-    
-    nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      background: rgba(0, 0, 0, 0.8);
-      justify-content: space-around;
-      padding: 10px 0;
-      border-top: 1px solid rgba(0, 255, 213, 0.2);
-    }
-    
-    nav button {
-      background: none;
-      border: none;
-      color: var(--text-light);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      font-size: 12px;
-      padding: 5px;
-    }
-    
-    nav button.active {
-      color: var(--primary);
-    }
-    
-    .icon {
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
-    }
-    
-    .skill-btn {
-      background: linear-gradient(145deg, var(--secondary), #0066ff);
-      margin-top: 10px;
-    }
-    
-    #floating-damage {
-      position: absolute;
-      font-size: 20px;
-      font-weight: bold;
-      color: var(--primary);
-      animation: floatUp 1s ease-out forwards;
-      pointer-events: none;
-    }
-    
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-50px); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamster Kombat Clone</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <select id="language-selector">
-    <option value="en">English</option>
-    <option value="fr">Français</option>
-    <option value="es">Español</option>
-  </select>
+    <div class="game-container">
+        <!-- Header Section -->
+        <div class="game-header">
+            <div class="player-info">
+                <div class="hamster-icon">🐹</div>
+                <span>Nikandr (CEO)</span>
+            </div>
+            
+            <div class="progress-container">
+                <div class="level-info">
+                    <span id="levelName">Legendary</span>
+                    <span id="levelProgress">7 / 10</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="levelProgressBar"></div>
+                </div>
+            </div>
+            
+            <div class="profit-info">
+                <img src="assets/binance.png" alt="Binance" class="exchange-icon">
+                <div class="divider"></div>
+                <div class="profit-text">
+                    <p class="label">Profit per hour</p>
+                    <div class="value">
+                        <img src="assets/dollar.png" alt="$" class="coin-icon">
+                        <span id="profitValue">+126.42K</span>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="settings-icon">⚙️</div>
+            </div>
+        </div>
 
-  <header>
-    <div class="currency">
-      <svg class="icon" viewBox="0 0 24 24">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-      </svg>
-      <span id="aether-credits">0</span>
+        <!-- Main Game Area -->
+        <div class="game-board">
+            <!-- Daily Rewards Section -->
+            <div class="daily-rewards">
+                <div class="reward-card">
+                    <div class="dot"></div>
+                    <img src="assets/daily_reward.png" alt="Daily Reward">
+                    <p>Daily reward</p>
+                    <span class="time" id="dailyRewardTime">00:00</span>
+                </div>
+                <div class="reward-card">
+                    <div class="dot"></div>
+                    <img src="assets/daily_cipher.png" alt="Daily Cipher">
+                    <p>Daily cipher</p>
+                    <span class="time" id="dailyCipherTime">19:00</span>
+                </div>
+                <div class="reward-card">
+                    <div class="dot"></div>
+                    <img src="assets/daily_combo.png" alt="Daily Combo">
+                    <p>Daily combo</p>
+                    <span class="time" id="dailyComboTime">12:00</span>
+                </div>
+            </div>
+
+            <!-- Points Display -->
+            <div class="points-display">
+                <img src="assets/dollar.png" alt="$" class="large-coin">
+                <span id="pointsValue">22,749,365</span>
+            </div>
+
+            <!-- Main Character -->
+            <div class="character-circle" id="mainCharacter">
+                <div class="character-inner">
+                    <img src="assets/main_character.png" alt="Hamster CEO">
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <img src="assets/binance.png" alt="Exchange">
+                <span>Exchange</span>
+            </div>
+            <div class="nav-item">
+                <img src="assets/mine.png" alt="Mine">
+                <span>Mine</span>
+            </div>
+            <div class="nav-item">
+                <img src="assets/friends.png" alt="Friends">
+                <span>Friends</span>
+            </div>
+            <div class="nav-item">
+                <img src="assets/earn.png" alt="Earn">
+                <span>Earn</span>
+            </div>
+            <div class="nav-item">
+                <img src="assets/airdrop.png" alt="Airdrop">
+                <span>Airdrop</span>
+            </div>
+        </div>
     </div>
-  </header>
 
-  <div id="game-container">
-    <div id="combat-zone">
-      <div id="enemy-name">Corrupted Drone</div>
-      <div id="enemy-display">
-        <svg id="enemy-icon" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
-        </svg>
-      </div>
-      <div class="progress-container">
-        <div id="enemy-health-bar" class="progress-bar"></div>
-      </div>
-      <div class="combat-controls">
-        <button class="combat-btn" id="attack-btn" data-i18n="attack">Attack</button>
-        <button class="combat-btn" id="auto-btn" data-i18n="auto_off">Auto: OFF</button>
-      </div>
-      <button class="skill-btn" id="quantum-strike" data-i18n="skill_quantum">Quantum Strike (5 dmg)</button>
-    </div>
-  </div>
-
-  <div id="tab-upgrades" class="tab">
-    <div class="card">
-      <div class="upgrade-info">
-        <h3 data-i18n="upgrade_attack">Attack Power</h3>
-        <span class="upgrade-level" id="attack-level">Level 1</span>
-      </div>
-      <p data-i18n="upgrade_attack_desc">Increases your base attack damage</p>
-      <button id="upgrade-attack" onclick="buyUpgrade('attack')" data-i18n="upgrade_cost">Cost: 100</button>
-    </div>
-    
-    <div class="card">
-      <div class="upgrade-info">
-        <h3 data-i18n="upgrade_crit">Critical Chance</h3>
-        <span class="upgrade-level" id="crit-level">Level 0</span>
-      </div>
-      <p data-i18n="upgrade_crit_desc">Increases chance to deal double damage</p>
-      <button id="upgrade-crit" onclick="buyUpgrade('crit')" data-i18n="upgrade_cost">Cost: 200</button>
-    </div>
-  </div>
-
-  <div id="tab-skills" class="tab">
-    <div class="card">
-      <h3 data-i18n="skills_active">Active Skills</h3>
-      <p data-i18n="skills_active_desc">Powerful abilities with cooldowns</p>
-    </div>
-  </div>
-
-  <nav>
-    <button onclick="showTab('game')" class="active">
-      <svg class="icon" viewBox="0 0 24 24">
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-      </svg>
-      <span data-i18n="combat">Combat</span>
-    </button>
-    <button onclick="showTab('tab-upgrades')">
-      <svg class="icon" viewBox="0 0 24 24">
-        <path d="M12 6l-2-2H2v16h20V6H12zm2 10h-2v2h-2v-2H8v-2h2v-2h2v2h2v2zm-3-4V8h2v4h-2z"/>
-      </svg>
-      <span data-i18n="upgrades">Upgrades</span>
-    </button>
-    <button onclick="showTab('tab-skills')">
-      <svg class="icon" viewBox="0 0 24 24">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-      </svg>
-      <span data-i18n="skills">Skills</span>
-    </button>
-  </nav>
-
-  <script>
-    // Game State
-    const gameState = {
-      credits: 0,
-      autoCombat: false,
-      currentEnemy: 0,
-      enemies: [
-        { name: "Corrupted Drone", hp: 30, maxHp: 30, reward: 10, icon: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" },
-        { name: "Rogue Sentinel", hp: 100, maxHp: 100, reward: 30, icon: "M12 2L4 7v10l8 5 8-5V7l-8-5zm0 15.5l-6-3.5v-7l6 3.5 6-3.5v7l-6 3.5z" },
-        { name: "Void Walker", hp: 300, maxHp: 300, reward: 100, icon: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" }
-      ],
-      player: {
-        attack: 1,
-        critChance: 0.1,
-        skills: [
-          { name: "Quantum Strike", damage: 5, cooldown: 10, currentCooldown: 0 }
-        ]
-      },
-      upgrades: {
-        attack: { level: 1, cost: 100, effect: 1 },
-        crit: { level: 0, cost: 200, effect: 0.05 }
-      },
-      language: 'en'
-    };
-
-    // Localization
-    const translations = {
-      en: {
-        combat: "Combat",
-        upgrades: "Upgrades",
-        skills: "Skills",
-        attack: "Attack",
-        auto_off: "Auto: OFF",
-        auto_on: "Auto: ON",
-        skill_quantum: "Quantum Strike (5 dmg)",
-        upgrade_attack: "Attack Power",
-        upgrade_attack_desc: "Increases your base attack damage",
-        upgrade_crit: "Critical Chance",
-        upgrade_crit_desc: "Increases chance to deal double damage",
-        upgrade_cost: "Cost: ",
-        skills_active: "Active Skills",
-        skills_active_desc: "Powerful abilities with cooldowns"
-      },
-      fr: {
-        combat: "Combat",
-        upgrades: "Améliorations",
-        skills: "Compétences",
-        attack: "Attaquer",
-        auto_off: "Auto : OFF",
-        auto_on: "Auto : ON",
-        skill_quantum: "Frappe Quantique (5 dgt)",
-        upgrade_attack: "Puissance d'Attaque",
-        upgrade_attack_desc: "Augmente les dégâts de base",
-        upgrade_crit: "Chance Critique",
-        upgrade_crit_desc: "Augmente la chance de double dégâts",
-        upgrade_cost: "Prix : ",
-        skills_active: "Compétences Actives",
-        skills_active_desc: "Capacités spéciales avec temps de recharge"
-      },
-      es: {
-        combat: "Combate",
-        upgrades: "Mejoras",
-        skills: "Habilidades",
-        attack: "Atacar",
-        auto_off: "Auto: OFF",
-        auto_on: "Auto: ON",
-        skill_quantum: "Golpe Cuántico (5 daño)",
-        upgrade_attack: "Poder de Ataque",
-        upgrade_attack_desc: "Aumenta el daño base",
-        upgrade_crit: "Probabilidad Crítica",
-        upgrade_crit_desc: "Aumenta la chance de doble daño",
-        upgrade_cost: "Costo: ",
-        skills_active: "Habilidades Activas",
-        skills_active_desc: "Habilidades poderosas con enfriamiento"
-      }
-    };
-
-    // DOM Elements
-    const creditsElement = document.getElementById('aether-credits');
-    const attackBtn = document.getElementById('attack-btn');
-    const autoBtn = document.getElementById('auto-btn');
-    const quantumStrikeBtn = document.getElementById('quantum-strike');
-    const enemyNameElement = document.getElementById('enemy-name');
-    const enemyHealthBar = document.getElementById('enemy-health-bar');
-    const enemyIcon = document.getElementById('enemy-icon');
-    const languageSelector = document.getElementById('language-selector');
-
-    // Initialize the game
-    function initGame() {
-      loadGame();
-      updateUI();
-      startGameLoop();
-      setupEventListeners();
-      spawnEnemy(0);
-      
-      // Set language from saved state or browser preference
-      if (gameState.language) {
-        languageSelector.value = gameState.language;
-        updateLanguage();
-      }
-    }
-
-    // Game loop for auto-combat and cooldowns
-    function startGameLoop() {
-      setInterval(() => {
-        if (gameState.autoCombat) {
-          attackEnemy();
-        }
-        
-        // Update skill cooldowns
-        gameState.player.skills.forEach(skill => {
-          if (skill.currentCooldown > 0) {
-            skill.currentCooldown--;
-          }
-        });
-        
-        updateSkillButtons();
-      }, 1000);
-    }
-
-    // Event Listeners
-    function setupEventListeners() {
-      attackBtn.addEventListener('click', attackEnemy);
-      autoBtn.addEventListener('click', toggleAutoCombat);
-      quantumStrikeBtn.addEventListener('click', useQuantumStrike);
-      languageSelector.addEventListener('change', handleLanguageChange);
-      
-      // Prevent zooming on double-tap
-      document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
-    }
-
-    function attackEnemy() {
-      const enemy = gameState.enemies[gameState.currentEnemy];
-      let damage = gameState.player.attack;
-      
-      // Critical hit chance
-      if (Math.random() < gameState.player.critChance) {
-        damage *= 2;
-        showFloatingDamage("CRIT! " + damage, "#ff0000");
-      } else {
-        showFloatingDamage(damage, "#00ffd5");
-      }
-      
-      enemy.hp -= damage;
-      
-      if (enemy.hp <= 0) {
-        enemy.hp = 0;
-        addCredits(enemy.reward);
-        nextEnemy();
-      }
-      
-      updateEnemyUI();
-      saveGame();
-    }
-
-    function useQuantumStrike() {
-      const skill = gameState.player.skills[0];
-      const enemy = gameState.enemies[gameState.currentEnemy];
-      
-      if (skill.currentCooldown <= 0) {
-        enemy.hp -= skill.damage;
-        showFloatingDamage("QUANTUM " + skill.damage, "#9900ff");
-        skill.currentCooldown = skill.cooldown;
-        
-        if (enemy.hp <= 0) {
-          enemy.hp = 0;
-          addCredits(enemy.reward);
-          nextEnemy();
-        }
-        
-        updateEnemyUI();
-        updateSkillButtons();
-        saveGame();
-      }
-    }
-
-    function toggleAutoCombat() {
-      gameState.autoCombat = !gameState.autoCombat;
-      updateAutoButton();
-      saveGame();
-    }
-
-    function buyUpgrade(type) {
-      const upgrade = gameState.upgrades[type];
-      
-      if (gameState.credits >= upgrade.cost) {
-        gameState.credits -= upgrade.cost;
-        upgrade.level++;
-        
-        // Increase cost for next level
-        upgrade.cost = Math.floor(upgrade.cost * 1.8);
-        
-        // Apply upgrade effects
-        if (type === 'attack') {
-          gameState.player.attack = 1 + upgrade.level;
-        } else if (type === 'crit') {
-          gameState.player.critChance = 0.1 + (upgrade.level * upgrade.effect);
-        }
-        
-        updateUI();
-        saveGame();
-      }
-    }
-
-    function spawnEnemy(index) {
-      gameState.currentEnemy = index;
-      const enemy = gameState.enemies[index];
-      enemy.hp = enemy.maxHp;
-      enemyIcon.setAttribute('d', enemy.icon);
-      updateEnemyUI();
-    }
-
-    function nextEnemy() {
-      const nextIndex = (gameState.currentEnemy + 1) % gameState.enemies.length;
-      spawnEnemy(nextIndex);
-    }
-
-    function showFloatingDamage(text, color) {
-      const floatingText = document.createElement('div');
-      floatingText.id = 'floating-damage';
-      floatingText.textContent = text;
-      floatingText.style.color = color;
-      
-      const enemyDisplay = document.getElementById('enemy-display');
-      const rect = enemyDisplay.getBoundingClientRect();
-      
-      floatingText.style.left = `${rect.left + rect.width/2}px`;
-      floatingText.style.top = `${rect.top + rect.height/2}px`;
-      
-      document.body.appendChild(floatingText);
-      
-      setTimeout(() => {
-        floatingText.remove();
-      }, 1000);
-    }
-
-    function addCredits(amount) {
-      gameState.credits += amount;
-      updateUI();
-      saveGame();
-    }
-
-    // UI Updates
-    function updateUI() {
-      creditsElement.textContent = gameState.credits;
-      updateEnemyUI();
-      updateUpgradeUI('attack');
-      updateUpgradeUI('crit');
-      updateAutoButton();
-      updateSkillButtons();
-    }
-
-    function updateEnemyUI() {
-      const enemy = gameState.enemies[gameState.currentEnemy];
-      enemyNameElement.textContent = enemy.name;
-      const healthPercent = (enemy.hp / enemy.maxHp) * 100;
-      enemyHealthBar.style.width = `${healthPercent}%`;
-    }
-
-    function updateUpgradeUI(type) {
-      const upgrade = gameState.upgrades[type];
-      const levelElement = document.getElementById(`${type}-level`);
-      const upgradeButton = document.getElementById(`upgrade-${type}`);
-      
-      levelElement.textContent = `Level ${upgrade.level}`;
-      upgradeButton.textContent = translations[gameState.language].upgrade_cost + upgrade.cost;
-      upgradeButton.disabled = gameState.credits < upgrade.cost;
-    }
-
-    function updateAutoButton() {
-      const autoText = gameState.autoCombat ? translations[gameState.language].auto_on : translations[gameState.language].auto_off;
-      autoBtn.textContent = autoText;
-    }
-
-    function updateSkillButtons() {
-      const skill = gameState.player.skills[0];
-      if (skill.currentCooldown > 0) {
-        quantumStrikeBtn.disabled = true;
-        quantumStrikeBtn.textContent = `Cooldown: ${skill.currentCooldown}s`;
-      } else {
-        quantumStrikeBtn.disabled = false;
-        quantumStrikeBtn.textContent = translations[gameState.language].skill_quantum;
-      }
-    }
-
-    function handleLanguageChange() {
-      gameState.language = languageSelector.value;
-      updateLanguage();
-      saveGame();
-    }
-
-    function updateLanguage() {
-      const elements = document.querySelectorAll('[data-i18n]');
-      
-      elements.forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        if (translations[gameState.language][key]) {
-          element.textContent = translations[gameState.language][key];
-        }
-      });
-      
-      // Update special cases
-      updateAutoButton();
-      updateSkillButtons();
-    }
-
-    // Tab Navigation
-    function showTab(tabId) {
-      // Hide all tabs
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      
-      // Deactivate all nav buttons
-      document.querySelectorAll('nav button').forEach(button => {
-        button.classList.remove('active');
-      });
-      
-      // Show selected tab
-      if (tabId === 'game') {
-        document.getElementById('game-container').style.display = 'flex';
-      } else {
-        document.getElementById('game-container').style.display = 'none';
-        document.getElementById(tabId).classList.add('active');
-        
-        // Activate corresponding nav button
-        document.querySelector(`nav button[onclick="showTab('${tabId}')"]`).classList.add('active');
-      }
-    }
-
-    // Save/Load Game
-    function saveGame() {
-      localStorage.setItem('aetherienCombatSave', JSON.stringify(gameState));
-    }
-
-    function loadGame() {
-      const savedGame = localStorage.getItem('aetherienCombatSave');
-      if (savedGame) {
-        try {
-          const parsed = JSON.parse(savedGame);
-          if (parsed && typeof parsed.credits === 'number') {
-            Object.assign(gameState, parsed);
-          }
-        } catch (e) {
-          console.error("Error loading game", e);
-        }
-      }
-    }
-
-    // Initialize the game when DOM is loaded
-    document.addEventListener('DOMContentLoaded', initGame);
-  </script>
+    <script src="game.js"></script>
 </body>
 </html>
