@@ -1,32 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TapWar X100</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hamster Combat X</title>
   <style>
     :root {
-      --main-color: #00d9ff;
-      --secondary-color: #ff00aa;
-      --bg-dark: #0c0f1c;
-      --bg-darker: #06090f;
+      --main-color: #FF6B00;
+      --secondary-color: #FFD700;
+      --bg-dark: #1A1A2E;
       --bg-light: #f9fafb;
-      --text-light: #ffffff;
-      --text-dark: #000000;
-      --xp-color: linear-gradient(to right, #00ffaa, var(--main-color));
-      --prestige-color: #ffaa00;
+      --text-light: #FFFFFF;
+      --text-dark: #16213E;
+      --health-color: #FF0000;
+      --energy-color: #00FF00;
     }
 
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', 'Roboto', sans-serif;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
       background: var(--bg-dark);
       color: var(--text-light);
       touch-action: manipulation;
       user-select: none;
-      min-height: 100vh;
       overflow-x: hidden;
     }
 
@@ -34,875 +31,474 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px;
-      background: rgba(0, 20, 40, 0.9);
-      border-bottom: 1px solid var(--main-color);
-      position: relative;
-      z-index: 100;
-    }
-
-    button, .tap-button {
-      background: var(--main-color);
-      border: none;
-      border-radius: 8px;
-      color: black;
-      font-size: 1rem;
       padding: 10px 15px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.2s;
-      margin: 5px 0;
+      background: linear-gradient(to right, #16213E, #0F3460);
+      border-bottom: 3px solid var(--main-color);
     }
 
-    button:hover, .tap-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 217, 255, 0.4);
-    }
-
-    button:active, .tap-button:active {
-      transform: translateY(0);
-    }
-
-    #tap-area {
-      width: 200px;
-      height: 200px;
-      margin: 30px auto;
-      background: radial-gradient(circle, var(--main-color) 0%, #0077ff 100%);
-      border-radius: 50%;
+    .combat-container {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      font-weight: bold;
-      box-shadow: 0 0 30px var(--main-color);
-      cursor: pointer;
-      transition: transform 0.1s;
+      padding: 20px;
+    }
+
+    .hamster-arena {
+      width: 300px;
+      height: 300px;
+      background: url('https://i.imgur.com/JqYeZZn.png') center/cover;
+      border-radius: 15px;
       position: relative;
-      overflow: hidden;
+      margin: 20px auto;
+      box-shadow: 0 0 30px rgba(255, 107, 0, 0.5);
+      border: 5px solid var(--main-color);
     }
 
-    #tap-area:active {
-      transform: scale(0.95);
-    }
-
-    #tap-area::after {
-      content: '';
+    #hamster {
+      width: 120px;
+      height: 120px;
       position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: transform 0.1s;
+      background: url('https://i.imgur.com/XWQz3ZS.png') center/contain no-repeat;
+    }
+
+    #hamster:active {
+      transform: translateX(-50%) scale(0.95);
+    }
+
+    .stats-bar {
       width: 100%;
-      height: 100%;
-      background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    #tap-area:active::after {
-      opacity: 0.4;
-    }
-
-    .hud {
       display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      padding: 15px;
-      background: rgba(0, 20, 40, 0.8);
-      margin: 0 20px;
-      border-radius: 10px;
-      gap: 10px;
-    }
-
-    .hud-item {
-      display: flex;
-      align-items: center;
+      flex-direction: column;
       gap: 5px;
+      margin-top: 15px;
+    }
+
+    .stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stat-label {
+      font-weight: bold;
+      color: var(--secondary-color);
     }
 
     .progress-container {
-      padding: 0 20px;
-      margin: 20px 0;
-    }
-
-    .progress-bar {
-      height: 12px;
-      background: #222;
-      border-radius: 6px;
-      margin: 10px 0;
-      position: relative;
+      width: 70%;
+      height: 20px;
+      background: #333;
+      border-radius: 10px;
       overflow: hidden;
     }
 
     .progress-fill {
       height: 100%;
-      width: 0%;
-      background: var(--xp-color);
-      border-radius: 6px;
-      transition: width 0.3s;
-      position: relative;
-    }
-
-    .progress-fill::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(90deg, 
-                rgba(255,255,255,0) 0%, 
-                rgba(255,255,255,0.3) 50%, 
-                rgba(255,255,255,0) 100%);
-      animation: shine 2s infinite;
-    }
-
-    @keyframes shine {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-
-    .shop, .stats, .badges, .controls, .prestige {
-      padding: 15px;
-      background: rgba(0, 20, 40, 0.8);
       border-radius: 10px;
-      margin: 15px;
-      border-left: 3px solid var(--main-color);
+      transition: width 0.3s;
     }
 
-    .shop {
-      border-left-color: #00ffaa;
+    #health-bar {
+      background: linear-gradient(to right, #FF0000, #FF6B00);
     }
 
-    .prestige {
-      border-left-color: var(--prestige-color);
+    #energy-bar {
+      background: linear-gradient(to right, #00AA00, #00FF00);
     }
 
-    .section-title {
+    .combat-controls {
       display: flex;
-      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .combat-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    #attack-btn {
+      background: var(--health-color);
+      color: white;
+    }
+
+    #heal-btn {
+      background: var(--energy-color);
+      color: var(--text-dark);
+    }
+
+    #upgrade-btn {
+      background: var(--secondary-color);
+      color: var(--text-dark);
+    }
+
+    .combat-log {
+      width: 90%;
+      height: 100px;
+      margin: 20px auto;
+      padding: 10px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 10px;
+      overflow-y: auto;
+      font-family: monospace;
+      border: 2px solid var(--main-color);
+    }
+
+    .shop-items {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
-      margin-bottom: 15px;
-      color: var(--main-color);
+      padding: 15px;
     }
 
-    .upgrade-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .upgrade-info {
-      flex: 1;
-    }
-
-    .upgrade-name {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .upgrade-desc {
-      font-size: 0.8rem;
-      opacity: 0.8;
-    }
-
-    .upgrade-cost {
-      font-weight: bold;
-      color: var(--main-color);
-      min-width: 80px;
-      text-align: right;
-    }
-
-    .badge {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 5px;
+    .shop-item {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
       padding: 10px;
-      background: rgba(0, 217, 255, 0.1);
-      border-radius: 8px;
-      width: 80px;
       text-align: center;
+      border: 1px solid var(--main-color);
+      cursor: pointer;
+      transition: transform 0.2s;
     }
 
-    .badge-icon {
-      font-size: 1.5rem;
-      margin-bottom: 5px;
+    .shop-item:hover {
+      transform: scale(1.05);
     }
 
-    .badge-name {
-      font-size: 0.7rem;
-    }
-
-    .badge-locked {
-      filter: grayscale(100%);
-      opacity: 0.5;
-    }
-
-    .toast {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--main-color);
-      color: black;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-weight: bold;
-      animation: fadeInOut 2s;
-      z-index: 1000;
-      box-shadow: 0 4px 15px rgba(0, 217, 255, 0.3);
-    }
-
-    @keyframes fadeInOut {
-      0%, 100% { opacity: 0; transform: translate(-50%, -20px); }
-      10%, 90% { opacity: 1; transform: translate(-50%, 0); }
-    }
-
-    .particle {
+    .damage-effect {
       position: absolute;
-      background: var(--main-color);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 10;
+      font-size: 24px;
+      font-weight: bold;
+      color: #FF0000;
+      animation: floatUp 1s forwards;
     }
 
-    .theme-toggle {
-      font-size: 1.2rem;
-      margin-left: 10px;
-      cursor: pointer;
-      transition: transform 0.3s;
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-50px); opacity: 0; }
     }
 
-    .theme-toggle:hover {
-      transform: rotate(30deg);
-    }
-
-    .tab-container {
-      display: flex;
-      margin: 0 15px;
-      gap: 5px;
-    }
-
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 10px;
-      background: rgba(0, 20, 40, 0.8);
-      border-radius: 8px 8px 0 0;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: all 0.3s;
-    }
-
-    .tab.active {
-      border-bottom-color: var(--main-color);
-      background: rgba(0, 217, 255, 0.1);
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    /* Animations */
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .floating {
-      animation: float 3s ease-in-out infinite;
-    }
-
-    /* Responsive */
+    /* Mobile responsive */
     @media (max-width: 600px) {
-      #tap-area {
-        width: 150px;
-        height: 150px;
-        font-size: 2rem;
+      .hamster-arena {
+        width: 250px;
+        height: 250px;
       }
       
-      .hud {
-        padding: 10px;
-        margin: 0 10px;
-      }
-      
-      .shop, .stats, .badges, .controls, .prestige {
-        margin: 10px;
-        padding: 10px;
+      #hamster {
+        width: 100px;
+        height: 100px;
       }
     }
   </style>
 </head>
 <body>
   <div class="header">
-    <div id="username">Player</div>
-    <div>
-      <button onclick="toggleLang()"><i class="fas fa-globe"></i> <span id="lang-text">EN</span></button>
-      <span class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></span>
-    </div>
+    <div id="username">Hamster Fighter</div>
+    <div id="coins">🪙 0</div>
   </div>
 
-  <div class="progress-container">
-    <div class="progress-bar"><div id="xp-fill" class="progress-fill"></div></div>
-    <div style="display: flex; justify-content: space-between;">
-      <span>Level <span id="level">1</span></span>
-      <span><span id="xp">0</span>/<span id="xp-needed">100</span> XP</span>
-    </div>
-  </div>
-
-  <div id="tap-area" onclick="tap()" class="floating">TAP</div>
-
-  <div class="hud">
-    <div class="hud-item"><i class="fas fa-bolt"></i> <span id="tap-power">1</span>/tap</div>
-    <div class="hud-item"><i class="fas fa-robot"></i> <span id="auto-power">0</span>/s</div>
-    <div class="hud-item"><i class="fas fa-coins"></i> <span id="aeth">0</span> AETH</div>
-  </div>
-
-  <div class="tab-container">
-    <div class="tab active" onclick="switchTab('shop')"><i class="fas fa-shopping-cart"></i> Shop</div>
-    <div class="tab" onclick="switchTab('upgrades')"><i class="fas fa-arrow-up"></i> Upgrades</div>
-    <div class="tab" onclick="switchTab('prestige')"><i class="fas fa-trophy"></i> Prestige</div>
-  </div>
-
-  <div id="shop" class="tab-content active">
-    <div class="shop">
-      <h3 class="section-title"><i class="fas fa-shopping-cart"></i> Shop</h3>
-      <button onclick="buyUpgrade('tapPower')">+1 Tap Power (<span id="tap-power-cost">10</span> AETH)</button>
-      <button onclick="buyUpgrade('autoPower')">+1 Auto Power (<span id="auto-power-cost">50</span> AETH)</button>
+  <div class="combat-container">
+    <div class="hamster-arena">
+      <div id="hamster" onclick="attack()"></div>
     </div>
 
-    <div class="stats">
-      <h3 class="section-title"><i class="fas fa-chart-line"></i> Stats</h3>
-      <div class="upgrade-item">
-        <div>Total Taps:</div>
-        <div id="tap-count">0</div>
-      </div>
-      <div class="upgrade-item">
-        <div>Time Played:</div>
-        <div id="play-time">0</div>
-      </div>
-      <div class="upgrade-item">
-        <div>Total Earned:</div>
-        <div id="total-earned">0</div>
-      </div>
-    </div>
-  </div>
-
-  <div id="upgrades" class="tab-content">
-    <div class="shop">
-      <h3 class="section-title"><i class="fas fa-arrow-up"></i> Upgrades</h3>
-      <div class="upgrade-item" onclick="buyUpgrade('multiTap')">
-        <div class="upgrade-info">
-          <div class="upgrade-name">Multi-Tap</div>
-          <div class="upgrade-desc">Chance for 2x taps</div>
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-label">❤ Health:</span>
+        <div class="progress-container">
+          <div id="health-bar" class="progress-fill" style="width: 100%"></div>
         </div>
-        <div class="upgrade-cost" id="multi-tap-cost">100 AETH</div>
       </div>
-      <div class="upgrade-item" onclick="buyUpgrade('criticalTap')">
-        <div class="upgrade-info">
-          <div class="upgrade-name">Critical Tap</div>
-          <div class="upgrade-desc">Chance for 5x taps</div>
+      <div class="stat">
+        <span class="stat-label">⚡ Energy:</span>
+        <div class="progress-container">
+          <div id="energy-bar" class="progress-fill" style="width: 100%"></div>
         </div>
-        <div class="upgrade-cost" id="critical-tap-cost">500 AETH</div>
       </div>
     </div>
 
-    <div class="badges">
-      <h3 class="section-title"><i class="fas fa-award"></i> Badges</h3>
-      <div id="badges-container" style="display: flex; flex-wrap: wrap; justify-content: center;"></div>
+    <div class="combat-controls">
+      <button id="attack-btn" class="combat-btn" onclick="attack()">ATTACK</button>
+      <button id="heal-btn" class="combat-btn" onclick="heal()">HEAL (50⚡)</button>
+      <button id="upgrade-btn" class="combat-btn" onclick="showShop()">UPGRADE</button>
+    </div>
+
+    <div class="combat-log" id="combat-log">
+      > Welcome to Hamster Combat!
+      > Tap ATTACK to fight enemies!
     </div>
   </div>
 
-  <div id="prestige" class="tab-content">
-    <div class="prestige">
-      <h3 class="section-title"><i class="fas fa-trophy"></i> Prestige</h3>
-      <p>Reset your progress for permanent bonuses!</p>
-      <div style="text-align: center; margin: 20px 0;">
-        <div style="font-size: 1.5rem; color: var(--prestige-color);">
-          <i class="fas fa-star"></i> <span id="prestige-points">0</span> Prestige Points
-        </div>
-        <button id="prestige-button" onclick="prestige()" style="background: var(--prestige-color); color: black; margin-top: 10px; padding: 15px; font-size: 1.2rem;">
-          PRESTIGE (0)
-        </button>
-        <p id="prestige-multiplier">Current multiplier: 1x</p>
+  <div id="shop" style="display: none;">
+    <h2 style="text-align: center; color: var(--secondary-color);">HAMSTER SHOP</h2>
+    <div class="shop-items">
+      <div class="shop-item" onclick="buyUpgrade('strength')">
+        <h3>💪 Strength</h3>
+        <p>+5 Attack Power</p>
+        <p>Cost: 100 🪙</p>
+      </div>
+      <div class="shop-item" onclick="buyUpgrade('health')">
+        <h3>❤ Max Health</h3>
+        <p>+20 Health</p>
+        <p>Cost: 150 🪙</p>
+      </div>
+      <div class="shop-item" onclick="buyUpgrade('energy')">
+        <h3>⚡ Max Energy</h3>
+        <p>+10 Energy</p>
+        <p>Cost: 120 🪙</p>
+      </div>
+      <div class="shop-item" onclick="buyUpgrade('critical')">
+        <h3>🎯 Critical Hit</h3>
+        <p>5% Crit Chance</p>
+        <p>Cost: 200 🪙</p>
       </div>
     </div>
+    <button style="display: block; margin: 15px auto;" onclick="hideShop()">BACK TO BATTLE</button>
   </div>
 
-  <div class="controls">
-    <h3 class="section-title"><i class="fas fa-cog"></i> Settings</h3>
-    <button onclick="exportSave()"><i class="fas fa-download"></i> Export Save</button>
-    <button onclick="importSave()"><i class="fas fa-upload"></i> Import Save</button>
-    <button onclick="resetGame()" style="background: #ff5555;"><i class="fas fa-trash"></i> Reset Game</button>
-  </div>
-
-  <audio id="tap-sound" src="https://cdn.pixabay.com/download/audio/2023/03/01/audio_f44e45d1cd.mp3?filename=click-124467.mp3"></audio>
-  <audio id="levelup-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5331e76e7e.mp3?filename=game-level-up-191276.mp3"></audio>
-  <audio id="prestige-sound" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_bb630cc098.mp3?filename=success-1-6297.mp3"></audio>
+  <audio id="attack-sound" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_e50e4b57a3.mp3?filename=punch-140236.mp3"></audio>
+  <audio id="heal-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3a8e9f0c7f.mp3?filename=magic-spell-6767.mp3"></audio>
+  <audio id="coin-sound" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_3a8e9f0c7f.mp3?filename=coins-13692.mp3"></audio>
 
   <script>
-    // Game state with all improvements
+    // Game State
     const game = {
-      aeth: 0,
+      coins: 0,
       level: 1,
-      xp: 0,
-      tapPower: 1,
-      autoPower: 0,
-      tapCount: 0,
-      totalEarned: 0,
-      timePlayed: 0,
+      health: 100,
+      maxHealth: 100,
+      energy: 100,
+      maxEnergy: 100,
+      strength: 10,
+      criticalChance: 0,
+      enemiesDefeated: 0,
+      currentEnemy: createEnemy(1),
       upgrades: {
-        multiTap: { level: 0, cost: 100 },
-        criticalTap: { level: 0, cost: 500 }
-      },
-      badges: [],
-      prestigePoints: 0,
-      lastUpdate: Date.now()
-    };
-
-    // Enhanced translations system
-    const translations = {
-      en: {
-        username: "Player",
-        shop: "Shop",
-        stats: "Stats",
-        upgrades: "Upgrades",
-        prestige: "Prestige",
-        tapPower: "Tap Power",
-        autoPower: "Auto Power",
-        multiTap: "Multi-Tap",
-        criticalTap: "Critical Tap",
-        multiTapDesc: "Chance for 2x taps",
-        criticalTapDesc: "Chance for 5x taps",
-        badges: ["Novice", "Pro", "Expert", "Master", "Legend"],
-        totalTaps: "Total Taps",
-        timePlayed: "Time Played",
-        totalEarned: "Total Earned",
-        prestigeButton: "PRESTIGE",
-        currentMultiplier: "Current multiplier",
-        exportSave: "Export Save",
-        importSave: "Import Save",
-        resetGame: "Reset Game",
-        langText: "EN"
-      },
-      fr: {
-        username: "Joueur",
-        shop: "Boutique",
-        stats: "Statistiques",
-        upgrades: "Améliorations",
-        prestige: "Prestige",
-        tapPower: "Puissance",
-        autoPower: "Auto",
-        multiTap: "Multi-Clic",
-        criticalTap: "Clic Critique",
-        multiTapDesc: "Chance de clics x2",
-        criticalTapDesc: "Chance de clics x5",
-        badges: ["Novice", "Pro", "Expert", "Maître", "Légende"],
-        totalTaps: "Total Clics",
-        timePlayed: "Temps Joué",
-        totalEarned: "Total Gagné",
-        prestigeButton: "PRESTIGE",
-        currentMultiplier: "Multiplicateur actuel",
-        exportSave: "Exporter",
-        importSave: "Importer",
-        resetGame: "Réinitialiser",
-        langText: "FR"
+        strength: 0,
+        health: 0,
+        energy: 0,
+        critical: 0
       }
     };
 
-    let currentLang = "en";
-    const xpBar = document.getElementById("xp-fill");
-    const tapSound = document.getElementById("tap-sound");
-    const levelSound = document.getElementById("levelup-sound");
-    const prestigeSound = document.getElementById("prestige-sound");
-    let particles = [];
-
-    // Main game loop
-    function gameLoop() {
-      const now = Date.now();
-      const deltaTime = (now - game.lastUpdate) / 1000;
-      game.lastUpdate = now;
+    // Enemy System
+    function createEnemy(level) {
+      const baseHealth = 50 + (level * 20);
+      const basePower = 5 + (level * 2);
       
-      if (game.autoPower > 0) {
-        const autoEarned = game.autoPower * deltaTime * (1 + game.prestigePoints * 0.1);
-        game.aeth += autoEarned;
-        game.totalEarned += autoEarned;
-        game.timePlayed += deltaTime;
-        updateUI();
-      }
-      
-      updateParticles();
-      requestAnimationFrame(gameLoop);
+      return {
+        health: baseHealth,
+        maxHealth: baseHealth,
+        power: basePower,
+        level: level,
+        name: ["Ratty", "Squeaker", "Nibbles", "Whiskers", "Fuzzy"][Math.floor(Math.random() * 5)]
+      };
     }
 
-    // Enhanced UI update
-    function updateUI() {
-      document.getElementById("level").textContent = game.level;
-      document.getElementById("xp").textContent = Math.floor(game.xp);
-      document.getElementById("xp-needed").textContent = game.level * 100;
-      document.getElementById("tap-power").textContent = game.tapPower * (1 + game.prestigePoints * 0.1);
-      document.getElementById("auto-power").textContent = game.autoPower * (1 + game.prestigePoints * 0.1);
-      document.getElementById("aeth").textContent = Math.floor(game.aeth);
-      document.getElementById("tap-count").textContent = game.tapCount;
-      document.getElementById("play-time").textContent = Math.floor(game.timePlayed);
-      document.getElementById("total-earned").textContent = Math.floor(game.totalEarned);
-      document.getElementById("tap-power-cost").textContent = 10 + game.tapPower * 2;
-      document.getElementById("auto-power-cost").textContent = 50 + game.autoPower * 5;
-      document.getElementById("multi-tap-cost").textContent = game.upgrades.multiTap.cost + " AETH";
-      document.getElementById("critical-tap-cost").textContent = game.upgrades.criticalTap.cost + " AETH";
-      document.getElementById("prestige-points").textContent = game.prestigePoints;
-      document.getElementById("prestige-multiplier").textContent = translations[currentLang].currentMultiplier + ": " + (1 + game.prestigePoints * 0.1).toFixed(1) + "x";
+    // Combat System
+    function attack() {
+      if (game.energy < 10) {
+        addLog("> Not enough energy!");
+        return;
+      }
+
+      // Player attack
+      game.energy -= 10;
+      let damage = game.strength;
       
-      const xpNeeded = game.level * 100;
-      xpBar.style.width = `${(game.xp / xpNeeded) * 100}%`;
+      // Critical hit chance
+      if (Math.random() * 100 < game.criticalChance) {
+        damage *= 2;
+        showDamage(damage, true);
+        addLog(`> CRITICAL HIT! ${damage} damage!`);
+      } else {
+        showDamage(damage);
+        addLog(`> You hit for ${damage} damage!`);
+      }
       
-      renderBadges();
-      updatePrestigeButton();
+      game.currentEnemy.health -= damage;
+      document.getElementById('attack-sound').play();
+      
+      // Check if enemy defeated
+      if (game.currentEnemy.health <= 0) {
+        const coinsEarned = 10 + (game.currentEnemy.level * 5);
+        game.coins += coinsEarned;
+        game.enemiesDefeated++;
+        
+        addLog(`> Enemy defeated! +${coinsEarned} coins!`);
+        document.getElementById('coin-sound').play();
+        
+        // Create new enemy
+        game.level = Math.floor(game.enemiesDefeated / 5) + 1;
+        game.currentEnemy = createEnemy(game.level);
+        addLog(`> New enemy: ${game.currentEnemy.name} (Lvl ${game.currentEnemy.level})`);
+      } else {
+        // Enemy counter attack
+        setTimeout(() => {
+          const enemyDamage = Math.max(1, game.currentEnemy.power - Math.floor(game.level / 2));
+          game.health -= enemyDamage;
+          showDamage(enemyDamage, false, true);
+          addLog(`> ${game.currentEnemy.name} hits you for ${enemyDamage} damage!`);
+          updateBars();
+          
+          // Check if player defeated
+          if (game.health <= 0) {
+            game.health = game.maxHealth;
+            addLog("> You were defeated! Health restored.");
+          }
+        }, 500);
+      }
+      
+      updateBars();
     }
 
-    // Enhanced tap function with particles and upgrades
-    function tap() {
-      let tapValue = game.tapPower * (1 + game.prestigePoints * 0.1);
-      
-      // Apply upgrades
-      if (Math.random() < game.upgrades.multiTap.level * 0.05) {
-        tapValue *= 2;
-        showToast("MULTI-TAP! x2", "#00ffaa");
-      }
-      if (Math.random() < game.upgrades.criticalTap.level * 0.02) {
-        tapValue *= 5;
-        showToast("CRITICAL TAP! x5", "#ff00aa");
+    function heal() {
+      if (game.energy < 50) {
+        addLog("> Not enough energy to heal!");
+        return;
       }
       
-      game.aeth += tapValue;
-      game.totalEarned += tapValue;
-      game.xp += 10;
-      game.tapCount++;
-      
-      createParticles(10);
-      tapSound.currentTime = 0;
-      tapSound.play();
-      
-      const xpNeeded = game.level * 100;
-      if (game.xp >= xpNeeded) {
-        game.level++;
-        game.xp = 0;
-        showToast(`LEVEL UP! ${game.level}`, "#00d9ff");
-        levelSound.currentTime = 0;
-        levelSound.play();
+      if (game.health >= game.maxHealth) {
+        addLog("> Health already full!");
+        return;
       }
       
-      updateUI();
-      saveGame();
+      game.energy -= 50;
+      const healAmount = Math.min(30, game.maxHealth - game.health);
+      game.health += healAmount;
+      
+      addLog(`> Healed for ${healAmount} health!`);
+      document.getElementById('heal-sound').play();
+      updateBars();
     }
 
-    // Enhanced buy upgrade function
+    // Visual Effects
+    function showDamage(amount, isCritical = false, isEnemyAttack = false) {
+      const hamster = document.getElementById('hamster');
+      const damageText = document.createElement('div');
+      damageText.className = 'damage-effect';
+      damageText.textContent = amount;
+      damageText.style.color = isCritical ? '#FFD700' : (isEnemyAttack ? '#FF0000' : '#FFFFFF');
+      damageText.style.fontSize = isCritical ? '28px' : '24px';
+      damageText.style.left = isEnemyAttack ? '70%' : '30%';
+      
+      hamster.appendChild(damageText);
+      setTimeout(() => damageText.remove(), 1000);
+      
+      // Shake effect
+      hamster.style.animation = 'none';
+      void hamster.offsetWidth; // Trigger reflow
+      hamster.style.animation = isEnemyAttack ? 'shake 0.5s' : 'punch 0.3s';
+    }
+
+    // Shop System
+    function showShop() {
+      document.querySelector('.combat-container').style.display = 'none';
+      document.getElementById('shop').style.display = 'block';
+    }
+
+    function hideShop() {
+      document.querySelector('.combat-container').style.display = 'flex';
+      document.getElementById('shop').style.display = 'none';
+    }
+
     function buyUpgrade(type) {
-      let cost = 0;
-      let success = false;
+      const costs = {
+        strength: 100 + (game.upgrades.strength * 50),
+        health: 150 + (game.upgrades.health * 60),
+        energy: 120 + (game.upgrades.energy * 40),
+        critical: 200 + (game.upgrades.critical * 100)
+      };
       
-      switch(type) {
-        case 'tapPower':
-          cost = 10 + game.tapPower * 2;
-          if (game.aeth >= cost) {
-            game.tapPower++;
-            game.aeth -= cost;
-            success = true;
-            showToast(translations[currentLang].tapPower + " +1", "#00d9ff");
-          }
-          break;
-          
-        case 'autoPower':
-          cost = 50 + game.autoPower * 5;
-          if (game.aeth >= cost) {
-            game.autoPower++;
-            game.aeth -= cost;
-            success = true;
-            showToast(translations[currentLang].autoPower + " +1", "#00d9ff");
-          }
-          break;
-          
-        case 'multiTap':
-          if (game.aeth >= game.upgrades.multiTap.cost) {
-            game.aeth -= game.upgrades.multiTap.cost;
-            game.upgrades.multiTap.level++;
-            game.upgrades.multiTap.cost = Math.floor(game.upgrades.multiTap.cost * 1.5);
-            success = true;
-            showToast(translations[currentLang].multiTap + " +1", "#00ffaa");
-          }
-          break;
-          
-        case 'criticalTap':
-          if (game.aeth >= game.upgrades.criticalTap.cost) {
-            game.aeth -= game.upgrades.criticalTap.cost;
-            game.upgrades.criticalTap.level++;
-            game.upgrades.criticalTap.cost = Math.floor(game.upgrades.criticalTap.cost * 1.5);
-            success = true;
-            showToast(translations[currentLang].criticalTap + " +1", "#ff00aa");
-          }
-          break;
-      }
-      
-      if (success) {
-        updateUI();
-        saveGame();
-      }
-    }
-
-    // Enhanced badge system
-    function renderBadges() {
-      const container = document.getElementById("badges-container");
-      const badgeConditions = [
-        game.tapCount >= 10,
-        game.tapCount >= 100,
-        game.level >= 10,
-        game.tapPower >= 20,
-        game.prestigePoints >= 1
-      ];
-      
-      container.innerHTML = badgeConditions.map((unlocked, i) => `
-        <div class="badge ${unlocked ? '' : 'badge-locked'}">
-          <div class="badge-icon">${unlocked ? '🏆' : '🔒'}</div>
-          <div class="badge-name">${translations[currentLang].badges[i]}</div>
-        </div>
-      `).join('');
-    }
-
-    // New prestige system
-    function prestige() {
-      const prestigeGain = Math.floor(Math.sqrt(game.totalEarned / 100000));
-      
-      if (prestigeGain > 0) {
-        game.prestigePoints += prestigeGain;
-        showToast(`PRESTIGE! +${prestigeGain} Points`, "#ffaa00");
-        prestigeSound.currentTime = 0;
-        prestigeSound.play();
+      if (game.coins >= costs[type]) {
+        game.coins -= costs[type];
+        game.upgrades[type]++;
         
-        // Reset game but keep prestige points and some upgrades
-        game.aeth = 0;
-        game.level = 1;
-        game.xp = 0;
-        game.tapPower = 1;
-        game.autoPower = 0;
-        game.tapCount = 0;
-        game.totalEarned = 0;
-        game.timePlayed = 0;
+        switch(type) {
+          case 'strength':
+            game.strength += 5;
+            addLog("> Strength increased!");
+            break;
+          case 'health':
+            game.maxHealth += 20;
+            game.health += 20;
+            addLog("> Max health increased!");
+            break;
+          case 'energy':
+            game.maxEnergy += 10;
+            game.energy += 10;
+            addLog("> Max energy increased!");
+            break;
+          case 'critical':
+            game.criticalChance += 5;
+            addLog("> Critical chance increased!");
+            break;
+        }
         
-        saveGame();
+        document.getElementById('coin-sound').play();
         updateUI();
       } else {
-        showToast("Need more AETH to prestige!", "#ff5555");
+        addLog("> Not enough coins!");
       }
     }
 
-    function updatePrestigeButton() {
-      const prestigeGain = Math.floor(Math.sqrt(game.totalEarned / 100000));
-      const button = document.getElementById("prestige-button");
-      button.textContent = `${translations[currentLang].prestigeButton} (${prestigeGain})`;
-      button.disabled = prestigeGain <= 0;
+    // UI Updates
+    function updateBars() {
+      document.getElementById('health-bar').style.width = `${(game.health / game.maxHealth) * 100}%`;
+      document.getElementById('energy-bar').style.width = `${(game.energy / game.maxEnergy) * 100}%`;
     }
 
-    // New particle effects
-    function createParticles(count) {
-      const tapArea = document.getElementById("tap-area");
-      const rect = tapArea.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      
-      for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = 1 + Math.random() * 3;
-        const size = 2 + Math.random() * 4;
-        const lifetime = 500 + Math.random() * 1000;
-        
-        particles.push({
-          x: centerX,
-          y: centerY,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          size: size,
-          alpha: 1,
-          lifetime: lifetime,
-          createdAt: Date.now()
-        });
+    function updateUI() {
+      document.getElementById('coins').textContent = `🪙 ${game.coins}`;
+      updateBars();
+    }
+
+    function addLog(message) {
+      const log = document.getElementById('combat-log');
+      log.innerHTML += `<br>${message}`;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // Energy Regeneration
+    setInterval(() => {
+      if (game.energy < game.maxEnergy) {
+        game.energy = Math.min(game.maxEnergy, game.energy + 2);
+        updateBars();
       }
-    }
+    }, 1000);
 
-    function updateParticles() {
-      const now = Date.now();
-      particles = particles.filter(p => now - p.createdAt < p.lifetime);
-      
-      particles.forEach(p => {
-        const age = now - p.createdAt;
-        p.alpha = 1 - age / p.lifetime;
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.1; // gravity
-      });
-      
-      drawParticles();
-    }
-
-    function drawParticles() {
-      // Remove old particles
-      document.querySelectorAll('.particle').forEach(el => el.remove());
-      
-      // Draw new particles
-      particles.forEach(p => {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = `${p.x}px`;
-        particle.style.top = `${p.y}px`;
-        particle.style.width = `${p.size}px`;
-        particle.style.height = `${p.size}px`;
-        particle.style.backgroundColor = `rgba(0, 217, 255, ${p.alpha})`;
-        document.body.appendChild(particle);
-      });
-    }
-
-    // Enhanced save system
-    function saveGame() {
-      game.lastUpdate = Date.now();
-      localStorage.setItem("tapwarx100", JSON.stringify(game));
-    }
-
-    function loadGame() {
-      const saved = localStorage.getItem("tapwarx100");
-      if (saved) {
-        const savedData = JSON.parse(saved);
-        Object.assign(game, savedData);
-        
-        // Fix for missing new properties
-        if (!game.upgrades) game.upgrades = { multiTap: { level: 0, cost: 100 }, criticalTap: { level: 0, cost: 500 } };
-        if (!game.prestigePoints) game.prestigePoints = 0;
-        if (!game.totalEarned) game.totalEarned = game.aeth;
-        
-        // Calculate offline progress
-        const now = Date.now();
-        const offlineTime = (now - game.lastUpdate) / 1000;
-        if (offlineTime > 1 && offlineTime < 86400) { // Max 1 day offline
-          const offlineEarned = game.autoPower * offlineTime * (1 + game.prestigePoints * 0.1);
-          game.aeth += offlineEarned;
-          game.totalEarned += offlineEarned;
-          game.timePlayed += offlineTime;
-          showToast(`Offline: +${Math.floor(offlineEarned)} AETH`, "#00d9ff");
-        }
-        
-        game.lastUpdate = now;
-      }
-    }
-
-    function exportSave() {
-      const saveData = JSON.stringify(game);
-      navigator.clipboard.writeText(saveData).then(() => {
-        showToast("Save copied to clipboard!", "#00d9ff");
-      });
-    }
-
-    function importSave() {
-      const data = prompt("Paste your save data:");
-      if (data) {
-        try {
-          const parsed = JSON.parse(data);
-          Object.assign(game, parsed);
-          updateUI();
-          showToast("Save imported!", "#00ffaa");
-        } catch (e) {
-          showToast("Invalid save data!", "#ff5555");
-        }
-      }
-    }
-
-    function resetGame() {
-      if (confirm("Are you sure you want to reset all progress?")) {
-        Object.assign(game, {
-          aeth: 0,
-          level: 1,
-          xp: 0,
-          tapPower: 1,
-          autoPower: 0,
-          tapCount: 0,
-          totalEarned: 0,
-          timePlayed: 0,
-          upgrades: {
-            multiTap: { level: 0, cost: 100 },
-            criticalTap: { level: 0, cost: 500 }
-          },
-          badges: [],
-          prestigePoints: 0,
-          lastUpdate: Date.now()
-        });
-        saveGame();
-        updateUI();
-        showToast("Game reset!", "#ff5555");
-      }
-    }
-
-    // Enhanced language system
-    function toggleLang() {
-      currentLang = currentLang === "en" ? "fr" : "en";
-      updateTranslations();
-      saveGame();
-    }
-
-    function updateTranslations() {
-      document.getElementById("username").textContent = translations[currentLang].username;
-      document.querySelector('[onclick="switchTab(\'shop\')"]').innerHTML = `<i class="fas fa-shopping-cart"></i> ${translations[currentLang].shop}`;
-      document.querySelector('[onclick="switchTab(\'upgrades\')"]').innerHTML = `<i class="fas fa-arrow-up"></i> ${translations[currentLang].upgrades}`;
-      document.querySelector('[onclick="switchTab(\'prestige\')"]').innerHTML = `<i class="fas fa-trophy"></i> ${translations[currentLang].prestige}`;
-      document.getElementById("lang-text").textContent = translations[currentLang].langText;
-      
-      // Update all other text elements...
-    }
-
-    // Tab system
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-      
-      document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
-      document.getElementById(tabName).classList.add('active');
-    }
-
-    // Enhanced toast notifications
-    function showToast(msg, color = "#00d9ff") {
-      const toast = document.createElement("div");
-      toast.className = "toast";
-      toast.textContent = msg;
-      toast.style.background = color;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    }
-
-    // Theme toggle
-    function toggleTheme() {
-      const root = document.documentElement;
-      const currentBg = getComputedStyle(document.body).backgroundColor;
-      
-      if (currentBg.includes('12')) { // Dark theme
-        document.body.style.background = "#f9fafb";
-        document.body.style.color = "black";
-        document.querySelector('.theme-toggle i').className = "fas fa-sun";
-      } else { // Light theme
-        document.body.style.background = "var(--bg-dark)";
-        document.body.style.color = "white";
-        document.querySelector('.theme-toggle i').className = "fas fa-moon";
-      }
-    }
-
-    // Initialize game
-    loadGame();
+    // Initialize
+    addLog(`> Enemy encountered: ${game.currentEnemy.name} (Lvl ${game.currentEnemy.level})`);
     updateUI();
-    updateTranslations();
-    gameLoop();
-    
-    // Add vibration on tap if supported
-    document.getElementById("tap-area").addEventListener('click', () => {
-      if ('vibrate' in navigator) navigator.vibrate(10);
-    });
+
+    // CSS Animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes shake {
+        0%, 100% { transform: translateX(-50%) translateY(0); }
+        20%, 60% { transform: translateX(-50%) translateY(-5px); }
+        40%, 80% { transform: translateX(-50%) translateY(5px); }
+      }
+      
+      @keyframes punch {
+        0% { transform: translateX(-50%) scale(1); }
+        50% { transform: translateX(-50%) scale(1.1); }
+        100% { transform: translateX(-50%) scale(1); }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>
