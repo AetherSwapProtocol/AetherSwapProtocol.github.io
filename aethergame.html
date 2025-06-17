@@ -1,323 +1,310 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TapWar X10</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AetherSwap TapBot</title>
   <style>
     :root {
-      --main-color: #00d9ff;
-      --bg-dark: #0c0f1c;
-      --bg-light: #f9fafb;
+      --primary-color: #00ffd5;
+      --secondary-color: #ff0058;
       --text-light: #ffffff;
-      --text-dark: #000000;
+      --text-dimmed: #aaaaaa;
+      --bg-dark: #0f0f23;
+      --bg-darker: #000000;
+      --card-bg: rgba(30, 30, 47, 0.7);
     }
-
     body {
       margin: 0;
-      padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-dark);
+      background: radial-gradient(var(--bg-dark), var(--bg-darker));
       color: var(--text-light);
-      touch-action: manipulation;
-      user-select: none;
+      overflow-x: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-
-    .header {
+    .game-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .game-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px;
-      background: rgba(0, 20, 40, 0.9);
-      border-bottom: 1px solid var(--main-color);
+      margin-bottom: 16px;
     }
-
-    button, .tap-button {
-      background: var(--main-color);
-      border: none;
-      border-radius: 8px;
-      color: black;
-      font-size: 1rem;
-      padding: 10px 15px;
-      cursor: pointer;
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-
-    #tap-area {
-      width: 200px;
-      height: 200px;
-      margin: 30px auto;
-      background: radial-gradient(circle, var(--main-color) 0%, #0077ff 100%);
+    .progress-container {
+      flex: 1;
+      margin: 0 12px;
+    }
+    .level-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      transition: width 0.3s ease;
+    }
+    .profit-info {
+      font-size: 12px;
+      color: var(--primary-color);
+    }
+    .daily-rewards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .reward-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      font-size: 12px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(0, 255, 213, 0.2);
+    }
+    .reward-card p {
+      margin: 4px 0;
+      color: var(--text-dimmed);
+    }
+    .reward-card span {
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    .main-game-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .points-display {
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      margin: 10px 0;
+      color: var(--text-light);
+      text-shadow: 0 0 10px var(--primary-color);
+    }
+    .character-circle {
+      width: 180px;
+      height: 180px;
+      margin: 20px auto;
       border-radius: 50%;
+      background: linear-gradient(145deg, #1c1c3a, #2a2a4a);
+      box-shadow: 0 0 30px rgba(0, 255, 213, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
-      box-shadow: 0 0 30px var(--main-color);
       cursor: pointer;
-      transition: transform 0.1s;
+      transition: transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .character-circle::before {
+      content: '';
+      position: absolute;
+      width: 150%;
+      height: 150%;
+      background: radial-gradient(circle, rgba(0,255,213,0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+    .character-inner img {
+      width: 100px;
+      z-index: 2;
       position: relative;
     }
-
-    #tap-area:active {
-      transform: scale(0.95);
-    }
-
-    .hud {
+    .bottom-nav {
+      background: rgba(20, 20, 35, 0.8);
+      border-radius: 20px;
+      padding: 12px 0;
       display: flex;
       justify-content: space-around;
-      flex-wrap: wrap;
-      padding: 10px;
-      background: rgba(0, 20, 40, 0.8);
-      margin: 0 20px;
-      border-radius: 10px;
+      margin-top: auto;
     }
-
-    .progress-bar {
-      height: 10px;
-      background: #222;
-      border-radius: 5px;
-      margin: 10px 20px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(to right, #00ffaa, var(--main-color));
-      border-radius: 5px;
-      transition: width 0.3s;
-    }
-
-    .shop, .stats, .badges, .controls {
-      padding: 10px 20px;
-      background: rgba(0, 20, 40, 0.8);
-      border-radius: 10px;
-      margin: 15px;
-    }
-
-    .toast {
-      position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--main-color);
-      color: black;
-      padding: 8px 15px;
-      border-radius: 20px;
-      font-weight: bold;
-      animation: fadeInOut 2s;
-      z-index: 999;
-    }
-
-    @keyframes fadeInOut {
-      0%, 100% { opacity: 0; }
-      10%, 90% { opacity: 1; }
-    }
-
-    .theme-toggle {
-      font-size: 1.2rem;
-      margin-left: 10px;
+    .nav-item {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-dimmed);
       cursor: pointer;
+      transition: all 0.3s;
+    }
+    .nav-item.active {
+      color: var(--primary-color);
+      transform: translateY(-5px);
+    }
+    .nav-item span {
+      display: block;
+      margin-top: 4px;
+    }
+    .click-effect {
+      position: absolute;
+      color: #00ff88;
+      font-weight: bold;
+      font-size: 18px;
+      animation: floatUp 0.8s ease-out forwards;
+      pointer-events: none;
+      z-index: 1000;
+      text-shadow: 0 0 8px rgba(0, 255, 136, 0.7);
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-60px); }
+    }
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <div id="username">Player</div>
-    <div>
-      <button onclick="toggleLang()">🌐</button>
-      <span class="theme-toggle" onclick="toggleTheme()">🌓</span>
+  <div class="game-container">
+    <div class="game-header">
+      <div class="player-info">
+        <span>🦾 Aetherien</span>
+      </div>
+      <div class="progress-container">
+        <div class="level-info">
+          <span id="levelName">Silver</span>
+          <span id="levelProgress">2 / 10</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="levelProgressBar" style="width: 20%"></div></div>
+      </div>
+      <div class="profit-info">
+        <span id="profitValue">+126.42K</span>
+      </div>
+    </div>
+
+    <div class="daily-rewards">
+      <div class="reward-card">
+        <p>Daily</p>
+        <span id="dailyRewardTime">05:07</span>
+      </div>
+      <div class="reward-card">
+        <p>Cipher</p>
+        <span id="dailyCipherTime">00:07</span>
+      </div>
+      <div class="reward-card">
+        <p>Combo</p>
+        <span id="dailyComboTime">17:07</span>
+      </div>
+    </div>
+
+    <div class="main-game-area">
+      <div class="points-display">
+        <span id="pointsValue">17,216</span>
+      </div>
+
+      <div class="character-circle" id="mainCharacter">
+        <div class="character-inner"><img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Aetherien" /></div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active"><span>Exchange</span></div>
+      <div class="nav-item"><span>Mine</span></div>
+      <div class="nav-item"><span>Friends</span></div>
+      <div class="nav-item"><span>Earn</span></div>
+      <div class="nav-item"><span>Airdrop</span></div>
     </div>
   </div>
 
-  <div class="progress-bar"><div id="xp-fill" class="progress-fill"></div></div>
-
-  <div id="tap-area" onclick="tap()">TAP</div>
-
-  <div class="hud">
-    <div>🆙 <span id="level">1</span></div>
-    <div>💥 <span id="tap-power">1</span>/tap</div>
-    <div>🤖 <span id="auto-power">0</span>/s</div>
-    <div>🔢 Taps: <span id="tap-count">0</span></div>
-  </div>
-
-  <div class="shop">
-    <h3>🛍️ Shop</h3>
-    <button onclick="buyUpgrade('tapPower')">+1 Tap Power (10 AETH)</button>
-    <button onclick="buyUpgrade('autoPower')">+1 Auto Power (50 AETH)</button>
-  </div>
-
-  <div class="stats">
-    <h3>📊 Stats</h3>
-    <p>Total AETH: <span id="aeth">0</span></p>
-    <p>Total Time: <span id="play-time">0</span>s</p>
-  </div>
-
-  <div class="badges">
-    <h3>🏅 Badges</h3>
-    <div id="badges-container"></div>
-  </div>
-
-  <div class="controls">
-    <h3>⚙️ Save & Load</h3>
-    <button onclick="exportSave()">⬇ Export</button>
-    <button onclick="importSave()">⬆ Import</button>
-  </div>
-
-  <audio id="tap-sound" src="https://cdn.pixabay.com/download/audio/2023/03/01/audio_f44e45d1cd.mp3?filename=click-124467.mp3"></audio>
-  <audio id="levelup-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5331e76e7e.mp3?filename=game-level-up-191276.mp3"></audio>
-
   <script>
-    const game = {
-      aeth: 0,
-      level: 1,
-      xp: 0,
-      tapPower: 1,
-      autoPower: 0,
-      tapCount: 0,
-      badges: [],
-      timePlayed: 0
-    };
+    const levelNames = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Epic", "Legendary", "Master", "GrandMaster", "Lord"];
+    const levelMinPoints = [0, 5000, 25000, 100000, 1000000, 2000000, 10000000, 50000000, 100000000, 1000000000];
 
-    const translations = {
-      en: {
-        username: "Player",
-        shop: "Shop",
-        stats: "Stats",
-        tapPower: "Tap Power",
-        autoPower: "Auto Power",
-        dashboard: "Dashboard",
-        badges: ["Miner", "Trader", "Champion", "Whale"]
-      },
-      fr: {
-        username: "Joueur",
-        shop: "Boutique",
-        stats: "Statistiques",
-        tapPower: "Puissance",
-        autoPower: "Auto",
-        dashboard: "Tableau de bord",
-        badges: ["Mineur", "Trader", "Champion", "Baleine"]
-      }
-    };
+    let levelIndex = 1; // Silver = niveau 2
+    let points = parseInt(localStorage.getItem("points")) || 17216;
+    const pointsToAdd = 11;
+    const profitPerHour = 126420;
 
-    let currentLang = "en";
-    const xpBar = document.getElementById("xp-fill");
-    const tapSound = document.getElementById("tap-sound");
-    const levelSound = document.getElementById("levelup-sound");
+    const levelNameEl = document.getElementById('levelName');
+    const levelProgressEl = document.getElementById('levelProgress');
+    const levelProgressBarEl = document.getElementById('levelProgressBar');
+    const profitValueEl = document.getElementById('profitValue');
+    const pointsValueEl = document.getElementById('pointsValue');
+    const mainCharacterEl = document.getElementById('mainCharacter');
+    const navItems = document.querySelectorAll('.nav-item');
 
-    function updateUI() {
-      document.getElementById("level").textContent = game.level;
-      document.getElementById("tap-power").textContent = game.tapPower;
-      document.getElementById("auto-power").textContent = game.autoPower;
-      document.getElementById("aeth").textContent = game.aeth;
-      document.getElementById("tap-count").textContent = game.tapCount;
-      document.getElementById("play-time").textContent = game.timePlayed;
-      const xpNeeded = game.level * 100;
-      xpBar.style.width = `${(game.xp / xpNeeded) * 100}%`;
-      renderBadges();
+    function updateLevelInfo() {
+      levelNameEl.textContent = levelNames[levelIndex];
+      levelProgressEl.textContent = (levelIndex + 1) + " / " + levelNames.length;
+      levelProgressBarEl.style.width = calculateProgress() + "%";
     }
 
-    function tap() {
-      game.aeth += game.tapPower;
-      game.xp += 10;
-      game.tapCount++;
-      updateUI();
-      tapSound.play();
-      const xpNeeded = game.level * 100;
-      if (game.xp >= xpNeeded) {
-        game.level++;
-        game.xp = 0;
-        showToast(`LEVEL UP! ${game.level}`);
-        levelSound.play();
-      }
-      saveGame();
+    function calculateProgress() {
+      if (levelIndex >= levelNames.length - 1) return 100;
+      const current = points - levelMinPoints[levelIndex];
+      const next = levelMinPoints[levelIndex + 1] - levelMinPoints[levelIndex];
+      return Math.min((current / next) * 100, 100);
     }
 
-    function buyUpgrade(type) {
-      if (type === 'tapPower' && game.aeth >= 10) {
-        game.tapPower++;
-        game.aeth -= 10;
-        showToast("Tap Power Upgraded!");
-      } else if (type === 'autoPower' && game.aeth >= 50) {
-        game.autoPower++;
-        game.aeth -= 50;
-        showToast("Auto Power Upgraded!");
-      }
-      updateUI();
-      saveGame();
+    function updatePointsDisplay() {
+      pointsValueEl.textContent = points.toLocaleString("fr-FR");
+      profitValueEl.textContent = `+${(profitPerHour/1000).toFixed(2)}K`;
+      localStorage.setItem("points", points);
     }
 
-    function renderBadges() {
-      const container = document.getElementById("badges-container");
-      const badgeConditions = [
-        game.tapCount >= 10,
-        game.level >= 5,
-        game.tapPower >= 10,
-        game.autoPower >= 5
-      ];
-      container.innerHTML = badgeConditions.map((unlocked, i) =>
-        `<span title="${translations[currentLang].badges[i]}" style="margin:5px; padding:5px; background:${unlocked ? '#00ffaa' : '#333'}; border-radius:6px;">🏅</span>`
-      ).join('');
+    function handleCharacterClick(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      e.currentTarget.style.transform = `perspective(1000px) rotateX(${-y/10}deg) rotateY(${x/10}deg) scale(1.05)`;
+      
+      points += pointsToAdd;
+      updatePointsDisplay();
+      checkLevelUp();
+      showClickEffect(e);
+      
+      setTimeout(() => {
+        e.currentTarget.style.transform = "";
+      }, 200);
     }
 
-    function startAutoClicker() {
-      setInterval(() => {
-        game.aeth += game.autoPower;
-        game.timePlayed++;
-        updateUI();
-        saveGame();
-      }, 1000);
+    function showClickEffect(e) {
+      const effect = document.createElement('div');
+      effect.className = 'click-effect';
+      effect.textContent = `+${pointsToAdd}`;
+      effect.style.left = e.pageX + 'px';
+      effect.style.top = e.pageY + 'px';
+      document.body.appendChild(effect);
+      effect.addEventListener('animationend', () => effect.remove());
     }
 
-    function toggleLang() {
-      currentLang = currentLang === "en" ? "fr" : "en";
-      document.getElementById("username").textContent = translations[currentLang].username;
-      updateUI();
+    function handleNavClick(e) {
+      navItems.forEach(item => item.classList.remove('active'));
+      e.currentTarget.classList.add('active');
     }
 
-    function toggleTheme() {
-      const root = document.documentElement;
-      const dark = getComputedStyle(root).getPropertyValue('--bg-dark');
-      const currentBg = getComputedStyle(document.body).backgroundColor;
-      document.body.style.background = currentBg.includes('12') ? dark : '#f9fafb';
-      document.body.style.color = currentBg.includes('12') ? 'white' : 'black';
+    function initGame() {
+      updateLevelInfo();
+      updatePointsDisplay();
+      mainCharacterEl.addEventListener("click", handleCharacterClick);
+      navItems.forEach(item => item.addEventListener("click", handleNavClick));
     }
 
-    function showToast(msg) {
-      const toast = document.createElement("div");
-      toast.className = "toast";
-      toast.textContent = msg;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    }
-
-    function exportSave() {
-      const saveData = JSON.stringify(game);
-      navigator.clipboard.writeText(saveData).then(() => {
-        showToast("Copied Save to Clipboard");
-      });
-    }
-
-    function importSave() {
-      const data = prompt("Paste your save data:");
-      if (data) {
-        Object.assign(game, JSON.parse(data));
-        updateUI();
-        showToast("Save Imported!");
-      }
-    }
-
-    function saveGame() {
-      localStorage.setItem("tapwarx10", JSON.stringify(game));
-    }
-
-    function loadGame() {
-      const saved = localStorage.getItem("tapwarx10");
-      if (saved) Object.assign(game, JSON.parse(saved));
-    }
-
-    loadGame();
-    updateUI();
-    startAutoClicker();
+    document.addEventListener("DOMContentLoaded", initGame);
   </script>
 </body>
 </html>
