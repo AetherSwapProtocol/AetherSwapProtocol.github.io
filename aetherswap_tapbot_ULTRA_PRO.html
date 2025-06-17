@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>Aetherien - Hamster Kombat Clone</title>
+<style>
+  /* Reset & base */
+  * {
+    margin:0; padding:0; box-sizing: border-box;
+    user-select:none;
+  }
+  html, body {
+    height: 100%;
+    background: linear-gradient(135deg, #0d0f1e 0%, #1a1f38 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #d1d1e9;
+    overflow: hidden;
+  }
+  #app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Top bar - points */
+  #top-bar {
+    height: 48px;
+    background: #10122a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #70ffb3;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 10px #70ffb3aa;
+    border-bottom: 1px solid #23374d;
+    position: relative;
+    z-index: 10;
+  }
+  /* Main content flex */
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: radial-gradient(ellipse at center, #121526 0%, #080a1a 70%);
+  }
+
+  /* 3D container for robot */
+  #robot-container {
+    flex: 1;
+    position: relative;
+  }
+
+  /* Canvas full size */
+  canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Tap button overlay center */
+  #tap-button {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px;
+    height: 160px;
+    background: linear-gradient(145deg, #2affb0, #2a70ff);
+    border-radius: 50%;
+    box-shadow:
+      0 0 30px #2affb0,
+      inset 0 0 40px #2affb0,
+      0 8px 15px rgba(42, 255, 176, 0.6);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #tap-button:active {
+    transform: translate(-50%, -50%) scale(0.92);
+    box-shadow:
+      0 0 20px #2affb0,
+      inset 0 0 20px #2affb0,
+      0 4px 8px rgba(42, 255, 176, 0.7);
+  }
+  #tap-button span {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #10122a;
+    text-shadow: 0 0 12px #08f7a5;
+    user-select:none;
+  }
+
+  /* Bottom navigation bar */
+  #bottom-nav {
+    height: 56px;
+    background: #10122a;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #23374d;
+    position: relative;
+    z-index: 10;
+  }
+  #bottom-nav button {
+    background: transparent;
+    border: none;
+    color: #70ffb3;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    user-select:none;
+  }
+  #bottom-nav button:hover,
+  #bottom-nav button.active {
+    background: #2affb0;
+    color: #10122a;
+    box-shadow: 0 0 12px #2affb0;
+  }
+
+  /* Content panels for tabs */
+  #content-panels {
+    flex: 1;
+    background: #14172d;
+    border-top: 2px solid #2affb0;
+    overflow-y: auto;
+    padding: 12px 18px;
+    color: #a5f5d9;
+    font-size: 1rem;
+    user-select:none;
+  }
+
+  /* Missions tab */
+  #missions-panel .mission-item {
+    background: #10122a;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 0 10px #2affb044;
+  }
+  #missions-panel .mission-info {
+    max-width: 70%;
+  }
+  #missions-panel .mission-info h3 {
+    margin-bottom: 6px;
+    font-weight: 700;
+    color: #70ffb3;
+  }
+  #missions-panel .mission-info p {
+    font-size: 0.85rem;
+    color: #a5f5d9;
+  }
+  #missions-panel button {
+    background: #2affb0;
+    border: none;
+    border-radius: 14px;
+    padding: 6px 16px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #10122a;
+    box-shadow: 0 0 12px #2affb0;
+    user-select:none;
+  }
+  #missions-panel button:disabled {
+    background: #444;
+    box-shadow: none;
+    cursor: default;
+    color: #888;
+  }
+  #missions-panel .claimed {
+    color: #33ff88;
+    font-weight: 900;
+    user-select:none;
+  }
+
+  /* Cards tab */
+  #cards-panel .card-item {
+    background: #10122a;
+    border-radius: 14px;
+    margin-bottom: 14px;
+    padding: 16px;
+    box-shadow: 0 0 20px #2affb033;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #cards-panel .card-item h3 {
+    font-weight: 700;
+    color: #70ffb3;
+    margin-bottom: 8px;
+  }
+  #cards-panel .card-item p {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    color: #a5f5d9;
+    text-align: center;
+  }
+  #cards-panel button {
+    background: #2affb0;
+    border: none;
+    border-radius: 16px;
+    padding: 10px 26px;
+    font-weight: 800;
+    cursor: pointer;
+    color: #10122a;
+    box-shadow: 0 0 15px #2affb0;
+    user-select:none;
+  }
+  #cards-panel button:disabled {
+    background: #444;
+    cursor: default;
+    box-shadow: none;
+    color: #888;
+  }
+
+  /* Scrollbar styling */
+  #content-panels::-webkit-scrollbar {
+    width: 8px;
+  }
+  #content-panels::-webkit-scrollbar-thumb {
+    background-color: #2affb0aa;
+    border-radius: 10px;
+  }
+  #content-panels::-webkit-scrollbar-track {
+    background: transparent;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top-bar">Aether$ : <span id="points">0</span></div>
+  <div id="main">
+    <div id="robot-container"></div>
+    <div id="tap-button" title="Tap to earn Aether$"><span>Tap</span></div>
+  </div>
+  <div id="content-panels">
+    <!-- Tabs content goes here -->
+  </div>
+  <nav id="bottom-nav">
+    <button data-tab="home" class="active" aria-label="Accueil">Accueil</button>
+    <button data-tab="missions" aria-label="Missions">Missions</button>
+    <button data-tab="cards" aria-label="Cartes">Cartes</button>
+  </nav>
+</div>
+
+<!-- Three.js library -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+
+<script>
+(() => {
+  // State
+  let points = 0;
+  let missions = [
+    { id: 1, title: "Inviter 3 amis", desc: "Partage le jeu avec 3 amis", started: false, completed: false, claimed: false },
+    { id: 2, title: "Faire 100 taps", desc: "Tapote 100 fois le robot", started: false, completed: false, claimed: false },
+    { id: 3, title: "Connecter Telegram", desc: "Connecte-toi au bot Telegram", started: false, completed: false, claimed: false }
+  ];
+  let cards = [
+    { id: 1, title: "Booster de clic", desc: "+1 Aether$ par tap", cost: 50, owned: 0, multiplier: 1 },
+    { id: 2, title: "Auto Tap", desc: "Automatise le tap toutes les 2s", cost: 200, owned: 0, multiplier: 0 }
+  ];
+
+  // Load saved from localStorage
+  function loadGame() {
+    let savedPoints = localStorage.getItem('aether_points');
+    if (savedPoints) points = parseInt(savedPoints);
+    let savedMissions = localStorage.getItem('aether_missions');
+    if (savedMissions) missions = JSON.parse(savedMissions);
+    let savedCards = localStorage.getItem('aether_cards');
+    if (savedCards) cards = JSON.parse(savedCards);
+  }
+  // Save to localStorage
+  function saveGame() {
+    localStorage.setItem('aether_points', points);
+    localStorage.setItem('aether_missions', JSON.stringify(missions));
+    localStorage.setItem('aether_cards', JSON.stringify(cards));
+  }
+
+  // Update points display
+  const pointsDisplay = document.getElementById('points');
+  function updatePoints() {
+    pointsDisplay.textContent = points.toLocaleString();
+  }
+
+  // Create Missions UI
+  function createMissionsPanel() {
+    const panel = document.createElement('div');
+    panel.id = "missions-panel";
+    missions.forEach(m => {
+      const item = document.createElement('div');
+      item.className = "mission-item";
+
+      const info = document.createElement('div');
+      info.className = "mission-info";
+      const title = document.createElement('h3');
+      title.textContent = m.title;
+      const desc = document.createElement('p');
+      desc.textContent = m.desc;
+      info.appendChild(title);
+      info.appendChild(desc);
+
+      const btn = document.createElement('button');
+      if (m.claimed) {
+        btn.textContent = "Réclamé ✔️";
+        btn.disabled = true;
+        btn.classList.add("claimed");
+      } else if (m.completed) {
+        btn.textContent = "Claim";
+        btn.disabled = false;
+        btn.onclick = () => claimMission(m.id);
+      } else if (m.started) {
+        btn.textContent = "En cours";
+        btn.disabled = true;
+      } else {
+        btn.textContent = "Start";
+        btn.disabled = false;
+        btn.onclick = () => startMission(m.id);
+      }
+
+      item.appendChild(info);
+      item.appendChild(btn);
+      panel.appendChild(item);
+    });
+    return panel;
+  }
+  // Start mission
+  function startMission(id) {
+    let m = missions.find(x => x.id === id);
+    if (!m) return;
+    if (!m.started) {
+      m.started = true;
+      saveGame();
+      renderTab('missions');
+    }
+  }
+  // Claim mission reward (simple +50 points reward for example)
+  function claimMission(id) {
+    let m = missions.find(x => x.id === id);
+    if (!m || !m.completed || m.claimed) return;
+    m.claimed = true;
+    points += 50;
+    saveGame();
+    updatePoints();
+    renderTab('missions');
+  }
+
+  // Create Cards UI
+  function createCardsPanel() {
+    const panel = document.createElement('div');
+    panel.id = "cards-panel";
+    cards.forEach(c => {
+      const card = document.createElement('div');
+      card.className = "card-item";
+      const title = document.createElement('h3');
+      title.textContent = c.title;
+      const desc = document.createElement('p');
+      desc.textContent = c.desc + (c.multiplier > 0 ? ` x${c.multiplier}` : '');
+      const btn = document.createElement('button');
+      btn.textContent = `Acheter (${c.cost} Aether$)`;
+      btn.disabled = points < c.cost;
+      btn.onclick = () => buyCard(c.id);
+      card.appendChild(title);
+      card.appendChild(desc);
+      card.appendChild(btn);
+      panel.appendChild(card);
+    });
+    return panel;
+  }
+  // Buy card
+  function buyCard(id) {
+    let c = cards.find(x => x.id === id);
+    if (!c) return;
+    if (points >= c.cost) {
+      points -= c.cost;
+      c.owned++;
+      if (c.id === 1) {
+        tapMultiplier = 1 + c.owned;
+      }
+      if (c.id === 2) {
+        if (!autoTapInterval) {
+          autoTapInterval = setInterval(() => tap(), 2000);
+        }
+      }
+      saveGame();
+      updatePoints();
+      renderTab('cards');
+    }
+  }
+
+  // Tap logic
+  let tapMultiplier = 1;
+  let autoTapInterval = null;
+  function tap() {
+    points += tapMultiplier;
+    updatePoints();
+    saveGame();
+    // Animate tap button glow briefly
+    const btn = document.getElementById('tap-button');
+    btn.style.transform = 'translate(-50%, -50%) scale(0.9)';
+    setTimeout(() => {
+      btn.style.transform = 'translate(-50%, -50%) scale(1)';
+    }, 100);
+    // Check missions completion example for tap mission
+    let tapMission = missions.find(m => m.id === 2);
+    if (tapMission && tapMission.started && !tapMission.completed) {
+      tapMission.progress = (tapMission.progress || 0) + 1;
+      if (tapMission.progress >= 100) {
+        tapMission.completed = true;
+        tapMission.started = false;
+      }
+      saveGame();
+      if (currentTab === 'missions') renderTab('missions');
+    }
+  }
+
+  // Render tabs content
+  let currentTab = 'home';
+  const contentPanels = document.getElementById('content-panels');
+  function renderTab(tab) {
+    currentTab = tab;
+    contentPanels.innerHTML = '';
+    if (tab === 'home') {
+      // Show instructions or robot info
+      const homeDiv = document.createElement('div');
+      homeDiv.style.color = '#70ffb3';
+      homeDiv.style.textAlign = 'center';
+      homeDiv.style.padding = '20px';
+      homeDiv.innerHTML = `<h2>Bienvenue sur Aetherien</h2>
+        <p>Tapote le robot au centre pour gagner des Aether$.</p>
+        <p>Achète des cartes et complète des missions pour progresser.</p>`;
+      contentPanels.appendChild(homeDiv);
+    } else if (tab === 'missions') {
+      contentPanels.appendChild(createMissionsPanel());
+    } else if (tab === 'cards') {
+      contentPanels.appendChild(createCardsPanel());
+    }
+  }
+
+  // Navigation button clicks
+  const navButtons = document.querySelectorAll('#bottom-nav button');
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTab(btn.dataset.tab);
+    });
+  });
+
+  // Tap button click event
+  document.getElementById('tap-button').addEventListener('click', () => {
+    tap();
+  });
+
+  // Initialize Three.js robot 3D
+  function initRobot3D() {
+    const container = document.getElementById('robot-container');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.set(0, 1.6, 3);
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    container.appendChild(renderer.domElement);
+
+    // Lights
+    const hemiLight = new THREE.HemisphereLight(0x70ffb3, 0x10122a, 1.2);
+    scene.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0x2affb0, 1);
+    dirLight.position.set(3, 5, 5);
+    scene.add(dirLight);
+
+    // Robot group
+    const robot = new THREE.Group();
+
+    // Body - capsule shape approximation (cylinder + spheres)
+    const bodyMaterial = new THREE.MeshStandardMaterial({
+      color: 0x2affb0,
+      roughness: 0.2,
+      metalness: 0.9,
+      emissive: 0x08f7a5,
+      emissiveIntensity: 0.6
+    });
+    const cylinder = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.4, 0.4, 1.2, 32),
+      bodyMaterial
+    );
+    robot.add(cylinder);
+
+    const sphereTop = new THREE.Mesh(
+      new THREE.SphereGeometry(0.4, 32, 32),
+      bodyMaterial
+    );
+    sphereTop.position.y = 0.6;
+    robot.add(sphereTop);
+
+    const sphereBottom = new THREE.Mesh(
+      new THREE.SphereGeometry(0.4, 32, 32),
+      bodyMaterial
+    );
+    sphereBottom.position.y = -0.6;
+    robot.add(sphereBottom);
+
+    // Head - smaller sphere with emissive eyes
+    const headMaterial = new THREE.MeshStandardMaterial({
+      color: 0x1a70ff,
+      roughness: 0.1,
+      metalness: 1,
+      emissive: 0x2affb0,
+      emissiveIntensity: 1.2
+    });
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.35, 32, 32), headMaterial);
+    head.position.y = 1.05;
+    robot.add(head);
+
+    // Eyes - small glowing spheres
+    const eyeMaterial = new THREE.MeshStandardMaterial({
+      color: 0x70ffb3,
+      emissive: 0x70ffb3,
+      emissiveIntensity: 3,
+      roughness: 0.05,
+      metalness: 1
+    });
+    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.07, 16, 16), eyeMaterial);
+    const eyeR = eyeL.clone();
+    eyeL.position.set(-0.15, 1.1, 0.32);
+    eyeR.position.set(0.15, 1.1, 0.32);
+    robot.add(eyeL);
+    robot.add(eyeR);
+
+    // Antennae
+    const antennaMaterial = new THREE.MeshStandardMaterial({
+      color: 0x70ffb3,
+      emissive: 0x33ffcc,
+      emissiveIntensity: 1,
+      roughness: 0.15,
+      metalness: 0.9
+    });
+    const antennaL = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.6, 8), antennaMaterial);
+    antennaL.position.set(-0.15, 1.4, 0);
+    antennaL.rotation.z = Math.PI / 8;
+    const antennaR = antennaL.clone();
+    antennaR.position.set(0.15, 1.4, 0);
+    antennaR.rotation.z = -Math.PI / 8;
+    robot.add(antennaL);
+    robot.add(antennaR);
+
+    scene.add(robot);
+
+    // Animate robot subtle floating and rotation
+    let clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      let t = clock.getElapsedTime();
+      robot.position.y = 0.05 * Math.sin(t * 2);
+      robot.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    });
+
+  }
+
+  // Load game and render UI
+  loadGame();
+  updatePoints();
+  renderTab(currentTab);
+  initRobot3D();
+
+  // Missions simulation example for Invite friends (mock)
+  // After 10 seconds, mark invite mission as completed for demo
+  setTimeout(() => {
+    let inviteMission = missions.find(m => m.id === 1);
+    if (inviteMission && inviteMission.started && !inviteMission.completed) {
+      inviteMission.completed = true;
+      inviteMission.started = false;
+      saveGame();
+      if (currentTab === 'missions') renderTab('missions');
+    }
+  }, 10000);
+
+})();
+</script>
+</body>
+</html>
