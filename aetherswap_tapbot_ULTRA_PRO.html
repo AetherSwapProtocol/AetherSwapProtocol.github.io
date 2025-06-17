@@ -1,108 +1,293 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hamster Kombat Clone</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aetherien Combat</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(#0f0f23, #000);
+      color: #fff;
+      overflow-x: hidden;
+    }
+    .game-container {
+      max-width: 480px;
+      margin: auto;
+      padding: 20px;
+    }
+    .game-header, .bottom-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .progress-container {
+      flex: 1;
+      margin: 0 12px;
+    }
+    .level-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #00ffd5;
+      transition: width 0.3s ease;
+    }
+    .profit-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .points-display {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 16px 0;
+      color: #00ffd5;
+    }
+    .character-circle {
+      width: 160px;
+      height: 160px;
+      margin: auto;
+      border-radius: 50%;
+      background: #1c1c3a;
+      box-shadow: 0 0 20px #00ffd5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .character-inner img {
+      width: 90px;
+    }
+    .daily-rewards {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .reward-card {
+      flex: 1;
+      background: #1e1e2f;
+      border-radius: 10px;
+      padding: 8px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .reward-card img {
+      width: 40px;
+      margin-bottom: 4px;
+    }
+    .bottom-nav {
+      margin-top: 24px;
+      justify-content: space-around;
+    }
+    .nav-item {
+      text-align: center;
+      font-size: 10px;
+      color: #aaa;
+    }
+    .nav-item.active {
+      color: #00ffd5;
+    }
+    .click-effect {
+      position: absolute;
+      color: #00ff88;
+      font-weight: bold;
+      font-size: 16px;
+      animation: floatUp 1s ease-out forwards;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="game-container">
-        <!-- Header Section -->
-        <div class="game-header">
-            <div class="player-info">
-                <div class="hamster-icon">🐹</div>
-                <span>AetherFounder</span>
-            </div>
-            
-            <div class="progress-container">
-                <div class="level-info">
-                    <span id="levelName">Legendary</span>
-                    <span id="levelProgress">7 / 10</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="levelProgressBar"></div>
-                </div>
-            </div>
-            
-            <div class="profit-info">
-                <img src="assets/binance.png" alt="Binance" class="exchange-icon">
-                <div class="divider"></div>
-                <div class="profit-text">
-                    <p class="label">Profit per hour</p>
-                    <div class="value">
-                        <img src="assets/dollar.png" alt="$" class="coin-icon">
-                        <span id="profitValue">+126.42K</span>
-                    </div>
-                </div>
-                <div class="divider"></div>
-                <div class="settings-icon">⚙️</div>
-            </div>
+  <div class="game-container">
+    <div class="game-header">
+      <div class="player-info"><span>ð¤ Aetherien</span></div>
+      <div class="progress-container">
+        <div class="level-info">
+          <span id="levelName">Legendary</span>
+          <span id="levelProgress">7 / 10</span>
         </div>
-
-        <!-- Main Game Area -->
-        <div class="game-board">
-            <!-- Daily Rewards Section -->
-            <div class="daily-rewards">
-                <div class="reward-card">
-                    <div class="dot"></div>
-                    <img src="assets/daily_reward.png" alt="Daily Reward">
-                    <p>Daily reward</p>
-                    <span class="time" id="dailyRewardTime">00:00</span>
-                </div>
-                <div class="reward-card">
-                    <div class="dot"></div>
-                    <img src="assets/daily_cipher.png" alt="Daily Cipher">
-                    <p>Daily cipher</p>
-                    <span class="time" id="dailyCipherTime">19:00</span>
-                </div>
-                <div class="reward-card">
-                    <div class="dot"></div>
-                    <img src="assets/daily_combo.png" alt="Daily Combo">
-                    <p>Daily combo</p>
-                    <span class="time" id="dailyComboTime">12:00</span>
-                </div>
-            </div>
-
-            <!-- Points Display -->
-            <div class="points-display">
-                <img src="assets/dollar.png" alt="$" class="large-coin">
-                <span id="pointsValue">22,749,365</span>
-            </div>
-
-            <!-- Main Character -->
-            <div class="character-circle" id="mainCharacter">
-                <div class="character-inner">
-                    <img src="assets/main_character.png" alt="Hamster CEO">
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <div class="nav-item active">
-                <img src="assets/binance.png" alt="Exchange">
-                <span>Exchange</span>
-            </div>
-            <div class="nav-item">
-                <img src="assets/mine.png" alt="Mine">
-                <span>Mine</span>
-            </div>
-            <div class="nav-item">
-                <img src="assets/friends.png" alt="Friends">
-                <span>Friends</span>
-            </div>
-            <div class="nav-item">
-                <img src="assets/earn.png" alt="Earn">
-                <span>Earn</span>
-            </div>
-            <div class="nav-item">
-                <img src="assets/airdrop.png" alt="Airdrop">
-                <span>Airdrop</span>
-            </div>
-        </div>
+        <div class="progress-bar"><div class="progress-fill" id="levelProgressBar"></div></div>
+      </div>
+      <div class="profit-info">
+        <span id="profitValue">+126.42K</span>
+      </div>
     </div>
 
-    <script src="game.js"></script>
+    <div class="daily-rewards">
+      <div class="reward-card"><img src="" alt=""><p>Daily</p><span id="dailyRewardTime">00:00</span></div>
+      <div class="reward-card"><img src="" alt=""><p>Cipher</p><span id="dailyCipherTime">19:00</span></div>
+      <div class="reward-card"><img src="" alt=""><p>Combo</p><span id="dailyComboTime">12:00</span></div>
+    </div>
+
+    <div class="points-display">
+      <span id="pointsValue">22,749,365</span>
+    </div>
+
+    <div class="character-circle" id="mainCharacter">
+      <div class="character-inner"><img src="" alt="Aetherien Bot" /></div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active"><span>Exchange</span></div>
+      <div class="nav-item"><span>Mine</span></div>
+      <div class="nav-item"><span>Friends</span></div>
+      <div class="nav-item"><span>Earn</span></div>
+      <div class="nav-item"><span>Airdrop</span></div>
+    </div>
+  </div>
+
+  <script>
+    const levelNames = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Epic", "Legendary", "Master", "GrandMaster", "Lord"];
+    const levelMinPoints = [0, 5000, 25000, 100000, 1000000, 2000000, 10000000, 50000000, 100000000, 1000000000];
+
+    let levelIndex = 6;
+    let points = parseInt(localStorage.getItem("points")) || 22749365;
+    const pointsToAdd = 11;
+    const profitPerHour = 126420;
+
+    const levelNameEl = document.getElementById('levelName');
+    const levelProgressEl = document.getElementById('levelProgress');
+    const levelProgressBarEl = document.getElementById('levelProgressBar');
+    const profitValueEl = document.getElementById('profitValue');
+    const pointsValueEl = document.getElementById('pointsValue');
+    const dailyRewardTimeEl = document.getElementById('dailyRewardTime');
+    const dailyCipherTimeEl = document.getElementById('dailyCipherTime');
+    const dailyComboTimeEl = document.getElementById('dailyComboTime');
+    const mainCharacterEl = document.getElementById('mainCharacter');
+
+    function updateLevelInfo() {
+      levelNameEl.textContent = levelNames[levelIndex];
+      levelProgressEl.textContent = (levelIndex + 1) + " / " + levelNames.length;
+      levelProgressBarEl.style.width = calculateProgress() + "%";
+    }
+
+    function calculateProgress() {
+      if (levelIndex >= levelNames.length - 1) return 100;
+      const current = points - levelMinPoints[levelIndex];
+      const next = levelMinPoints[levelIndex + 1] - levelMinPoints[levelIndex];
+      return Math.min((current / next) * 100, 100);
+    }
+
+    function updatePointsDisplay() {
+      pointsValueEl.textContent = points.toLocaleString("fr-FR");
+      profitValueEl.textContent = formatProfit(profitPerHour);
+      localStorage.setItem("points", points);
+    }
+
+    function formatProfit(profit) {
+      if (profit >= 1e9) return "+" + (profit / 1e9).toFixed(2) + "B";
+      if (profit >= 1e6) return "+" + (profit / 1e6).toFixed(2) + "M";
+      if (profit >= 1e3) return "+" + (profit / 1e3).toFixed(2) + "K";
+      return "+" + profit;
+    }
+
+    function startPassiveIncome() {
+      const pointsPerSecond = Math.floor(profitPerHour / 3600);
+      setInterval(() => {
+        points += pointsPerSecond;
+        updatePointsDisplay();
+        checkLevelUp();
+      }, 1000);
+    }
+
+    function checkLevelUp() {
+      const currentLevelMin = levelMinPoints[levelIndex];
+      const nextLevelMin = levelMinPoints[levelIndex + 1];
+      if (points >= nextLevelMin && levelIndex < levelNames.length - 1) {
+        levelIndex++;
+        updateLevelInfo();
+      } else if (points < currentLevelMin && levelIndex > 0) {
+        levelIndex--;
+        updateLevelInfo();
+      } else {
+        levelProgressBarEl.style.width = calculateProgress() + "%";
+      }
+    }
+
+    function updateDailyTimers() {
+      dailyRewardTimeEl.textContent = calculateTimeLeft(0);
+      dailyCipherTimeEl.textContent = calculateTimeLeft(19);
+      dailyComboTimeEl.textContent = calculateTimeLeft(12);
+    }
+
+    function calculateTimeLeft(targetHour) {
+      const now = new Date();
+      const target = new Date(now);
+      target.setUTCHours(targetHour, 0, 0, 0);
+      if (now.getUTCHours() >= targetHour) target.setUTCDate(target.getUTCDate() + 1);
+      const diff = target - now;
+      const hours = String(Math.floor(diff / 3600000)).padStart(2, '0');
+      const minutes = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+      return hours + ":" + minutes;
+    }
+
+    function handleCharacterClick(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      e.currentTarget.style.transform = `perspective(1000px) rotateX(${-y / 10}deg) rotateY(${x / 10}deg)`;
+      setTimeout(() => e.currentTarget.style.transform = "", 100);
+      points += pointsToAdd;
+      updatePointsDisplay();
+      checkLevelUp();
+      showClickEffect(e);
+    }
+
+    function showClickEffect(e) {
+      const effect = document.createElement('div');
+      effect.className = 'click-effect';
+      effect.textContent = `+${pointsToAdd}`;
+      effect.style.left = e.pageX + 'px';
+      effect.style.top = e.pageY + 'px';
+      document.body.appendChild(effect);
+      effect.addEventListener('animationend', () => effect.remove());
+    }
+
+    function initGame() {
+      updateLevelInfo();
+      updatePointsDisplay();
+      startPassiveIncome();
+      updateDailyTimers();
+      setInterval(updateDailyTimers, 60000);
+      mainCharacterEl.addEventListener("click", handleCharacterClick);
+    }
+
+    document.addEventListener("DOMContentLoaded", initGame);
+  </script>
 </body>
 </html>
