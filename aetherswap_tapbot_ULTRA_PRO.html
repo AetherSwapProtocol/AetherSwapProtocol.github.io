@@ -1,135 +1,110 @@
+
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crypto Fighter - Telegram Game</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AetherSwap</title>
   <style>
-    /* CSS intégré (modern Telegram-like UI) */
-    :root {
-      --tg-theme-bg-color: #17212b;
-      --tg-theme-text-color: #ffffff;
-      --tg-theme-button-color: #5288c1;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--tg-theme-bg-color);
-      color: var(--tg-theme-text-color);
+    html, body {
       margin: 0;
       padding: 0;
-      overflow-x: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f1c;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
     }
-    #intro-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
+    #game {
+      position: relative;
       width: 100%;
       height: 100%;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
+      background: url('https://files.oaiusercontent.com/file_00000000d5c4622f9d0828ecb16ed483/mnt/data/A_digital_illustration_in_futuristic,_sci-fi_style.png') no-repeat center center;
+      background-size: cover;
     }
-    #language-screen {
-      display: none;
-      flex-direction: column;
-      gap: 15px;
-      padding: 20px;
+    .coin-counter {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.6);
+      padding: 10px 20px;
+      border-radius: 30px;
+      color: #00ffcc;
+      font-size: 20px;
+      font-weight: bold;
+      border: 1px solid #00ffcc;
     }
-    .lang-btn {
-      background: var(--tg-theme-button-color);
-      border: none;
-      padding: 12px;
-      border-radius: 10px;
-      color: white;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .bot-wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
     }
-    /* ... (autres styles) ... */
+    .bot {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,255,200,0.5), transparent 70%);
+      animation: float 3s ease-in-out infinite;
+      position: relative;
+    }
+    .bot::after {
+      content: "";
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 30px;
+      background: radial-gradient(ellipse at center, rgba(0,255,180,0.4) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(4px);
+    }
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+      50% { transform: translate(-50%, -50%) translateY(-10px); }
+    }
+    .floating-text {
+      position: absolute;
+      color: #00ffcc;
+      font-weight: bold;
+      animation: floatUp 1s ease-out forwards;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-50px); }
+    }
   </style>
 </head>
 <body>
-  <!-- Écran d'intro (cinématique) -->
-  <div id="intro-screen">
-    <div id="intro-animation">
-      <svg width="200" height="200" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <!-- Animation SVG intégrée -->
-        <circle cx="50" cy="50" r="40" fill="#5288c1" id="pulse-circle"/>
-        <animate xlink:href="#pulse-circle" attributeName="r" values="40;30;40" dur="1s" repeatCount="indefinite"/>
-      </svg>
-      <h1 style="text-align: center;">CRYPTO FIGHTER</h1>
+  <div id="game">
+    <div class="coin-counter">AetherCoins : <span id="coin-count">0</span></div>
+    <div class="bot-wrapper" onclick="addCoin(event)">
+      <div class="bot"></div>
     </div>
   </div>
-
-  <!-- Sélecteur de langue -->
-  <div id="language-screen">
-    <h2>Sélectionnez votre langue</h2>
-    <button class="lang-btn" onclick="setLanguage('FR')">🇫🇷 Français</button>
-    <button class="lang-btn" onclick="setLanguage('EN')">🇬🇧 English</button>
-    <button class="lang-btn" onclick="setLanguage('ES')">🇪🇸 Español</button>
-  </div>
-
-  <!-- Dashboard principal (caché au départ) -->
-  <div id="game-dashboard" style="display: none;">
-    <div class="header">
-      <span id="username-display"></span>
-      <span id="coins-display">🪙 0</span>
-    </div>
-    <div class="game-menu">
-      <button class="game-btn" id="play-btn">JOUER</button>
-      <button class="game-btn" id="inventory-btn">INVENTAIRE</button>
-    </div>
-  </div>
-
   <script>
-    // 1. Gestion des langues (intégré)
-    const translations = {
-      FR: { play: "JOUER", inventory: "INVENTAIRE" },
-      EN: { play: "PLAY", inventory: "INVENTORY" },
-      ES: { play: "JUGAR", inventory: "INVENTARIO" }
-    };
+    let coins = localStorage.getItem('aethercoins') || 0;
+    document.getElementById('coin-count').innerText = coins;
 
-    // 2. Détection Telegram (simulée si pas dans l'app)
-    function detectTelegramUser() {
-      if (window.Telegram.WebApp) {
-        return Telegram.WebApp.initDataUnsafe.user?.username || "Player";
-      } else {
-        return "Guest_" + Math.floor(Math.random() * 1000);
-      }
+    function addCoin(e) {
+      coins++;
+      localStorage.setItem('aethercoins', coins);
+      document.getElementById('coin-count').innerText = coins;
+
+      const floatText = document.createElement('div');
+      floatText.className = 'floating-text';
+      floatText.innerText = '+1';
+      floatText.style.left = (e.clientX - 10) + 'px';
+      floatText.style.top = (e.clientY - 20) + 'px';
+      document.body.appendChild(floatText);
+
+      setTimeout(() => {
+        floatText.remove();
+      }, 1000);
     }
-
-    // 3. Séquence de démarrage
-    setTimeout(() => {
-      document.getElementById('intro-screen').style.display = 'none';
-      document.getElementById('language-screen').style.display = 'flex';
-      
-      // Pré-sélection si déjà choisi
-      const savedLang = localStorage.getItem('gameLang');
-      if (savedLang) setLanguage(savedLang);
-    }, 3000); // 3s d'intro
-
-    function setLanguage(lang) {
-      localStorage.setItem('gameLang', lang);
-      document.getElementById('play-btn').textContent = translations[lang].play;
-      document.getElementById('inventory-btn').textContent = translations[lang].inventory;
-      
-      // Afficher le dashboard
-      document.getElementById('language-screen').style.display = 'none';
-      document.getElementById('game-dashboard').style.display = 'block';
-      
-      // Afficher l'utilisateur
-      const username = detectTelegramUser();
-      document.getElementById('username-display').textContent = `👤 ${username}`;
-    }
-
-    // 4. Logique du jeu (exemple simplifié)
-    document.getElementById('play-btn').addEventListener('click', () => {
-      alert("Mode jeu lancé !");
-      // Ici, intégrer le gameplay...
-    });
   </script>
 </body>
 </html>
