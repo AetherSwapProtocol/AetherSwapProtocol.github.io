@@ -3,153 +3,162 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Swap Kombat X100</title>
+  <title>Swap Kombat Ultra</title>
   <style>
-    body {
+    :root {
+      --primary: #ff6b00;
+      --secondary: #ffd700;
+      --bg: #121212;
+      --white: #ffffff;
+    }
+    html, body {
       margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--white);
       font-family: 'Segoe UI', sans-serif;
-      background: #121212;
-      color: #fff;
       overflow: hidden;
-      user-select: none;
-      touch-action: manipulation;
     }
     header {
-      background: linear-gradient(to right, #ff6b00, #ffd700);
-      padding: 1rem;
       text-align: center;
+      padding: 1rem;
       font-size: 1.5rem;
       font-weight: bold;
-      color: #121212;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      color: #111;
     }
-    #arena {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 2rem;
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.6);
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 14px;
     }
-    #enemy {
-      width: 150px;
-      height: 150px;
-      background: radial-gradient(circle at center, #ff6b00 20%, #660000 80%);
-      border-radius: 50%;
-      margin-bottom: 1rem;
-      box-shadow: 0 0 20px #ff6b00;
+    canvas {
+      display: block;
+      margin: auto;
+      background: radial-gradient(ellipse at center, #222 0%, #111 100%);
+      border: 4px solid var(--primary);
+      border-radius: 10px;
     }
     #log {
-      width: 90%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
       height: 100px;
-      background: #1e1e1e;
-      margin: 1rem auto;
-      padding: 1rem;
       overflow-y: auto;
+      background: #1e1e1e;
+      color: lime;
       font-family: monospace;
-      border: 1px solid #ff6b00;
-      border-radius: 5px;
+      padding: 5px;
     }
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      background: #ff6b00;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
+    #wallet {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--primary);
+      color: #000;
+      padding: 8px 12px;
+      border-radius: 8px;
       cursor: pointer;
-      color: black;
     }
-    .bar-container {
-      width: 80%;
-      margin: 10px auto;
-    }
-    .bar {
-      height: 20px;
-      background: #444;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .fill {
-      height: 100%;
-      transition: width 0.3s;
-    }
-    .health { background: linear-gradient(to right, red, darkred); }
-    .xp { background: linear-gradient(to right, lime, green); }
   </style>
 </head>
 <body>
-  <header>ð¥ SWAP KOMBAT X100 ð¥</header>
-  <div id="arena">
-    <div id="enemy"></div>
-    <div class="bar-container">
-      <div class="bar"><div id="health-fill" class="fill health" style="width:100%"></div></div>
-    </div>
-    <div class="bar-container">
-      <div class="bar"><div id="xp-fill" class="fill xp" style="width:0%"></div></div>
-    </div>
-    <div>
-      <button onclick="attack()">Swap âï¸</button>
-      <button onclick="special()">Mint ð¥</button>
-      <button onclick="heal()">Stake ð</button>
-    </div>
-    <div id="log">> Game started</div>
+  <header>ð¥ SWAP KOMBAT ULTRA ð¥</header>
+  <div id="wallet">Connect Wallet</div>
+  <div id="hud">
+    â¤ï¸ HP: <span id="hp">100</span><br>
+    â¡ Energy: <span id="energy">50</span><br>
+    ð XP: <span id="xp">0</span><br>
+    ðï¸ Level: <span id="level">1</span><br>
+    ðª Tokens: <span id="tokens">0</span>
   </div>
-
+  <canvas id="gameCanvas" width="400" height="300"></canvas>
+  <div id="log">> Game started...</div>
   <audio id="snd-attack" src="data:audio/mp3;base64,RkFLRUFVRElP"></audio>
   <audio id="snd-heal" src="data:audio/mp3;base64,RkFLRUFVRElP"></audio>
   <audio id="snd-coin" src="data:audio/mp3;base64,RkFLRUFVRElP"></audio>
-
   <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
     const log = (msg) => {
-      const logBox = document.getElementById('log');
-      logBox.innerHTML += '<br>> ' + msg;
-      logBox.scrollTop = logBox.scrollHeight;
+      const el = document.getElementById('log');
+      el.innerHTML += "<br>> " + msg;
+      el.scrollTop = el.scrollHeight;
     };
 
     let game = {
       hp: 100,
-      maxHp: 100,
+      energy: 50,
       xp: 0,
-      level: 1
+      level: 1,
+      tokens: 0,
+      wallet: null
     };
 
-    function updateUI() {
-      document.getElementById('health-fill').style.width = (game.hp / game.maxHp * 100) + '%';
-      document.getElementById('xp-fill').style.width = (game.xp % 100) + '%';
+    function updateHUD() {
+      document.getElementById('hp').textContent = game.hp;
+      document.getElementById('energy').textContent = game.energy;
+      document.getElementById('xp').textContent = game.xp;
+      document.getElementById('level').textContent = game.level;
+      document.getElementById('tokens').textContent = game.tokens;
     }
 
-    function attack() {
-      const snd = document.getElementById('snd-attack'); snd.play();
-      let dmg = 10 + Math.floor(Math.random() * 5);
-      game.xp += dmg;
-      log("Swap Attack deals " + dmg + " XP!");
-      if (game.xp >= game.level * 100) {
-        game.level++;
-        log("LEVEL UP! You reached level " + game.level);
-        document.getElementById('snd-coin').play();
-      }
-      updateUI();
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#fff';
+      ctx.font = '20px monospace';
+      ctx.fillText('Enemy ð', 150, 50);
+      ctx.fillStyle = '#f00';
+      ctx.fillRect(100, 70, 200, 20); // enemy health bar
+      ctx.fillStyle = '#ff6b00';
+      ctx.beginPath();
+      ctx.arc(200, 170, 40, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#000';
+      ctx.fillText('YOU', 180, 175);
     }
 
-    function special() {
-      const crit = Math.random() < 0.3;
-      const dmg = crit ? 50 : 20;
-      game.xp += dmg;
-      log(crit ? 'MINT CRIT!! ð¥ 50 XP' : 'Mint deals 20 XP');
-      document.getElementById('snd-attack').play();
-      updateUI();
-    }
-
-    function heal() {
-      if (game.hp < game.maxHp) {
-        game.hp = Math.min(game.maxHp, game.hp + 30);
-        document.getElementById('snd-heal').play();
-        log('You staked and healed 30 HP');
-        updateUI();
+    canvas.addEventListener('click', () => {
+      if (game.energy >= 10) {
+        game.energy -= 10;
+        const xpGained = Math.floor(Math.random() * 15) + 5;
+        game.xp += xpGained;
+        document.getElementById('snd-attack').play();
+        log("Swap Attack! +" + xpGained + " XP");
+        if (game.xp >= game.level * 100) {
+          game.level++;
+          game.tokens += 50;
+          game.xp = 0;
+          log("ð LEVEL UP! Now level " + game.level);
+          document.getElementById('snd-coin').play();
+        }
       } else {
-        log('Health already full!');
+        log("Not enough energy!");
       }
-    }
+      updateHUD();
+    });
 
-    updateUI();
+    document.getElementById('wallet').addEventListener('click', () => {
+      game.wallet = '0xFAKE123456789...';
+      document.getElementById('wallet').textContent = 'Wallet: ' + game.wallet;
+      log("Wallet connected: " + game.wallet);
+    });
+
+    setInterval(() => {
+      if (game.energy < 100) {
+        game.energy++;
+        updateHUD();
+      }
+      draw();
+    }, 1000);
+
+    updateHUD();
+    draw();
   </script>
 </body>
 </html>
