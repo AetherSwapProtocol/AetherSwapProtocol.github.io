@@ -515,6 +515,145 @@
                     progress = 100;
                 } else {
                     const current
-    </script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const levelData = [
+        { name: "Bronze", min: 0, click: 1, profit: 0 },
+        { name: "Silver", min: 5000, click: 2, profit: 50 },
+        { name: "Gold", min: 25000, click: 4, profit: 120 },
+        { name: "Platinum", min: 100000, click: 6, profit: 250 },
+        { name: "Diamond", min: 1000000, click: 8, profit: 600 },
+        { name: "Epic", min: 2000000, click: 10, profit: 1200 },
+        { name: "Legendary", min: 10000000, click: 15, profit: 3000 },
+        { name: "Master", min: 50000000, click: 20, profit: 6000 },
+        { name: "GrandMaster", min: 100000000, click: 25, profit: 10000 },
+        { name: "Lord", min: 1000000000, click: 30, profit: 20000 },
+    ];
+
+    const levelNameEl = document.querySelector('.level-name');
+    const levelCountEl = document.querySelector('.level-count');
+    const progressEl = document.querySelector('.progress-gradient');
+    const pointsEl = document.querySelector('.points-value');
+    const circleEl = document.querySelector('.circle-outer');
+    const dailyTimersEls = document.querySelectorAll('.daily-timer');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    const defaultState = {
+        points: 0,
+        dailyTimers: [3600, 7200, 14400],
+        cards: [], // Future use
+    };
+
+    let state = JSON.parse(localStorage.getItem('aetherGame')) || defaultState;
+
+    function getLevel() {
+        let index = 0;
+        for (let i = levelData.length - 1; i >= 0; i--) {
+            if (state.points >= levelData[i].min) {
+                index = i;
+                break;
+            }
+        }
+        return { ...levelData[index], index };
+    }
+
+    function updateUI() {
+        const lvl = getLevel();
+        const next = levelData[lvl.index + 1];
+        const progress = next
+            ? ((state.points - lvl.min) / (next.min - lvl.min)) * 100
+            : 100;
+
+        levelNameEl.textContent = lvl.name;
+        levelCountEl.innerHTML = `${lvl.index + 1} <span class="text-muted">/ ${levelData.length}</span>`;
+        progressEl.style.width = `${progress}%`;
+        pointsEl.textContent = Math.floor(state.points).toLocaleString();
+    }
+
+    function tickProfit() {
+        setInterval(() => {
+            const { profit } = getLevel();
+            state.points += profit / 3600;
+            updateUI();
+            save();
+        }, 1000);
+    }
+
+    function handleClicks() {
+        circleEl.addEventListener('click', (e) => {
+            const { click } = getLevel();
+            state.points += click;
+            showClickAnimation(`+${click}`, e.pageX, e.pageY);
+            updateUI();
+            save();
+        });
+    }
+
+    function showClickAnimation(text, x, y) {
+        const el = document.createElement('div');
+        el.className = 'click-animation';
+        el.textContent = text;
+        el.style.left = `${x - 30}px`;
+        el.style.top = `${y - 40}px`;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 900);
+    }
+
+    function save() {
+        localStorage.setItem('aetherGame', JSON.stringify(state));
+    }
+
+    function tickDailyTimers() {
+        setInterval(() => {
+            state.dailyTimers = state.dailyTimers.map(t => Math.max(0, t - 1));
+            dailyTimersEls.forEach((el, i) => {
+                const t = state.dailyTimers[i];
+                const mins = String(Math.floor(t / 60)).padStart(2, '0');
+                const secs = String(t % 60).padStart(2, '0');
+                el.textContent = t > 0 ? `${mins}:${secs}` : 'Réclamer 🔓';
+            });
+            save();
+        }, 1000);
+    }
+
+    function setupNavigation() {
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                // Tu peux afficher/masquer des blocs de contenu ici
+            });
+        });
+    }
+
+    function addResetButton() {
+        const btn = document.createElement('button');
+        btn.textContent = '🔁 Reset Game';
+        btn.style.position = 'fixed';
+        btn.style.bottom = '70px';
+        btn.style.right = '20px';
+        btn.style.zIndex = '999';
+        btn.style.padding = '10px';
+        btn.style.background = '#f3ba2f';
+        btn.style.border = 'none';
+        btn.style.borderRadius = '8px';
+        btn.onclick = () => {
+            if (confirm("Remettre tout à zéro ?")) {
+                localStorage.removeItem('aetherGame');
+                location.reload();
+            }
+        };
+        document.body.appendChild(btn);
+    }
+
+    // Run
+    updateUI();
+    tickProfit();
+    handleClicks();
+    tickDailyTimers();
+    setupNavigation();
+    addResetButton();
+});
+</script>
 </body>
 </html>
