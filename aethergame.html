@@ -475,7 +475,62 @@
             </div>
         </div>
     </div>
+<script>
+const defaultState = {
+    firstLaunch: true,
+    points: 0,
+    dailyTimers: [3600, 7200, 14400],
+    cards: [],
+};
 
+let state = JSON.parse(localStorage.getItem('aetherGame'));
+
+if (!state) {
+    state = defaultState;
+    saveState();
+}
+
+if (state.firstLaunch) {
+    alert("Bienvenue dans AetherSwap 👾 ! Vous commencez avec 0 point.");
+    state.firstLaunch = false;
+    saveState();
+}
+
+function saveState() {
+    localStorage.setItem('aetherGame', JSON.stringify(state));
+}
+
+function updateUI() {
+    const pointsDisplay = document.querySelector('.points-value');
+    if (pointsDisplay) {
+        pointsDisplay.textContent = state.points.toLocaleString('fr-FR');
+    }
+}
+
+// 🔥 Gagne des points à chaque clic
+document.getElementById("tap-zone").addEventListener("click", () => {
+    const pointsPerClick = 1; // Tu peux augmenter ce nombre plus tard
+    state.points += pointsPerClick;
+    updateUI();
+    saveState();
+    triggerClickAnimation(); // 👇 (optionnel mais cool)
+});
+
+// (optionnel) Petite animation à chaque clic
+function triggerClickAnimation() {
+    const tapZone = document.getElementById("tap-zone");
+    const anim = document.createElement("div");
+    anim.className = "click-animation";
+    anim.textContent = "+1";
+    anim.style.top = `${Math.random() * 80 + 10}%`;
+    anim.style.left = `${Math.random() * 80 + 10}%`;
+    tapZone.appendChild(anim);
+    setTimeout(() => anim.remove(), 1000);
+}
+
+// Initialise
+updateUI();
+</script>
     <script>
         // Logique du jeu
         document.addEventListener('DOMContentLoaded', () => {
