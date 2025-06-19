@@ -5,368 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AetherSwap Game</title>
     <style>
-        /* Reset et styles de base */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: sans-serif;
-        }
-        
-        body {
-            background-color: #000;
-            color: white;
-            display: flex;
-            justify-content: center;
-            overflow-x: hidden;
-        }
-        
-        /* Conteneur principal */
-        .game-container {
-            width: 100%;
-            max-width: 600px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        
-        /* Header */
-        .header {
-            padding: 1rem;
-            z-index: 10;
-        }
-        
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding-top: 1rem;
-        }
-        
-        .profile-icon {
-            padding: 0.25rem;
-            border-radius: 0.5rem;
-            background-color: #1d2025;
-        }
-        
-        .profile-name {
-            font-size: 0.875rem;
-        }
-        
-        .stats {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-top: 0.25rem;
-        }
-        
-        .level-container {
-            flex: 1;
-        }
-        
-        .level-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.875rem;
-        }
-        
-        .progress-container {
-            display: flex;
-            align-items: center;
-            margin-top: 0.25rem;
-            border: 2px solid #43433b;
-            border-radius: 9999px;
-        }
-        
-        .progress-bg {
-            width: 100%;
-            height: 0.5rem;
-            background-color: rgba(67, 67, 59, 0.6);
-            border-radius: 9999px;
-        }
-        
-        .progress-gradient {
-            height: 0.5rem;
-            border-radius: 9999px;
-            background: linear-gradient(to right, #90ef89, #d692dd, #726edd);
-        }
-        
-        .exchange-container {
-            flex: 2;
-            max-width: 256px;
-            display: flex;
-            align-items: center;
-            border: 2px solid #43433b;
-            border-radius: 9999px;
-            padding: 0.125rem 1rem;
-            background-color: rgba(67, 67, 59, 0.6);
-        }
-        
-        .exchange-icon {
-            width: 2rem;
-            height: 2rem;
-        }
-        
-        .divider {
-            height: 2rem;
-            width: 2px;
-            background-color: #43433b;
-            margin: 0 0.5rem;
-        }
-        
-        .profit-container {
-            flex: 1;
-            text-align: center;
-        }
-        
-        .profit-label {
-            font-size: 0.75rem;
-            color: #85827d;
-            font-weight: 500;
-        }
-        
-        .profit-value {
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.25rem;
-        }
-        
-        .coin-icon {
-            width: 1.125rem;
-            height: 1.125rem;
-        }
-        
-        .info-icon {
-            color: #43433b;
-            width: 1.25rem;
-            height: 1.25rem;
-        }
-        
-        /* Zone de jeu principale */
-        .main-game {
-            flex-grow: 1;
-            margin-top: 1rem;
-            background-color: #f3ba2f;
-            border-top-left-radius: 3rem;
-            border-top-right-radius: 3rem;
-            position: relative;
-            box-shadow: 0 -26px 20px rgba(243, 186, 47, 0.3);
-        }
-        
-        .game-content {
-            position: absolute;
-            top: 2px;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #1d2025;
-            border-top-left-radius: 2.875rem;
-            border-top-right-radius: 2.875rem;
-            padding: 1.5rem 1rem 0;
-        }
-        
-        /* Cartes quotidiennes */
-        .daily-cards {
-            display: flex;
-            justify-content: space-between;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
-        }
-        
-        .daily-card {
-            background-color: #272a2f;
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
-            width: 100%;
-            position: relative;
-        }
-        
-        .dot {
-            width: 6px;
-            height: 6px;
-            background-color: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            animation: blink 1s infinite;
-        }
-        
-        .daily-icon {
-            width: 3rem;
-            height: 3rem;
-            margin: 0 auto;
-        }
-        
-        .daily-label {
-            font-size: 0.625rem;
-            text-align: center;
-            color: white;
-            margin-top: 0.25rem;
-        }
-        
-        .daily-timer {
-            font-size: 0.625rem;
-            font-weight: 500;
-            text-align: center;
-            color: #9ca3af;
-            margin-top: 0.5rem;
-        }
-        
-        /* Affichage des points */
-        .points-display {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-        
-        .points-container {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-        }
-        
-        .points-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-        }
-        
-        .points-value {
-            font-size: 2.25rem;
-            color: white;
-        }
-        
-        /* Cercle central */
-        .circle-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-        
-        .circle-outer {
-            background: linear-gradient(to bottom, #575def, #202731);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 90vw;
-            height: 90vw;
-            max-width: 360px;
-            max-height: 360px;
-            border-radius: 50%;
-            padding: 1rem;
-        }
-        
-        .circle-inner {
-            background: radial-gradient(circle, #4960b2, #282e3e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-        }
-        
-        .character {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: contain;
-        }
-        
-        /* Navigation */
-        .navigation {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 2rem);
-            max-width: 600px;
-            background-color: #272a2f;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 50;
-            border-radius: 1.5rem;
-            font-size: 0.75rem;
-            padding: 0.25rem;
-        }
-        
-        .nav-item {
-            text-align: center;
-            color: #85827d;
-            width: 20%;
-            padding: 0.5rem;
-        }
-        
-        .nav-item.active {
-            background-color: #1c1f24;
-            border-radius: 1rem;
-            margin: 0.25rem;
-        }
-        
-        .nav-icon {
-            width: 2rem;
-            height: 2rem;
-            margin: 0 auto;
-        }
-        
-        /* Animations */
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-        
-        @keyframes float {
-            0% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-        }
-        
-        .click-animation {
-            position: absolute;
-            font-size: 3rem;
-            font-weight: bold;
-            opacity: 0;
-            color: white;
-            pointer-events: none;
-            animation: float 1s ease-out;
-        }
-        
-        /* SVG personnalisés */
-        .icon {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+        body{background:#000;color:#fff;display:flex;justify-content:center}
+        .game-container{width:100%;max-width:600px;height:100vh;display:flex;flex-direction:column;position:relative}
+        .header{padding:1rem;z-index:10}
+        .profile{display:flex;align-items:center;gap:.5rem;padding-top:1rem}
+        .profile-icon{padding:.25rem;border-radius:.5rem;background:#1d2025}
+        .profile-name{font-size:.875rem}
+        .stats{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.25rem}
+        .level-container{flex:1}
+        .level-header{display:flex;justify-content:space-between;font-size:.875rem}
+        .progress-container{display:flex;align-items:center;margin-top:.25rem;border:2px solid #43433b;border-radius:9999px}
+        .progress-bg{width:100%;height:.5rem;background:rgba(67,67,59,.6);border-radius:9999px}
+        .progress-gradient{height:.5rem;border-radius:9999px;background:linear-gradient(to right,#90ef89,#d692dd,#726edd);transition:width .3s}
+        .exchange-container{flex:2;max-width:256px;display:flex;align-items:center;border:2px solid #43433b;border-radius:9999px;padding:.125rem 1rem;background:rgba(67,67,59,.6)}
+        .exchange-icon{width:2rem;height:2rem}
+        .divider{height:2rem;width:2px;background:#43433b;margin:0 .5rem}
+        .profit-container{flex:1;text-align:center}
+        .profit-label{font-size:.75rem;color:#85827d;font-weight:500}
+        .profit-value{font-size:.875rem;display:flex;align-items:center;justify-content:center;gap:.25rem}
+        .coin-icon{width:1.125rem;height:1.125rem}
+        .info-icon{color:#43433b;width:1.25rem;height:1.25rem}
+        .main-game{flex-grow:1;margin-top:1rem;background:#f3ba2f;border-top-left-radius:3rem;border-top-right-radius:3rem;position:relative;box-shadow:0 -26px 20px rgba(243,186,47,.3)}
+        .game-content{position:absolute;top:2px;left:0;right:0;bottom:0;background:#1d2025;border-top-left-radius:2.875rem;border-top-right-radius:2.875rem;padding:1.5rem 1rem 0}
+        .daily-cards{display:flex;justify-content:space-between;gap:.5rem;margin-top:1.5rem}
+        .daily-card{background:#272a2f;border-radius:.5rem;padding:.5rem 1rem;width:100%;position:relative;cursor:pointer}
+        .dot{width:6px;height:6px;background:#fff;border-radius:50%;position:absolute;top:10px;right:10px;animation:blink 1s infinite}
+        .daily-icon{width:3rem;height:3rem;margin:0 auto}
+        .daily-label{font-size:.625rem;text-align:center;color:#fff;margin-top:.25rem}
+        .daily-timer{font-size:.625rem;font-weight:500;text-align:center;color:#9ca3af;margin-top:.5rem}
+        .points-display{display:flex;justify-content:center;margin-top:1rem}
+        .points-container{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem}
+        .points-icon{width:2.5rem;height:2.5rem}
+        .points-value{font-size:2.25rem;color:#fff}
+        .circle-container{display:flex;justify-content:center;margin-top:1rem}
+        .circle-outer{background:linear-gradient(to bottom,#575def,#202731);display:flex;align-items:center;justify-content:center;width:90vw;height:90vw;max-width:360px;max-height:360px;border-radius:50%;padding:1rem;cursor:pointer}
+        .circle-inner{background:radial-gradient(circle,#4960b2,#282e3e);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 1px rgba(0,0,0,.2);width:100%;height:100%;border-radius:50%}
+        .character{width:100%;height:100%;border-radius:50%;object-fit:contain}
+        .navigation{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:calc(100% - 2rem);max-width:600px;background:#272a2f;display:flex;justify-content:space-around;align-items:center;z-index:50;border-radius:1.5rem;font-size:.75rem;padding:.25rem}
+        .nav-item{text-align:center;color:#85827d;width:20%;padding:.5rem}
+        .nav-item.active{background:#1c1f24;border-radius:1rem;margin:.25rem}
+        .nav-icon{width:2rem;height:2rem;margin:0 auto}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+        @keyframes float{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
+        .click-animation{position:absolute;font-size:1.5rem;font-weight:bold;opacity:0;color:#fff;pointer-events:none;animation:float 1s;text-shadow:0 0 5px #f3ba2f;z-index:100}
+        .icon{width:24px;height:24px;fill:currentColor}
+        .reset-btn{position:fixed;bottom:70px;right:20px;z-index:999;padding:10px;background:#f3ba2f;border:none;border-radius:8px;cursor:pointer}
     </style>
 </head>
 <body>
     <div class="game-container">
-        <!-- Header -->
         <div class="header">
             <div class="profile">
                 <div class="profile-icon">
-                    <svg class="icon" viewBox="0 0 512 512">
-                        <path d="M0,135.434c0,27.786,13.637,54.737,37.605,71.028c18.611-53.476,51.532-106.098,95.693-142.701 C76.535,26.245,0,66.968,0,135.434z"></path>
-                        <path d="M378.702,63.759c43.385,35.965,76.691,88.103,95.692,142.702C498.321,190.199,512,163.267,512,135.434 C512,66.961,435.457,26.251,378.702,63.759z"></path>
-                        <path d="M256.003,49.597c-0.012,0-0.031,0-0.044,0C141.939,49.634,53.684,193.404,53.684,302.856 c0,111.622,89.237,159.667,202.316,159.667c113.018,0,202.316-48.063,202.316-159.667 C458.316,193.417,370.064,49.597,256.003,49.597z M335.505,162.289c12.198,0,22.086,9.888,22.086,22.086 s-9.888,22.086-22.086,22.086s-22.086-9.888-22.086-22.086S323.307,162.289,335.505,162.289z M176.495,162.289 c12.198,0,22.086,9.888,22.086,22.086s-9.888,22.086-22.086,22.086c-12.198,0-22.086-9.888-22.086-22.086 S164.297,162.289,176.495,162.289z M346.837,357.468c-11.685,8.312-25.551,12.62-39.522,12.623v30.149 c0,9.22-7.475,16.696-16.696,16.696H221.38c-9.22,0-16.696-7.475-16.696-16.696v-30.148c-13.968-0.002-27.828-4.306-39.508-12.615 c-18.199-12.948-28.638-33.164-28.638-55.465c0-9.22,7.475-16.696,16.696,16.696s16.696,7.475,16.696,16.696 c0,11.355,5.323,21.654,14.603,28.257c23.145,16.467,54.771-0.336,54.771-28.257c0-1.198,0.131-2.364,0.372-3.489l-33.528-38.715 c-9.33-10.774-1.678-27.626,12.621-27.626h74.464c14.253,0,21.981,16.816,12.621,27.625l-33.528,38.715 c0.239,1.126,0.372,2.293,0.372,3.491c0,27.809,31.539,44.783,54.784,28.249c9.272-6.597,14.589-16.893,14.589-28.249 c0-9.22,7.475-16.696,16.696-16.696c9.22,0,16.696,7.475,16.696,16.696C375.46,324.314,365.027,344.527,346.837,357.468z"></path>
-                    </svg>
+                    <svg class="icon" viewBox="0 0 512 512"><path d="M0,135.434c0,27.786,13.637,54.737,37.605,71.028c18.611-53.476,51.532-106.098,95.693-142.701C76.535,26.245,0,66.968,0,135.434z"/><path d="M378.702,63.759c43.385,35.965,76.691,88.103,95.692,142.702C498.321,190.199,512,163.267,512,135.434C512,66.961,435.457,26.251,378.702,63.759z"/><path d="M256.003,49.597c-0.012,0-0.031,0-0.044,0C141.939,49.634,53.684,193.404,53.684,302.856c0,111.622,89.237,159.667,202.316,159.667c113.018,0,202.316-48.063,202.316-159.667C458.316,193.417,370.064,49.597,256.003,49.597z M335.505,162.289c12.198,0,22.086,9.888,22.086,22.086s-9.888,22.086-22.086,22.086s-22.086-9.888-22.086-22.086S323.307,162.289,335.505,162.289z M176.495,162.289c12.198,0,22.086,9.888,22.086,22.086s-9.888,22.086-22.086,22.086c-12.198,0-22.086-9.888-22.086-22.086S164.297,162.289,176.495,162.289z M346.837,357.468c-11.685,8.312-25.551,12.62-39.522,12.623v30.149c0,9.22-7.475,16.696-16.696,16.696H221.38c-9.22,0-16.696-7.475-16.696-16.696v-30.148c-13.968-0.002-27.828-4.306-39.508-12.615c-18.199-12.948-28.638-33.164-28.638-55.465c0-9.22,7.475-16.696,16.696,16.696s16.696,7.475,16.696,16.696c0,11.355,5.323,21.654,14.603,28.257c23.145,16.467,54.771-0.336,54.771-28.257c0-1.198,0.131-2.364,0.372-3.489l-33.528-38.715c-9.33-10.774-1.678-27.626,12.621-27.626h74.464c14.253,0,21.981,16.816,12.621,27.625l-33.528,38.715c0.239,1.126,0.372,2.293,0.372,3.491c0,27.809,31.539,44.783,54.784,28.249c9.272-6.597,14.589-16.893,14.589-28.249c0-9.22,7.475-16.696,16.696-16.696c9.22,0,16.696,7.475,16.696,16.696C375.46,324.314,365.027,344.527,346.837,357.468z"/></svg>
                 </div>
                 <div class="profile-name">Aether (CEO)</div>
             </div>
-            
             <div class="stats">
                 <div class="level-container">
                     <div class="level-header">
@@ -375,70 +70,56 @@
                     </div>
                     <div class="progress-container">
                         <div class="progress-bg">
-                            <div class="progress-gradient" style="width: 27.5%"></div>
+                            <div class="progress-gradient" style="width:27.5%"></div>
                         </div>
                     </div>
                 </div>
-                
                 <div class="exchange-container">
                     <img class="exchange-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNNyAyaDZ2Mkg3em0wIDhoMTB2Mkg3em0wIDhoNnYySDd6bTEyLTdoLTJ2N2gtMnYtN2gtMnYtMmg2eiIvPjwvc3ZnPg==" alt="Exchange">
                     <div class="divider"></div>
                     <div class="profit-container">
                         <p class="profit-label">Profit per hour</p>
                         <div class="profit-value">
-                            <img class="coin-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAxOGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6bS0xLTguNTlWOGgtMnY4aDJ2LTNoM3YtM2gtM3oiLz48L3N2Zz4=" alt="Coin">
+                            <img class="coin-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAxOGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6bTEtMTNoMnY2aDZ2MkgxM3oiLz48L3N2Zz4=" alt="Coin">
                             <p>+126.42K</p>
-                            <svg class="info-icon" viewBox="0 0 24 24">
-                                <path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm1,15a1,1,0,0,1-2,0V11a1,1,0,0,1,2,0ZM12,8a1.5,1.5,0,1,1,1.5-1.5A1.5,1.5,0,0,1,12,8Z"></path>
-                            </svg>
+                            <svg class="info-icon" viewBox="0 0 24 24"><path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm1,15a1,1,0,0,1-2,0V11a1,1,0,0,1,2,0ZM12,8a1.5,1.5,0,1,1,1.5-1.5A1.5,1.5,0,0,1,12,8Z"/></svg>
                         </div>
                     </div>
                     <div class="divider"></div>
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M14.2788 2.15224C13.9085 2 13.439 2 12.5 2C11.561 2 11.0915 2 10.7212 2.15224C10.2274 2.35523 9.83509 2.74458 9.63056 3.23463C9.53719 3.45834 9.50065 3.7185 9.48635 4.09799C9.46534 4.65568 9.17716 5.17189 8.69017 5.45093C8.20318 5.72996 7.60864 5.71954 7.11149 5.45876C6.77318 5.2813 6.52789 5.18262 6.28599 5.15102C5.75609 5.08178 5.22018 5.22429 4.79616 5.5472C4.47814 5.78938 4.24339 6.1929 3.7739 6.99993C3.30441 7.80697 3.06967 8.21048 3.01735 8.60491C2.94758 9.1308 3.09118 9.66266 3.41655 10.0835C3.56506 10.2756 3.77377 10.437 4.0977 10.639C4.57391 10.936 4.88032 11.4419 4.88029 12C4.88026 12.5581 4.57386 13.0639 4.0977 13.3608C3.77372 13.5629 3.56497 13.7244 3.41645 13.9165C3.09108 14.3373 2.94749 14.8691 3.01725 15.395C3.06957 15.7894 3.30432 16.193 3.7738 17C4.24329 17.807 4.47804 18.2106 4.79606 18.4527C5.22008 18.7756 5.75599 18.9181 6.28589 18.8489C6.52778 18.8173 6.77305 18.7186 7.11133 18.5412C7.60852 18.2804 8.2031 18.27 8.69012 18.549C9.17714 18.8281 9.46533 19.3443 9.48635 19.9021C9.50065 20.2815 9.53719 20.5417 9.63056 20.7654C9.83509 21.2554 10.2274 21.6448 10.7212 21.8478C11.0915 22 11.561 22 12.5 22C13.439 22 13.9085 22 14.2788 21.8478C14.7726 21.6448 15.1649 21.2554 15.3694 20.7654C15.4628 20.5417 15.4994 20.2815 15.5137 19.902C15.5347 19.3443 15.8228 18.8281 16.3098 18.549C16.7968 18.2699 17.3914 18.2804 17.8886 18.5412C18.2269 18.7186 18.4721 18.8172 18.714 18.8488C19.2439 18.9181 19.7798 18.7756 20.2038 18.4527C20.5219 18.2105 20.7566 17.807 21.2261 16.9999C21.6956 16.1929 21.9303 15.7894 21.9827 15.395C22.0524 14.8691 21.9088 14.3372 21.5835 13.9164C21.4349 13.7243 21.2262 13.5628 20.9022 13.3608C20.4261 13.0639 20.1197 12.558 20.1197 11.9999C20.1197 11.4418 20.4261 10.9361 20.9022 10.6392C21.2263 10.4371 21.435 10.2757 21.5836 10.0835C21.9089 9.66273 22.0525 9.13087 21.9828 8.60497C21.9304 8.21055 21.6957 7.80703 21.2262 7C20.7567 6.19297 20.522 5.78945 20.2039 5.54727C19.7799 5.22436 19.244 5.08185 18.7141 5.15109C18.4722 5.18269 18.2269 5.28136 17.8887 5.4588C17.3915 5.71959 16.7969 5.73002 16.3099 5.45096C15.8229 5.17191 15.5347 4.65566 15.5136 4.09794C15.4993 3.71848 15.4628 3.45833 15.3694 3.23463C15.1649 2.74458 14.7726 2.35523 14.2788 2.15224ZM12.5 15C14.1695 15 15.5228 13.6569 15.5228 12C15.5228 10.3431 14.1695 9 12.5 9C10.8305 9 9.47716 10.3431 9.47716 12C9.47716 13.6569 10.8305 15 12.5 15Z"></path>
-                    </svg>
+                    <svg class="icon" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M14.2788 2.15224C13.9085 2 13.439 2 12.5 2C11.561 2 11.0915 2 10.7212 2.15224C10.2274 2.35523 9.83509 2.74458 9.63056 3.23463C9.53719 3.45834 9.50065 3.7185 9.48635 4.09799C9.46534 4.65568 9.17716 5.17189 8.69017 5.45093C8.20318 5.72996 7.60864 5.71954 7.11149 5.45876C6.77318 5.2813 6.52789 5.18262 6.28599 5.15102C5.75609 5.08178 5.22018 5.22429 4.79616 5.5472C4.47814 5.78938 4.24339 6.1929 3.7739 6.99993C3.30441 7.80697 3.06967 8.21048 3.01735 8.60491C2.94758 9.1308 3.09118 9.66266 3.41655 10.0835C3.56506 10.2756 3.77377 10.437 4.0977 10.639C4.57391 10.936 4.88032 11.4419 4.88029 12C4.88026 12.5581 4.57386 13.0639 4.0977 13.3608C3.77372 13.5629 3.56497 13.7244 3.41645 13.9165C3.09108 14.3373 2.94749 14.8691 3.01725 15.395C3.06957 15.7894 3.30432 16.193 3.7738 17C4.24329 17.807 4.47804 18.2106 4.79606 18.4527C5.22008 18.7756 5.75599 18.9181 6.28589 18.8489C6.52778 18.8173 6.77305 18.7186 7.11133 18.5412C7.60852 18.2804 8.2031 18.27 8.69012 18.549C9.17714 18.8281 9.46533 19.3443 9.48635 19.9021C9.50065 20.2815 9.53719 20.5417 9.63056 20.7654C9.83509 21.2554 10.2274 21.6448 10.7212 21.8478C11.0915 22 11.561 22 12.5 22C13.439 22 13.9085 22 14.2788 21.8478C14.7726 21.6448 15.1649 21.2554 15.3694 20.7654C15.4628 20.5417 15.4994 20.2815 15.5137 19.902C15.5347 19.3443 15.8228 18.8281 16.3098 18.549C16.7968 18.2699 17.3914 18.2804 17.8886 18.5412C18.2269 18.7186 18.4721 18.8172 18.714 18.8488C19.2439 18.9181 19.7798 18.7756 20.2038 18.4527C20.5219 18.2105 20.7566 17.807 21.2261 16.9999C21.6956 16.1929 21.9303 15.7894 21.9827 15.395C22.0524 14.8691 21.9088 14.3372 21.5835 13.9164C21.4349 13.7243 21.2262 13.5628 20.9022 13.3608C20.4261 13.0639 20.1197 12.558 20.1197 11.9999C20.1197 11.4418 20.4261 10.9361 20.9022 10.6392C21.2263 10.4371 21.435 10.2757 21.5836 10.0835C21.9089 9.66273 22.0525 9.13087 21.9828 8.60497C21.9304 8.21055 21.6957 7.80703 21.2262 7C20.7567 6.19297 20.522 5.78945 20.2039 5.54727C19.7799 5.22436 19.244 5.08185 18.7141 5.15109C18.4722 5.18269 18.2269 5.28136 17.8887 5.4588C17.3915 5.71959 16.7969 5.73002 16.3099 5.45096C15.8229 5.17191 15.5347 4.65566 15.5136 4.09794C15.4993 3.71848 15.4628 3.45833 15.3694 3.23463C15.1649 2.74458 14.7726 2.35523 14.2788 2.15224ZM12.5 15C14.1695 15 15.5228 13.6569 15.5228 12C15.5228 10.3431 14.1695 9 12.5 9C10.8305 9 9.47716 10.3431 9.47716 12C9.47716 13.6569 10.8305 15 12.5 15Z"/></svg>
                 </div>
             </div>
         </div>
-        <div class="circle-inner" id="tap-zone">
-    <img class="character" src="..." alt="Main Character">
-</div>
-        <!-- Zone de jeu principale -->
         <div class="main-game">
             <div class="game-content">
-                <!-- Cartes quotidiennes -->
                 <div class="daily-cards">
-                    <div class="daily-card">
+                    <div class="daily-card" id="daily-reward">
                         <div class="dot"></div>
                         <img class="daily-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAxOGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6bTEtMTNoMnY2aDZ2MkgxM3oiLz48L3N2Zz4=" alt="Daily Reward">
                         <p class="daily-label">Daily reward</p>
                         <p class="daily-timer">00:12</p>
                     </div>
-                    <div class="daily-card">
+                    <div class="daily-card" id="daily-cipher">
                         <div class="dot"></div>
                         <img class="daily-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMTkgM2gtM1YxaC0ydjJIOFYxSDZ2MkgzYy0xLjEgMC0yIC45LTIgMnYxNGMwIDEuMS45IDIgMiAyaDE4YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bTAgMTZIM1Y4aDE4djExek0xMyAxMGgtMnY3aDJ2LTd6Ii8+PC9zdmc+" alt="Daily Cipher">
                         <p class="daily-label">Daily cipher</p>
                         <p class="daily-timer">05:37</p>
                     </div>
-                    <div class="daily-card">
+                    <div class="daily-card" id="daily-combo">
                         <div class="dot"></div>
                         <img class="daily-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMTkgMTloLTJ2LTRoMnY0em0tNyAwSDl2LTRoM3Y0em0tNyAwaC0ydi00aDJ2NHptMTQtM3YtMWMwLS41LS41LTEgMS0xaDJ2LTFoLTNjLS41IDAtMS0uNS0xLTF2LTNjMC0uNS41LTEgMS0xaDN2LTFoLTNjLS41IDAtMS0uNS0xLTF2LTNjMC0uNS41LTEgMS0xaDN2LTFIMXYzaDJjLjUgMCAxIC41IDEgMXYzYzAgLjUtLjUgMS0xIDFIMXYzaDJjLjUgMCAxIC41IDEgMXYzYzAgLjUtLjUgMS0xIDFIMXYzaDIydi0xaC0yYy0uNSAwLTEtLjUtMS0xem0tMTQgMHYtM2gzdi4xN0g1djIuODN6bTAtNXYtM2gzdjNINXptNyA1di0zaDN2M2gtM3ptMC01di0zaDN2M2gtM3oiLz48L3N2Zz4=" alt="Daily Combo">
                         <p class="daily-label">Daily combo</p>
                         <p class="daily-timer">12:45</p>
                     </div>
                 </div>
-                
-                <!-- Affichage des points -->
                 <div class="points-display">
                     <div class="points-container">
                         <img class="points-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAxOGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6bTEtMTNoMnY2aDZ2MkgxM3oiLz48L3N2Zz4=" alt="Coins">
                         <p class="points-value">22,749,365</p>
                     </div>
                 </div>
-                
-                <!-- Cercle central -->
                 <div class="circle-container">
-                    <div class="circle-outer">
+                    <div class="circle-outer" id="tap-zone">
                         <div class="circle-inner">
                             <img class="character" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZyBmaWxsPSJjdXJyZW50Q29sb3IiPjxnPjxwYXRoIGQ9Ik0wLDEzNS40MzRjMCwyNy43ODYsMTMuNjM3LDU0LjczNywzNy42MDUsNzEuMDI4YzE4LjYxMS01My40NzYsNTEuNTMyLTEwNi4wOTgsOTUuNjkzLTE0Mi43MDEgQzc2LjUzNSwyNi4yNDUsMCw2Ni45NjgsMCwxMzUuNDM0eiI+PC9wYXRoPjwvZz48Zz48Zz48cGF0aCBkPSJNMzc4LjcwMiw2My43NTljNDMuMzg1LDM1Ljk2NSw3Ni42OTEsODguMTAzLDk1LjY5MiwxNDIuNzAyQzQ5OC4zMjEsMTkwLjE5OSw1MTIsMTYzLjI2Nyw1MTIsMTM1LjQzNCBDNTEyLDY2Ljk2MSw0MzUuNDU3LDI2LjI1MSwzNzguNzAyLDYzLjc1OXoiPjwvcGF0aD48L2c+PC9nPjxnPjxnPjxwYXRoIGQ9Ik0yNTYuMDAzLDQ5LjU5N2MtMC4wMTIsMC0wLjAzMSwwLTAuMDQ0LDBDMTQxLjkzOSw0OS42MzQsNTMuNjg0LDE5My40MDQsNTMuNjg0LDMwMi44NTYgYzAsMTExLjYyMiw4OS4yMzcsMTU5LjY2NywyMDIuMzE2LDE1OS42NjdjMTEzLjAxOCwwLDIwMi4zMTYtNDguMDYzLDIwMi4zMTYtMTU5LjY2NyBDNDU4LjMxNiwxOTMuNDE3LDM3MC4wNjQsNDkuNTk3LDI1Ni4wMDMsNDkuNTk3eiBNMzM1LjUwNSwxNjIuMjg5YzEyLjE5OCwwLDIyLjA4Niw5Ljg4OCwyMi4wODYsMjIuMDg2IHMtOS44ODgsMjIuMDg2LTIyLjA4NiwyMi4wODZzLTIyLjA4Ni05Ljg4OC0yMi4wODYtMjIuMDg2UzMyMy4zMDcsMTYyLjI4OSwzMzUuNTA1LDE2Mi4yODl6IE0xNzYuNDk1LDE2Mi4yODkgYzEyLjE5OCwwLDIyLjA4Niw5Ljg4OCwyMi4wODYsMjIuMDg2cy05Ljg4OCwyMi4wODYtMjIuMDg2LDIyLjA4NmMtMTIuMTk4LDAtMjIuMDg2LTkuODg4LTIyLjA4Ni0yMi4wODYgUzE2NC4yOTcsMTYyLjI4OSwxNzYuNDk1LDE2Mi4yODl6IE0zNDYuODM3LDM1Ny40NjhjLTExLjY4NSw4LjMxMi0yNS41NTEsMTIuNjItMzkuNTIyLDEyLjYyM3YzMC4xNDkgYzAsOS4yMi03LjQ3NSwxNi42OTYtMTYuNjk2LDE2LjY5NkgyMjEuMzhjLTkuMjIsMC0xNi42OTYtNy40NzUtMTYuNjk2LTE2LjY5NnYtMzAuMTQ4Yy0xMy45NjgtMC4wMDItMjcuODI4LTQuMzA2LTM5LjUwOC0xMi42MTUgYy0xOC4xOTktMTIuOTQ4LTI4LjYzOC0zMy4xNjQtMjguNjM4LTU1LjQ2NWMwLTkuMjIsNy40NzUtMTYuNjk2LDE2LjY5NiwxNi42OTZzMTYuNjk2LDcuNDc1LDE2LjY5NiwxNi42OTYgYzAsMTEuMzU1LDUuMzIzLDIxLjY1NCwxNC42MDMsMjguMjU3YzIzLjE0NSwxNi40NjcsNTQuNzcxLTAuMzM2LDU0Ljc3MS0yOC4yNTdjMC0xLjE5OCwwLjEzMS0yLjM2NCwwLjM3Mi0zLjQ4OWwtMzMuNTI4LTM4LjcxNSBjLTkuMzMtMTAuNzc0LTEuNjc4LTI3LjYyNiwxMi42MjEtMjcuNjI2aDc0LjQ2NGMxNC4yNTMsMCwyMS45ODEsMTYuODE2LDEyLjYyMSwyNy42MjVsLTMzLjUyOCwzOC43MTUgYzAuMjM5LDEuMTI2LDAuMzcyLDIuMjkzLDAuMzcyLDMuNDkxYzAsMjcuODA5LDMxLjUzOSw0NC43ODMsNTQuNzg0LDI4LjI0OWM5LjI3Mi02LjU5NywxNC41ODktMTYuODkzLDE0LjU4OS0yOC4yNDkgYzAtOS4yMiw3LjQ3NS0xNi42OTYsMTYuNjk2LTE2LjY5NmM5LjIyLDAsMTYuNjk2LDcuNDc1LDE2LjY5NiwxNi42OTZDMzc1LjQ2LDMyNC4zMTQsMzY1LjAyNywzNDQuNTI3LDM0Ni44MzcsMzU3LjQ2OHoiPjwvcGF0aD48L2c+PC9nPjwvZz48L3N2Zz4=" alt="Main Character">
                         </div>
@@ -446,271 +127,152 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Navigation -->
         <div class="navigation">
             <div class="nav-item active">
                 <img class="nav-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMTkgM2gtM1YxaC0ydjJIOFYxSDZ2MkgzYy0xLjEgMC0yIC45LTIgMnYxNGMwIDEuMS45IDIgMiAyaDE4YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bTAgMTZIM1Y4aDE4djExek0xMyAxMGgtMnY3aDJ2LTd6Ii8+PC9zdmc+" alt="Exchange">
                 <p>Exchange</p>
             </div>
             <div class="nav-item">
-                <svg class="nav-icon" viewBox="0 0 32 32">
-                    <path d="M11.707,17.707c-0.195-0.195-0.451-0.293-0.707-0.293s-0.512,0.098-0.707,0.293l-6.586,6.586 C3.512,24.488,3.256,24.586,3,24.586s-0.512-0.098-0.707-0.293l-0.637-0.637c-0.973-0.973-1.159-2.484-0.451-3.665L6,12L3,9 L2.391,7.173c-0.24-0.719-0.052-1.511,0.483-2.047l2.252-2.252C5.507,2.493,6.018,2.288,6.54,2.288c0.212,0,0.425,0.034,0.632,0.103 L9,3l3,3l7.991-4.795c0.479-0.287,1.013-0.428,1.542-0.428c0.776,0,1.544,0.3,2.122,0.879l0.637,0.637 c0.391,0.391,0.391,1.024,0,1.414l-6.586,6.586c-0.391,0.391-0.391,1.024,0,1.414l0.586,0.586c0.383,0.383,0.385,0.997,0.017,1.389 l-4.628,4.628C13.49,18.49,13.246,18.586,13,18.586c-0.256,0-0.512-0.098-0.707-0.293L11.707,17.707z M30.586,26.586L18.707,14.707 l-4,4l11.879,11.879c0.391,0.391,0.902,0.586,1.414,0.586s1.024-0.195,1.414-0.586l1.172-1.172 C31.367,28.633,31.367,27.367,30.586,26.586z"></path>
-                </svg>
+                <svg class="nav-icon" viewBox="0 0 32 32"><path d="M11.707,17.707c-0.195-0.195-0.451-0.293-0.707-0.293s-0.512,0.098-0.707,0.293l-6.586,6.586C3.512,24.488,3.256,24.586,3,24.586s-0.512-0.098-0.707-0.293l-0.637-0.637c-0.973-0.973-1.159-2.484-0.451-3.665L6,12L3,9L2.391,7.173c-0.24-0.719-0.052-1.511,0.483-2.047l2.252-2.252C5.507,2.493,6.018,2.288,6.54,2.288c0.212,0,0.425,0.034,0.632,0.103L9,3l3,3l7.991-4.795c0.479-0.287,1.013-0.428,1.542-0.428c0.776,0,1.544,0.3,2.122,0.879l0.637,0.637c0.391,0.391,0.391,1.024,0,1.414l-6.586,6.586c-0.391,0.391-0.391,1.024,0,1.414l0.586,0.586c0.383,0.383,0.385,0.997,0.017,1.389l-4.628,4.628C13.49,18.49,13.246,18.586,13,18.586c-0.256,0-0.512-0.098-0.707-0.293L11.707,17.707z M30.586,26.586L18.707,14.707l-4,4l11.879,11.879c0.391,0.391,0.902,0.586,1.414,0.586s1.024-0.195,1.414-0.586l1.172-1.172C31.367,28.633,31.367,27.367,30.586,26.586z"/></svg>
                 <p>Mine</p>
             </div>
             <div class="nav-item">
-                <svg class="nav-icon" viewBox="0 0 28 28">
-                    <path d="M17.75,18 C18.7164983,18 19.5,18.7835017 19.5,19.75 L19.5,21.7519766 L19.4921156,21.8604403 C19.1813607,23.9866441 17.2715225,25.0090369 14.0667905,25.0090369 C10.8736123,25.0090369 8.93330141,23.9983408 8.51446278,21.8965776 L8.5,21.75 L8.5,19.75 C8.5,18.7835017 9.28350169,18 10.25,18 L17.75,18 Z M18.2439108,11.9999135 L24.25,12 C25.2164983,12 26,12.7835017 26,13.75 L26,15.7519766 L25.9921156,15.8604403 C25.6813607,17.9866441 23.7715225,19.0090369 20.5667905,19.0090369 L20.3985759,19.007437 C20.0900029,17.9045277 19.1110503,17.0815935 17.9288034,17.0057197 L17.75,17 L16.8277704,17.0007255 C17.8477843,16.1757619 18.5,14.9140475 18.5,13.5 C18.5,12.9740145 18.4097576,12.4691063 18.2439108,11.9999135 Z M3.75,12 L9.75608915,11.9999135 C9.59024243,12.4691063 9.5,12.9740145 9.5,13.5 C9.5,14.8308682 10.0777413,16.0267978 10.996103,16.8506678 L11.1722296,17.0007255 L10.25,17 C8.9877951,17 7.92420242,17.85036 7.60086562,19.0094363 L7.5667905,19.0090369 C4.37361228,19.0090369 2.43330141,17.9983408 2.01446278,15.8965776 L2,15.75 L2,13.75 C2,12.7835017 2.78350169,12 3.75,12 Z M14,10 C15.9329966,10 17.5,11.5670034 17.5,13.5 C17.5,15.4329966 15.9329966,17 14,17 C12.0670034,17 10.5,15.4329966 10.5,13.5 C10.5,11.5670034 12.0670034,10 14,10 Z M20.5,4 C22.4329966,4 24,5.56700338 24,7.5 C24,9.43299662 22.4329966,11 20.5,11 C18.5670034,11 17,9.43299662 17,7.5 C17,5.56700338 18.5670034,4 20.5,4 Z M7.5,4 C9.43299662,4 11,5.56700338 11,7.5 C11,9.43299662 9.43299662,11 7.5,11 C5.56700338,11 4,9.43299662 4,7.5 C4,5.56700338 5.56700338,4 7.5,4 Z"></path>
-                </svg>
+                <svg class="nav-icon" viewBox="0 0 28 28"><path d="M17.75,18 C18.7164983,18 19.5,18.7835017 19.5,19.75 L19.5,21.7519766 L19.4921156,21.8604403 C19.1813607,23.9866441 17.2715225,25.0090369 14.0667905,25.0090369 C10.8736123,25.0090369 8.93330141,23.9983408 8.51446278,21.8965776 L8.5,21.75 L8.5,19.75 C8.5,18.7835017 9.28350169,18 10.25,18 L17.75,18 Z M18.2439108,11.9999135 L24.25,12 C25.2164983,12 26,12.7835017 26,13.75 L26,15.7519766 L25.9921156,15.8604403 C25.6813607,17.9866441 23.7715225,19.0090369 20.5667905,19.0090369 L20.3985759,19.007437 C20.0900029,17.9045277 19.1110503,17.0815935 17.9288034,17.0057197 L17.75,17 L16.8277704,17.0007255 C17.8477843,16.1757619 18.5,14.9140475 18.5,13.5 C18.5,12.9740145 18.4097576,12.4691063 18.2439108,11.9999135 Z M3.75,12 L9.75608915,11.9999135 C9.59024243,12.4691063 9.5,12.9740145 9.5,13.5 C9.5,14.8308682 10.0777413,16.0267978 10.996103,16.8506678 L11.1722296,17.0007255 L10.25,17 C8.9877951,17 7.92420242,17.85036 7.60086562,19.0094363 L7.5667905,19.0090369 C4.37361228,19.0090369 2.43330141,17.9983408 2.01446278,15.8965776 L2,15.75 L2,13.75 C2,12.7835017 2.78350169,12 3.75,12 Z M14,10 C15.9329966,10 17.5,11.5670034 17.5,13.5 C17.5,15.4329966 15.9329966,17 14,17 C12.0670034,17 10.5,15.4329966 10.5,13.5 C10.5,11.5670034 12.0670034,10 14,10 Z M20.5,4 C22.4329966,4 24,5.56700338 24,7.5 C24,9.43299662 22.4329966,11 20.5,11 C18.5670034,11 17,9.43299662 17,7.5 C17,5.56700338 18.5670034,4 20.5,4 Z M7.5,4 C9.43299662,4 11,5.56700338 11,7.5 C11,9.43299662 9.43299662,11 7.5,11 C5.56700338,11 4,9.43299662 4,7.5 C4,5.56700338 5.56700338,4 7.5,4 Z"/></svg>
                 <p>Friends</p>
             </div>
             <div class="nav-item">
-                <svg class="nav-icon" viewBox="0 0 512 512">
-                    <path d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"></path>
-                </svg>
+                <svg class="nav-icon" viewBox="0 0 512 512"><path d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"/></svg>
                 <p>Earn</p>
             </div>
             <div class="nav-item">
-                <img class="nav-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZyBmaWxsPSJjdXJyZW50Q29sb3IiPjxnPjxwYXRoIGQ9Ik0wLDEzNS40MzRjMCwyNy43ODYsMTMuNjM3LDU0LjczNywzNy42MDUsNzEuMDI4YzE4LjYxMS01My40NzYsNTEuNTMyLTEwNi4wOTgsOTUuNjkzLTE0Mi43MDEgQzc2LjUzNSwyNi4yNDUsMCw2Ni45NjgsMCwxMzUuNDM0eiI+PC9wYXRoPjwvZz48Zz48Zz48cGF0aCBkPSJNMzc4LjcwMiw2My43NTljNDMuMzg1LDM1Ljk2NSw3Ni42OTEsODguMTAzLDk1LjY5MiwxNDIuNzAyQzQ5OC4zMjEsMTkwLjE5OSw1MTIsMTYzLjI2Nyw1MTIsMTM1LjQzNCBDNTEyLDY2Ljk2MSw0MzUuNDU3LDI2LjI1MSwzNzguNzAyLDYzLjc1OXoiPjwvcGF0aD48L2c+PC9nPjxnPjxnPjxwYXRoIGQ9Ik0yNTYuMDAzLDQ5LjU5N2MtMC4wMTIsMC0wLjAzMSwwLTAuMDQ0LDBDMTQxLjkzOSw0OS42MzQsNTMuNjg0LDE5My40MDQsNTMuNjg0LDMwMi44NTYgYzAsMTExLjYyMiw4OS4yMzcsMTU5LjY2NywyMDIuMzE2LDE1OS42NjdjMTEzLjAxOCwwLDIwMi4zMTYtNDguMDYzLDIwMi4zMTYtMTU5LjY2NyBDNDU4LjMxNiwxOTMuNDE3LDM3MC4wNjQsNDkuNTk3LDI1Ni4wMDMsNDkuNTk3eiBNMzM1LjUwNSwxNjIuMjg5YzEyLjE5OCwwLDIyLjA4Niw5Ljg4OCwyMi4wODYsMjIuMDg2IHMtOS44ODgsMjIuMDg2LTIyLjA4NiwyMi4wODZzLTIyLjA4Ni05Ljg4OC0yMi4wODYtMjIuMDg2UzMyMy4zMDcsMTYyLjI4OSwzMzUuNTA1LDE2Mi4yODl6IE0xNzYuNDk1LDE2Mi4yODkgYzEyLjE5OCwwLDIyLjA4Niw5Ljg4OCwyMi4wODYsMjIuMDg2cy05Ljg4OCwyMi4wODYtMjIuMDg2LDIyLjA4NmMtMTIuMTk4LDAtMjIuMDg2LTkuODg4LTIyLjA4Ni0yMi4wODYgUzE2NC4yOTcsMTYyLjI4OSwxNzYuNDk1LDE2Mi4yODl6IE0zNDYuODM3LDM1Ny40NjhjLTExLjY4NSw4LjMxMi0yNS41NTEsMTIuNjItMzkuNTIyLDEyLjYyM3YzMC4xNDkgYzAsOS4yMi03LjQ3NSwxNi42OTYtMTYuNjk2LDE2LjY5NkgyMjEuMzhjLTkuMjIsMC0xNi42OTYtNy40NzUtMTYuNjk2LTE2LjY5NnYtMzAuMTQ4Yy0xMy45NjgtMC4wMDItMjcuODI4LTQuMzA2LTM5LjUwOC0xMi42MTUgYy0xOC4xOTktMTIuOTQ4LTI4LjYzOC0zMy4xNjQtMjguNjM4LTU1LjQ2NWMwLTkuMjIsNy40NzUtMTYuNjk2LDE2LjY5NiwxNi42OTZzMTYuNjk2LDcuNDc1LDE2LjY5NiwxNi42OTYgYzAsMTEuMzU1LDUuMzIzLDIxLjY1NCwxNC42MDMsMjguMjU3YzIzLjE0NSwxNi40NjcsNTQuNzcxLTAuMzM2LDU0Ljc3MS0yOC4yNTdjMC0xLjE5OCwwLjEzMS0yLjM2NCwwLjM3Mi0zLjQ4OWwtMzMuNTI4LTM4LjcxNSBjLTkuMzMtMTAuNzc0LTEuNjc4LTI3LjYyNiwxMi42MjEtMjcuNjI2aDc0LjQ2NGMxNC4yNTMsMCwyMS45ODEsMTYuODE2LDEyLjYyMSwyNy42MjVsLTMzLjUyOCwzOC43MTUgYzAuMjM5LDEuMTI2LDAuMzcyLDIuMjkzLDAuMzcyLDMuNDkxYzAsMjcuODA5LDMxLjUzOSw0NC43ODMsNTQuNzg0LDI4LjI0OWM5LjI3Mi02LjU5NywxNC41ODktMTYuODkzLDE0LjU4OS0yOC4yNDkgYzAtOS4yMiw3LjQ3NS0xNi42OTYsMTYuNjk2LTE2LjY5NmM5LjIyLDAsMTYuNjk2LDcuNDc1LDE2LjY5NiwxNi42OTZDMzc1LjQ2LDMyNC4zMTQsMzY1LjAyNywzNDQuNTI3LDM0Ni44MzcsMzU3LjQ2OHoiPjwvcGF0aD48L2c+PC9nPjwvZz48L3N2Zz4=" alt="Airdrop">
+                <img class="nav-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZyBmaWxsPSJjdXJyZW50Q29sb3IiPjxnPjxwYXRoIGQ9Ik0wLDEzNS40MzRjMCwyNy43ODYsMTMuNjM3LDU0LjczNywzNy42MDUsNzEuMDI4YzE4LjYxMS01My40NzYsNTEuNTMyLTEwNi4wOTgsOTUuNjkzLTE0Mi43MDEgQzc2LjUzNSwyNi4yNDUsMCw2Ni45NjgsMCwxMzUuNDM0eiI+PC9wYXRoPjwvZz48Zz48Zz48cGF0aCBkPSJNMzc4LjcwMiw2My43NTljNDMuMzg1LDM1Ljk2NSw3Ni42OTEsODguMTAzLDk1LjY5MiwxNDIuNzAyQzQ5OC4zMjEsMTkwLjE5OSw1MTIsMTYzLjI2Nyw1MTIsMTM1LjQzNCBDNTEyLDY2Ljk2MSw0MzUuNDU3LDI2LjI1MSwzNzguNzAyLDYzLjc1OXoiPjwvcGF0aD48L2c+PC9nPjxnPjxnPjxwYXRoIGQ9Ik0yNTYuMDAzLDQ5LjU5N2MtMC4wMTIsMC0wLjAzMSwwLTAuMDQ0LDBDMTQxLjkzOSw0OS42MzQsNTMuNjg0LDE5My40MDQsNTMuNjg0LDMwMi44NTYgYzAsMTExLjYyMiw4OS4yMzcsMTU5LjY2NywyMDIuMzE2LDE1OS42NjdjMTEzLjAxOCwwLDIwMi4zMTYtNDguMDYzLDIwMi4zMTYtMTU5LjY2NyBDNDU4LjMxNiwxOTMuNDE3LDM3MC4wNjQsNDkuNTk3LDI1Ni4wMDMsNDkuNTk3eiBNMzM1LjUwNSwxNjIuMjg5YzEyLjE5OCwwLDIyLjA4Niw5Ljg4OCwyMi4wODYsMjIuMDg2IHMtOS44ODgsMjIuMDg2LTIyLjA4NiwyMi4wODZzLTIyLjA4Ni05Ljg4OC0yMi4wODYtMjIuMDg2UzMyMy4zMDcsMTY2LjY5NiwxNC42MDMsMjguMjU3YzIzLjE0NSwxNi40NjcsNTQuNzcxLTAuMzM2LDU0Ljc3MS0yOC4yNTdjMC0xLjE5OCwwLjEzMS0yLjM2NCwwLjM3Mi0zLjQ4OWwtMzMuNTI4LTM4LjcxNSBjLTkuMzMtMTAuNzc0LTEuNjc4LTI3LjYyNiwxMi42MjEtMjcuNjI2aDc0LjQ2NGMxNC4yNTMsMCwyMS45ODEsMTYuODE2LDEyLjYyMSwyNy42MjVsLTMzLjUyOCwzOC43MTUgYzAuMjM5LDEuMTI2LDAuMzcyLDIuMjkzLDAuMzcyLDMuNDkxYzAsMjcuODA5LDMxLjUzOSw0NC43ODMsNTQuNzg0LDI4LjI0OWM5LjI3Mi02LjU5NywxNC41ODktMTYuODkzLDE0LjU4OS0yOC4yNDkgYzAtOS4yMiw3LjQ3NS0xNi42OTYsMTYuNjk2LTE2LjY5NmM5LjIyLDAsMTYuNjk2LDcuNDc1LDE2LjY5NiwxNi42OTZDMzc1LjQ2LDMyNC4zMTQsMzY1LjAyNywzNDQuNTI3LDM0Ni44MzcsMzU3LjQ2OHoiPjwvcGF0aD48L2c+PC9nPjwvZz48L3N2Zz4=" alt="Airdrop">
                 <p>Airdrop</p>
             </div>
         </div>
     </div>
-<script>
-const defaultState = {
-    firstLaunch: true,
-    points: 0,
-    dailyTimers: [3600, 7200, 14400],
-    cards: [],
-};
-
-let state = JSON.parse(localStorage.getItem('aetherGame'));
-
-if (!state) {
-    state = defaultState;
-    saveState();
-}
-
-if (state.firstLaunch) {
-    alert("Bienvenue dans AetherSwap 👾 ! Vous commencez avec 0 point.");
-    state.firstLaunch = false;
-    saveState();
-}
-
-function saveState() {
-    localStorage.setItem('aetherGame', JSON.stringify(state));
-}
-
-function updateUI() {
-    const pointsDisplay = document.querySelector('.points-value');
-    if (pointsDisplay) {
-        pointsDisplay.textContent = state.points.toLocaleString('fr-FR');
-    }
-}
-
-// 🔥 Gagne des points à chaque clic
-document.getElementById("tap-zone").addEventListener("click", () => {
-    const pointsPerClick = 1; // Tu peux augmenter ce nombre plus tard
-    state.points += pointsPerClick;
-    updateUI();
-    saveState();
-    triggerClickAnimation(); // 👇 (optionnel mais cool)
-});
-
-// (optionnel) Petite animation à chaque clic
-function triggerClickAnimation() {
-    const tapZone = document.getElementById("tap-zone");
-    const anim = document.createElement("div");
-    anim.className = "click-animation";
-    anim.textContent = "+1";
-    anim.style.top = `${Math.random() * 80 + 10}%`;
-    anim.style.left = `${Math.random() * 80 + 10}%`;
-    tapZone.appendChild(anim);
-    setTimeout(() => anim.remove(), 1000);
-}
-
-// Initialise
-updateUI();
-</script>
+    <button class="reset-btn">🔁 Reset</button>
     <script>
-        // Logique du jeu
-        document.addEventListener('DOMContentLoaded', () => {
-            const levelNames = [
-                "Bronze", "Silver", "Gold", "Platinum", "Diamond",
-                "Epic", "Legendary", "Master", "GrandMaster", "Lord"
-            ];
-            
-            const levelMinPoints = [
-                0, 5000, 25000, 100000, 1000000,
-                2000000, 10000000, 50000000, 100000000, 1000000000
-            ];
-            
-            // Éléments DOM
-            const levelNameEl = document.querySelector('.level-name');
-            const levelCountEl = document.querySelector('.level-count');
-            const progressEl = document.querySelector('.progress-gradient');
-            const pointsEl = document.querySelector('.points-value');
-            const circleEl = document.querySelector('.circle-outer');
-            const dailyTimers = document.querySelectorAll('.daily-timer');
-            
-            // État du jeu
-            let levelIndex = 6;
-            let points = 22749365;
-            const pointsToAdd = 11;
-            const profitPerHour = 126420;
-            let clicks = [];
-            
-            // Mise à jour de l'interface
-            function updateUI() {
-                levelNameEl.textContent = levelNames[levelIndex];
-                levelCountEl.innerHTML = `${levelIndex + 1} <span class="text-muted">/ ${levelNames.length}</span>`;
-                
-                // Calcul de la progression
-                let progress;
-                if (levelIndex >= levelNames.length - 1) {
-                    progress = 100;
-                } else {
-                    const current
-    <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const levelData = [
-        { name: "Bronze", min: 0, click: 1, profit: 0 },
-        { name: "Silver", min: 5000, click: 2, profit: 50 },
-        { name: "Gold", min: 25000, click: 4, profit: 120 },
-        { name: "Platinum", min: 100000, click: 6, profit: 250 },
-        { name: "Diamond", min: 1000000, click: 8, profit: 600 },
-        { name: "Epic", min: 2000000, click: 10, profit: 1200 },
-        { name: "Legendary", min: 10000000, click: 15, profit: 3000 },
-        { name: "Master", min: 50000000, click: 20, profit: 6000 },
-        { name: "GrandMaster", min: 100000000, click: 25, profit: 10000 },
-        { name: "Lord", min: 1000000000, click: 30, profit: 20000 },
-    ];
-
-    const levelNameEl = document.querySelector('.level-name');
-    const levelCountEl = document.querySelector('.level-count');
-    const progressEl = document.querySelector('.progress-gradient');
-    const pointsEl = document.querySelector('.points-value');
-    const circleEl = document.querySelector('.circle-outer');
-    const dailyTimersEls = document.querySelectorAll('.daily-timer');
-    const navItems = document.querySelectorAll('.nav-item');
-
-    const defaultState = {
-        points: 0,
-        dailyTimers: [3600, 7200, 14400],
-        cards: [], // Future use
-    };
-
-    let state = JSON.parse(localStorage.getItem('aetherGame')) || defaultState;
-
-    function getLevel() {
-        let index = 0;
-        for (let i = levelData.length - 1; i >= 0; i--) {
-            if (state.points >= levelData[i].min) {
-                index = i;
-                break;
-            }
+        const levels = [
+            {name:"Bronze",min:0,click:1,profit:0},
+            {name:"Silver",min:5000,click:2,profit:50},
+            {name:"Gold",min:25000,click:4,profit:120},
+            {name:"Platinum",min:1e5,click:6,profit:250},
+            {name:"Diamond",min:1e6,click:8,profit:600},
+            {name:"Epic",min:2e6,click:10,profit:1200},
+            {name:"Legendary",min:1e7,click:15,profit:3000},
+            {name:"Master",min:5e7,click:20,profit:6000},
+            {name:"GrandMaster",min:1e8,click:25,profit:1e4},
+            {name:"Lord",min:1e9,click:30,profit:2e4}
+        ];
+        
+        let state = JSON.parse(localStorage.getItem('aetherGame')) || {points:0,dailyTimers:[3600,7200,14400],firstLaunch:true};
+        
+        if(state.firstLaunch){
+            alert("Bienvenue dans AetherSwap 👾 !");
+            state.firstLaunch = false;
+            save();
         }
-        return { ...levelData[index], index };
-    }
-
-    function updateUI() {
-        const lvl = getLevel();
-        const next = levelData[lvl.index + 1];
-        const progress = next
-            ? ((state.points - lvl.min) / (next.min - lvl.min)) * 100
-            : 100;
-
-        levelNameEl.textContent = lvl.name;
-        levelCountEl.innerHTML = `${lvl.index + 1} <span class="text-muted">/ ${levelData.length}</span>`;
-        progressEl.style.width = `${progress}%`;
-        pointsEl.textContent = Math.floor(state.points).toLocaleString();
-    }
-
-    function tickProfit() {
-        setInterval(() => {
-            const { profit } = getLevel();
-            state.points += profit / 3600;
-            updateUI();
-            save();
-        }, 1000);
-    }
-
-    function handleClicks() {
-        circleEl.addEventListener('click', (e) => {
-            const { click } = getLevel();
+        
+        const el = id => document.getElementById(id);
+        const qs = sel => document.querySelector(sel);
+        const qsa = sel => document.querySelectorAll(sel);
+        
+        const levelNameEl = qs('.level-name');
+        const levelCountEl = qs('.level-count');
+        const progressEl = qs('.progress-gradient');
+        const pointsEl = qs('.points-value');
+        const dailyTimers = qsa('.daily-timer');
+        const navItems = qsa('.nav-item');
+        const rewards = [1e3, 2500, 5e3];
+        
+        function getLevel(){
+            let idx = 0;
+            for(let i=levels.length-1;i>=0;i--) if(state.points>=levels[i].min){idx=i;break;}
+            return {...levels[idx],idx};
+        }
+        
+        function updateUI(){
+            const lvl = getLevel();
+            const next = levels[lvl.idx+1];
+            const progress = next ? ((state.points-lvl.min)/(next.min-lvl.min))*100 : 100;
+            
+            levelNameEl.textContent = lvl.name;
+            levelCountEl.innerHTML = `${lvl.idx+1} <span class="text-muted">/ ${levels.length}</span>`;
+            progressEl.style.width = `${progress}%`;
+            pointsEl.textContent = Math.floor(state.points).toLocaleString();
+        }
+        
+        function showClick(text,x,y){
+            const el = document.createElement('div');
+            el.className = 'click-animation';
+            el.textContent = text;
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+            document.body.appendChild(el);
+            setTimeout(()=>el.remove(),900);
+        }
+        
+        function save(){
+            localStorage.setItem('aetherGame',JSON.stringify(state));
+        }
+        
+        // Événements
+        el('tap-zone').addEventListener('click',e=>{
+            const {click} = getLevel();
             state.points += click;
-            showClickAnimation(`+${click}`, e.pageX, e.pageY);
+            showClick(`+${click}`,e.clientX,e.clientY);
             updateUI();
             save();
         });
-    }
-
-    function showClickAnimation(text, x, y) {
-        const el = document.createElement('div');
-        el.className = 'click-animation';
-        el.textContent = text;
-        el.style.left = `${x - 30}px`;
-        el.style.top = `${y - 40}px`;
-        document.body.appendChild(el);
-        setTimeout(() => el.remove(), 900);
-    }
-
-    function save() {
-        localStorage.setItem('aetherGame', JSON.stringify(state));
-    }
-
-    function tickDailyTimers() {
-        setInterval(() => {
-            state.dailyTimers = state.dailyTimers.map(t => Math.max(0, t - 1));
-            dailyTimersEls.forEach((el, i) => {
-                const t = state.dailyTimers[i];
-                const mins = String(Math.floor(t / 60)).padStart(2, '0');
-                const secs = String(t % 60).padStart(2, '0');
-                el.textContent = t > 0 ? `${mins}:${secs}` : 'Réclamer 🔓';
-            });
-            save();
-        }, 1000);
-    }
-
-    function setupNavigation() {
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                navItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                // Tu peux afficher/masquer des blocs de contenu ici
+        
+        qsa('.daily-card').forEach((card,i)=>{
+            card.addEventListener('click',()=>{
+                if(state.dailyTimers[i]===0){
+                    state.points += rewards[i];
+                    state.dailyTimers[i] = [3600,7200,14400][i];
+                    const rect = card.getBoundingClientRect();
+                    showClick(`+${rewards[i]}`,rect.left+rect.width/2,rect.top+rect.height/2);
+                    updateUI();
+                    save();
+                }
             });
         });
-    }
-
-    function addResetButton() {
-        const btn = document.createElement('button');
-        btn.textContent = '🔁 Reset Game';
-        btn.style.position = 'fixed';
-        btn.style.bottom = '70px';
-        btn.style.right = '20px';
-        btn.style.zIndex = '999';
-        btn.style.padding = '10px';
-        btn.style.background = '#f3ba2f';
-        btn.style.border = 'none';
-        btn.style.borderRadius = '8px';
-        btn.onclick = () => {
-            if (confirm("Remettre tout à zéro ?")) {
+        
+        navItems.forEach(item=>{
+            item.addEventListener('click',()=>{
+                navItems.forEach(i=>i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+        
+        qs('.reset-btn').addEventListener('click',()=>{
+            if(confirm("Remettre tout à zéro ?")){
                 localStorage.removeItem('aetherGame');
                 location.reload();
             }
-        };
-        document.body.appendChild(btn);
-    }
-
-    // Run
-    updateUI();
-    tickProfit();
-    handleClicks();
-    tickDailyTimers();
-    setupNavigation();
-    addResetButton();
-});
-</script>
+        });
+        
+        // Timers
+        setInterval(()=>{
+            const {profit} = getLevel();
+            state.points += profit/3600;
+            updateUI();
+            save();
+        },1000);
+        
+        setInterval(()=>{
+            state.dailyTimers = state.dailyTimers.map(t=>Math.max(0,t-1));
+            dailyTimers.forEach((el,i)=>{
+                const t = state.dailyTimers[i];
+                el.textContent = t>0 ? 
+                    `${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}` : 
+                    'Réclamer 🔓';
+            });
+            save();
+        },1000);
+        
+        // Init
+        updateUI();
+    </script>
 </body>
 </html>
