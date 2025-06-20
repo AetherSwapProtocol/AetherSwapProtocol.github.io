@@ -7,11 +7,20 @@
     <style>
         /* ========== GLOBAL STYLES ========== */
         :root {
-            --primary: #f3ba2f;
-            --secondary: #1d2025;
-            --dark: #0a0a1a;
-            --light: #ffffff;
-            --success: #90ef89;
+            /* Futuristic Neon Color Scheme */
+            --primary: #6EFFC5;          /* Neon Green (Main accent) */
+            --secondary: #1B1E2B;        /* Dark Blue (Secondary BG) */
+            --dark: #0F111A;             /* Deep Space Black (Main BG) */
+            --light: #FFFFFF;            /* Pure White (Text) */
+            --accent: #B46CFF;           /* Purple (Secondary accent) */
+            --success: #7AFC8D;          /* Mint Green (Success) */
+            
+            /* Glow Effects */
+            --glow-green: 0 0 12px rgba(110, 255, 197, 0.7);
+            --glow-purple: 0 0 12px rgba(180, 108, 255, 0.5);
+            
+            /* Gradients */
+            --gradient-main: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
         }
 
         * {
@@ -49,7 +58,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(180deg, rgba(10,10,26,0.8) 0%, rgba(10,10,26,0) 100%);
+            background: linear-gradient(180deg, rgba(15,17,26,0.8) 0%, rgba(15,17,26,0) 100%);
             z-index: 100;
         }
 
@@ -84,15 +93,20 @@
             color: var(--primary);
         }
 
-        /* ========== MAIN GAME AREA ========== */
-        .main-game {
+        /* ========== PAGE SYSTEM ========== */
+        .page {
+            display: none;
             flex: 1;
             position: relative;
-            background-color: var(--primary);
+            background: var(--secondary);
             border-top-left-radius: 30px;
             border-top-right-radius: 30px;
             margin-top: 10px;
-            box-shadow: 0 -10px 30px rgba(243, 186, 47, 0.3);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
         }
 
         .game-content {
@@ -127,11 +141,12 @@
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
+            border: 1px solid var(--dark);
         }
 
         .daily-card.unlocked {
-            background: linear-gradient(135deg, #272a2f 0%, #1d2025 100%);
-            box-shadow: 0 4px 15px rgba(243, 186, 47, 0.2);
+            background: linear-gradient(135deg, #272a2f 0%, var(--secondary) 100%);
+            box-shadow: var(--glow-purple);
         }
 
         .daily-card.locked {
@@ -182,6 +197,8 @@
             font-weight: 700;
             margin-bottom: 20px;
             text-align: center;
+            color: var(--primary);
+            text-shadow: var(--glow-green);
         }
 
         .tap-container {
@@ -205,8 +222,8 @@
         }
 
         .tap-outer {
-            background: linear-gradient(135deg, #575def 0%, #202731 100%);
-            box-shadow: 0 10px 30px rgba(87, 93, 239, 0.3);
+            background: var(--gradient-main);
+            box-shadow: var(--glow-green);
         }
 
         .tap-inner {
@@ -252,7 +269,7 @@
         .progress-fill {
             height: 100%;
             border-radius: 4px;
-            background: linear-gradient(90deg, #90ef89 0%, #d692dd 50%, #726edd 100%);
+            background: var(--gradient-main);
             transition: width 0.5s ease;
         }
 
@@ -262,7 +279,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: #272a2f;
+            background-color: var(--secondary);
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
@@ -271,6 +288,7 @@
             max-width: 600px;
             margin: 0 auto;
             z-index: 100;
+            border-top: 1px solid var(--dark);
         }
 
         .nav-item {
@@ -283,7 +301,7 @@
         }
 
         .nav-item.active {
-            background-color: #1c1f24;
+            background-color: rgba(110, 255, 197, 0.1);
         }
 
         .nav-icon {
@@ -308,6 +326,11 @@
             100% { transform: translateY(-50px); opacity: 0; }
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .click-effect {
             position: absolute;
             font-size: 24px;
@@ -318,40 +341,6 @@
             text-shadow: 0 0 5px var(--primary);
             z-index: 10;
         }
-
-        /* ========== NEW: PAGE SYSTEM ========== */
-        .page {
-            display: none;
-            flex: 1;
-            position: relative;
-            background-color: var(--primary);
-            border-top-left-radius: 30px;
-            border-top-right-radius: 30px;
-            margin-top: 10px;
-            box-shadow: 0 -10px 30px rgba(243, 186, 47, 0.3);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .page .game-content {
-            position: absolute;
-            top: 2px;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--secondary);
-            border-top-left-radius: 28px;
-            border-top-right-radius: 28px;
-            padding: 20px 15px;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
     </style>
 </head>
 <body>
@@ -361,7 +350,7 @@
             <div class="profile">
                 <div class="profile-icon">
                     <svg class="icon" viewBox="0 0 512 512" width="24" height="24">
-                        <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
+                        <path fill="var(--primary)" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
                     </svg>
                 </div>
                 <div class="profile-info">
@@ -374,7 +363,7 @@
             </div>
         </header>
 
-        <!-- NEW: Pages System -->
+        <!-- Pages System -->
         <div class="page active" id="page-exchange">
             <div class="game-content">
                 <!-- Daily Rewards -->
@@ -382,21 +371,21 @@
                     <div class="daily-card" id="daily-reward-1">
                         <div class="daily-badge"></div>
                         <svg class="daily-icon" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm1-13h-2v6h6v-2h-4z"/>
+                            <path fill="var(--primary)" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm1-13h-2v6h6v-2h-4z"/>
                         </svg>
                         <div class="daily-label">Daily Reward</div>
                         <div class="daily-timer" id="daily-timer-1">Ready</div>
                     </div>
                     <div class="daily-card" id="daily-reward-2">
                         <svg class="daily-icon" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
+                            <path fill="var(--primary)" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
                         </svg>
                         <div class="daily-label">Daily Cipher</div>
                         <div class="daily-timer" id="daily-timer-2">24:00</div>
                     </div>
                     <div class="daily-card" id="daily-reward-3">
                         <svg class="daily-icon" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M19 19h-2v-4h2zm-7 0H9v-4h3zm-7 0H2v-4h3zm14-7h-2v-1c0-.5-.5-1 1-1h2v-1h-3c-.5 0-1-.5-1-1V5c0-.5.5-1 1-1h3v-1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h22v-1h-3c-.5 0-1-.5-1-1zm-14-3v-3h3v3zm7 0v-3h3v3z"/>
+                            <path fill="var(--primary)" d="M19 19h-2v-4h2zm-7 0H9v-4h3zm-7 0H2v-4h3zm14-7h-2v-1c0-.5-.5-1 1-1h2v-1h-3c-.5 0-1-.5-1-1V5c0-.5.5-1 1-1h3v-1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h22v-1h-3c-.5 0-1-.5-1-1zm-14-3v-3h3v3zm7 0v-3h3v3z"/>
                         </svg>
                         <div class="daily-label">Daily Combo</div>
                         <div class="daily-timer" id="daily-timer-3">24:00</div>
@@ -421,7 +410,7 @@
                         <div class="tap-circle tap-outer">
                             <div class="tap-circle tap-inner">
                                 <svg class="character" viewBox="0 0 512 512">
-                                    <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
+                                    <path fill="var(--primary)" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
                                 </svg>
                             </div>
                         </div>
@@ -430,32 +419,32 @@
             </div>
         </div>
 
-        <!-- NEW: Other Pages -->
+        <!-- Other Pages -->
         <div class="page" id="page-mine">
             <div class="game-content">
-                <h2>Mining Station</h2>
-                <p style="margin-top: 20px; text-align: center;">Coming soon - Mine crypto automatically!</p>
+                <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Mining Station</h2>
+                <p style="color: var(--light); text-align: center; margin-top: 10px;">Coming soon - Mine crypto automatically!</p>
             </div>
         </div>
 
         <div class="page" id="page-friends">
             <div class="game-content">
-                <h2>Friends Network</h2>
-                <p style="margin-top: 20px; text-align: center;">Invite friends and earn bonuses together!</p>
+                <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Friends Network</h2>
+                <p style="color: var(--light); text-align: center; margin-top: 10px;">Invite friends and earn bonuses together!</p>
             </div>
         </div>
 
         <div class="page" id="page-earn">
             <div class="game-content">
-                <h2>Earn Rewards</h2>
-                <p style="margin-top: 20px; text-align: center;">Complete tasks and earn more tokens!</p>
+                <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Earn Rewards</h2>
+                <p style="color: var(--light); text-align: center; margin-top: 10px;">Complete tasks and earn more tokens!</p>
             </div>
         </div>
 
         <div class="page" id="page-airdrop">
             <div class="game-content">
-                <h2>Airdrop Hub</h2>
-                <p style="margin-top: 20px; text-align: center;">Claim your free token distributions!</p>
+                <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Airdrop Hub</h2>
+                <p style="color: var(--light); text-align: center; margin-top: 10px;">Claim your free token distributions!</p>
             </div>
         </div>
 
@@ -463,31 +452,31 @@
         <nav class="navigation">
             <div class="nav-item active" data-page="exchange">
                 <svg class="nav-icon" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
+                    <path fill="var(--primary)" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
                 </svg>
                 <div class="nav-label">Exchange</div>
             </div>
             <div class="nav-item" data-page="mine">
                 <svg class="nav-icon" viewBox="0 0 32 32">
-                    <path fill="currentColor" d="M11.7 17.7c-.2-.2-.5-.3-.7-.3s-.5.1-.7.3l-6.6 6.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3l-.6-.6c-1-1-1.2-2.5-.5-3.7L6 12 3 9l-.6-1.8c-.2-.7 0-1.5.5-2l2.3-2.3c.4-.4.9-.6 1.4-.6.2 0 .4 0 .6.1L9 3l3 3 8-4.8c.5-.3 1-.4 1.5-.4.8 0 1.5.3 2.1.9l.6.6c.4.4.4 1 0 1.4l-6.6 6.6c-.4.4-.4 1 0 1.4l.6.6c.4.4.4 1 0 1.4l-4.6 4.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3L11.7 17.7zm19-9L18.7 14.7l-4 4 11.9 11.9c.4.4.9.6 1.4.6s1-.2 1.4-.6l1.2-1.2c.8-.8.8-2 0-2.8z"/>
+                    <path fill="var(--primary)" d="M11.7 17.7c-.2-.2-.5-.3-.7-.3s-.5.1-.7.3l-6.6 6.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3l-.6-.6c-1-1-1.2-2.5-.5-3.7L6 12 3 9l-.6-1.8c-.2-.7 0-1.5.5-2l2.3-2.3c.4-.4.9-.6 1.4-.6.2 0 .4 0 .6.1L9 3l3 3 8-4.8c.5-.3 1-.4 1.5-.4.8 0 1.5.3 2.1.9l.6.6c.4.4.4 1 0 1.4l-6.6 6.6c-.4.4-.4 1 0 1.4l.6.6c.4.4.4 1 0 1.4l-4.6 4.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3L11.7 17.7zm19-9L18.7 14.7l-4 4 11.9 11.9c.4.4.9.6 1.4.6s1-.2 1.4-.6l1.2-1.2c.8-.8.8-2 0-2.8z"/>
                 </svg>
                 <div class="nav-label">Mine</div>
             </div>
             <div class="nav-item" data-page="friends">
                 <svg class="nav-icon" viewBox="0 0 28 28">
-                    <path fill="currentColor" d="M17.75 18c1 0 1.8.8 1.8 1.8v2h-1.8v-2h-6.5v2H9.5v-2c0-1-.8-1.8-1.8-1.8H7.6c1-.7 1.8-1.8 1.8-3.2v-1.3c0-1.4-.8-2.5-1.8-3.2H7.6c1-.7 1.8-1.8 1.8-3.2V7.6c0-1.4-.8-2.5-1.8-3.2h1.1c1 0 1.8-.8 1.8-1.8V1h1.8v1.8h6.5V1h1.8v1.8c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1c-1 0-1.8.8-1.8 1.8v1.3c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1zM14 10c1.9 0 3.5 1.6 3.5 3.5S15.9 17 14 17s-3.5-1.6-3.5-3.5S12.1 10 14 10zm6.5-6c1.9 0 3.5 1.6 3.5 3.5S22.4 11 20.5 11 17 9.4 17 7.5 18.6 4 20.5 4zM7.5 4C9.4 4 11 5.6 11 7.5S9.4 11 7.5 11 4 9.4 4 7.5 5.6 4 7.5 4z"/>
+                    <path fill="var(--primary)" d="M17.75 18c1 0 1.8.8 1.8 1.8v2h-1.8v-2h-6.5v2H9.5v-2c0-1-.8-1.8-1.8-1.8H7.6c1-.7 1.8-1.8 1.8-3.2v-1.3c0-1.4-.8-2.5-1.8-3.2H7.6c1-.7 1.8-1.8 1.8-3.2V7.6c0-1.4-.8-2.5-1.8-3.2h1.1c1 0 1.8-.8 1.8-1.8V1h1.8v1.8h6.5V1h1.8v1.8c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1c-1 0-1.8.8-1.8 1.8v1.3c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1zM14 10c1.9 0 3.5 1.6 3.5 3.5S15.9 17 14 17s-3.5-1.6-3.5-3.5S12.1 10 14 10zm6.5-6c1.9 0 3.5 1.6 3.5 3.5S22.4 11 20.5 11 17 9.4 17 7.5 18.6 4 20.5 4zM7.5 4C9.4 4 11 5.6 11 7.5S9.4 11 7.5 11 4 9.4 4 7.5 5.6 4 7.5 4z"/>
                 </svg>
                 <div class="nav-label">Friends</div>
             </div>
             <div class="nav-item" data-page="earn">
                 <svg class="nav-icon" viewBox="0 0 512 512">
-                    <path fill="currentColor" d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"/>
+                    <path fill="var(--primary)" d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"/>
                 </svg>
                 <div class="nav-label">Earn</div>
             </div>
             <div class="nav-item" data-page="airdrop">
                 <svg class="nav-icon" viewBox="0 0 512 512">
-                    <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
+                    <path fill="var(--primary)" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
                 </svg>
                 <div class="nav-label">Airdrop</div>
             </div>
@@ -517,7 +506,7 @@
             totalTaps: parseInt(localStorage.getItem('totalTaps')) || 0,
             profitPerHour: parseInt(localStorage.getItem('profitPerHour')) || 0,
 
-            // NEW: Active page
+            // Active page
             activePage: localStorage.getItem('activePage') || 'exchange'
         };
 
@@ -561,7 +550,7 @@
             // Start game loops
             startGameLoops();
 
-            // NEW: Initialize active page
+            // Initialize active page
             switchPage(gameState.activePage);
         }
 
@@ -611,11 +600,13 @@
             localStorage.setItem('lastDailyClaimCipher', gameState.lastDailyClaim.cipher.toString());
             localStorage.setItem('lastDailyClaimCombo', gameState.lastDailyClaim.combo.toString());
 
-            // NEW: Save active page
+            // Save active page
             localStorage.setItem('activePage', gameState.activePage);
         }
 
-        // NEW: PAGE SYSTEM FUNCTIONS
+        // ======================
+        // PAGE SYSTEM FUNCTIONS
+        // ======================
         function switchPage(pageId) {
             // Hide all pages
             document.querySelectorAll('.page').forEach(page => {
@@ -827,7 +818,7 @@
                 }
             });
 
-            // NEW: Navigation tabs
+            // Navigation tabs
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const pageId = item.getAttribute('data-page');
