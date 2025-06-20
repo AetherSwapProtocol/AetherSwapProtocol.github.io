@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Zoom blocking tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>AetherSwap Elite</title>
@@ -104,7 +103,6 @@
         .profile-level {
             font-size: 12px;
             color: var(--accent);
-            text-shadow: var(--glow-yellow);
         }
 
         /* ========== PAGE SYSTEM ========== */
@@ -186,7 +184,6 @@
             font-size: 11px;
             font-weight: 600;
             color: var(--accent);
-            text-shadow: var(--glow-yellow);
         }
 
         .daily-badge {
@@ -199,6 +196,7 @@
             border-radius: 50%;
             animation: pulse 2s infinite;
             box-shadow: 0 0 5px var(--success);
+            display: none;
         }
 
         /* ========== TAP AREA ========== */
@@ -297,6 +295,32 @@
             transition: width 0.5s ease;
         }
 
+        /* ========== ENERGY BAR ========== */
+        .energy-container {
+            margin: 10px 0;
+        }
+
+        .energy-bar {
+            height: 6px;
+            background-color: rgba(67, 67, 59, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .energy-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--success) 0%, #00CCFF 100%);
+            transition: width 0.3s ease;
+        }
+
+        .energy-text {
+            font-size: 11px;
+            text-align: right;
+            color: var(--success);
+            margin-top: 2px;
+        }
+
         /* ========== NAVIGATION ========== */
         .navigation {
             position: fixed;
@@ -340,6 +364,73 @@
             font-size: 12px;
         }
 
+        /* ========== EXCHANGE ITEMS ========== */
+        .exchange-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .exchange-card {
+            background-color: rgba(27, 10, 46, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--neon-purple);
+            transition: all 0.3s ease;
+        }
+
+        .exchange-card.unlocked {
+            background: linear-gradient(135deg, rgba(27, 10, 46, 0.7) 0%, rgba(59, 20, 100, 0.5) 100%);
+        }
+
+        .exchange-card.locked {
+            opacity: 0.5;
+            filter: grayscale(80%);
+        }
+
+        .exchange-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .exchange-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .exchange-profit {
+            font-size: 12px;
+            color: var(--success);
+        }
+
+        .exchange-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .exchange-btn {
+            background: var(--gradient-main);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .exchange-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
         /* ========== ANIMATIONS ========== */
         @keyframes pulse {
             0% { transform: scale(1); opacity: 1; }
@@ -377,6 +468,64 @@
             animation: float 1s forwards;
             text-shadow: 0 0 5px var(--primary);
             z-index: 10;
+        }
+
+        /* ========== MISSION ITEMS ========== */
+        .mission-item {
+            background-color: rgba(27, 10, 46, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid var(--neon-purple);
+        }
+
+        .mission-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .mission-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .mission-reward {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .mission-progress {
+            height: 4px;
+            background-color: rgba(67, 67, 59, 0.3);
+            border-radius: 2px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .mission-progress-fill {
+            height: 100%;
+            background: var(--gradient-main);
+            border-radius: 2px;
+        }
+
+        .mission-btn {
+            background: var(--gradient-main);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .mission-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
     </style>
 </head>
@@ -429,6 +578,14 @@
                     </div>
                 </div>
 
+                <!-- Energy Bar -->
+                <div class="energy-container">
+                    <div class="energy-bar">
+                        <div class="energy-fill" id="energy-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="energy-text" id="energy-text">100/100</div>
+                </div>
+
                 <!-- Progress Bar -->
                 <div class="progress-container">
                     <div class="progress-header">
@@ -456,61 +613,93 @@
             </div>
         </div>
 
-        <!-- Other Pages -->
+        <!-- Exchange Page -->
         <div class="page" id="page-mine">
             <div class="game-content">
                 <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Mining Station</h2>
-                <p style="color: var(--light); text-align: center; margin-top: 10px;">Coming soon - Mine crypto automatically!</p>
+                <p style="color: var(--light); text-align: center; margin-top: 10px; margin-bottom: 20px;">Upgrade your mining power to earn more!</p>
+                
+                <div class="exchange-items" id="exchange-items">
+                    <!-- Cards will be added dynamically -->
+                </div>
             </div>
         </div>
 
+        <!-- Friends Page -->
         <div class="page" id="page-friends">
-    <div class="game-content" style="padding-bottom: 20px;">
-        <h2 style="color: var(--primary); text-align: center; margin-top: 20px; margin-bottom: 25px;">Invite Friends & Earn</h2>
-        
-        <!-- Rewards Card -->
-        <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
-            <p style="color: var(--light); margin-bottom: 12px; font-size: 14px; text-align: center;">Earn <span style="color: var(--accent);">10%</span> from friends and <span style="color: var(--accent);">5%</span> from their friends</p>
-            
-            <div style="margin-bottom: 15px;">
-                <p style="color: var(--light); margin-bottom: 5px; font-size: 13px; text-align: center;">Available rewards</p>
-                <p id="available-rewards" style="font-size: 24px; color: var(--success); font-weight: 700; text-align: center; margin: 5px 0;">0 AETH</p>
+            <div class="game-content" style="padding-bottom: 20px;">
+                <h2 style="color: var(--primary); text-align: center; margin-top: 20px; margin-bottom: 25px;">Invite Friends & Earn</h2>
+                
+                <!-- Rewards Card -->
+                <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
+                    <p style="color: var(--light); margin-bottom: 12px; font-size: 14px; text-align: center;">Earn <span style="color: var(--accent);">10%</span> from friends and <span style="color: var(--accent);">5%</span> from their friends</p>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <p style="color: var(--light); margin-bottom: 5px; font-size: 13px; text-align: center;">Available rewards</p>
+                        <p id="available-rewards" style="font-size: 24px; color: var(--success); font-weight: 700; text-align: center; margin: 5px 0;">0 AETH</p>
+                    </div>
+                    <button id="claim-rewards" style="background: var(--gradient-main); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; font-weight: 600; cursor: pointer;">CLAIM</button>
+                </div>
+
+                <!-- Stats Card -->
+                <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="color: var(--light);">Your referrals</span>
+                        <span id="referral-count" style="color: var(--accent); font-weight: 500;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--light);">Total earned</span>
+                        <span id="total-earned" style="color: var(--success); font-weight: 500;">0 AETH</span>
+                    </div>
+                </div>
+
+                <!-- Invite Card -->
+                <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
+                    <p style="color: var(--accent); margin-bottom: 15px; font-size: 16px; text-align: center; font-weight: 600;">YOUR INVITE CODE</p>
+                    <div id="referral-code-display" style="background: var(--dark); padding: 12px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: 1px; margin-bottom: 15px; word-break: break-all;">AETH-XXXX-XXXX</div>
+                    <button id="copy-invite-btn" style="background: var(--gradient-main); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; font-weight: 600; cursor: pointer;">COPY INVITE LINK</button>
+                </div>
             </div>
-            <button id="claim-rewards" style="background: var(--gradient-main); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; font-weight: 600; cursor: pointer;">CLAIM</button>
         </div>
 
-        <!-- Stats Card -->
-        <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                <span style="color: var(--light);">Your referrals</span>
-                <span id="referral-count" style="color: var(--accent); font-weight: 500;">0</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span style="color: var(--light);">Total earned</span>
-                <span id="total-earned" style="color: var(--success); font-weight: 500;">0 AETH</span>
-            </div>
-        </div>
-
-        <!-- Invite Card -->
-        <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
-            <p style="color: var(--accent); margin-bottom: 15px; font-size: 16px; text-align: center; font-weight: 600;">YOUR INVITE CODE</p>
-            <div id="referral-code-display" style="background: var(--dark); padding: 12px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: 1px; margin-bottom: 15px; word-break: break-all;"></div>
-            <button id="copy-invite-btn" style="background: var(--gradient-main); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; font-weight: 600; cursor: pointer;">COPY INVITE LINK</button>
-        </div>
-    </div>
-</div>
-
+        <!-- Earn Page -->
         <div class="page" id="page-earn">
             <div class="game-content">
                 <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Earn Rewards</h2>
-                <p style="color: var(--light); text-align: center; margin-top: 10px;">Complete tasks and earn more tokens!</p>
+                <p style="color: var(--light); text-align: center; margin-top: 10px; margin-bottom: 20px;">Complete missions to earn bonus coins!</p>
+                
+                <div id="missions-container">
+                    <!-- Missions will be added dynamically -->
+                </div>
             </div>
         </div>
 
+        <!-- Airdrop Page -->
         <div class="page" id="page-airdrop">
             <div class="game-content">
                 <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Airdrop Hub</h2>
-                <p style="color: var(--light); text-align: center; margin-top: 10px;">Claim your free token distributions!</p>
+                <p style="color: var(--light); text-align: center; margin-top: 10px; margin-bottom: 30px;">Claim your free token distributions!</p>
+                
+                <div style="margin: 0 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="color: var(--light);">Total coins earned</span>
+                        <span id="airdrop-total-coins" style="color: var(--accent); font-weight: 500;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="color: var(--light);">Your level</span>
+                        <span id="airdrop-level" style="color: var(--accent); font-weight: 500;">1</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+                        <span style="color: var(--light);">Referrals</span>
+                        <span id="airdrop-referrals" style="color: var(--accent); font-weight: 500;">0</span>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <p style="color: var(--light); margin-bottom: 5px; font-size: 13px; text-align: center;">Estimated airdrop</p>
+                        <p id="airdrop-estimate" style="font-size: 24px; color: var(--success); font-weight: 700; text-align: center; margin: 5px 0;">0 AETH</p>
+                    </div>
+                    <button style="background: #444; border: none; padding: 12px; border-radius: 8px; color: #999; width: 100%; font-weight: 600; cursor: not-allowed;">COMING SOON</button>
+                </div>
             </div>
         </div>
 
@@ -565,10 +754,28 @@
         const gameState = {
             // Player Data
             username: localStorage.getItem('username') || 'Guest',
-            points: parseInt(localStorage.getItem('points')) || 0,
+            coins: parseFloat(localStorage.getItem('coins')) || 0,
+            clickValue: parseFloat(localStorage.getItem('clickValue')) || 1,
+            profitPerHour: parseFloat(localStorage.getItem('profitPerHour')) || 0,
+            energy: parseInt(localStorage.getItem('energy')) || 100,
+            maxEnergy: 100,
+            lastEnergyUpdate: parseInt(localStorage.getItem('lastEnergyUpdate')) || Date.now(),
+            energyRechargeRate: 5000, // 5 seconds per energy point
+            
+            // Progression
             level: parseInt(localStorage.getItem('level')) || 1,
-            progress: parseInt(localStorage.getItem('progress')) || 0,
-            progressRequired: 100,
+            progress: parseFloat(localStorage.getItem('progress')) || 0,
+            progressRequired: parseInt(localStorage.getItem('progressRequired')) || 100,
+            
+            // Cards
+            cards: JSON.parse(localStorage.getItem('cards')) || [],
+            cardDefinitions: [
+                { id: 1, name: "Basic Miner", price: 100, profitPerHour: 10, levelRequired: 1 },
+                { id: 2, name: "Advanced Miner", price: 500, profitPerHour: 50, levelRequired: 2 },
+                { id: 3, name: "Pro Miner", price: 2000, profitPerHour: 200, levelRequired: 3 },
+                { id: 4, name: "Expert Miner", price: 10000, profitPerHour: 1000, levelRequired: 5 },
+                { id: 5, name: "Elite Miner", price: 50000, profitPerHour: 5000, levelRequired: 8 }
+            ],
             
             // Daily Rewards
             lastDailyClaim: {
@@ -577,10 +784,20 @@
                 combo: parseInt(localStorage.getItem('lastDailyClaimCombo')) || 0
             },
             
-            // Game Stats
-            totalTaps: parseInt(localStorage.getItem('totalTaps')) || 0,
-            profitPerHour: parseInt(localStorage.getItem('profitPerHour')) || 0,
-
+            // Missions
+            missions: JSON.parse(localStorage.getItem('missions')) || [
+                { id: 1, name: "First Steps", description: "Collect 100 coins", target: 100, progress: 0, reward: 50, status: "active" },
+                { id: 2, name: "Beginner Miner", description: "Buy your first miner", target: 1, progress: 0, reward: 100, status: "locked" },
+                { id: 3, name: "Daily Grind", description: "Claim daily reward 3 times", target: 3, progress: 0, reward: 200, status: "locked" }
+            ],
+            lastMissionReset: parseInt(localStorage.getItem('lastMissionReset')) || Date.now(),
+            
+            // Referrals
+            referrals: JSON.parse(localStorage.getItem('referrals')) || [],
+            referralPendingCoins: parseFloat(localStorage.getItem('referralPendingCoins')) || 0,
+            totalEarnedFromReferrals: parseFloat(localStorage.getItem('totalEarnedFromReferrals')) || 0,
+            referralCode: localStorage.getItem('referralCode') || generateReferralCode(),
+            
             // Active page
             activePage: localStorage.getItem('activePage') || 'exchange'
         };
@@ -596,6 +813,10 @@
             currentProgress: document.getElementById('current-progress'),
             maxProgress: document.getElementById('max-progress'),
             profitPerHour: document.getElementById('profit-per-hour'),
+            energyFill: document.getElementById('energy-fill'),
+            energyText: document.getElementById('energy-text'),
+            
+            // Daily Rewards
             dailyTimers: {
                 reward: document.getElementById('daily-timer-1'),
                 cipher: document.getElementById('daily-timer-2'),
@@ -606,7 +827,29 @@
                 cipher: document.getElementById('daily-reward-2'),
                 combo: document.getElementById('daily-reward-3')
             },
-            tapArea: document.querySelector('.tap-outer')
+            
+            // Tap Area
+            tapArea: document.querySelector('.tap-outer'),
+            
+            // Exchange
+            exchangeItems: document.getElementById('exchange-items'),
+            
+            // Friends
+            availableRewards: document.getElementById('available-rewards'),
+            referralCount: document.getElementById('referral-count'),
+            totalEarned: document.getElementById('total-earned'),
+            referralCodeDisplay: document.getElementById('referral-code-display'),
+            claimRewardsBtn: document.getElementById('claim-rewards'),
+            copyInviteBtn: document.getElementById('copy-invite-btn'),
+            
+            // Missions
+            missionsContainer: document.getElementById('missions-container'),
+            
+            // Airdrop
+            airdropTotalCoins: document.getElementById('airdrop-total-coins'),
+            airdropLevel: document.getElementById('airdrop-level'),
+            airdropReferrals: document.getElementById('airdrop-referrals'),
+            airdropEstimate: document.getElementById('airdrop-estimate')
         };
 
         // ======================
@@ -627,6 +870,15 @@
 
             // Initialize active page
             switchPage(gameState.activePage);
+            
+            // Generate exchange cards
+            generateExchangeCards();
+            
+            // Generate missions
+            generateMissions();
+            
+            // Update referral code display
+            elements.referralCodeDisplay.textContent = gameState.referralCode;
         }
 
         // ======================
@@ -635,48 +887,106 @@
         function loadGame() {
             // Update all UI elements from gameState
             elements.username.textContent = gameState.username;
-            elements.pointsDisplay.textContent = gameState.points.toLocaleString();
+            elements.pointsDisplay.textContent = formatNumber(gameState.coins);
             elements.currentLevel.textContent = gameState.level;
-            elements.currentProgress.textContent = gameState.progress;
+            elements.currentProgress.textContent = Math.floor(gameState.progress);
             elements.maxProgress.textContent = gameState.progressRequired;
             elements.progressFill.style.width = `${(gameState.progress / gameState.progressRequired) * 100}%`;
-            elements.profitPerHour.textContent = `${gameState.profitPerHour}/h`;
+            elements.profitPerHour.textContent = `${formatNumber(gameState.profitPerHour)}/h`;
+            
+            // Update energy
+            updateEnergyDisplay();
             
             // Initialize daily rewards
             updateDailyRewardsUI();
+            
+            // Update referral stats
+            updateReferralUI();
+            
+            // Update airdrop stats
+            updateAirdropUI();
         }
 
         function updateUI() {
             // Update points display with animation
-            animateValue(elements.pointsDisplay, parseInt(elements.pointsDisplay.textContent.replace(/,/g, '')), gameState.points, 500);
+            animateValue(elements.pointsDisplay, parseFloat(elements.pointsDisplay.textContent.replace(/,/g, '')), gameState.coins, 500);
             
             // Update progress bar
             elements.progressFill.style.width = `${(gameState.progress / gameState.progressRequired) * 100}%`;
-            elements.currentProgress.textContent = gameState.progress;
+            elements.currentProgress.textContent = Math.floor(gameState.progress);
             
             // Update level if changed
             elements.currentLevel.textContent = gameState.level;
             
             // Update profit per hour
-            elements.profitPerHour.textContent = `${gameState.profitPerHour}/h`;
+            elements.profitPerHour.textContent = `${formatNumber(gameState.profitPerHour)}/h`;
+            
+            // Update energy
+            updateEnergyDisplay();
+            
+            // Update missions
+            checkMissions();
         }
 
         function saveGame() {
             // Save all game state to localStorage
             localStorage.setItem('username', gameState.username);
-            localStorage.setItem('points', gameState.points.toString());
+            localStorage.setItem('coins', gameState.coins.toString());
+            localStorage.setItem('clickValue', gameState.clickValue.toString());
+            localStorage.setItem('profitPerHour', gameState.profitPerHour.toString());
+            localStorage.setItem('energy', gameState.energy.toString());
+            localStorage.setItem('lastEnergyUpdate', gameState.lastEnergyUpdate.toString());
+            
+            // Save progression
             localStorage.setItem('level', gameState.level.toString());
             localStorage.setItem('progress', gameState.progress.toString());
-            localStorage.setItem('totalTaps', gameState.totalTaps.toString());
-            localStorage.setItem('profitPerHour', gameState.profitPerHour.toString());
+            localStorage.setItem('progressRequired', gameState.progressRequired.toString());
             
-            // Save daily rewards timestamps
+            // Save cards
+            localStorage.setItem('cards', JSON.stringify(gameState.cards));
+            
+            // Save daily rewards
             localStorage.setItem('lastDailyClaimReward', gameState.lastDailyClaim.reward.toString());
             localStorage.setItem('lastDailyClaimCipher', gameState.lastDailyClaim.cipher.toString());
             localStorage.setItem('lastDailyClaimCombo', gameState.lastDailyClaim.combo.toString());
-
+            
+            // Save missions
+            localStorage.setItem('missions', JSON.stringify(gameState.missions));
+            localStorage.setItem('lastMissionReset', gameState.lastMissionReset.toString());
+            
+            // Save referrals
+            localStorage.setItem('referrals', JSON.stringify(gameState.referrals));
+            localStorage.setItem('referralPendingCoins', gameState.referralPendingCoins.toString());
+            localStorage.setItem('totalEarnedFromReferrals', gameState.totalEarnedFromReferrals.toString());
+            localStorage.setItem('referralCode', gameState.referralCode);
+            
             // Save active page
             localStorage.setItem('activePage', gameState.activePage);
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('en', { maximumFractionDigits: 2 });
+        }
+
+        // ======================
+        // ENERGY SYSTEM
+        // ======================
+        function updateEnergyDisplay() {
+            elements.energyFill.style.width = `${(gameState.energy / gameState.maxEnergy) * 100}%`;
+            elements.energyText.textContent = `${gameState.energy}/${gameState.maxEnergy}`;
+        }
+
+        function rechargeEnergy() {
+            const now = Date.now();
+            const timePassed = now - gameState.lastEnergyUpdate;
+            const energyToAdd = Math.floor(timePassed / gameState.energyRechargeRate);
+            
+            if (energyToAdd > 0) {
+                gameState.energy = Math.min(gameState.energy + energyToAdd, gameState.maxEnergy);
+                gameState.lastEnergyUpdate = now;
+                updateEnergyDisplay();
+                saveGame();
+            }
         }
 
         // ======================
@@ -706,25 +1016,28 @@
         // GAME MECHANICS
         // ======================
         function handleTap() {
-            // Increase points and progress
-            gameState.points += 1;
-            gameState.progress += 1;
-            gameState.totalTaps += 1;
+            // Check if player has energy
+            if (gameState.energy <= 0) return;
+            
+            // Consume energy
+            gameState.energy--;
+            updateEnergyDisplay();
+            
+            // Increase coins and progress
+            gameState.coins += gameState.clickValue;
+            gameState.progress += gameState.clickValue;
             
             // Check for level up
             if (gameState.progress >= gameState.progressRequired) {
                 levelUp();
             }
             
-            // Update profit (simplified example)
-            gameState.profitPerHour = Math.floor(gameState.level * 10 + gameState.totalTaps / 100);
-            
             // Update UI and save
             updateUI();
             saveGame();
             
             // Create visual effect
-            createTapEffect();
+            createTapEffect(gameState.clickValue);
         }
 
         function levelUp() {
@@ -735,40 +1048,121 @@
             // Update max progress display
             elements.maxProgress.textContent = gameState.progressRequired;
             
+            // Check for new unlocked cards
+            generateExchangeCards();
+            
+            // Check missions
+            checkMissions();
+            
             // Visual feedback
             elements.currentLevel.classList.add('pulse');
             setTimeout(() => elements.currentLevel.classList.remove('pulse'), 1000);
+            
+            // Save game
+            saveGame();
         }
 
-        function claimDailyReward(type) {
-            const now = Date.now();
-            let rewardAmount = 0;
+        function addCoins(amount) {
+            gameState.coins += amount;
+            gameState.progress += amount;
             
-            switch (type) {
-                case 'reward':
-                    rewardAmount = 1000 * gameState.level;
-                    gameState.lastDailyClaim.reward = now;
-                    break;
-                case 'cipher':
-                    rewardAmount = 2500 * gameState.level;
-                    gameState.lastDailyClaim.cipher = now;
-                    break;
-                case 'combo':
-                    rewardAmount = 5000 * gameState.level;
-                    gameState.lastDailyClaim.combo = now;
-                    break;
+            // Check for level up
+            if (gameState.progress >= gameState.progressRequired) {
+                levelUp();
             }
-            
-            gameState.points += rewardAmount;
             
             // Update UI and save
             updateUI();
             saveGame();
-            updateDailyRewardsUI();
+        }
+
+        // ======================
+        // EXCHANGE SYSTEM
+        // ======================
+        function generateExchangeCards() {
+            elements.exchangeItems.innerHTML = '';
             
-            // Visual feedback
-            elements.dailyCards[type].classList.add('pulse');
-            setTimeout(() => elements.dailyCards[type].classList.remove('pulse'), 1000);
+            gameState.cardDefinitions.forEach(cardDef => {
+                const card = document.createElement('div');
+                card.className = `exchange-card ${cardDef.levelRequired > gameState.level ? 'locked' : 'unlocked'}`;
+                
+                const cardInfo = document.createElement('div');
+                cardInfo.className = 'exchange-info';
+                
+                const cardName = document.createElement('div');
+                cardName.className = 'exchange-name';
+                cardName.textContent = cardDef.name;
+                
+                const cardProfit = document.createElement('div');
+                cardProfit.className = 'exchange-profit';
+                cardProfit.textContent = `Profit: ${formatNumber(cardDef.profitPerHour)}/h`;
+                
+                cardInfo.appendChild(cardName);
+                cardInfo.appendChild(cardProfit);
+                
+                const cardPrice = document.createElement('div');
+                cardPrice.className = 'exchange-price';
+                cardPrice.textContent = formatNumber(cardDef.price);
+                
+                const cardBtn = document.createElement('button');
+                cardBtn.className = 'exchange-btn';
+                cardBtn.textContent = 'BUY';
+                cardBtn.disabled = cardDef.levelRequired > gameState.level || gameState.coins < cardDef.price;
+                
+                if (cardDef.levelRequired <= gameState.level) {
+                    cardBtn.addEventListener('click', () => buyCard(cardDef));
+                }
+                
+                card.appendChild(cardInfo);
+                card.appendChild(cardPrice);
+                card.appendChild(cardBtn);
+                
+                elements.exchangeItems.appendChild(card);
+            });
+        }
+
+        function buyCard(cardDef) {
+            if (gameState.coins >= cardDef.price) {
+                // Deduct coins
+                gameState.coins -= cardDef.price;
+                
+                // Add to owned cards
+                const ownedCard = gameState.cards.find(c => c.id === cardDef.id);
+                if (ownedCard) {
+                    ownedCard.count++;
+                } else {
+                    gameState.cards.push({
+                        id: cardDef.id,
+                        name: cardDef.name,
+                        count: 1,
+                        profitPerHour: cardDef.profitPerHour
+                    });
+                }
+                
+                // Update profit
+                updateProfit();
+                
+                // Update UI and save
+                updateUI();
+                generateExchangeCards();
+                saveGame();
+                
+                // Check missions
+                checkMissions();
+            }
+        }
+
+        function updateProfit() {
+            gameState.profitPerHour = gameState.cards.reduce((total, card) => {
+                return total + (card.profitPerHour * card.count);
+            }, 0);
+            
+            // Add referral bonuses (10% from level 1 referrals, 5% from level 2)
+            const level1Referrals = gameState.referrals.filter(r => r.level === 1).length;
+            const level2Referrals = gameState.referrals.filter(r => r.level === 2).length;
+            
+            const referralBonus = gameState.profitPerHour * (level1Referrals * 0.10 + level2Referrals * 0.05);
+            gameState.referralPendingCoins += referralBonus / 3600; // Add per second
         }
 
         // ======================
@@ -837,13 +1231,192 @@
             }
         }
 
+        function claimDailyReward(type) {
+            const now = Date.now();
+            let rewardAmount = 0;
+            
+            switch (type) {
+                case 'reward':
+                    rewardAmount = 1000 * gameState.level;
+                    gameState.lastDailyClaim.reward = now;
+                    break;
+                case 'cipher':
+                    rewardAmount = 2500 * gameState.level;
+                    gameState.lastDailyClaim.cipher = now;
+                    break;
+                case 'combo':
+                    rewardAmount = 5000 * gameState.level;
+                    gameState.lastDailyClaim.combo = now;
+                    break;
+            }
+            
+            addCoins(rewardAmount);
+            updateDailyRewardsUI();
+            
+            // Check missions
+            checkMissions();
+            
+            // Visual feedback
+            elements.dailyCards[type].classList.add('pulse');
+            setTimeout(() => elements.dailyCards[type].classList.remove('pulse'), 1000);
+        }
+
+        // ======================
+        // MISSION SYSTEM
+        // ======================
+        function generateMissions() {
+            elements.missionsContainer.innerHTML = '';
+            
+            gameState.missions.forEach(mission => {
+                if (mission.status === 'locked') return;
+                
+                const missionItem = document.createElement('div');
+                missionItem.className = 'mission-item';
+                
+                const missionHeader = document.createElement('div');
+                missionHeader.className = 'mission-header';
+                
+                const missionName = document.createElement('div');
+                missionName.className = 'mission-name';
+                missionName.textContent = mission.name;
+                
+                const missionReward = document.createElement('div');
+                missionReward.className = 'mission-reward';
+                missionReward.textContent = `${formatNumber(mission.reward)} coins`;
+                
+                missionHeader.appendChild(missionName);
+                missionHeader.appendChild(missionReward);
+                
+                const missionDesc = document.createElement('div');
+                missionDesc.style.color = 'var(--light)';
+                missionDesc.style.fontSize = '12px';
+                missionDesc.style.marginBottom = '8px';
+                missionDesc.textContent = mission.description;
+                
+                const missionProgress = document.createElement('div');
+                missionProgress.className = 'mission-progress';
+                
+                const missionProgressFill = document.createElement('div');
+                missionProgressFill.className = 'mission-progress-fill';
+                missionProgressFill.style.width = `${(mission.progress / mission.target) * 100}%`;
+                
+                missionProgress.appendChild(missionProgressFill);
+                
+                const missionBtn = document.createElement('button');
+                missionBtn.className = 'mission-btn';
+                
+                if (mission.progress >= mission.target) {
+                    missionBtn.textContent = 'CLAIM';
+                    missionBtn.addEventListener('click', () => claimMission(mission.id));
+                } else {
+                    missionBtn.textContent = `${Math.floor(mission.progress)}/${mission.target}`;
+                    missionBtn.disabled = true;
+                }
+                
+                missionItem.appendChild(missionHeader);
+                missionItem.appendChild(missionDesc);
+                missionItem.appendChild(missionProgress);
+                missionItem.appendChild(missionBtn);
+                
+                elements.missionsContainer.appendChild(missionItem);
+            });
+        }
+
+        function checkMissions() {
+            // Update mission progress
+            gameState.missions.forEach(mission => {
+                if (mission.status === 'completed') return;
+                
+                switch (mission.id) {
+                    case 1: // Collect 100 coins
+                        mission.progress = Math.min(gameState.coins, mission.target);
+                        break;
+                    case 2: // Buy first miner
+                        mission.progress = gameState.cards.length > 0 ? 1 : 0;
+                        if (mission.status === 'locked' && gameState.level >= 2) {
+                            mission.status = 'active';
+                        }
+                        break;
+                    case 3: // Claim daily reward 3 times
+                        if (mission.status === 'locked' && gameState.level >= 3) {
+                            mission.status = 'active';
+                        }
+                        // Progress is tracked in claimDailyReward function
+                        break;
+                }
+                
+                if (mission.progress >= mission.target && mission.status === 'active') {
+                    mission.status = 'ready';
+                }
+            });
+            
+            generateMissions();
+            saveGame();
+        }
+
+        function claimMission(missionId) {
+            const mission = gameState.missions.find(m => m.id === missionId);
+            if (mission && mission.status === 'ready') {
+                addCoins(mission.reward);
+                mission.status = 'completed';
+                generateMissions();
+                saveGame();
+            }
+        }
+
+        // ======================
+        // REFERRAL SYSTEM
+        // ======================
+        function generateReferralCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'AETH-';
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            code += '-';
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        function updateReferralUI() {
+            elements.availableRewards.textContent = `${formatNumber(gameState.referralPendingCoins)} AETH`;
+            elements.referralCount.textContent = gameState.referrals.length;
+            elements.totalEarned.textContent = `${formatNumber(gameState.totalEarnedFromReferrals)} AETH`;
+        }
+
+        function claimReferralRewards() {
+            if (gameState.referralPendingCoins > 0) {
+                addCoins(gameState.referralPendingCoins);
+                gameState.totalEarnedFromReferrals += gameState.referralPendingCoins;
+                gameState.referralPendingCoins = 0;
+                updateReferralUI();
+                updateAirdropUI();
+                saveGame();
+            }
+        }
+
+        // ======================
+        // AIRDROP SYSTEM
+        // ======================
+        function updateAirdropUI() {
+            elements.airdropTotalCoins.textContent = formatNumber(gameState.coins + gameState.totalEarnedFromReferrals);
+            elements.airdropLevel.textContent = gameState.level;
+            elements.airdropReferrals.textContent = gameState.referrals.length;
+            
+            // Simple estimation formula
+            const estimate = (gameState.coins * 0.001) + (gameState.level * 10) + (gameState.referrals.length * 5);
+            elements.airdropEstimate.textContent = `${formatNumber(estimate)} AETH`;
+        }
+
         // ======================
         // VISUAL EFFECTS
         // ======================
-        function createTapEffect() {
+        function createTapEffect(value) {
             const effect = document.createElement('div');
             effect.className = 'click-effect';
-            effect.textContent = '+1';
+            effect.textContent = `+${formatNumber(value)}`;
             effect.style.left = `${Math.random() * 60 + 20}%`;
             effect.style.top = `${Math.random() * 60 + 20}%`;
             elements.tapArea.appendChild(effect);
@@ -859,7 +1432,7 @@
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                 const value = Math.floor(progress * (end - start) + start);
-                element.textContent = value.toLocaleString();
+                element.textContent = formatNumber(value);
                 if (progress < 1) {
                     window.requestAnimationFrame(step);
                 }
@@ -878,6 +1451,13 @@
             elements.dailyCards.reward.addEventListener('click', () => {
                 if (elements.dailyCards.reward.classList.contains('unlocked')) {
                     claimDailyReward('reward');
+                    
+                    // Update mission progress for daily reward mission
+                    const dailyMission = gameState.missions.find(m => m.id === 3);
+                    if (dailyMission && dailyMission.status === 'active') {
+                        dailyMission.progress++;
+                        checkMissions();
+                    }
                 }
             });
             
@@ -900,24 +1480,56 @@
                     switchPage(pageId);
                 });
             });
+            
+            // Referral claim button
+            elements.claimRewardsBtn.addEventListener('click', claimReferralRewards);
+            
+            // Copy invite button
+            elements.copyInviteBtn.addEventListener('click', () => {
+                const inviteLink = `${window.location.origin}?ref=${gameState.referralCode}`;
+                navigator.clipboard.writeText(inviteLink).then(() => {
+                    alert('Invite link copied to clipboard!');
+                });
+            });
         }
 
         // ======================
         // GAME LOOPS
         // ======================
         function startGameLoops() {
+            // Update energy every second
+            setInterval(rechargeEnergy, 1000);
+            
             // Update daily rewards every minute
             setInterval(updateDailyRewardsUI, 60000);
             
-            // Passive income every second (simplified)
+            // Passive income every second
             setInterval(() => {
                 if (gameState.profitPerHour > 0) {
-                    const pointsToAdd = gameState.profitPerHour / 3600; // Points per second
-                    gameState.points += pointsToAdd;
-                    elements.pointsDisplay.textContent = Math.floor(gameState.points).toLocaleString();
-                    saveGame();
+                    const coinsToAdd = gameState.profitPerHour / 3600; // Coins per second
+                    addCoins(coinsToAdd);
+                    
+                    // Update referral bonuses
+                    updateProfit();
                 }
             }, 1000);
+            
+            // Check for mission reset every hour
+            setInterval(() => {
+                const now = Date.now();
+                if (now - gameState.lastMissionReset >= 24 * 60 * 60 * 1000) {
+                    // Reset daily missions
+                    gameState.missions.forEach(mission => {
+                        if (mission.id === 3) { // Daily reward mission
+                            mission.progress = 0;
+                            mission.status = 'active';
+                        }
+                    });
+                    gameState.lastMissionReset = now;
+                    saveGame();
+                    generateMissions();
+                }
+            }, 60 * 60 * 1000);
         }
 
         // ======================
