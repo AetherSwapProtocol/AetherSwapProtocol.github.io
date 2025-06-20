@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AetherSwap Elite</title>
     <style>
-        /* ========== GLOBAL STYLES ========== */
+        /* ===== CORE STYLES ===== */
         :root {
             --primary: #f3ba2f;
             --secondary: #1d2025;
@@ -18,39 +18,33 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         body {
-            background-color: var(--dark);
+            background: var(--dark);
             color: var(--light);
-            overflow-x: hidden;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* ========== GAME CONTAINER ========== */
+        /* ===== GAME CONTAINER ===== */
         .game-container {
             max-width: 600px;
-            width: 100%;
             margin: 0 auto;
-            flex: 1;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             position: relative;
             padding-bottom: 80px;
         }
 
-        /* ========== HEADER SECTION ========== */
+        /* ===== HEADER ===== */
         .header {
             padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: linear-gradient(180deg, rgba(10,10,26,0.8) 0%, rgba(10,10,26,0) 100%);
-            z-index: 100;
         }
 
         .profile {
@@ -62,8 +56,8 @@
         .profile-icon {
             width: 36px;
             height: 36px;
+            background: var(--secondary);
             border-radius: 8px;
-            background-color: var(--secondary);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -84,14 +78,18 @@
             color: var(--primary);
         }
 
-        /* ========== MAIN GAME AREA ========== */
+        .profit-display {
+            font-weight: 600;
+        }
+
+        /* ===== MAIN GAME AREA ===== */
         .main-game {
             flex: 1;
-            position: relative;
-            background-color: var(--primary);
+            background: var(--primary);
             border-top-left-radius: 30px;
             border-top-right-radius: 30px;
             margin-top: 10px;
+            position: relative;
             box-shadow: 0 -10px 30px rgba(243, 186, 47, 0.3);
         }
 
@@ -101,7 +99,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: var(--secondary);
+            background: var(--secondary);
             border-top-left-radius: 28px;
             border-top-right-radius: 28px;
             padding: 20px 15px;
@@ -109,66 +107,7 @@
             flex-direction: column;
         }
 
-        /* ========== DAILY REWARDS ========== */
-        .daily-rewards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .daily-card {
-            background-color: #272a2f;
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .daily-card.unlocked {
-            background: linear-gradient(135deg, #272a2f 0%, #1d2025 100%);
-            box-shadow: 0 4px 15px rgba(243, 186, 47, 0.2);
-        }
-
-        .daily-card.locked {
-            opacity: 0.6;
-            filter: grayscale(60%);
-        }
-
-        .daily-icon {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 8px;
-        }
-
-        .daily-label {
-            font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .daily-timer {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .daily-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 8px;
-            height: 8px;
-            background-color: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        /* ========== TAP AREA ========== */
+        /* ===== TAP AREA ===== */
         .tap-section {
             flex: 1;
             display: flex;
@@ -181,7 +120,6 @@
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 20px;
-            text-align: center;
         }
 
         .tap-container {
@@ -201,7 +139,6 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            user-select: none;
         }
 
         .tap-outer {
@@ -216,53 +153,64 @@
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
         }
 
-        .character {
-            width: 60%;
-            height: 60%;
+        /* ===== PANELS SYSTEM ===== */
+        .panel {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%) translateY(110%);
+            width: calc(100% - 30px);
+            max-width: 570px;
+            background: #272a2f;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.5);
+            z-index: 90;
+            transition: transform 0.3s ease;
+            max-height: 60vh;
+            overflow-y: auto;
         }
 
-        /* ========== PROGRESS BAR ========== */
-        .progress-container {
-            margin: 20px 0;
+        .panel.active {
+            transform: translateX(-50%) translateY(0);
         }
 
-        .progress-header {
+        .panel-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
-        .progress-level {
-            font-size: 14px;
-            font-weight: 600;
+        .panel-title {
+            font-size: 18px;
+            color: var(--primary);
         }
 
-        .progress-count {
-            font-size: 12px;
-            color: #85827d;
+        .close-panel {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 24px;
+            cursor: pointer;
         }
 
-        .progress-bar {
-            height: 8px;
-            background-color: rgba(67, 67, 59, 0.6);
-            border-radius: 4px;
-            overflow: hidden;
+        /* Specific panel styles */
+        #exchange-panel {
+            background: linear-gradient(135deg, #1d2025 0%, #272a2f 100%);
         }
 
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            background: linear-gradient(90deg, #90ef89 0%, #d692dd 50%, #726edd 100%);
-            transition: width 0.5s ease;
+        #mine-panel {
+            background: linear-gradient(135deg, #1d2025 0%, #2a1f2f 100%);
         }
 
-        /* ========== NAVIGATION ========== */
+        /* ===== NAVIGATION ===== */
         .navigation {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: #272a2f;
+            background: #272a2f;
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
@@ -279,11 +227,11 @@
             align-items: center;
             padding: 5px 10px;
             border-radius: 10px;
-            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .nav-item.active {
-            background-color: #1c1f24;
+            background: #1c1f24;
         }
 
         .nav-icon {
@@ -295,98 +243,35 @@
         .nav-label {
             font-size: 12px;
         }
-
-        /* ========== ANIMATIONS ========== */
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
-        }
-
-        .click-effect {
-            position: absolute;
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            pointer-events: none;
-            animation: float 1s forwards;
-            text-shadow: 0 0 5px var(--primary);
-            z-index: 10;
-        }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <!-- Header Section -->
+        <!-- Header -->
         <header class="header">
             <div class="profile">
                 <div class="profile-icon">
-                    <svg class="icon" viewBox="0 0 512 512" width="24" height="24">
+                    <svg viewBox="0 0 512 512" width="24" height="24">
                         <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
                     </svg>
                 </div>
                 <div class="profile-info">
-                    <div class="profile-name" id="username">Guest</div>
+                    <div class="profile-name" id="username">Player</div>
                     <div class="profile-level">Level <span id="current-level">1</span></div>
                 </div>
             </div>
-            <div class="profit-display">
-                <div class="profit-amount" id="profit-per-hour">0/h</div>
-            </div>
+            <div class="profit-display" id="profit-per-hour">0/h</div>
         </header>
 
-        <!-- Main Game Area -->
+        <!-- Main Game -->
         <main class="main-game">
             <div class="game-content">
-                <!-- Daily Rewards -->
-                <div class="daily-rewards">
-                    <div class="daily-card" id="daily-reward-1">
-                        <div class="daily-badge"></div>
-                        <svg class="daily-icon" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm1-13h-2v6h6v-2h-4z"/>
-                        </svg>
-                        <div class="daily-label">Daily Reward</div>
-                        <div class="daily-timer" id="daily-timer-1">Ready</div>
-                    </div>
-                    <div class="daily-card" id="daily-reward-2">
-                        <svg class="daily-icon" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
-                        </svg>
-                        <div class="daily-label">Daily Cipher</div>
-                        <div class="daily-timer" id="daily-timer-2">24:00</div>
-                    </div>
-                    <div class="daily-card" id="daily-reward-3">
-                        <svg class="daily-icon" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M19 19h-2v-4h2zm-7 0H9v-4h3zm-7 0H2v-4h3zm14-7h-2v-1c0-.5-.5-1 1-1h2v-1h-3c-.5 0-1-.5-1-1V5c0-.5.5-1 1-1h3v-1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h22v-1h-3c-.5 0-1-.5-1-1zm-14-3v-3h3v3zm7 0v-3h3v3z"/>
-                        </svg>
-                        <div class="daily-label">Daily Combo</div>
-                        <div class="daily-timer" id="daily-timer-3">24:00</div>
-                    </div>
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="progress-container">
-                    <div class="progress-header">
-                        <div class="progress-level">Progress</div>
-                        <div class="progress-count"><span id="current-progress">0</span>/<span id="max-progress">100</span></div>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <!-- Tap Area -->
                 <div class="tap-section">
                     <div class="points-display" id="points-display">0</div>
                     <div class="tap-container">
                         <div class="tap-circle tap-outer">
                             <div class="tap-circle tap-inner">
-                                <svg class="character" viewBox="0 0 512 512">
+                                <svg class="character" viewBox="0 0 512 512" width="80%" height="80%">
                                     <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
                                 </svg>
                             </div>
@@ -396,15 +281,46 @@
             </div>
         </main>
 
+        <!-- Exchange Panel -->
+        <div class="panel" id="exchange-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Exchange Center</h2>
+                <button class="close-panel">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="exchange-item">
+                    <h3>Convert Points</h3>
+                    <input type="number" id="exchange-amount" placeholder="Amount">
+                    <button id="exchange-button">Convert</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mine Panel -->
+        <div class="panel" id="mine-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Crypto Mine</h2>
+                <button class="close-panel">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="mine-progress">
+                    <h3>Mining Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="mine-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Navigation -->
         <nav class="navigation">
-            <div class="nav-item active">
+            <div class="nav-item" data-panel="exchange-panel">
                 <svg class="nav-icon" viewBox="0 0 24 24">
                     <path fill="currentColor" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
                 </svg>
                 <div class="nav-label">Exchange</div>
             </div>
-            <div class="nav-item">
+            <div class="nav-item" data-panel="mine-panel">
                 <svg class="nav-icon" viewBox="0 0 32 32">
                     <path fill="currentColor" d="M11.7 17.7c-.2-.2-.5-.3-.7-.3s-.5.1-.7.3l-6.6 6.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3l-.6-.6c-1-1-1.2-2.5-.5-3.7L6 12 3 9l-.6-1.8c-.2-.7 0-1.5.5-2l2.3-2.3c.4-.4.9-.6 1.4-.6.2 0 .4 0 .6.1L9 3l3 3 8-4.8c.5-.3 1-.4 1.5-.4.8 0 1.5.3 2.1.9l.6.6c.4.4.4 1 0 1.4l-6.6 6.6c-.4.4-.4 1 0 1.4l.6.6c.4.4.4 1 0 1.4l-4.6 4.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3L11.7 17.7zm19-9L18.7 14.7l-4 4 11.9 11.9c.4.4.9.6 1.4.6s1-.2 1.4-.6l1.2-1.2c.8-.8.8-2 0-2.8z"/>
                 </svg>
@@ -433,329 +349,113 @@
 
     <script>
         // ======================
-        // GAME STATE MANAGEMENT
+        // GAME STATE
         // ======================
         const gameState = {
-            // Player Data
-            username: localStorage.getItem('username') || 'Guest',
+            username: localStorage.getItem('username') || 'Player',
             points: parseInt(localStorage.getItem('points')) || 0,
             level: parseInt(localStorage.getItem('level')) || 1,
             progress: parseInt(localStorage.getItem('progress')) || 0,
             progressRequired: 100,
-            
-            // Daily Rewards
-            lastDailyClaim: {
-                reward: parseInt(localStorage.getItem('lastDailyClaimReward')) || 0,
-                cipher: parseInt(localStorage.getItem('lastDailyClaimCipher')) || 0,
-                combo: parseInt(localStorage.getItem('lastDailyClaimCombo')) || 0
-            },
-            
-            // Game Stats
-            totalTaps: parseInt(localStorage.getItem('totalTaps')) || 0,
             profitPerHour: parseInt(localStorage.getItem('profitPerHour')) || 0
         };
 
         // ======================
-        // DOM ELEMENTS
+        // PANEL SYSTEM
         // ======================
-        const elements = {
-            username: document.getElementById('username'),
-            pointsDisplay: document.getElementById('points-display'),
-            currentLevel: document.getElementById('current-level'),
-            progressFill: document.getElementById('progress-fill'),
-            currentProgress: document.getElementById('current-progress'),
-            maxProgress: document.getElementById('max-progress'),
-            profitPerHour: document.getElementById('profit-per-hour'),
-            dailyTimers: {
-                reward: document.getElementById('daily-timer-1'),
-                cipher: document.getElementById('daily-timer-2'),
-                combo: document.getElementById('daily-timer-3')
+        const panelSystem = {
+            currentPanel: null,
+            
+            init() {
+                // Setup navigation click handlers
+                document.querySelectorAll('.nav-item[data-panel]').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const panelId = item.getAttribute('data-panel');
+                        this.togglePanel(panelId);
+                    });
+                });
+
+                // Setup close buttons
+                document.querySelectorAll('.close-panel').forEach(btn => {
+                    btn.addEventListener('click', () => this.closePanel());
+                });
             },
-            dailyCards: {
-                reward: document.getElementById('daily-reward-1'),
-                cipher: document.getElementById('daily-reward-2'),
-                combo: document.getElementById('daily-reward-3')
+            
+            togglePanel(panelId) {
+                if (this.currentPanel === panelId) {
+                    this.closePanel();
+                    return;
+                }
+                
+                // Close current panel if open
+                if (this.currentPanel) {
+                    document.getElementById(this.currentPanel).classList.remove('active');
+                }
+                
+                // Open new panel
+                this.currentPanel = panelId;
+                document.getElementById(panelId).classList.add('active');
             },
-            tapArea: document.querySelector('.tap-outer')
+            
+            closePanel() {
+                if (this.currentPanel) {
+                    document.getElementById(this.currentPanel).classList.remove('active');
+                    this.currentPanel = null;
+                }
+            }
         };
 
         // ======================
-        // GAME INITIALIZATION
+        // GAME FUNCTIONS
         // ======================
-        function initGame() {
-            // Load saved data
-            loadGame();
-            
-            // Update UI
-            updateUI();
-            
-            // Setup event listeners
-            setupEventListeners();
-            
-            // Start game loops
-            startGameLoops();
-        }
-
-        // ======================
-        // CORE GAME FUNCTIONS
-        // ======================
-        function loadGame() {
-            // Update all UI elements from gameState
-            elements.username.textContent = gameState.username;
-            elements.pointsDisplay.textContent = gameState.points.toLocaleString();
-            elements.currentLevel.textContent = gameState.level;
-            elements.currentProgress.textContent = gameState.progress;
-            elements.maxProgress.textContent = gameState.progressRequired;
-            elements.progressFill.style.width = `${(gameState.progress / gameState.progressRequired) * 100}%`;
-            elements.profitPerHour.textContent = `${gameState.profitPerHour}/h`;
-            
-            // Initialize daily rewards
-            updateDailyRewardsUI();
-        }
-
         function updateUI() {
-            // Update points display with animation
-            animateValue(elements.pointsDisplay, parseInt(elements.pointsDisplay.textContent.replace(/,/g, '')), gameState.points, 500);
+            document.getElementById('username').textContent = gameState.username;
+            document.getElementById('points-display').textContent = gameState.points.toLocaleString();
+            document.getElementById('current-level').textContent = gameState.level;
+            document.getElementById('profit-per-hour').textContent = `${gameState.profitPerHour}/h`;
+        }
+
+        function handleTap() {
+            gameState.points += 1;
+            gameState.progress += 1;
             
-            // Update progress bar
-            elements.progressFill.style.width = `${(gameState.progress / gameState.progressRequired) * 100}%`;
-            elements.currentProgress.textContent = gameState.progress;
+            // Calculate profit (simplified example)
+            gameState.profitPerHour = Math.floor(gameState.level * 10 + gameState.points / 100);
             
-            // Update level if changed
-            elements.currentLevel.textContent = gameState.level;
+            // Check for level up
+            if (gameState.progress >= gameState.progressRequired) {
+                gameState.level += 1;
+                gameState.progress = 0;
+                gameState.progressRequired = Math.floor(100 * Math.pow(1.1, gameState.level - 1));
+            }
             
-            // Update profit per hour
-            elements.profitPerHour.textContent = `${gameState.profitPerHour}/h`;
+            updateUI();
+            saveGame();
         }
 
         function saveGame() {
-            // Save all game state to localStorage
             localStorage.setItem('username', gameState.username);
             localStorage.setItem('points', gameState.points.toString());
             localStorage.setItem('level', gameState.level.toString());
             localStorage.setItem('progress', gameState.progress.toString());
-            localStorage.setItem('totalTaps', gameState.totalTaps.toString());
             localStorage.setItem('profitPerHour', gameState.profitPerHour.toString());
-            
-            // Save daily rewards timestamps
-            localStorage.setItem('lastDailyClaimReward', gameState.lastDailyClaim.reward.toString());
-            localStorage.setItem('lastDailyClaimCipher', gameState.lastDailyClaim.cipher.toString());
-            localStorage.setItem('lastDailyClaimCombo', gameState.lastDailyClaim.combo.toString());
         }
 
         // ======================
-        // GAME MECHANICS
+        // INITIALIZATION
         // ======================
-        function handleTap() {
-            // Increase points and progress
-            gameState.points += 1;
-            gameState.progress += 1;
-            gameState.totalTaps += 1;
+        function initGame() {
+            // Initialize panel system
+            panelSystem.init();
             
-            // Check for level up
-            if (gameState.progress >= gameState.progressRequired) {
-                levelUp();
-            }
+            // Setup tap event
+            document.querySelector('.tap-outer').addEventListener('click', handleTap);
             
-            // Update profit (simplified example)
-            gameState.profitPerHour = Math.floor(gameState.level * 10 + gameState.totalTaps / 100);
-            
-            // Update UI and save
+            // Load saved data
             updateUI();
-            saveGame();
-            
-            // Create visual effect
-            createTapEffect();
         }
 
-        function levelUp() {
-            gameState.level += 1;
-            gameState.progress = 0;
-            gameState.progressRequired = Math.floor(100 * Math.pow(1.1, gameState.level - 1));
-            
-            // Update max progress display
-            elements.maxProgress.textContent = gameState.progressRequired;
-            
-            // Visual feedback
-            elements.currentLevel.classList.add('pulse');
-            setTimeout(() => elements.currentLevel.classList.remove('pulse'), 1000);
-        }
-
-        function claimDailyReward(type) {
-            const now = Date.now();
-            let rewardAmount = 0;
-            
-            switch (type) {
-                case 'reward':
-                    rewardAmount = 1000 * gameState.level;
-                    gameState.lastDailyClaim.reward = now;
-                    break;
-                case 'cipher':
-                    rewardAmount = 2500 * gameState.level;
-                    gameState.lastDailyClaim.cipher = now;
-                    break;
-                case 'combo':
-                    rewardAmount = 5000 * gameState.level;
-                    gameState.lastDailyClaim.combo = now;
-                    break;
-            }
-            
-            gameState.points += rewardAmount;
-            
-            // Update UI and save
-            updateUI();
-            saveGame();
-            updateDailyRewardsUI();
-            
-            // Visual feedback
-            elements.dailyCards[type].classList.add('pulse');
-            setTimeout(() => elements.dailyCards[type].classList.remove('pulse'), 1000);
-        }
-
-        // ======================
-        // DAILY REWARD SYSTEM
-        // ======================
-        function updateDailyRewardsUI() {
-            const now = Date.now();
-            const twentyFourHours = 24 * 60 * 60 * 1000;
-            
-            // Daily Reward
-            updateDailyRewardUI(
-                'reward', 
-                gameState.lastDailyClaim.reward, 
-                now, 
-                twentyFourHours
-            );
-            
-            // Daily Cipher
-            updateDailyRewardUI(
-                'cipher', 
-                gameState.lastDailyClaim.cipher, 
-                now, 
-                twentyFourHours
-            );
-            
-            // Daily Combo
-            updateDailyRewardUI(
-                'combo', 
-                gameState.lastDailyClaim.combo, 
-                now, 
-                twentyFourHours
-            );
-        }
-
-        function updateDailyRewardUI(type, lastClaim, now, cooldown) {
-            const timeSinceLastClaim = now - lastClaim;
-            const card = elements.dailyCards[type];
-            const timer = elements.dailyTimers[type];
-            
-            if (timeSinceLastClaim >= cooldown || lastClaim === 0) {
-                // Reward is available
-                card.classList.add('unlocked');
-                card.classList.remove('locked');
-                timer.textContent = 'Ready';
-                
-                // Show notification badge for reward
-                if (type === 'reward') {
-                    card.querySelector('.daily-badge').style.display = 'block';
-                }
-            } else {
-                // Reward is on cooldown
-                card.classList.add('locked');
-                card.classList.remove('unlocked');
-                
-                // Calculate remaining time
-                const remainingTime = cooldown - timeSinceLastClaim;
-                const hours = Math.floor(remainingTime / (1000 * 60 * 60));
-                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-                
-                timer.textContent = `${hours}h ${minutes}m`;
-                
-                // Hide notification badge
-                if (type === 'reward') {
-                    card.querySelector('.daily-badge').style.display = 'none';
-                }
-            }
-        }
-
-        // ======================
-        // VISUAL EFFECTS
-        // ======================
-        function createTapEffect() {
-            const effect = document.createElement('div');
-            effect.className = 'click-effect';
-            effect.textContent = '+1';
-            effect.style.left = `${Math.random() * 60 + 20}%`;
-            effect.style.top = `${Math.random() * 60 + 20}%`;
-            elements.tapArea.appendChild(effect);
-            
-            setTimeout(() => {
-                effect.remove();
-            }, 1000);
-        }
-
-        function animateValue(element, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const value = Math.floor(progress * (end - start) + start);
-                element.textContent = value.toLocaleString();
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
-        }
-
-        // ======================
-        // EVENT LISTENERS
-        // ======================
-        function setupEventListeners() {
-            // Tap area
-            elements.tapArea.addEventListener('click', handleTap);
-            
-            // Daily rewards
-            elements.dailyCards.reward.addEventListener('click', () => {
-                if (elements.dailyCards.reward.classList.contains('unlocked')) {
-                    claimDailyReward('reward');
-                }
-            });
-            
-            elements.dailyCards.cipher.addEventListener('click', () => {
-                if (elements.dailyCards.cipher.classList.contains('unlocked')) {
-                    claimDailyReward('cipher');
-                }
-            });
-            
-            elements.dailyCards.combo.addEventListener('click', () => {
-                if (elements.dailyCards.combo.classList.contains('unlocked')) {
-                    claimDailyReward('combo');
-                }
-            });
-        }
-
-        // ======================
-        // GAME LOOPS
-        // ======================
-        function startGameLoops() {
-            // Update daily rewards every minute
-            setInterval(updateDailyRewardsUI, 60000);
-            
-            // Passive income every second (simplified)
-            setInterval(() => {
-                if (gameState.profitPerHour > 0) {
-                    const pointsToAdd = gameState.profitPerHour / 3600; // Points per second
-                    gameState.points += pointsToAdd;
-                    elements.pointsDisplay.textContent = Math.floor(gameState.points).toLocaleString();
-                    saveGame();
-                }
-            }, 1000);
-        }
-
-        // ======================
-        // START THE GAME
-        // ======================
+        // Start the game when page loads
         document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
