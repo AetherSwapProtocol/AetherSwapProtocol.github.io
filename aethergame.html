@@ -465,23 +465,23 @@
         </div>
 
         <div class="page" id="page-friends">
-    <div class="game-content">
-        <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Invite Friends & Earn</h2>
+    <div class="game-content" style="padding-bottom: 20px;">
+        <h2 style="color: var(--primary); text-align: center; margin-top: 20px; margin-bottom: 25px;">Invite Friends & Earn</h2>
         
-        <!-- Rewards Section -->
-        <div style="margin: 20px; padding: 15px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
-            <p style="color: var(--light); margin-bottom: 10px;">Earn <span style="color: var(--accent); font-weight: 500;">10%</span> from friends and <span style="color: var(--accent); font-weight: 500;">5%</span> from their friends</p>
+        <!-- Rewards Card -->
+        <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
+            <p style="color: var(--light); margin-bottom: 12px; font-size: 14px; text-align: center;">Earn <span style="color: var(--accent);">10%</span> from friends and <span style="color: var(--accent);">5%</span> from their friends</p>
             
-            <div style="background: var(--dark); padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
-                <p style="color: var(--light); margin-bottom: 5px; font-size: 14px;">Available rewards</p>
-                <p id="available-rewards" style="font-size: 24px; color: var(--success); font-weight: 700;">0 AETH</p>
-                <button id="claim-rewards" style="background: var(--gradient-main); border: none; padding: 10px; border-radius: 8px; color: white; width: 100%; margin-top: 10px; font-weight: 600;">CLAIM</button>
+            <div style="margin-bottom: 15px;">
+                <p style="color: var(--light); margin-bottom: 5px; font-size: 13px; text-align: center;">Available rewards</p>
+                <p id="available-rewards" style="font-size: 24px; color: var(--success); font-weight: 700; text-align: center; margin: 5px 0;">0 AETH</p>
             </div>
+            <button id="claim-rewards" style="background: var(--gradient-main); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; font-weight: 600; cursor: pointer;">CLAIM</button>
         </div>
 
-        <!-- Stats Section -->
-        <div style="margin: 20px; padding: 15px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <!-- Stats Card -->
+        <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
                 <span style="color: var(--light);">Your referrals</span>
                 <span id="referral-count" style="color: var(--accent); font-weight: 500;">0</span>
             </div>
@@ -491,11 +491,11 @@
             </div>
         </div>
 
-        <!-- Invite Section -->
-        <div style="margin: 20px; padding: 15px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
-            <h3 style="color: var(--accent); margin-bottom: 15px; font-size: 16px;">YOUR INVITE CODE</h3>
-            <div id="referral-code" style="background: var(--dark); padding: 12px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: 1px; margin-bottom: 15px;"></div>
-            <button id="copy-invite" style="background: var(--gradient-main); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; font-weight: 600;">COPY INVITE LINK</button>
+        <!-- Invite Card -->
+        <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
+            <p style="color: var(--accent); margin-bottom: 15px; font-size: 16px; text-align: center; font-weight: 600;">YOUR INVITE CODE</p>
+            <div id="referral-code-display" style="background: var(--dark); padding: 12px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: 1px; margin-bottom: 15px; word-break: break-all;"></div>
+            <button id="copy-invite-btn" style="background: var(--gradient-main); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; font-weight: 600; cursor: pointer;">COPY INVITE LINK</button>
         </div>
     </div>
 </div>
