@@ -1,719 +1,762 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherSwap | Elite Experience</title>
+    <title>AetherSwap Elite</title>
     <style>
-        /* ===== [Vos styles CSS existants] ===== */
+        /* ========== GLOBAL STYLES ========== */
+        :root {
+            --primary: #f3ba2f;
+            --secondary: #1d2025;
+            --dark: #0a0a1a;
+            --light: #ffffff;
+            --success: #90ef89;
+        }
+
         * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: sans-serif;
-}
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-body {
-    background: #000;
-    color: #fff;
-    display: flex;
-    justify-content: center;
-}
-
-.game-container {
-    width: 100%;
-    max-width: 600px;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-.header {
-    padding: 1rem;
-    z-index: 10;
-}
-
-.profile {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding-top: 1rem;
-}
-
-.profile-icon {
-    padding: 0.25rem;
-    border-radius: 0.5rem;
-    background: #1d2025;
-}
-
-.profile-name {
-    font-size: 0.875rem;
-}
-
-.stats {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-top: 0.25rem;
-}
-
-.level-container {
-    flex: 1;
-}
-
-.level-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.875rem;
-}
-
-.progress-container {
-    display: flex;
-    align-items: center;
-    margin-top: 0.25rem;
-    border: 2px solid #43433b;
-    border-radius: 9999px;
-}
-
-.progress-bg {
-    width: 100%;
-    height: 0.5rem;
-    background: rgba(67, 67, 59, 0.6);
-    border-radius: 9999px;
-}
-
-.progress-gradient {
-    height: 0.5rem;
-    border-radius: 9999px;
-    background: linear-gradient(to right, #90ef89, #d692dd, #726edd);
-    transition: width 0.3s;
-}
-
-.exchange-container {
-    flex: 2;
-    max-width: 256px;
-    display: flex;
-    align-items: center;
-    border: 2px solid #43433b;
-    border-radius: 9999px;
-    padding: 0.125rem 1rem;
-    background: rgba(67, 67, 59, 0.6);
-    position: relative;
-}
-
-.exchange-icon {
-    width: 1.5rem;
-    height: 1.5rem;
-}
-
-.divider {
-    height: 2rem;
-    width: 2px;
-    background: #43433b;
-    margin: 0 0.5rem;
-}
-
-.profit-container {
-    flex: 1;
-    text-align: center;
-}
-
-.profit-label {
-    font-size: 0.75rem;
-    color: #85827d;
-    font-weight: 500;
-}
-
-.profit-value {
-    font-size: 0.875rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-}
-
-.coin-icon {
-    width: 1.125rem;
-    height: 1.125rem;
-}
-
-.info-icon {
-    color: #43433b;
-    width: 1.25rem;
-    height: 1.25rem;
-    cursor: pointer;
-}
-
-.language-wheel {
-    position: absolute;
-    right: -5px;
-    top: -5px;
-    background: #f3ba2f;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 10px;
-    font-weight: bold;
-    color: #000;
-}
-
-.language-popup {
-    position: absolute;
-    top: 30px;
-    right: 0;
-    background: #272a2f;
-    border-radius: 8px;
-    padding: 10px;
-    z-index: 100;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    display: none;
-}
-
-.language-option {
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.language-option:hover {
-    background: #1d2025;
-}
-
-.main-game {
-    flex-grow: 1;
-    margin-top: 1rem;
-    background: #f3ba2f;
-    border-top-left-radius: 3rem;
-    border-top-right-radius: 3rem;
-    position: relative;
-    box-shadow: 0 -26px 20px rgba(243, 186, 47, 0.3);
-}
-
-.game-content {
-    position: absolute;
-    top: 2px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #1d2025;
-    border-top-left-radius: 2.875rem;
-    border-top-right-radius: 2.875rem;
-    padding: 1.5rem 1rem 0;
-}
-
-.daily-cards {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-}
-
-.daily-card {
-    background: #272a2f;
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
-    width: 100%;
-    position: relative;
-    cursor: pointer;
-}
-
-.dot {
-    width: 6px;
-    height: 6px;
-    background: #fff;
-    border-radius: 50%;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    animation: blink 1s infinite;
-}
-
-.daily-icon {
-    width: 3rem;
-    height: 3rem;
-    margin: 0 auto;
-}
-
-.daily-label {
-    font-size: 0.625rem;
-    text-align: center;
-    color: #fff;
-    margin-top: 0.25rem;
-}
-
-.daily-timer {
-    font-size: 0.625rem;
-    font-weight: 500;
-    text-align: center;
-    color: #9ca3af;
-    margin-top: 0.5rem;
-}
-
-.points-display {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-}
-
-.points-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-}
-
-.points-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-}
-
-.points-value {
-    font-size: 2.25rem;
-    color: #fff;
-}
-
-.circle-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-}
-
-.circle-outer {
-    background: linear-gradient(to bottom, #575def, #202731);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 90vw;
-    height: 90vw;
-    max-width: 360px;
-    max-height: 360px;
-    border-radius: 50%;
-    padding: 1rem;
-    cursor: pointer;
-}
-
-.circle-inner {
-    background: radial-gradient(circle, #4960b2, #282e3e);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-}
-
-.character {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: contain;
-}
-
-.navigation {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 2rem);
-    max-width: 600px;
-    background: #272a2f;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 50;
-    border-radius: 1.5rem;
-    font-size: 0.75rem;
-    padding: 0.25rem;
-}
-
-.nav-item {
-    text-align: center;
-    color: #85827d;
-    width: 20%;
-    padding: 0.5rem;
-}
-
-.nav-item.active {
-    background: #1c1f24;
-    border-radius: 1rem;
-    margin: 0.25rem;
-}
-
-.nav-icon {
-    width: 2rem;
-    height: 2rem;
-    margin: 0 auto;
-}
-
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-}
-
-@keyframes float {
-    0% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-50px); }
-}
-
-.click-animation {
-    position: absolute;
-    font-size: 1.5rem;
-    font-weight: bold;
-    opacity: 0;
-    color: #fff;
-    pointer-events: none;
-    animation: float 1s;
-    text-shadow: 0 0 5px #f3ba2f;
-    z-index: 100;
-}
-
-.icon {
-    width: 24px;
-    height: 24px;
-    fill: currentColor;
-}
-
-.reset-btn {
-    position: fixed;
-    bottom: 70px;
-    right: 20px;
-    z-index: 999;
-    padding: 10px;
-    background: #f3ba2f;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
-        .preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #0a0a1a;
-            z-index: 9999;
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+        }
+
+        /* ========== GAME CONTAINER ========== */
+        .game-container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
+        /* ========== HEADER SECTION ========== */
+        .header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            overflow: hidden;
+            background: linear-gradient(180deg, rgba(10,10,26,0.8) 0%, rgba(10,10,26,0) 100%);
+            z-index: 100;
         }
 
-        .preloader-logo {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 30px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%236e45e2" d="M50 0L100 50L50 100L0 50Z"/></svg>') no-repeat center;
-            background-size: contain;
-            animation: pulse 2s infinite alternate;
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .loading-bar-container {
-            width: 300px;
-            height: 6px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            overflow: hidden;
+        .profile-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .profile-level {
+            font-size: 12px;
+            color: var(--primary);
+        }
+
+        /* ========== MAIN GAME AREA ========== */
+        .main-game {
+            flex: 1;
+            position: relative;
+            background-color: var(--primary);
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
+            margin-top: 10px;
+            box-shadow: 0 -10px 30px rgba(243, 186, 47, 0.3);
+        }
+
+        .game-content {
+            position: absolute;
+            top: 2px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--secondary);
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========== DAILY REWARDS ========== */
+        .daily-rewards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
             margin-bottom: 20px;
         }
 
-        .loading-progress {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #6e45e2, #88d3ce);
-            border-radius: 3px;
-            transition: width 0.3s ease;
+        .daily-card {
+            background-color: #272a2f;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
 
-        .loading-text {
-            color: white;
-            font-family: 'Arial', sans-serif;
-            font-size: 18px;
-            margin-top: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .daily-card.unlocked {
+            background: linear-gradient(135deg, #272a2f 0%, #1d2025 100%);
+            box-shadow: 0 4px 15px rgba(243, 186, 47, 0.2);
         }
 
-        .loading-percentage {
-            font-weight: bold;
-            color: #88d3ce;
+        .daily-card.locked {
+            opacity: 0.6;
+            filter: grayscale(60%);
         }
 
-        .loading-tip {
-            color: rgba(255,255,255,0.6);
-            font-size: 14px;
-            margin-top: 30px;
+        .daily-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 8px;
+        }
+
+        .daily-label {
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .daily-timer {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .daily-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        /* ========== TAP AREA ========== */
+        .tap-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .points-display {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
             text-align: center;
-            max-width: 400px;
-            line-height: 1.5;
         }
 
+        .tap-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            max-width: 80vw;
+            max-height: 80vw;
+        }
+
+        .tap-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .tap-outer {
+            background: linear-gradient(135deg, #575def 0%, #202731 100%);
+            box-shadow: 0 10px 30px rgba(87, 93, 239, 0.3);
+        }
+
+        .tap-inner {
+            width: 92%;
+            height: 92%;
+            background: radial-gradient(circle, #4960b2 0%, #282e3e 100%);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .character {
+            width: 60%;
+            height: 60%;
+        }
+
+        /* ========== PROGRESS BAR ========== */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .progress-level {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-count {
+            font-size: 12px;
+            color: #85827d;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(67, 67, 59, 0.6);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #90ef89 0%, #d692dd 50%, #726edd 100%);
+            transition: width 0.5s ease;
+        }
+
+        /* ========== NAVIGATION ========== */
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #272a2f;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            background-color: #1c1f24;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 5px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+        }
+
+        /* ========== ANIMATIONS ========== */
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.1); opacity: 1; }
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        @keyframes fadeOut {
-            to { opacity: 0; visibility: hidden; }
+        @keyframes float {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
         }
 
-        /* ===== [Fin des ajouts CSS] ===== */
+        .click-effect {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            pointer-events: none;
+            animation: float 1s forwards;
+            text-shadow: 0 0 5px var(--primary);
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
-    <!-- Preloader Premium -->
-    <div class="preloader" id="preloader">
-        <div class="preloader-logo"></div>
-        <div class="loading-bar-container">
-            <div class="loading-progress" id="loadingProgress"></div>
-        </div>
-        <div class="loading-text">
-            INITIALIZING AETHER ENGINE: <span class="loading-percentage" id="loadingPercentage">0%</span>
-        </div>
-        <div class="loading-tip" id="loadingTip">
-            Did you know? The first Aether transaction happened in 2023
-        </div>
-    </div>
-
-    <!-- Votre HTML de jeu existant ici -->
-   <div class="game-container">
-    <div class="header">
-        <div class="profile">
-            <div class="profile-icon">
-                <svg class="icon" viewBox="0 0 512 512">
-                    <path d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
-                </svg>
-            </div>
-            <div class="profile-name" id="profile-name">Aether (CEO)</div>
-        </div>
-        <div class="stats">
-            <div class="level-container">
-                <div class="level-header">
-                    <p class="level-name">Legendary</p>
-                    <p class="level-count">7 <span class="text-muted">/ 10</span></p>
+    <div class="game-container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="profile">
+                <div class="profile-icon">
+                    <svg class="icon" viewBox="0 0 512 512" width="24" height="24">
+                        <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
+                    </svg>
                 </div>
-                <div class="progress-container">
-                    <div class="progress-bg">
-                        <div class="progress-gradient" style="width:27.5%"></div>
+                <div class="profile-info">
+                    <div class="profile-name" id="username">Guest</div>
+                    <div class="profile-level">Level <span id="current-level">1</span></div>
+                </div>
+            </div>
+            <div class="profit-display">
+                <div class="profit-amount" id="profit-per-hour">0/h</div>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <main class="main-game">
+            <div class="game-content">
+                <!-- Daily Rewards -->
+                <div class="daily-rewards">
+                    <div class="daily-card" id="daily-reward-1">
+                        <div class="daily-badge"></div>
+                        <svg class="daily-icon" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm1-13h-2v6h6v-2h-4z"/>
+                        </svg>
+                        <div class="daily-label">Daily Reward</div>
+                        <div class="daily-timer" id="daily-timer-1">Ready</div>
+                    </div>
+                    <div class="daily-card" id="daily-reward-2">
+                        <svg class="daily-icon" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
+                        </svg>
+                        <div class="daily-label">Daily Cipher</div>
+                        <div class="daily-timer" id="daily-timer-2">24:00</div>
+                    </div>
+                    <div class="daily-card" id="daily-reward-3">
+                        <svg class="daily-icon" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M19 19h-2v-4h2zm-7 0H9v-4h3zm-7 0H2v-4h3zm14-7h-2v-1c0-.5-.5-1 1-1h2v-1h-3c-.5 0-1-.5-1-1V5c0-.5.5-1 1-1h3v-1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h22v-1h-3c-.5 0-1-.5-1-1zm-14-3v-3h3v3zm7 0v-3h3v3z"/>
+                        </svg>
+                        <div class="daily-label">Daily Combo</div>
+                        <div class="daily-timer" id="daily-timer-3">24:00</div>
                     </div>
                 </div>
-            </div>
-            <div class="exchange-container">
-                <svg class="exchange-icon" viewBox="0 0 24 24">
-                    <path d="M7 2h6v2H7zm0 4h2v4H5V4a2 2 0 0 1 2-2zm10 6h2v6h-2zm-4-2h4V8h-4zm0 8h4v-2h-4zm-6-6h6v2H7zm0 4h2v4H7z"/>
-                </svg>
-                <div class="divider"></div>
-                <div class="profit-container">
-                    <p class="profit-label">Profit per hour</p>
-                    <div class="profit-value">
-                        <svg class="coin-icon" viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
-                            <text x="12" y="16" text-anchor="middle" font-size="12" fill="currentColor">$</text>
-                        </svg>
-                        <p id="profit-value">+126.42K</p>
-                        <svg class="info-icon" id="language-wheel-trigger" viewBox="0 0 24 24">
-                            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15a1 1 0 1 1-2 0v-6a1 1 0 1 1 2 0zm-1-9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
-                        </svg>
-                        <div class="language-wheel">🌐</div>
-                        <div class="language-popup" id="language-popup">
-                            <div class="language-option" data-lang="en">English</div>
-                            <div class="language-option" data-lang="fr">Français</div>
-                            <div class="language-option" data-lang="es">Español</div>
-                            <div class="language-option" data-lang="de">Deutsch</div>
-                            <div class="language-option" data-lang="it">Italiano</div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <div class="progress-level">Progress</div>
+                        <div class="progress-count"><span id="current-progress">0</span>/<span id="max-progress">100</span></div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Tap Area -->
+                <div class="tap-section">
+                    <div class="points-display" id="points-display">0</div>
+                    <div class="tap-container">
+                        <div class="tap-circle tap-outer">
+                            <div class="tap-circle tap-inner">
+                                <svg class="character" viewBox="0 0 512 512">
+                                    <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="main-game">
-        <div class="game-content">
-            <div class="daily-cards">
-                <div class="daily-card" id="daily-reward">
-                    <div class="dot"></div>
-                    <svg class="daily-icon" viewBox="0 0 24 24">
-                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm1-13h-2v6h6v-2h-4z"/>
-                    </svg>
-                    <p class="daily-label">Daily reward</p>
-                    <p class="daily-timer">00:12</p>
-                </div>
-                <div class="daily-card" id="daily-cipher">
-                    <div class="dot"></div>
-                    <svg class="daily-icon" viewBox="0 0 24 24">
-                        <path d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
-                    </svg>
-                    <p class="daily-label">Daily cipher</p>
-                    <p class="daily-timer">05:37</p>
-                </div>
-                <div class="daily-card" id="daily-combo">
-                    <div class="dot"></div>
-                    <svg class="daily-icon" viewBox="0 0 24 24">
-                        <path d="M19 19h-2v-4h2zm-7 0H9v-4h3zm-7 0H2v-4h3zm14-7h-2v-1c0-.5-.5-1 1-1h2v-1h-3c-.5 0-1-.5-1-1V5c0-.5.5-1 1-1h3v-1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h22v-1h-3c-.5 0-1-.5-1-1zm-14-3v-3h3v3zm7 0v-3h3v3z"/>
-                    </svg>
-                    <p class="daily-label">Daily combo</p>
-                    <p class="daily-timer">12:45</p>
-                </div>
+        </main>
+
+        <!-- Navigation -->
+        <nav class="navigation">
+            <div class="nav-item active">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
+                </svg>
+                <div class="nav-label">Exchange</div>
             </div>
-            <div class="points-display">
-                <div class="points-container">
-                    <svg class="points-icon" viewBox="0 0 24 24">
-                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm1-13h-2v6h6v-2h-4z"/>
-                    </svg>
-                    <p class="points-value" id="points-value">22,749,365</p>
-                </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 32 32">
+                    <path fill="currentColor" d="M11.7 17.7c-.2-.2-.5-.3-.7-.3s-.5.1-.7.3l-6.6 6.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3l-.6-.6c-1-1-1.2-2.5-.5-3.7L6 12 3 9l-.6-1.8c-.2-.7 0-1.5.5-2l2.3-2.3c.4-.4.9-.6 1.4-.6.2 0 .4 0 .6.1L9 3l3 3 8-4.8c.5-.3 1-.4 1.5-.4.8 0 1.5.3 2.1.9l.6.6c.4.4.4 1 0 1.4l-6.6 6.6c-.4.4-.4 1 0 1.4l.6.6c.4.4.4 1 0 1.4l-4.6 4.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3L11.7 17.7zm19-9L18.7 14.7l-4 4 11.9 11.9c.4.4.9.6 1.4.6s1-.2 1.4-.6l1.2-1.2c.8-.8.8-2 0-2.8z"/>
+                </svg>
+                <div class="nav-label">Mine</div>
             </div>
-            <div class="circle-container">
-                <div class="circle-outer" id="tap-zone">
-                    <div class="circle-inner">
-                        <svg class="character" viewBox="0 0 512 512">
-                            <path d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
-                        </svg>
-                    </div>
-                </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 28 28">
+                    <path fill="currentColor" d="M17.75 18c1 0 1.8.8 1.8 1.8v2h-1.8v-2h-6.5v2H9.5v-2c0-1-.8-1.8-1.8-1.8H7.6c1-.7 1.8-1.8 1.8-3.2v-1.3c0-1.4-.8-2.5-1.8-3.2H7.6c1-.7 1.8-1.8 1.8-3.2V7.6c0-1.4-.8-2.5-1.8-3.2h1.1c1 0 1.8-.8 1.8-1.8V1h1.8v1.8h6.5V1h1.8v1.8c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1c-1 0-1.8.8-1.8 1.8v1.3c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1zM14 10c1.9 0 3.5 1.6 3.5 3.5S15.9 17 14 17s-3.5-1.6-3.5-3.5S12.1 10 14 10zm6.5-6c1.9 0 3.5 1.6 3.5 3.5S22.4 11 20.5 11 17 9.4 17 7.5 18.6 4 20.5 4zM7.5 4C9.4 4 11 5.6 11 7.5S9.4 11 7.5 11 4 9.4 4 7.5 5.6 4 7.5 4z"/>
+                </svg>
+                <div class="nav-label">Friends</div>
             </div>
-        </div>
-    </div>
-    <div class="navigation">
-        <div class="nav-item active">
-            <svg class="nav-icon" viewBox="0 0 24 24">
-                <path d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
-            </svg>
-            <p>Exchange</p>
-        </div>
-        <div class="nav-item">
-            <svg class="nav-icon" viewBox="0 0 32 32">
-                <path d="M11.7 17.7c-.2-.2-.5-.3-.7-.3s-.5.1-.7.3l-6.6 6.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3l-.6-.6c-1-1-1.2-2.5-.5-3.7L6 12 3 9l-.6-1.8c-.2-.7 0-1.5.5-2l2.3-2.3c.4-.4.9-.6 1.4-.6.2 0 .4 0 .6.1L9 3l3 3 8-4.8c.5-.3 1-.4 1.5-.4.8 0 1.5.3 2.1.9l.6.6c.4.4.4 1 0 1.4l-6.6 6.6c-.4.4-.4 1 0 1.4l.6.6c.4.4.4 1 0 1.4l-4.6 4.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3L11.7 17.7zm19-9L18.7 14.7l-4 4 11.9 11.9c.4.4.9.6 1.4.6s1-.2 1.4-.6l1.2-1.2c.8-.8.8-2 0-2.8z"/>
-            </svg>
-            <p>Mine</p>
-        </div>
-        <div class="nav-item">
-            <svg class="nav-icon" viewBox="0 0 28 28">
-                <path d="M17.75 18c1 0 1.8.8 1.8 1.8v2h-1.8v-2h-6.5v2H9.5v-2c0-1-.8-1.8-1.8-1.8H7.6c1-.7 1.8-1.8 1.8-3.2v-1.3c0-1.4-.8-2.5-1.8-3.2H7.6c1-.7 1.8-1.8 1.8-3.2V7.6c0-1.4-.8-2.5-1.8-3.2h1.1c1 0 1.8-.8 1.8-1.8V1h1.8v1.8h6.5V1h1.8v1.8c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1c-1 0-1.8.8-1.8 1.8v1.3c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1zM14 10c1.9 0 3.5 1.6 3.5 3.5S15.9 17 14 17s-3.5-1.6-3.5-3.5S12.1 10 14 10zm6.5-6c1.9 0 3.5 1.6 3.5 3.5S22.4 11 20.5 11 17 9.4 17 7.5 18.6 4 20.5 4zM7.5 4C9.4 4 11 5.6 11 7.5S9.4 11 7.5 11 4 9.4 4 7.5 5.6 4 7.5 4z"/>
-            </svg>
-            <p>Friends</p>
-        </div>
-        <div class="nav-item">
-            <svg class="nav-icon" viewBox="0 0 512 512">
-                <path d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"/>
-            </svg>
-            <p>Earn</p>
-        </div>
-        <div class="nav-item">
-            <svg class="nav-icon" viewBox="0 0 512 512">
-                <path d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
-            </svg>
-            <p>Airdrop</p>
-        </div>
-    </div>
-</div>
-<button class="reset-btn">🔁 Reset</button>
-    <!-- ... (reste du code inchangé) ... -->
-</div>
-<button class="reset-btn">🔁 Reset</button>
-    <div class="game-container">
-        <!-- ... -->
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 512 512">
+                    <path fill="currentColor" d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"/>
+                </svg>
+                <div class="nav-label">Earn</div>
+            </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 512 512">
+                    <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
+                </svg>
+                <div class="nav-label">Airdrop</div>
+            </div>
+        </nav>
     </div>
 
     <script>
         // ======================
-        // SYSTÈME DE CHARGEMENT PREMIUM
+        // GAME STATE MANAGEMENT
         // ======================
-        const loadingTips = [
-            "Pro Tip: Tap faster during full moons for bonus yields",
-            "Aether nodes sync 40% faster when market volatility is high",
-            "Your first daily claim has 3x multiplier",
-            "Over 2M traders joined AetherSwap this month",
-            "Did you know? Holding for 24h activates compound mode"
-        ];
-
-        const assets = [
-            {name: "core", size: 150},
-            {name: "textures", size: 320},
-            {name: "audio", size: 75},
-            {name: "market-data", size: 210},
-            {name: "ai-models", size: 180}
-        ];
-
-        function initPreloader() {
-            const preloader = document.getElementById('preloader');
-            const progressBar = document.getElementById('loadingProgress');
-            const percentage = document.getElementById('loadingPercentage');
-            const tipElement = document.getElementById('loadingTip');
-
-            let totalSize = assets.reduce((sum, asset) => sum + asset.size, 0);
-            let loaded = 0;
-            let currentAsset = 0;
-
-            // Random tip
-            tipElement.textContent = loadingTips[Math.floor(Math.random() * loadingTips.length)];
-
-            // Simulation de chargement premium
-            const loadNextAsset = () => {
-                if (currentAsset < assets.length) {
-                    const asset = assets[currentAsset];
-                    const loadTime = (asset.size / totalSize) * 3000; // 3s total
-                    
-                    // Animation fluide
-                    const steps = 20;
-                    const stepSize = asset.size / steps;
-                    
-                    let currentStep = 0;
-                    const loadInterval = setInterval(() => {
-                        loaded += stepSize;
-                        currentStep++;
-                        
-                        const percent = Math.min(Math.floor((loaded / totalSize) * 100), 100);
-                        progressBar.style.width = `${percent}%`;
-                        percentage.textContent = `${percent}%`;
-                        
-                        // Changement dynamique du tip
-                        if (percent % 25 === 0) {
-                            tipElement.style.opacity = 0;
-                            setTimeout(() => {
-                                tipElement.textContent = loadingTips[(currentAsset + percent/25) % loadingTips.length];
-                                tipElement.style.opacity = 1;
-                            }, 300);
-                        }
-
-                        if (currentStep >= steps) {
-                            clearInterval(loadInterval);
-                            currentAsset++;
-                            setTimeout(loadNextAsset, 200); // Petit délai entre les assets
-                        }
-                    }, loadTime / steps);
-                } else {
-                    // Chargement complet
-                    setTimeout(() => {
-                        preloader.style.animation = "fadeOut 0.5s forwards";
-                        setTimeout(() => {
-                            preloader.remove();
-                            initGame(); // Lancez votre jeu ici
-                        }, 500);
-                    }, 500);
-                }
-            };
-
-            loadNextAsset();
-        }
+        const gameState = {
+            // Player Data
+            username: localStorage.getItem('username') || 'Guest',
+            points: parseInt(localStorage.getItem('points')) || 0,
+            level: parseInt(localStorage.getItem('level')) || 1,
+            progress: parseInt(localStorage.getItem('progress')) || 0,
+            progressRequired: 100,
+            
+            // Daily Rewards
+            lastDailyClaim: {
+                reward: parseInt(localStorage.getItem('lastDailyClaimReward')) || 0,
+                cipher: parseInt(localStorage.getItem('lastDailyClaimCipher')) || 0,
+                combo: parseInt(localStorage.getItem('lastDailyClaimCombo')) || 0
+            },
+            
+            // Game Stats
+            totalTaps: parseInt(localStorage.getItem('totalTaps')) || 0,
+            profitPerHour: parseInt(localStorage.getItem('profitPerHour')) || 0
+        };
 
         // ======================
-        // INITIALISATION DU JEU
+        // DOM ELEMENTS
+        // ======================
+        const elements = {
+            username: document.getElementById('username'),
+            pointsDisplay: document.getElementById('points-display'),
+            currentLevel: document.getElementById('current-level'),
+            progressFill: document.getElementById('progress-fill'),
+            currentProgress: document.getElementById('current-progress'),
+            maxProgress: document.getElementById('max-progress'),
+            profitPerHour: document.getElementById('profit-per-hour'),
+            dailyTimers: {
+                reward: document.getElementById('daily-timer-1'),
+                cipher: document.getElementById('daily-timer-2'),
+                combo: document.getElementById('daily-timer-3')
+            },
+            dailyCards: {
+                reward: document.getElementById('daily-reward-1'),
+                cipher: document.getElementById('daily-reward-2'),
+                combo: document.getElementById('daily-reward-3')
+            },
+            tapArea: document.querySelector('.tap-outer')
+        };
+
+        // ======================
+        // GAME INITIALIZATION
         // ======================
         function initGame() {
-            // [Votre code d'initialisation de jeu existant]
-            console.log("Jeu entièrement chargé !");
+            // Load saved data
+            loadGame();
+            
+            // Update UI
+            updateUI();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Start game loops
+            startGameLoops();
         }
 
-        // Démarrer le preloader
-        window.addEventListener('DOMContentLoaded', initPreloader);
+        // ======================
+        // CORE GAME FUNCTIONS
+        // ======================
+        function loadGame() {
+            // Update all UI elements from gameState
+            elements.username.textContent = gameState.username;
+            elements.pointsDisplay.textContent = gameState.points.toLocaleString();
+            elements.currentLevel.textContent = gameState.level;
+            elements.currentProgress.textContent = gameState.progress;
+            elements.maxProgress.textContent = gameState.progressRequired;
+            elements.progressFill.style.width = `${(gameState.progress / gameState.progressRequired) * 100}%`;
+            elements.profitPerHour.textContent = `${gameState.profitPerHour}/h`;
+            
+            // Initialize daily rewards
+            updateDailyRewardsUI();
+        }
+
+        function updateUI() {
+            // Update points display with animation
+            animateValue(elements.pointsDisplay, parseInt(elements.pointsDisplay.textContent.replace(/,/g, '')), gameState.points, 500);
+            
+            // Update progress bar
+            elements.progressFill.style.width = `${(gameState.progress / gameState.progressRequired) * 100}%`;
+            elements.currentProgress.textContent = gameState.progress;
+            
+            // Update level if changed
+            elements.currentLevel.textContent = gameState.level;
+            
+            // Update profit per hour
+            elements.profitPerHour.textContent = `${gameState.profitPerHour}/h`;
+        }
+
+        function saveGame() {
+            // Save all game state to localStorage
+            localStorage.setItem('username', gameState.username);
+            localStorage.setItem('points', gameState.points.toString());
+            localStorage.setItem('level', gameState.level.toString());
+            localStorage.setItem('progress', gameState.progress.toString());
+            localStorage.setItem('totalTaps', gameState.totalTaps.toString());
+            localStorage.setItem('profitPerHour', gameState.profitPerHour.toString());
+            
+            // Save daily rewards timestamps
+            localStorage.setItem('lastDailyClaimReward', gameState.lastDailyClaim.reward.toString());
+            localStorage.setItem('lastDailyClaimCipher', gameState.lastDailyClaim.cipher.toString());
+            localStorage.setItem('lastDailyClaimCombo', gameState.lastDailyClaim.combo.toString());
+        }
+
+        // ======================
+        // GAME MECHANICS
+        // ======================
+        function handleTap() {
+            // Increase points and progress
+            gameState.points += 1;
+            gameState.progress += 1;
+            gameState.totalTaps += 1;
+            
+            // Check for level up
+            if (gameState.progress >= gameState.progressRequired) {
+                levelUp();
+            }
+            
+            // Update profit (simplified example)
+            gameState.profitPerHour = Math.floor(gameState.level * 10 + gameState.totalTaps / 100);
+            
+            // Update UI and save
+            updateUI();
+            saveGame();
+            
+            // Create visual effect
+            createTapEffect();
+        }
+
+        function levelUp() {
+            gameState.level += 1;
+            gameState.progress = 0;
+            gameState.progressRequired = Math.floor(100 * Math.pow(1.1, gameState.level - 1));
+            
+            // Update max progress display
+            elements.maxProgress.textContent = gameState.progressRequired;
+            
+            // Visual feedback
+            elements.currentLevel.classList.add('pulse');
+            setTimeout(() => elements.currentLevel.classList.remove('pulse'), 1000);
+        }
+
+        function claimDailyReward(type) {
+            const now = Date.now();
+            let rewardAmount = 0;
+            
+            switch (type) {
+                case 'reward':
+                    rewardAmount = 1000 * gameState.level;
+                    gameState.lastDailyClaim.reward = now;
+                    break;
+                case 'cipher':
+                    rewardAmount = 2500 * gameState.level;
+                    gameState.lastDailyClaim.cipher = now;
+                    break;
+                case 'combo':
+                    rewardAmount = 5000 * gameState.level;
+                    gameState.lastDailyClaim.combo = now;
+                    break;
+            }
+            
+            gameState.points += rewardAmount;
+            
+            // Update UI and save
+            updateUI();
+            saveGame();
+            updateDailyRewardsUI();
+            
+            // Visual feedback
+            elements.dailyCards[type].classList.add('pulse');
+            setTimeout(() => elements.dailyCards[type].classList.remove('pulse'), 1000);
+        }
+
+        // ======================
+        // DAILY REWARD SYSTEM
+        // ======================
+        function updateDailyRewardsUI() {
+            const now = Date.now();
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+            
+            // Daily Reward
+            updateDailyRewardUI(
+                'reward', 
+                gameState.lastDailyClaim.reward, 
+                now, 
+                twentyFourHours
+            );
+            
+            // Daily Cipher
+            updateDailyRewardUI(
+                'cipher', 
+                gameState.lastDailyClaim.cipher, 
+                now, 
+                twentyFourHours
+            );
+            
+            // Daily Combo
+            updateDailyRewardUI(
+                'combo', 
+                gameState.lastDailyClaim.combo, 
+                now, 
+                twentyFourHours
+            );
+        }
+
+        function updateDailyRewardUI(type, lastClaim, now, cooldown) {
+            const timeSinceLastClaim = now - lastClaim;
+            const card = elements.dailyCards[type];
+            const timer = elements.dailyTimers[type];
+            
+            if (timeSinceLastClaim >= cooldown || lastClaim === 0) {
+                // Reward is available
+                card.classList.add('unlocked');
+                card.classList.remove('locked');
+                timer.textContent = 'Ready';
+                
+                // Show notification badge for reward
+                if (type === 'reward') {
+                    card.querySelector('.daily-badge').style.display = 'block';
+                }
+            } else {
+                // Reward is on cooldown
+                card.classList.add('locked');
+                card.classList.remove('unlocked');
+                
+                // Calculate remaining time
+                const remainingTime = cooldown - timeSinceLastClaim;
+                const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                
+                timer.textContent = `${hours}h ${minutes}m`;
+                
+                // Hide notification badge
+                if (type === 'reward') {
+                    card.querySelector('.daily-badge').style.display = 'none';
+                }
+            }
+        }
+
+        // ======================
+        // VISUAL EFFECTS
+        // ======================
+        function createTapEffect() {
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            effect.textContent = '+1';
+            effect.style.left = `${Math.random() * 60 + 20}%`;
+            effect.style.top = `${Math.random() * 60 + 20}%`;
+            elements.tapArea.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 1000);
+        }
+
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = value.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // ======================
+        // EVENT LISTENERS
+        // ======================
+        function setupEventListeners() {
+            // Tap area
+            elements.tapArea.addEventListener('click', handleTap);
+            
+            // Daily rewards
+            elements.dailyCards.reward.addEventListener('click', () => {
+                if (elements.dailyCards.reward.classList.contains('unlocked')) {
+                    claimDailyReward('reward');
+                }
+            });
+            
+            elements.dailyCards.cipher.addEventListener('click', () => {
+                if (elements.dailyCards.cipher.classList.contains('unlocked')) {
+                    claimDailyReward('cipher');
+                }
+            });
+            
+            elements.dailyCards.combo.addEventListener('click', () => {
+                if (elements.dailyCards.combo.classList.contains('unlocked')) {
+                    claimDailyReward('combo');
+                }
+            });
+        }
+
+        // ======================
+        // GAME LOOPS
+        // ======================
+        function startGameLoops() {
+            // Update daily rewards every minute
+            setInterval(updateDailyRewardsUI, 60000);
+            
+            // Passive income every second (simplified)
+            setInterval(() => {
+                if (gameState.profitPerHour > 0) {
+                    const pointsToAdd = gameState.profitPerHour / 3600; // Points per second
+                    gameState.points += pointsToAdd;
+                    elements.pointsDisplay.textContent = Math.floor(gameState.points).toLocaleString();
+                    saveGame();
+                }
+            }, 1000);
+        }
+
+        // ======================
+        // START THE GAME
+        // ======================
+        document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
 </html>
