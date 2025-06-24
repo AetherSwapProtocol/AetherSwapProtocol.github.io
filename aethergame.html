@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Aether-Coin - Jeu Web autonome</title>
+<title>Aether-Coin Pro - Jeu Web avec Gains Passifs</title>
 <style>
   /* === VARIABLES === */
   :root {
@@ -15,6 +15,9 @@
     --color-energy-full: #44a74b;
     --color-energy-mid: #d8b94f;
     --color-energy-low: #b94141;
+    --color-success: #4caf50;
+    --color-warning: #ff9800;
+    --color-danger: #f44336;
     --font-main: 'Rajdhani', sans-serif;
   }
 
@@ -60,9 +63,18 @@
   #title {
     color: white;
     user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  #coins-display {
+  #title img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+  }
+
+  .currency-display {
     background: #273f91;
     padding: 6px 14px;
     border-radius: 20px;
@@ -70,6 +82,7 @@
     text-align: center;
     box-shadow: 0 0 10px #2f51e9, 0 0 20px 5px rgba(47, 81, 233, 0.3);
     font-feature-settings: "tnum";
+    margin-left: 8px;
   }
 
   #energy-container {
@@ -86,8 +99,7 @@
     background: #25365c;
     border-radius: 7px;
     overflow: hidden;
-    box-shadow:
-      inset 0 0 10px rgba(0,0,0,0.4);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
     margin-bottom: 4px;
   }
 
@@ -96,9 +108,7 @@
     width: 100%;
     background: var(--color-energy-full);
     transition: width 0.4s ease;
-    box-shadow:
-      0 0 10px #43d84f,
-      inset 0 0 5px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 10px #43d84f, inset 0 0 5px rgba(255, 255, 255, 0.5);
   }
 
   #energy-text {
@@ -141,6 +151,7 @@
     border-radius: 8px 8px 0 0;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
   }
 
   nav button:hover {
@@ -151,6 +162,21 @@
     background: #455bb5;
     color: #e7ecff;
     box-shadow: inset 0 -4px 10px #2b3d89, 0 0 10px rgba(69, 91, 181, 0.7);
+  }
+
+  nav button .notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--color-danger);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* === TAB CONTENT === */
@@ -169,6 +195,7 @@
   #principal {
     align-items: center;
     justify-content: center;
+    gap: 20px;
   }
 
   #click-button {
@@ -218,34 +245,156 @@
     }
   }
 
-  /* === COINS FLY ANIMATION === */
-  .coin-fly {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    background: radial-gradient(circle at 50% 50%, #6cff9c, #26a530);
-    border-radius: 50%;
-    box-shadow: 0 0 10px #40ff6f;
-    pointer-events: none;
-    animation: flyUp 1s ease-out forwards;
-    filter: drop-shadow(0 0 5px #37d949);
-    z-index: 1000;
+  /* === PASSIVE INCOME SECTION === */
+  #passive-income {
+    width: 100%;
+    background: rgba(39, 63, 145, 0.3);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
-  @keyframes flyUp {
-    0% {
-      opacity: 1;
-      transform: translate(0, 0) scale(1);
-    }
-    100% {
-      opacity: 0;
-      transform: translate(var(--x, 0)px, -100px) scale(0.3);
-    }
+  .income-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .income-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #aabbff;
+  }
+
+  .income-rate {
+    font-weight: 700;
+    color: #4caf50;
+  }
+
+  .worker-card {
+    background: linear-gradient(145deg, #3b5d99, #244376);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s;
+  }
+
+  .worker-card:active {
+    transform: scale(0.98);
+  }
+
+  .worker-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .worker-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #5b7dea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  .worker-details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .worker-name {
+    font-weight: 700;
+  }
+
+  .worker-production {
+    font-size: 0.8rem;
+    color: #aabbff;
+  }
+
+  .worker-cost {
+    font-size: 0.9rem;
+    color: #ff9800;
+    font-weight: 600;
+  }
+
+  /* === QUESTS SECTION === */
+  #quests-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .quest-card {
+    background: rgba(59, 93, 153, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 4px solid var(--color-warning);
+  }
+
+  .quest-card.completed {
+    border-left-color: var(--color-success);
+  }
+
+  .quest-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .quest-title {
+    font-weight: 700;
+    color: #ffd700;
+  }
+
+  .quest-reward {
+    background: var(--color-success);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .quest-progress {
+    width: 100%;
+    height: 6px;
+    background: #25365c;
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .quest-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #5b7dea, #7b66ff);
+    transition: width 0.3s ease;
   }
 
   /* === AVANTAGES TAB === */
   #avantages {
     padding: 12px 0;
+    gap: 12px;
+  }
+
+  .bonus-section {
+    background: rgba(39, 63, 145, 0.3);
+    border-radius: 12px;
+    padding: 12px;
+  }
+
+  .bonus-section h3 {
+    margin-top: 0;
+    color: #aabbff;
+    font-size: 1.1rem;
   }
 
   .btn-advantage {
@@ -259,9 +408,18 @@
     font-weight: 700;
     font-size: 1.1rem;
     cursor: pointer;
-    box-shadow:
-      0 0 12px #234675;
-    transition: background 0.3s ease;
+    box-shadow: 0 0 12px #234675;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .btn-advantage .badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
   }
 
   .btn-advantage:disabled {
@@ -272,6 +430,49 @@
   .btn-advantage:not(:disabled):hover {
     background: linear-gradient(145deg, #4a72bd, #3559a0);
     box-shadow: 0 0 16px #3360bb;
+  }
+
+  .telegram-connect {
+    background: linear-gradient(145deg, #2aabee, #229ed9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .telegram-connect img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .referral-link {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .referral-link input {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #5b7dea;
+    border-radius: 6px;
+    padding: 8px;
+    color: white;
+    font-family: inherit;
+    width: 100%;
+  }
+
+  .referral-link button {
+    background: var(--color-success);
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
   }
 
   /* === CLASSEMENT TAB === */
@@ -313,9 +514,74 @@
     gap: 16px;
   }
 
-  #profil p {
-    margin: 0;
-    font-weight: 600;
+  .profile-section {
+    background: rgba(39, 63, 145, 0.3);
+    border-radius: 12px;
+    padding: 12px;
+  }
+
+  .profile-section h3 {
+    margin-top: 0;
+    color: #aabbff;
+  }
+
+  #profile-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  #profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #5b7dea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  #profile-details {
+    flex: 1;
+  }
+
+  #profile-username {
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+
+  #profile-telegram {
+    font-size: 0.9rem;
+    color: #aabbff;
+  }
+
+  .profile-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .stat-card {
+    background: rgba(59, 93, 153, 0.5);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-value {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #ffd700;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: #aabbff;
   }
 
   #profil button {
@@ -334,6 +600,77 @@
 
   #profil button:hover {
     background: #d35656;
+  }
+
+  /* === TON WALLET SECTION === */
+  #ton-wallet {
+    background: linear-gradient(145deg, #2aabee, #229ed9);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 12px;
+  }
+
+  #ton-wallet h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #ton-wallet h3 img {
+    width: 20px;
+    height: 20px;
+  }
+
+  #wallet-address {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 8px;
+    font-family: monospace;
+    word-break: break-all;
+    font-size: 0.9rem;
+  }
+
+  #connect-wallet {
+    background: white;
+    color: #2aabee;
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* === COINS FLY ANIMATION === */
+  .coin-fly {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    background: radial-gradient(circle at 50% 50%, #6cff9c, #26a530);
+    border-radius: 50%;
+    box-shadow: 0 0 10px #40ff6f;
+    pointer-events: none;
+    animation: flyUp 1s ease-out forwards;
+    filter: drop-shadow(0 0 5px #37d949);
+    z-index: 1000;
+  }
+
+  @keyframes flyUp {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--x, 0)px, -100px) scale(0.3);
+    }
   }
 
   /* === PARTICULES BACKGROUND === */
@@ -359,6 +696,40 @@
     will-change: transform, opacity;
   }
 
+  /* === NOTIFICATIONS === */
+  .notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .notification.success {
+    border-left: 4px solid var(--color-success);
+  }
+
+  .notification.warning {
+    border-left: 4px solid var(--color-warning);
+  }
+
+  .notification.error {
+    border-left: 4px solid var(--color-danger);
+  }
+
+  @keyframes slideIn {
+    from { top: -50px; opacity: 0; }
+    to { top: 20px; opacity: 1; }
+  }
+
   /* Scrollbar minimal */
   ::-webkit-scrollbar {
     width: 8px;
@@ -379,7 +750,10 @@
   <div id="particles-container" aria-hidden="true"></div>
 
   <header>
-    <div id="title" aria-label="Titre du jeu">Aether-Coin</div>
+    <div id="title" aria-label="Titre du jeu">
+      <img src="https://via.placeholder.com/24" alt="Logo Aether-Coin">
+      Aether-Coin Pro
+    </div>
     <div id="coins-display" aria-live="polite" aria-atomic="true" aria-label="Nombre de pièces">0</div>
     <div id="energy-container" aria-label="Barre d'énergie">
       <div id="energy-bar" role="progressbar" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="1000">
@@ -392,17 +766,116 @@
   <main>
     <section id="principal" class="tab-content active" role="tabpanel" aria-labelledby="tab-principal" tabindex="0">
       <button id="click-button" aria-pressed="false" aria-label="Bouton principal pour gagner des pièces">GAGNER</button>
+      
+      <div id="passive-income">
+        <div class="income-header">
+          <h3>Revenus passifs</h3>
+          <div class="income-rate">+<span id="income-rate">0</span>/sec</div>
+        </div>
+        
+        <div class="worker-card" id="worker-junior">
+          <div class="worker-info">
+            <div class="worker-icon">👨‍💼</div>
+            <div class="worker-details">
+              <div class="worker-name">Employé Junior</div>
+              <div class="worker-production">+0.2 pièces/sec</div>
+            </div>
+          </div>
+          <div class="worker-cost" data-cost="50">50 pièces</div>
+        </div>
+        
+        <div class="worker-card" id="worker-senior">
+          <div class="worker-info">
+            <div class="worker-icon">👨‍💻</div>
+            <div class="worker-details">
+              <div class="worker-name">Employé Senior</div>
+              <div class="worker-production">+1 pièce/sec</div>
+            </div>
+          </div>
+          <div class="worker-cost" data-cost="250">250 pièces</div>
+        </div>
+        
+        <div class="worker-card" id="worker-manager">
+          <div class="worker-info">
+            <div class="worker-icon">👔</div>
+            <div class="worker-details">
+              <div class="worker-name">Manager</div>
+              <div class="worker-production">+5 pièces/sec</div>
+            </div>
+          </div>
+          <div class="worker-cost" data-cost="1200">1200 pièces</div>
+        </div>
+      </div>
+      
+      <div id="quests-container">
+        <div class="quest-card" id="daily-quest">
+          <div class="quest-header">
+            <div class="quest-title">Quête du jour: 100 clics</div>
+            <div class="quest-reward">+200 pièces</div>
+          </div>
+          <div class="quest-progress">
+            <div class="quest-progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+        
+        <div class="quest-card" id="invite-quest">
+          <div class="quest-header">
+            <div class="quest-title">Inviter 1 ami</div>
+            <div class="quest-reward">+500 pièces</div>
+          </div>
+          <div class="quest-progress">
+            <div class="quest-progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section id="avantages" class="tab-content" role="tabpanel" aria-labelledby="tab-avantages" tabindex="0">
-      <button id="btn-subscribe" class="btn-advantage" aria-label="Bénéficier du bonus abonnement Telegram">Bonus abonnement (+1600 énergie)</button>
-      <button id="btn-invite" class="btn-advantage" aria-label="Bénéficier du bonus invitation d'amis">Bonus invitation (+100 énergie, max 5)</button>
+      <div class="bonus-section">
+        <h3>Connexion Telegram</h3>
+        <button id="btn-telegram" class="btn-advantage telegram-connect">
+          <img src="https://telegram.org/img/t_logo.png" alt="Telegram Logo">
+          Se connecter avec Telegram
+        </button>
+        
+        <div id="ton-wallet">
+          <h3><img src="https://ton.org/download/ton_symbol.png" alt="TON Logo"> Portefeuille TON</h3>
+          <div id="wallet-address">Non connecté</div>
+          <button id="connect-wallet">
+            <img src="https://ton.org/download/ton_symbol.png" alt="TON Logo" width="16">
+            Connecter Wallet
+          </button>
+        </div>
+      </div>
+      
+      <div class="bonus-section">
+        <h3>Bonus</h3>
+        <button id="btn-subscribe" class="btn-advantage">
+          Bonus abonnement
+          <span class="badge">+1600 énergie</span>
+        </button>
+        <button id="btn-invite" class="btn-advantage">
+          Inviter des amis
+          <span class="badge">+100 énergie par ami</span>
+        </button>
+      </div>
+      
+      <div class="bonus-section">
+        <h3>Parrainage</h3>
+        <div class="referral-link">
+          <input type="text" id="referral-link-input" value="Chargement..." readonly>
+          <button id="copy-referral">Copier le lien</button>
+        </div>
+        <p style="font-size: 0.8rem; text-align: center;">
+          Recevez 10% des gains de vos filleuls!
+        </p>
+      </div>
     </section>
 
     <section id="classement" class="tab-content" role="tabpanel" aria-labelledby="tab-classement" tabindex="0">
       <table>
         <thead>
-          <tr><th>#</th><th>Pseudo</th><th>Pièces</th></tr>
+          <tr><th>#</th><th>Pseudo</th><th>Pièces</th><th>TON</th></tr>
         </thead>
         <tbody id="ranking-body">
           <!-- Rempli dynamiquement -->
@@ -411,29 +884,85 @@
     </section>
 
     <section id="profil" class="tab-content" role="tabpanel" aria-labelledby="tab-profil" tabindex="0">
-      <p><strong>Utilisateur :</strong> <span id="profile-username">-</span></p>
-      <p><strong>Pièces :</strong> <span id="profile-coins">0</span></p>
-      <p><strong>Énergie :</strong> <span id="profile-energy">0 / 0</span></p>
-      <button id="reset-game" aria-label="Réinitialiser la partie">Réinitialiser la partie</button>
+      <div class="profile-section">
+        <div id="profile-info">
+          <div id="profile-avatar">AC</div>
+          <div id="profile-details">
+            <div id="profile-username">-</div>
+            <div id="profile-telegram">Non connecté à Telegram</div>
+          </div>
+        </div>
+        
+        <div class="profile-stats">
+          <div class="stat-card">
+            <div class="stat-value" id="profile-coins">0</div>
+            <div class="stat-label">Pièces</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="profile-energy">0/0</div>
+            <div class="stat-label">Énergie</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="profile-ton">0</div>
+            <div class="stat-label">TON</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="profile-referrals">0</div>
+            <div class="stat-label">Filleuls</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="profile-section">
+        <h3>Progression</h3>
+        <div class="quest-card">
+          <div class="quest-header">
+            <div class="quest-title">Niveau actuel: <span id="profile-level">1</span></div>
+            <div class="quest-reward">XP: <span id="profile-xp">0</span>/100</div>
+          </div>
+          <div class="quest-progress">
+            <div class="quest-progress-bar" id="level-progress" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+      
+      <button id="reset-game">Réinitialiser la partie</button>
     </section>
   </main>
 
   <nav role="tablist" aria-label="Navigation principale">
-    <button id="tab-principal" role="tab" aria-selected="true" tabindex="0" aria-controls="principal" class="active">Principal</button>
-    <button id="tab-avantages" role="tab" aria-selected="false" tabindex="-1" aria-controls="avantages">Avantages</button>
-    <button id="tab-classement" role="tab" aria-selected="false" tabindex="-1" aria-controls="classement">Classement</button>
-    <button id="tab-profil" role="tab" aria-selected="false" tabindex="-1" aria-controls="profil">Profil</button>
+    <button id="tab-principal" role="tab" aria-selected="true" tabindex="0" aria-controls="principal" class="active">
+      Principal
+    </button>
+    <button id="tab-avantages" role="tab" aria-selected="false" tabindex="-1" aria-controls="avantages">
+      Avantages
+    </button>
+    <button id="tab-classement" role="tab" aria-selected="false" tabindex="-1" aria-controls="classement">
+      Classement
+    </button>
+    <button id="tab-profil" role="tab" aria-selected="false" tabindex="-1" aria-controls="profil">
+      Profil
+    </button>
   </nav>
 </div>
 
 <script>
 (() => {
-  // --- CONST ---
+  // --- CONSTANTS ---
   const COINS_PER_CLICK = 1;
   const ENERGY_BASE = 1000;
   const ENERGY_SUBSCRIBE_BONUS = 1600;
   const ENERGY_INVITE_BONUS = 100;
   const MAX_INVITES = 5;
+  const WORKERS = {
+    junior: { baseCost: 50, production: 0.2, owned: 0 },
+    senior: { baseCost: 250, production: 1, owned: 0 },
+    manager: { baseCost: 1200, production: 5, owned: 0 }
+  };
+  const QUESTS = {
+    dailyClicks: { target: 100, progress: 0, reward: 200, completed: false },
+    inviteFriend: { target: 1, progress: 0, reward: 500, completed: false }
+  };
 
   // --- STATE ---
   let username = null;
@@ -442,20 +971,54 @@
   let energyMax = ENERGY_BASE;
   let subscribed = false;
   let invitedFriends = 0;
+  let referralCode = generateReferralCode();
   let rankingData = [];
+  let passiveIncome = 0;
+  let lastUpdate = Date.now();
+  let telegramConnected = false;
+  let telegramData = null;
+  let walletConnected = false;
+  let walletAddress = null;
+  let tonBalance = 0;
+  let level = 1;
+  let xp = 0;
+  let totalClicks = 0;
 
-  // --- DOM ---
+  // --- DOM ELEMENTS ---
   const coinsDisplay = document.getElementById("coins-display");
   const energyFill = document.getElementById("energy-fill");
   const energyText = document.getElementById("energy-text");
   const clickButton = document.getElementById("click-button");
   const btnSubscribe = document.getElementById("btn-subscribe");
   const btnInvite = document.getElementById("btn-invite");
+  const btnTelegram = document.getElementById("btn-telegram");
+  const connectWallet = document.getElementById("connect-wallet");
+  const copyReferral = document.getElementById("copy-referral");
+  const referralInput = document.getElementById("referral-link-input");
   const rankingBody = document.getElementById("ranking-body");
   const profileUsername = document.getElementById("profile-username");
+  const profileTelegram = document.getElementById("profile-telegram");
   const profileCoins = document.getElementById("profile-coins");
   const profileEnergy = document.getElementById("profile-energy");
+  const profileTon = document.getElementById("profile-ton");
+  const profileReferrals = document.getElementById("profile-referrals");
+  const profileLevel = document.getElementById("profile-level");
+  const profileXp = document.getElementById("profile-xp");
+  const levelProgress = document.getElementById("level-progress");
   const resetGameBtn = document.getElementById("reset-game");
+  const incomeRate = document.getElementById("income-rate");
+  const walletAddressDisplay = document.getElementById("wallet-address");
+  
+  // Worker elements
+  const workerJunior = document.getElementById("worker-junior");
+  const workerSenior = document.getElementById("worker-senior");
+  const workerManager = document.getElementById("worker-manager");
+  
+  // Quest elements
+  const dailyQuest = document.getElementById("daily-quest");
+  const inviteQuest = document.getElementById("invite-quest");
+  
+  // Tab elements
   const tabButtons = {
     principal: document.getElementById("tab-principal"),
     avantages: document.getElementById("tab-avantages"),
@@ -470,254 +1033,573 @@
   };
 
   // --- LOCAL STORAGE KEYS ---
-  const STORAGE_KEY = "aethercoin_game_data";
+  const STORAGE_KEY = "aethercoin_pro_game_data";
 
-  // --- LOAD GAME DATA ---
-  function loadGame() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (!data) {
-      resetGame();
-      return;
+  // --- UTILITY FUNCTIONS ---
+  function generateReferralCode() {
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
+  }
+
+  function showNotification(message, type = "success") {
+    const notification = document.createElement("div");
+    notification.className = `notification ${type}`;
+    notification.innerHTML = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.opacity = "0";
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
+  }
+
+  function calculateWorkerCost(baseCost, owned) {
+    return Math.floor(baseCost * Math.pow(1.15, owned));
+  }
+
+  function calculatePassiveIncome() {
+    let income = 0;
+    income += WORKERS.junior.owned * WORKERS.junior.production;
+    income += WORKERS.senior.owned * WORKERS.senior.production;
+    income += WORKERS.manager.owned * WORKERS.manager.production;
+    return income;
+  }
+
+  function addXP(amount) {
+    xp += amount;
+    const xpNeeded = level * 100;
+    
+    if (xp >= xpNeeded) {
+      xp -= xpNeeded;
+      level++;
+      showNotification(`Niveau ${level} atteint!
+      showNotification(`Niveau ${level} atteint!`, "success");
+      energyMax += 200; // Augmente l'énergie max à chaque niveau
+      energy = energyMax; // Remplit l'énergie
+      updateEnergyDisplay();
     }
-    try {
-      const obj = JSON.parse(data);
-      username = obj.username || null;
-      coins = Number(obj.coins) || 0;
-      energy = Number(obj.energy) || ENERGY_BASE;
-      energyMax = Number(obj.energyMax) || ENERGY_BASE;
-      subscribed = !!obj.subscribed;
-      invitedFriends = Number(obj.invitedFriends) || 0;
-      rankingData = obj.rankingData || [];
-    } catch {
-      resetGame();
+    
+    profileXp.textContent = `${xp}/${level * 100}`;
+    levelProgress.style.width = `${(xp / (level * 100)) * 100}%`;
+    profileLevel.textContent = level;
+    saveGame();
+  }
+
+  function createCoinFly(x, y) {
+    const coin = document.createElement("div");
+    coin.className = "coin-fly";
+    coin.style.left = `${x}px`;
+    coin.style.top = `${y}px`;
+    coin.style.setProperty("--x", (Math.random() * 100 - 50));
+    document.getElementById("app").appendChild(coin);
+    
+    setTimeout(() => coin.remove(), 1000);
+  }
+
+  function updateWorkerDisplays() {
+    // Junior
+    const juniorCost = calculateWorkerCost(WORKERS.junior.baseCost, WORKERS.junior.owned);
+    workerJunior.querySelector(".worker-cost").textContent = `${juniorCost} pièces`;
+    workerJunior.querySelector(".worker-cost").dataset.cost = juniorCost;
+    
+    // Senior
+    const seniorCost = calculateWorkerCost(WORKERS.senior.baseCost, WORKERS.senior.owned);
+    workerSenior.querySelector(".worker-cost").textContent = `${seniorCost} pièces`;
+    workerSenior.querySelector(".worker-cost").dataset.cost = seniorCost;
+    
+    // Manager
+    const managerCost = calculateWorkerCost(WORKERS.manager.baseCost, WORKERS.manager.owned);
+    workerManager.querySelector(".worker-cost").textContent = `${managerCost} pièces`;
+    workerManager.querySelector(".worker-cost").dataset.cost = managerCost;
+  }
+
+  function updatePassiveIncome() {
+    passiveIncome = calculatePassiveIncome();
+    incomeRate.textContent = passiveIncome.toFixed(1);
+  }
+
+  function updateQuestDisplays() {
+    // Quête des clics
+    const dailyProgress = (QUESTS.dailyClicks.progress / QUESTS.dailyClicks.target) * 100;
+    dailyQuest.querySelector(".quest-progress-bar").style.width = `${dailyProgress}%`;
+    
+    if (QUESTS.dailyClicks.completed) {
+      dailyQuest.classList.add("completed");
+    } else {
+      dailyQuest.classList.remove("completed");
+    }
+    
+    // Quête d'invitation
+    const inviteProgress = (QUESTS.inviteFriend.progress / QUESTS.inviteFriend.target) * 100;
+    inviteQuest.querySelector(".quest-progress-bar").style.width = `${inviteProgress}%`;
+    
+    if (QUESTS.inviteFriend.completed) {
+      inviteQuest.classList.add("completed");
+    } else {
+      inviteQuest.classList.remove("completed");
     }
   }
 
-  // --- SAVE GAME DATA ---
+  function updateEnergyDisplay() {
+    const percent = (energy / energyMax) * 100;
+    energyFill.style.width = `${percent}%`;
+    energyText.textContent = `${Math.floor(energy)} / ${energyMax}`;
+    
+    // Changement de couleur selon l'énergie
+    if (percent > 60) {
+      energyFill.style.background = "var(--color-energy-full)";
+      energyFill.style.boxShadow = "0 0 10px #43d84f, inset 0 0 5px rgba(255, 255, 255, 0.5)";
+    } else if (percent > 30) {
+      energyFill.style.background = "var(--color-energy-mid)";
+      energyFill.style.boxShadow = "0 0 10px #d8b94f, inset 0 0 5px rgba(255, 255, 255, 0.5)";
+    } else {
+      energyFill.style.background = "var(--color-energy-low)";
+      energyFill.style.boxShadow = "0 0 10px #b94141, inset 0 0 5px rgba(255, 255, 255, 0.5)";
+    }
+  }
+
+  function updateProfileDisplay() {
+    profileCoins.textContent = Math.floor(coins);
+    profileEnergy.textContent = `${Math.floor(energy)} / ${energyMax}`;
+    profileTon.textContent = tonBalance.toFixed(2);
+    profileReferrals.textContent = invitedFriends;
+    
+    if (telegramConnected && telegramData) {
+      profileUsername.textContent = telegramData.username || "-";
+      profileTelegram.textContent = `@${telegramData.username}`;
+    } else {
+      profileUsername.textContent = "-";
+      profileTelegram.textContent = "Non connecté à Telegram";
+    }
+    
+    if (walletConnected) {
+      walletAddressDisplay.textContent = walletAddress;
+      connectWallet.textContent = "Connecté";
+      connectWallet.style.background = "#4CAF50";
+    } else {
+      walletAddressDisplay.textContent = "Non connecté";
+      connectWallet.textContent = "Connecter Wallet";
+      connectWallet.style.background = "white";
+    }
+  }
+
+  function updateRankingDisplay() {
+    rankingBody.innerHTML = "";
+    
+    rankingData.slice(0, 20).forEach((player, index) => {
+      const row = document.createElement("tr");
+      if (player.isPlayer) row.className = "self-player";
+      
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${player.username}</td>
+        <td>${Math.floor(player.coins)}</td>
+        <td>${player.ton.toFixed(2)}</td>
+      `;
+      
+      rankingBody.appendChild(row);
+    });
+  }
+
+  function addCoins(amount, x, y) {
+    coins += amount;
+    coinsDisplay.textContent = Math.floor(coins);
+    profileCoins.textContent = Math.floor(coins);
+    
+    if (x && y) {
+      createCoinFly(x, y);
+    }
+    
+    saveGame();
+  }
+
+  function spendCoins(amount) {
+    if (coins >= amount) {
+      coins -= amount;
+      coinsDisplay.textContent = Math.floor(coins);
+      profileCoins.textContent = Math.floor(coins);
+      saveGame();
+      return true;
+    }
+    return false;
+  }
+
+  function spendEnergy(amount) {
+    if (energy >= amount) {
+      energy -= amount;
+      updateEnergyDisplay();
+      saveGame();
+      return true;
+    }
+    return false;
+  }
+
+  function buyWorker(workerType) {
+    const worker = WORKERS[workerType];
+    const cost = calculateWorkerCost(worker.baseCost, worker.owned);
+    
+    if (spendCoins(cost)) {
+      worker.owned++;
+      updateWorkerDisplays();
+      updatePassiveIncome();
+      showNotification(`${workerType === "junior" ? "Employé Junior" : workerType === "senior" ? "Employé Senior" : "Manager"} acheté!`, "success");
+      addXP(10);
+    } else {
+      showNotification("Pas assez de pièces!", "error");
+    }
+  }
+
+  function completeQuest(questType) {
+    const quest = QUESTS[questType];
+    
+    if (!quest.completed) {
+      quest.completed = true;
+      addCoins(quest.reward);
+      addXP(20);
+      showNotification(`Quête accomplie! +${quest.reward} pièces`, "success");
+      saveGame();
+    }
+  }
+
+  function claimSubscribeBonus() {
+    if (!subscribed) {
+      subscribed = true;
+      energyMax += ENERGY_SUBSCRIBE_BONUS;
+      energy = energyMax;
+      updateEnergyDisplay();
+      btnSubscribe.disabled = true;
+      showNotification(`Bonus abonnement activé! +${ENERGY_SUBSCRIBE_BONUS} énergie max`, "success");
+      saveGame();
+    }
+  }
+
+  function claimInviteBonus() {
+    if (invitedFriends < MAX_INVITES) {
+      invitedFriends++;
+      energyMax += ENERGY_INVITE_BONUS;
+      energy = energyMax;
+      updateEnergyDisplay();
+      
+      if (invitedFriends >= MAX_INVITES) {
+        btnInvite.disabled = true;
+      }
+      
+      showNotification(`Bonus parrainage! +${ENERGY_INVITE_BONUS} énergie max`, "success");
+      saveGame();
+    }
+  }
+
+  function connectTelegram() {
+    // Simulation de connexion Telegram
+    telegramConnected = true;
+    telegramData = {
+      username: "user_" + Math.random().toString(36).substring(2, 8),
+      photo_url: null
+    };
+    
+    btnTelegram.innerHTML = `
+      <img src="https://telegram.org/img/t_logo.png" alt="Telegram Logo">
+      Connecté: @${telegramData.username}
+    `;
+    
+    updateProfileDisplay();
+    showNotification("Connecté avec Telegram!", "success");
+    saveGame();
+  }
+
+  function connectWallet() {
+    // Simulation de connexion wallet TON
+    walletConnected = true;
+    walletAddress = "EQ" + Math.random().toString(36).substring(2, 24).toUpperCase();
+    tonBalance = Math.random() * 10;
+    
+    updateProfileDisplay();
+    showNotification("Portefeuille TON connecté!", "success");
+    saveGame();
+  }
+
+  function copyReferralLink() {
+    referralInput.select();
+    document.execCommand("copy");
+    showNotification("Lien de parrainage copié!", "success");
+  }
+
+  function resetGame() {
+    if (confirm("Êtes-vous sûr de vouloir réinitialiser votre progression? Tout sera perdu!")) {
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    }
+  }
+
   function saveGame() {
-    const data = {
+    const gameData = {
       username,
       coins,
       energy,
       energyMax,
       subscribed,
       invitedFriends,
-      rankingData
+      referralCode,
+      telegramConnected,
+      telegramData,
+      walletConnected,
+      walletAddress,
+      tonBalance,
+      workers: WORKERS,
+      quests: QUESTS,
+      level,
+      xp,
+      totalClicks,
+      lastUpdate: Date.now()
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData));
   }
 
-  // --- UPDATE DISPLAY ---
-  function updateDisplay() {
-    coinsDisplay.textContent = coins.toLocaleString();
-    energyText.textContent = `${energy} / ${energyMax}`;
-    energyFill.style.width = `${(energy / energyMax) * 100}%`;
-
-    // Color energy bar by level
-    const ratio = energy / energyMax;
-    if (ratio > 0.5) {
-      energyFill.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-energy-full');
-    } else if (ratio > 0.2) {
-      energyFill.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-energy-mid');
-    } else {
-      energyFill.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-energy-low');
-    }
-
-    // Glow bouton si énergie > 50%
-    if (ratio > 0.5) clickButton.classList.add("active-glow");
-    else clickButton.classList.remove("active-glow");
-
-    // Profil update
-    profileUsername.textContent = username || "-";
-    profileCoins.textContent = coins.toLocaleString();
-    profileEnergy.textContent = `${energy} / ${energyMax}`;
-
-    // Boutons avantages désactivation
-    btnSubscribe.disabled = subscribed;
-    btnInvite.disabled = invitedFriends >= MAX_INVITES;
-
-    // Classement update
-    updateRanking();
-  }
-
-  // --- UPDATE RANKING ---
-  function updateRanking() {
-    // Met à jour rankingData avec cet utilisateur
-    if (username) {
-      const existing = rankingData.findIndex(e => e.username === username);
-      if (existing !== -1) {
-        rankingData[existing].coins = coins;
-      } else {
-        rankingData.push({username, coins});
+  function loadGame() {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    
+    if (savedData) {
+      const gameData = JSON.parse(savedData);
+      
+      username = gameData.username;
+      coins = gameData.coins || 0;
+      energy = gameData.energy || ENERGY_BASE;
+      energyMax = gameData.energyMax || ENERGY_BASE;
+      subscribed = gameData.subscribed || false;
+      invitedFriends = gameData.invitedFriends || 0;
+      referralCode = gameData.referralCode || generateReferralCode();
+      telegramConnected = gameData.telegramConnected || false;
+      telegramData = gameData.telegramData || null;
+      walletConnected = gameData.walletConnected || false;
+      walletAddress = gameData.walletAddress || null;
+      tonBalance = gameData.tonBalance || 0;
+      level = gameData.level || 1;
+      xp = gameData.xp || 0;
+      totalClicks = gameData.totalClicks || 0;
+      
+      // Workers
+      if (gameData.workers) {
+        WORKERS.junior.owned = gameData.workers.junior?.owned || 0;
+        WORKERS.senior.owned = gameData.workers.senior?.owned || 0;
+        WORKERS.manager.owned = gameData.workers.manager?.owned || 0;
       }
-      // Trie par coins desc
-      rankingData.sort((a,b) => b.coins - a.coins);
-      // Garder max 50 joueurs
-      if (rankingData.length > 50) rankingData.length = 50;
+      
+      // Quests
+      if (gameData.quests) {
+        QUESTS.dailyClicks.progress = gameData.quests.dailyClicks?.progress || 0;
+        QUESTS.dailyClicks.completed = gameData.quests.dailyClicks?.completed || false;
+        QUESTS.inviteFriend.progress = gameData.quests.inviteFriend?.progress || 0;
+        QUESTS.inviteFriend.completed = gameData.quests.inviteFriend?.completed || false;
+      }
+      
+      lastUpdate = gameData.lastUpdate || Date.now();
+      
+      // Calculer les pièces gagnées passivement depuis la dernière connexion
+      if (gameData.lastUpdate) {
+        const timeDiff = (Date.now() - gameData.lastUpdate) / 1000; // en secondes
+        const passiveGain = timeDiff * calculatePassiveIncome();
+        if (passiveGain > 0) {
+          coins += passiveGain;
+          showNotification(`Vous avez gagné ${Math.floor(passiveGain)} pièces pendant votre absence!`, "success");
+        }
+      }
     }
-
-    // Affichage tableau
-    rankingBody.innerHTML = "";
-    rankingData.forEach((player, i) => {
-      const tr = document.createElement("tr");
-      if(player.username === username) tr.classList.add("self-player");
-      tr.innerHTML = `<td>${i+1}</td><td>${player.username}</td><td>${player.coins.toLocaleString()}</td>`;
-      rankingBody.appendChild(tr);
-    });
+    
+    // Mettre à jour l'affichage
+    coinsDisplay.textContent = Math.floor(coins);
+    referralInput.value = `${window.location.origin}?ref=${referralCode}`;
+    
+    if (subscribed) {
+      btnSubscribe.disabled = true;
+    }
+    
+    if (invitedFriends >= MAX_INVITES) {
+      btnInvite.disabled = true;
+    }
+    
+    if (telegramConnected && telegramData) {
+      btnTelegram.innerHTML = `
+        <img src="https://telegram.org/img/t_logo.png" alt="Telegram Logo">
+        Connecté: @${telegramData.username}
+      `;
+    }
+    
+    updateWorkerDisplays();
+    updatePassiveIncome();
+    updateQuestDisplays();
+    updateEnergyDisplay();
+    updateProfileDisplay();
+    
+    // Simuler des données de classement
+    generateRankingData();
   }
 
-  // --- SPAWN COIN ANIMATION ---
-  function spawnFlyingCoin() {
-    const coin = document.createElement("div");
-    coin.className = "coin-fly";
-
-    // Position aléatoire autour du bouton
-    const angle = Math.random() * 2 * Math.PI;
-    const dist = 50 + Math.random() * 30;
-    coin.style.left = `calc(50% + ${Math.cos(angle)*dist}px)`;
-    coin.style.top = `calc(50% + ${Math.sin(angle)*dist}px)`;
-
-    // Direction vol aléatoire pour keyframe
-    coin.style.setProperty('--x', (Math.random()*100 - 50));
-
-    document.getElementById("principal").appendChild(coin);
-
-    setTimeout(() => coin.remove(), 1000);
-  }
-
-  // --- PARTICLES BACKGROUND ---
-  const particlesCount = 80;
-  const particlesContainer = document.getElementById("particles-container");
-  let particles = [];
-
-  function createParticle() {
-    const p = document.createElement("div");
-    p.className = "particle";
-    p.style.left = Math.random() * 480 + "px";
-    p.style.top = Math.random() * window.innerHeight + "px";
-    p.speedY = 0.3 + Math.random() * 0.7;
-    p.opacity = 0.1 + Math.random() * 0.3;
-    p.style.opacity = p.opacity;
-    particlesContainer.appendChild(p);
-    return p;
-  }
-
-  function animateParticles() {
-    particles.forEach(p => {
-      let y = parseFloat(p.style.top);
-      y -= p.speedY;
-      if (y < -10) y = window.innerHeight + 10;
-      p.style.top = y + "px";
-    });
-    requestAnimationFrame(animateParticles);
-  }
-
-  // --- HANDLE CLICK ---
-  function handleClick() {
-    if (energy < 1) return; // Pas d'énergie = pas de clic
-
-    coins += COINS_PER_CLICK;
-    energy = Math.max(energy - 1, 0);
-
-    spawnFlyingCoin();
-    updateDisplay();
-    saveGame();
-  }
-
-  // --- BONUS ABONNEMENT ---
-  function subscribeBonus() {
-    if (subscribed) return;
-    subscribed = true;
-    energyMax += ENERGY_SUBSCRIBE_BONUS;
-    energy = Math.min(energy + ENERGY_SUBSCRIBE_BONUS, energyMax);
-    updateDisplay();
-    saveGame();
-  }
-
-  // --- BONUS INVITATION ---
-  function inviteBonus() {
-    if (invitedFriends >= MAX_INVITES) return;
-    invitedFriends++;
-    energyMax += ENERGY_INVITE_BONUS;
-    energy = Math.min(energy + ENERGY_INVITE_BONUS, energyMax);
-    updateDisplay();
-    saveGame();
-  }
-
-  // --- RESET GAME ---
-  function resetGame() {
-    username = null;
-    coins = 0;
-    energyMax = ENERGY_BASE;
-    energy = energyMax;
-    subscribed = false;
-    invitedFriends = 0;
+  function generateRankingData() {
     rankingData = [];
-    localStorage.removeItem(STORAGE_KEY);
-    askUsername();
-  }
-
-  // --- ASK USERNAME ---
-  function askUsername() {
-    // Essaie récupérer username Telegram automatiquement
-    if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-      username = window.Telegram.WebApp.initDataUnsafe.user?.username || null;
-    }
-    // Fallback prompt si pas trouvé
-    if(!username) {
-      let u = prompt("Entrez votre pseudo (Telegram username recommandé) :", "");
-      if(u) username = u.trim().slice(0, 20);
-      else username = "Player" + Math.floor(Math.random()*9999);
-    }
-    saveGame();
-    updateDisplay();
-  }
-
-  // --- TAB NAVIGATION ---
-  function switchTab(toTab) {
-    Object.keys(tabButtons).forEach(key => {
-      const isActive = key === toTab;
-      tabButtons[key].classList.toggle("active", isActive);
-      tabButtons[key].setAttribute("aria-selected", isActive ? "true" : "false");
-      tabButtons[key].setAttribute("tabindex", isActive ? "0" : "-1");
-      tabSections[key].classList.toggle("active", isActive);
+    
+    // Ajouter le joueur actuel
+    rankingData.push({
+      username: telegramConnected ? telegramData.username : "Joueur",
+      coins: coins,
+      ton: tonBalance,
+      isPlayer: true
     });
-    tabSections[toTab].focus();
-  }
-
-  // --- EVENTS ---
-  clickButton.addEventListener("click", () => {
-    handleClick();
-    clickButton.setAttribute("aria-pressed", "true");
-    setTimeout(() => clickButton.setAttribute("aria-pressed", "false"), 150);
-  });
-
-  btnSubscribe.addEventListener("click", subscribeBonus);
-  btnInvite.addEventListener("click", inviteBonus);
-  resetGameBtn.addEventListener("click", () => {
-    if(confirm("Voulez-vous vraiment réinitialiser la partie ?")) resetGame();
-  });
-
-  Object.keys(tabButtons).forEach(key => {
-    tabButtons[key].addEventListener("click", () => switchTab(key));
-  });
-
-  // --- INIT ---
-  function init() {
-    for(let i=0; i<particlesCount; i++) {
-      particles.push(createParticle());
+    
+    // Ajouter des joueurs fictifs
+    for (let i = 0; i < 49; i++) {
+      rankingData.push({
+        username: `Joueur_${i + 1}`,
+        coins: Math.floor(Math.random() * 10000),
+        ton: Math.random() * 50,
+        isPlayer: false
+      });
     }
-    animateParticles();
-
-    loadGame();
-    if(!username) askUsername();
-    updateDisplay();
-    switchTab("principal");
+    
+    // Trier par pièces
+    rankingData.sort((a, b) => b.coins - a.coins);
+    updateRankingDisplay();
   }
 
-  // Lancement
-  window.onload = init;
+  function handleClick(event) {
+    if (energy >= 1) {
+      const rect = clickButton.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      
+      if (spendEnergy(1)) {
+        addCoins(COINS_PER_CLICK, x, y);
+        totalClicks++;
+        
+        // Mettre à jour la quête des clics
+        if (!QUESTS.dailyClicks.completed) {
+          QUESTS.dailyClicks.progress++;
+          
+          if (QUESTS.dailyClicks.progress >= QUESTS.dailyClicks.target) {
+            QUESTS.dailyClicks.completed = true;
+            completeQuest("dailyClicks");
+          }
+          
+          updateQuestDisplays();
+        }
+        
+        // Animation du bouton
+        clickButton.classList.add("active-glow");
+        setTimeout(() => clickButton.classList.remove("active-glow"), 100);
+      } else {
+        showNotification("Plus d'énergie! Revenez plus tard.", "warning");
+      }
+    }
+  }
 
+  function switchTab(tabId) {
+    // Désactiver tous les onglets
+    Object.values(tabButtons).forEach(btn => {
+      btn.classList.remove("active");
+      btn.setAttribute("aria-selected", "false");
+      btn.tabIndex = -1;
+    });
+    
+    Object.values(tabSections).forEach(section => {
+      section.classList.remove("active");
+    });
+    
+    // Activer l'onglet sélectionné
+    tabButtons[tabId].classList.add("active");
+    tabButtons[tabId].setAttribute("aria-selected", "true");
+    tabButtons[tabId].tabIndex = 0;
+    tabSections[tabId].classList.add("active");
+  }
+
+  function createParticles() {
+    const container = document.getElementById("particles-container");
+    const particleCount = 50;
+    
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement("div");
+      particle.className = "particle";
+      
+      // Position aléatoire
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      const size = Math.random() * 2 + 1;
+      const opacity = Math.random() * 0.2 + 0.05;
+      const duration = Math.random() * 20 + 10;
+      const delay = Math.random() * 20;
+      
+      particle.style.left = `${x}%`;
+      particle.style.top = `${y}%`;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.opacity = opacity;
+      particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
+      
+      container.appendChild(particle);
+    }
+  }
+
+  // --- GAME LOOP ---
+  function gameLoop() {
+    const now = Date.now();
+    const deltaTime = (now - lastUpdate) / 1000; // en secondes
+    
+    if (deltaTime >= 1) {
+      // Gain passif
+      const passiveGain = passiveIncome * deltaTime;
+      if (passiveGain > 0) {
+        addCoins(passiveGain);
+      }
+      
+      // Régénération d'énergie
+      if (energy < energyMax) {
+        const energyRegen = deltaTime * (energyMax / 200); // 5 minutes pour recharger complètement
+        energy = Math.min(energy + energyRegen, energyMax);
+        updateEnergyDisplay();
+      }
+      
+      lastUpdate = now;
+    }
+    
+    requestAnimationFrame(gameLoop);
+  }
+
+  // --- EVENT LISTENERS ---
+  clickButton.addEventListener("click", handleClick);
+  
+  // Achat de workers
+  workerJunior.addEventListener("click", () => buyWorker("junior"));
+  workerSenior.addEventListener("click", () => buyWorker("senior"));
+  workerManager.addEventListener("click", () => buyWorker("manager"));
+  
+  // Boutons bonus
+  btnSubscribe.addEventListener("click", claimSubscribeBonus);
+  btnInvite.addEventListener("click", claimInviteBonus);
+  btnTelegram.addEventListener("click", connectTelegram);
+  connectWallet.addEventListener("click", connectWallet);
+  copyReferral.addEventListener("click", copyReferralLink);
+  resetGameBtn.addEventListener("click", resetGame);
+  
+  // Navigation par onglets
+  Object.entries(tabButtons).forEach(([tabId, button]) => {
+    button.addEventListener("click", () => switchTab(tabId));
+  });
+
+  // --- INITIALIZATION ---
+  function init() {
+    loadGame();
+    createParticles();
+    gameLoop();
+    
+    // Vérifier si arrivée par référence
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get("ref");
+    
+    if (refCode && refCode !== referralCode) {
+      showNotification(`Bienvenue parrainé par ${refCode}! Bonus de 50 pièces.`, "success");
+      addCoins(50);
+    }
+  }
+
+  init();
 })();
 </script>
 </body>
