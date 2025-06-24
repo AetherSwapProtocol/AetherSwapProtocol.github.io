@@ -3,279 +3,291 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aether-Coin Ultra HD</title>
+<title>Aether-Coin ULTRA</title>
 <style>
-/* Base 8K-ready */
+/* --- Base 8K avec tes variables CSS originales --- */
 :root {
   --gold-primary: linear-gradient(145deg, #FFD700 0%, #FFAA00 100%);
-  --platinum-glow: 0 0 30px 10px rgba(255, 221, 0, 0.7);
   --quantum-blue: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  --energy-glow: 0 0 15px 5px rgba(100, 255, 200, 0.7);
 }
 
+/* --- Adapté de ton CSS original avec upgrades --- */
 body {
   margin: 0;
-  overflow: hidden;
   font-family: 'Rajdhani', sans-serif;
   background: var(--quantum-blue);
   color: white;
+  overflow-x: hidden;
   touch-action: manipulation;
 }
 
-#game-container {
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  perspective: 1000px;
+#app {
+  position: relative;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #121c3d;
+  box-shadow: 
+    0 0 30px 15px rgba(76, 139, 245, 0.4),
+    inset 0 0 20px 5px rgba(36, 73, 122, 0.6);
+  overflow: hidden;
 }
 
-/* Bouton principal en 8K simulé */
-#quantum-button {
+/* Effets cosmiques */
+.cosmic-particle {
   position: absolute;
-  width: 220px;
-  height: 220px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: 
-    radial-gradient(circle at 30% 30%, 
-      rgba(255, 255, 255, 0.8) 0%, 
-      rgba(255, 215, 0, 0.6) 50%, 
-      transparent 70%),
-    var(--gold-primary);
-  box-shadow:
-    var(--platinum-glow),
-    inset 0 0 50px rgba(255, 255, 255, 0.5);
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 10;
-  backdrop-filter: blur(2px);
-}
-
-/* Effets de lumière dynamiques */
-.light-ray {
-  position: absolute;
-  width: 300%;
-  height: 300%;
-  background: radial-gradient(circle, 
-    rgba(255, 255, 255, 0.15) 0%, 
-    transparent 70%);
-  animation: rotate 60s linear infinite;
-  z-index: -1;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Particules quantiques */
-.particle {
-  position: absolute;
-  border-radius: 50%;
+  width: 2px;
+  height: 2px;
   background: white;
+  border-radius: 50%;
   opacity: 0;
-  filter: blur(1px);
   animation: float 15s infinite linear;
+  filter: blur(0.5px);
 }
 
 @keyframes float {
-  0% { 
-    transform: translateY(0) rotate(0deg);
-    opacity: 0; 
-  }
+  0% { transform: translateY(100vh); opacity: 0; }
   10% { opacity: 0.7; }
   90% { opacity: 0.7; }
-  100% { 
-    transform: translateY(-100vh) rotate(720deg);
+  100% { transform: translateY(-100px); opacity: 0; }
+}
+
+/* --- Header amélioré --- */
+header {
+  position: relative;
+  padding: 12px 20px;
+  background: linear-gradient(90deg, #3f5efb, #7b66ff);
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+
+#coins-display {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #fff;
+  background: #273f91;
+  padding: 6px 12px;
+  border-radius: 20px;
+  min-width: 120px;
+  text-align: center;
+  box-shadow: 
+    0 0 10px #2f51e9,
+    0 0 20px 5px rgba(47, 81, 233, 0.3);
+}
+
+/* --- Bouton principal ULTRA --- */
+#click-button {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #5b7dea, #3552b5);
+  box-shadow:
+    0 8px 25px #1e2c68,
+    inset 0 4px 20px #7ea3fc,
+    inset 0 -4px 15px #2b448f,
+    0 0 30px 10px rgba(100, 150, 255, 0.5);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 5;
+}
+
+#click-button:active {
+  transform: translateY(5px) scale(0.98);
+  box-shadow:
+    0 3px 15px #12205f,
+    inset 0 2px 10px #a1b3ff,
+    0 0 20px 5px rgba(100, 150, 255, 0.3);
+}
+
+/* Glow dynamique basé sur l'énergie */
+#click-button::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(100, 200, 255, 0.3) 0%, transparent 70%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+#click-button.active-glow::after {
+  opacity: 1;
+}
+
+/* --- Animation pièce améliorée --- */
+.coin-fly {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background: radial-gradient(circle at 50% 50%, #6cff9c, #26a530);
+  border-radius: 50%;
+  box-shadow: 0 0 10px #40ff6f;
+  pointer-events: none;
+  animation: flyUp 1s ease-out forwards;
+  filter: drop-shadow(0 0 5px #37d949);
+  z-index: 20;
+}
+
+@keyframes flyUp {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
     opacity: 0;
+    transform: translate(calc(var(--x, 0) * 1px), -100px) scale(0.3);
   }
 }
 
-/* UI Néon */
-#hud {
-  position: fixed;
-  top: 20px;
+/* --- Barre d'énergie premium --- */
+#energy-fill {
+  height: 100%;
   width: 100%;
-  display: flex;
-  justify-content: space-around;
-  font-size: 1.8rem;
-  text-shadow: 0 0 10px #00ffff;
-  font-weight: 700;
-  z-index: 100;
+  background: linear-gradient(90deg, 
+    #7bdb6e 0%, 
+    #44a74b 50%, 
+    #2ecc71 100%);
+  box-shadow: 
+    0 0 10px #43d84f,
+    inset 0 0 5px rgba(255, 255, 255, 0.5);
+  transition: width 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
-/* Effet de distortion au clic */
-@keyframes quantumPulse {
-  0% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(0.9); }
-  100% { transform: translate(-50%, -50%) scale(1); }
+/* --- Onglets avec effet néon --- */
+nav button.active {
+  background: linear-gradient(to bottom, #455bb5, #3a4da8);
+  color: #e7ecff;
+  box-shadow: 
+    inset 0 -4px 10px #2b3d89,
+    0 0 10px rgba(69, 91, 181, 0.7);
+}
+
+/* --- Particules de fond --- */
+#particles-js {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
 }
 </style>
 </head>
 <body>
 
-<div id="game-container">
-  <div class="light-ray"></div>
-  <div id="quantum-button"></div>
-  <div id="hud">
-    <div id="coins-display">0 ⚡</div>
-    <div id="energy-display">1000/1000 💫</div>
-  </div>
+<!-- Structure identique à ton original mais avec effets visuels ajoutés -->
+<div id="app">
+  <div id="particles-js"></div>
+  
+  <header>
+    <div id="title">Aether-Coin ULTRA</div>
+    <div id="coins-display">0</div>
+    <div id="energy-container">
+      <div id="energy-bar">
+        <div id="energy-fill"></div>
+      </div>
+      <div id="energy-text">1000/1000</div>
+    </div>
+  </header>
+
+  <main>
+    <section id="principal" class="tab-content active">
+      <button id="click-button">
+        <span id="click-text">GAGNER</span>
+      </button>
+    </section>
+
+    <!-- Sections avantages/classement/profil identiques à ton original -->
+    <!-- ... -->
+  </main>
+
+  <nav>
+    <!-- Onglets identiques -->
+    <!-- ... -->
+  </nav>
 </div>
 
-<!-- Three.js pour effets 3D -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<!-- GSAP pour animations pro -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+<!-- Librairies pour effets premium -->
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
 
 <script>
-// Config 8K
-const DPR = Math.min(2, window.devicePixelRatio || 1);
-const PARTICLES_COUNT = 150;
+// --- Ton code JavaScript original (700 lignes) --- //
+// Avec ces AJOUTS :
 
-// Init Three.js
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ 
-  alpha: true,
-  antialias: true 
+// Initialisation des particules de fond
+particlesJS("particles-js", {
+  particles: {
+    number: { value: 80, density: { enable: true, value_area: 800 } },
+    color: { value: "#ffffff" },
+    opacity: { value: 0.5, random: true },
+    size: { value: 3, random: true },
+    line_linked: { enable: true, distance: 150, color: "#4a65b8", opacity: 0.4, width: 1 },
+    move: { enable: true, speed: 2, direction: "none", random: true, straight: false }
+  }
 });
-renderer.setPixelRatio(DPR);
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.domElement.style.position = 'fixed';
-renderer.domElement.style.top = '0';
-renderer.domElement.style.zIndex = '-1';
-document.body.prepend(renderer.domElement);
 
-// Effets de lumière
-const ambientLight = new THREE.AmbientLight(0x404040);
-scene.add(ambientLight);
-
-const pointLight = new THREE.PointLight(0xffaa00, 1, 100);
-pointLight.position.set(0, 0, 10);
-scene.add(pointLight);
-
-// Particules quantiques
-const particlesGeometry = new THREE.BufferGeometry();
-const particlesCnt = 5000;
-const posArray = new Float32Array(particlesCnt * 3);
-
-for(let i = 0; i < particlesCnt * 3; i++) {
-  posArray[i] = (Math.random() - 0.5) * 10;
+// Upgrade de spawnFlyingCoin()
+function spawnFlyingCoin() {
+  const coin = document.createElement("div");
+  coin.className = "coin-fly";
+  
+  // Position aléatoire autour du bouton
+  const angle = Math.random() * Math.PI * 2;
+  const distance = 50 + Math.random() * 30;
+  coin.style.left = `calc(50% + ${Math.cos(angle) * distance}px)`;
+  coin.style.top = `calc(50% + ${Math.sin(angle) * distance}px)`;
+  
+  // Direction de vol aléatoire
+  coin.style.setProperty("--x", (Math.random() * 100 - 50));
+  
+  // Effet de scale aléatoire
+  gsap.fromTo(coin, 
+    { scale: 0.5 }, 
+    { scale: 1.2, duration: 0.3, yoyo: true, repeat: 1 }
+  );
+  
+  document.getElementById("principal").appendChild(coin);
+  setTimeout(() => coin.remove(), 1000);
 }
 
-particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-const particlesMaterial = new THREE.PointsMaterial({
-  size: 0.02,
-  color: 0xffffff,
-  transparent: true,
-  opacity: 0.8,
-  blending: THREE.AdditiveBlending
-});
-const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-scene.add(particlesMesh);
-
-camera.position.z = 5;
-
-// Animation loop
-function animate() {
-  requestAnimationFrame(animate);
+// Upgrade visuel de l'énergie
+function updateEnergyDisplay() {
+  const percent = energy / energyMax;
   
-  particlesMesh.rotation.x += 0.0005;
-  particlesMesh.rotation.y += 0.0005;
+  // Couleur dynamique
+  const hue = Math.floor(percent * 120);
+  energyFill.style.background = `linear-gradient(90deg, 
+    hsl(${hue}, 80%, 60%) 0%, 
+    hsl(${hue}, 90%, 50%) 100%)`;
   
-  renderer.render(scene, camera);
-}
-animate();
-
-// Game Logic
-let coins = 0;
-let energy = 1000;
-const energyMax = 1000;
-
-// UI
-const coinsDisplay = document.getElementById('coins-display');
-const energyDisplay = document.getElementById('energy-display');
-const quantumButton = document.getElementById('quantum-button');
-
-// Créer particules 2D
-for(let i = 0; i < PARTICLES_COUNT; i++) {
-  const particle = document.createElement('div');
-  particle.classList.add('particle');
-  particle.style.width = `${Math.random() * 8 + 2}px`;
-  particle.style.height = particle.style.width;
-  particle.style.left = `${Math.random() * 100}vw`;
-  particle.style.top = `${Math.random() * 100}vh`;
-  particle.style.animationDelay = `${Math.random() * 15}s`;
-  particle.style.backgroundColor = `hsl(${Math.random() * 60 + 180}, 100%, 80%)`;
-  document.body.appendChild(particle);
-}
-
-// Click effect
-quantumButton.addEventListener('click', () => {
-  // Animation
-  gsap.to(quantumButton, {
-    scale: 0.95,
-    duration: 0.1,
-    yoyo: true,
-    repeat: 1
-  });
-  
-  // Effet visuel
-  for(let i = 0; i < 15; i++) {
-    createSpark();
+  // Effet de pulsation si énergie basse
+  if (percent < 0.2) {
+    gsap.to(energyFill, {
+      opacity: 0.7,
+      duration: 0.5,
+      repeat: -1,
+      yoyo: true
+    });
+  } else {
+    gsap.killTweensOf(energyFill);
+    energyFill.style.opacity = "1";
   }
   
-  // Game logic
-  coins += 1;
-  energy = Math.max(0, energy - 1);
-  updateUI();
-});
-
-function createSpark() {
-  const spark = document.createElement('div');
-  spark.className = 'spark';
-  spark.style.left = `${50 + (Math.random() - 0.5) * 20}%`;
-  spark.style.top = '50%';
-  spark.style.width = `${Math.random() * 10 + 5}px`;
-  spark.style.height = spark.style.width;
-  spark.style.backgroundColor = `hsl(${Math.random() * 30 + 40}, 100%, 50%)`;
-  spark.style.boxShadow = `0 0 ${Math.random() * 20 + 10}px gold`;
-  document.body.appendChild(spark);
-  
-  gsap.to(spark, {
-    x: `${(Math.random() - 0.5) * 500}px`,
-    y: `${Math.random() * -300 - 100}px`,
-    opacity: 0,
-    scale: 0.1,
-    duration: Math.random() * 1 + 0.5,
-    onComplete: () => spark.remove()
-  });
+  // Mise à jour du glow du bouton
+  clickButton.classList.toggle("active-glow", percent > 0.5);
 }
 
-function updateUI() {
-  coinsDisplay.textContent = `${coins} ⚡`;
-  energyDisplay.textContent = `${energy}/${energyMax} 💫`;
-  
-  // Update energy bar color
-  const energyPercent = energy / energyMax;
-  quantumButton.style.boxShadow = `
-    0 0 ${20 + energyPercent * 30}px rgba(255, ${Math.floor(255 * energyPercent)}, 0, 0.7),
-    inset 0 0 50px rgba(255, 255, 255, ${0.3 + energyPercent * 0.5})
-  `;
-}
-
-// Responsive
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// Start
-updateUI();
+// Ajouter cette ligne dans ta fonction updateDisplay()
+updateEnergyDisplay();
 </script>
 </body>
 </html>
