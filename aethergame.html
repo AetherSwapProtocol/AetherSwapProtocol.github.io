@@ -1,1606 +1,1541 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Aether-Coin Pro - Jeu Web avec Gains Passifs</title>
-<style>
-  /* === VARIABLES === */
-  :root {
-    --color-bg: #121c3d;
-    --color-primary: #5b7dea;
-    --color-primary-dark: #3552b5;
-    --color-glow: rgba(100, 150, 255, 0.6);
-    --color-text: #eee;
-    --color-energy-full: #44a74b;
-    --color-energy-mid: #d8b94f;
-    --color-energy-low: #b94141;
-    --color-success: #4caf50;
-    --color-warning: #ff9800;
-    --color-danger: #f44336;
-    --font-main: 'Rajdhani', sans-serif;
-  }
-
-  /* === RESET & BASE === */
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0; padding: 0;
-    background: var(--color-bg);
-    color: var(--color-text);
-    font-family: var(--font-main);
-    -webkit-font-smoothing: antialiased;
-    user-select: none;
-    overflow-x: hidden;
-  }
-
-  #app {
-    max-width: 480px;
-    margin: auto;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(145deg, #121c3d 0%, #1a2a5a 100%);
-    box-shadow:
-      0 0 30px 15px rgba(76, 139, 245, 0.3),
-      inset 0 0 20px 5px rgba(36, 73, 122, 0.5);
-    position: relative;
-  }
-
-  /* === HEADER === */
-  header {
-    padding: 12px 20px;
-    background: linear-gradient(90deg, #3f5efb, #7b66ff);
-    border-radius: 12px 12px 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1.2rem;
-  }
-
-  #title {
-    color: white;
-    user-select: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  #title img {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-  }
-
-  .currency-display {
-    background: #273f91;
-    padding: 6px 14px;
-    border-radius: 20px;
-    min-width: 120px;
-    text-align: center;
-    box-shadow: 0 0 10px #2f51e9, 0 0 20px 5px rgba(47, 81, 233, 0.3);
-    font-feature-settings: "tnum";
-    margin-left: 8px;
-  }
-
-  #energy-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    min-width: 100px;
-    user-select: none;
-  }
-
-  #energy-bar {
-    width: 120px;
-    height: 14px;
-    background: #25365c;
-    border-radius: 7px;
-    overflow: hidden;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
-    margin-bottom: 4px;
-  }
-
-  #energy-fill {
-    height: 100%;
-    width: 100%;
-    background: var(--color-energy-full);
-    transition: width 0.4s ease;
-    box-shadow: 0 0 10px #43d84f, inset 0 0 5px rgba(255, 255, 255, 0.5);
-  }
-
-  #energy-text {
-    font-size: 0.75rem;
-    color: #d7e6ffcc;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-  }
-
-  /* === MAIN CONTENT === */
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: #1c2a56;
-    padding: 24px 20px 60px;
-    position: relative;
-  }
-
-  /* === TABS NAV === */
-  nav {
-    display: flex;
-    justify-content: space-around;
-    background: #273f91;
-    border-radius: 0 0 12px 12px;
-    padding: 6px 0;
-    user-select: none;
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-  }
-
-  nav button {
-    background: transparent;
-    border: none;
-    color: #aabbffaa;
-    font-weight: 700;
-    font-size: 1rem;
-    padding: 8px 16px;
-    border-radius: 8px 8px 0 0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-
-  nav button:hover {
-    color: white;
-  }
-
-  nav button.active {
-    background: #455bb5;
-    color: #e7ecff;
-    box-shadow: inset 0 -4px 10px #2b3d89, 0 0 10px rgba(69, 91, 181, 0.7);
-  }
-
-  nav button .notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: var(--color-danger);
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* === TAB CONTENT === */
-  .tab-content {
-    display: none;
-    flex-direction: column;
-    flex-grow: 1;
-    overflow-y: auto;
-  }
-
-  .tab-content.active {
-    display: flex;
-  }
-
-  /* === PRINCIPAL TAB === */
-  #principal {
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-  }
-
-  #click-button {
-    position: relative;
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    background: linear-gradient(145deg, var(--color-primary), var(--color-primary-dark));
-    box-shadow:
-      0 8px 25px #1e2c68,
-      inset 0 4px 20px #7ea3fc,
-      inset 0 -4px 15px #2b448f,
-      0 0 30px 10px var(--color-glow);
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    cursor: pointer;
-    transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    font-weight: 700;
-    font-size: 1.3rem;
-    color: white;
-    user-select: none;
-  }
-
-  #click-button:active {
-    transform: translateY(5px) scale(0.98);
-    box-shadow:
-      0 3px 15px #12205f,
-      inset 0 2px 10px #a1b3ff,
-      0 0 20px 5px rgba(100, 150, 255, 0.3);
-  }
-
-  #click-button.active-glow {
-    animation: glowPulse 2.5s ease-in-out infinite;
-  }
-
-  @keyframes glowPulse {
-    0%, 100% {
-      box-shadow:
-        0 0 20px 10px var(--color-glow),
-        inset 0 4px 20px #7ea3fc,
-        inset 0 -4px 15px #2b448f;
-    }
-    50% {
-      box-shadow:
-        0 0 40px 15px var(--color-glow),
-        inset 0 6px 25px #a2c0ff,
-        inset 0 -6px 20px #4570d1;
-    }
-  }
-
-  /* === PASSIVE INCOME SECTION === */
-  #passive-income {
-    width: 100%;
-    background: rgba(39, 63, 145, 0.3);
-    border-radius: 12px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .income-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-
-  .income-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: #aabbff;
-  }
-
-  .income-rate {
-    font-weight: 700;
-    color: #4caf50;
-  }
-
-  .worker-card {
-    background: linear-gradient(145deg, #3b5d99, #244376);
-    border-radius: 8px;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: transform 0.2s;
-  }
-
-  .worker-card:active {
-    transform: scale(0.98);
-  }
-
-  .worker-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .worker-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #5b7dea;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-  }
-
-  .worker-details {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .worker-name {
-    font-weight: 700;
-  }
-
-  .worker-production {
-    font-size: 0.8rem;
-    color: #aabbff;
-  }
-
-  .worker-cost {
-    font-size: 0.9rem;
-    color: #ff9800;
-    font-weight: 600;
-  }
-
-  /* === QUESTS SECTION === */
-  #quests-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
-  }
-
-  .quest-card {
-    background: rgba(59, 93, 153, 0.3);
-    border-radius: 8px;
-    padding: 12px;
-    border-left: 4px solid var(--color-warning);
-  }
-
-  .quest-card.completed {
-    border-left-color: var(--color-success);
-  }
-
-  .quest-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-  }
-
-  .quest-title {
-    font-weight: 700;
-    color: #ffd700;
-  }
-
-  .quest-reward {
-    background: var(--color-success);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.8rem;
-    font-weight: 700;
-  }
-
-  .quest-progress {
-    width: 100%;
-    height: 6px;
-    background: #25365c;
-    border-radius: 3px;
-    margin-top: 8px;
-    overflow: hidden;
-  }
-
-  .quest-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #5b7dea, #7b66ff);
-    transition: width 0.3s ease;
-  }
-
-  /* === AVANTAGES TAB === */
-  #avantages {
-    padding: 12px 0;
-    gap: 12px;
-  }
-
-  .bonus-section {
-    background: rgba(39, 63, 145, 0.3);
-    border-radius: 12px;
-    padding: 12px;
-  }
-
-  .bonus-section h3 {
-    margin-top: 0;
-    color: #aabbff;
-    font-size: 1.1rem;
-  }
-
-  .btn-advantage {
-    width: 100%;
-    padding: 14px;
-    margin: 8px 0;
-    background: linear-gradient(145deg, #3b5d99, #244376);
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-weight: 700;
-    font-size: 1.1rem;
-    cursor: pointer;
-    box-shadow: 0 0 12px #234675;
-    transition: all 0.3s ease;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .btn-advantage .badge {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.8rem;
-  }
-
-  .btn-advantage:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-
-  .btn-advantage:not(:disabled):hover {
-    background: linear-gradient(145deg, #4a72bd, #3559a0);
-    box-shadow: 0 0 16px #3360bb;
-  }
-
-  .telegram-connect {
-    background: linear-gradient(145deg, #2aabee, #229ed9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .telegram-connect img {
-    width: 20px;
-    height: 20px;
-  }
-
-  .referral-link {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 10px;
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .referral-link input {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid #5b7dea;
-    border-radius: 6px;
-    padding: 8px;
-    color: white;
-    font-family: inherit;
-    width: 100%;
-  }
-
-  .referral-link button {
-    background: var(--color-success);
-    border: none;
-    border-radius: 6px;
-    padding: 8px;
-    color: white;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  /* === CLASSEMENT TAB === */
-  #classement table {
-    width: 100%;
-    border-collapse: collapse;
-    user-select: none;
-  }
-
-  #classement th, #classement td {
-    padding: 10px 8px;
-    text-align: left;
-  }
-
-  #classement thead {
-    background: #3f5efb;
-    color: white;
-  }
-
-  #classement tbody tr:nth-child(odd) {
-    background: #2d3f88;
-  }
-
-  #classement tbody tr:nth-child(even) {
-    background: #384d9e;
-  }
-
-  #classement tbody tr.self-player {
-    background: #9de37f !important;
-    color: #0b2508;
-    font-weight: 700;
-  }
-
-  /* === PROFIL TAB === */
-  #profil {
-    padding: 12px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .profile-section {
-    background: rgba(39, 63, 145, 0.3);
-    border-radius: 12px;
-    padding: 12px;
-  }
-
-  .profile-section h3 {
-    margin-top: 0;
-    color: #aabbff;
-  }
-
-  #profile-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  #profile-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: #5b7dea;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-
-  #profile-details {
-    flex: 1;
-  }
-
-  #profile-username {
-    font-weight: 700;
-    font-size: 1.2rem;
-  }
-
-  #profile-telegram {
-    font-size: 0.9rem;
-    color: #aabbff;
-  }
-
-  .profile-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .stat-card {
-    background: rgba(59, 93, 153, 0.5);
-    border-radius: 8px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .stat-value {
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: #ffd700;
-  }
-
-  .stat-label {
-    font-size: 0.8rem;
-    color: #aabbff;
-  }
-
-  #profil button {
-    width: 100%;
-    padding: 14px;
-    background: #b94141;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-weight: 700;
-    font-size: 1.1rem;
-    cursor: pointer;
-    box-shadow: 0 0 12px #c44747;
-    transition: background 0.3s ease;
-  }
-
-  #profil button:hover {
-    background: #d35656;
-  }
-
-  /* === TON WALLET SECTION === */
-  #ton-wallet {
-    background: linear-gradient(145deg, #2aabee, #229ed9);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 12px;
-    border-radius: 12px;
-    margin-top: 12px;
-  }
-
-  #ton-wallet h3 {
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  #ton-wallet h3 img {
-    width: 20px;
-    height: 20px;
-  }
-
-  #wallet-address {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
-    padding: 8px;
-    font-family: monospace;
-    word-break: break-all;
-    font-size: 0.9rem;
-  }
-
-  #connect-wallet {
-    background: white;
-    color: #2aabee;
-    border: none;
-    border-radius: 6px;
-    padding: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  /* === COINS FLY ANIMATION === */
-  .coin-fly {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    background: radial-gradient(circle at 50% 50%, #6cff9c, #26a530);
-    border-radius: 50%;
-    box-shadow: 0 0 10px #40ff6f;
-    pointer-events: none;
-    animation: flyUp 1s ease-out forwards;
-    filter: drop-shadow(0 0 5px #37d949);
-    z-index: 1000;
-  }
-
-  @keyframes flyUp {
-    0% {
-      opacity: 1;
-      transform: translate(0, 0) scale(1);
-    }
-    100% {
-      opacity: 0;
-      transform: translate(var(--x, 0)px, -100px) scale(0.3);
-    }
-  }
-
-  /* === PARTICULES BACKGROUND === */
-  #particles-container {
-    position: fixed;
-    top: 0; left: 50%;
-    width: 480px;
-    height: 100vh;
-    margin-left: -240px;
-    pointer-events: none;
-    overflow: visible;
-    z-index: 1;
-  }
-
-  .particle {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.15;
-    filter: blur(0.6px);
-    will-change: transform, opacity;
-  }
-
-  /* === NOTIFICATIONS === */
-  .notification {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: slideIn 0.3s ease-out;
-  }
-
-  .notification.success {
-    border-left: 4px solid var(--color-success);
-  }
-
-  .notification.warning {
-    border-left: 4px solid var(--color-warning);
-  }
-
-  .notification.error {
-    border-left: 4px solid var(--color-danger);
-  }
-
-  @keyframes slideIn {
-    from { top: -50px; opacity: 0; }
-    to { top: 20px; opacity: 1; }
-  }
-
-  /* Scrollbar minimal */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #1a2a5a;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #3552b5;
-    border-radius: 4px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>AetherSwap Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ========== DISABLE ZOOM ========== */
+        html, body {
+            touch-action: manipulation;
+            -ms-touch-action: manipulation;
+            height: 100%;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+        }
+
+        /* ========== GLOBAL STYLES ========== */
+        :root {
+            /* Neon Color Scheme */
+            --primary: #FF2D75;        /* Vibrant Pink */
+            --secondary: #1B0A2E;      /* Deep Purple */
+            --dark: #110022;           /* Dark Purple-Black */
+            --light: #FFFFFF;          /* White */
+            --accent: #F9CB28;         /* Gold/Yellow */
+            --neon-purple: #B026FF;    /* Neon Purple */
+            --success: #00FF9D;        /* Neon Green */
+            
+            /* Effects */
+            --gradient-main: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            --glow-pink: 0 0 15px rgba(255, 45, 117, 0.7);
+            --glow-purple: 0 0 15px rgba(176, 38, 255, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Grotesk', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            width: 100%;
+        }
+
+        /* ========== GAME CONTAINER ========== */
+        .game-container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
+        /* ========== HEADER SECTION ========== */
+        .header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(17,0,34,0.8) 0%, rgba(17,0,34,0) 100%);
+            z-index: 100;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--neon-purple);
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .profile-level {
+            font-size: 12px;
+            color: var(--accent);
+        }
+
+        /* ========== PAGE SYSTEM ========== */
+        .page {
+            display: none;
+            flex: 1;
+            position: relative;
+            background: var(--secondary);
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
+            margin-top: 10px;
+            animation: fadeIn 0.3s ease;
+            border: 1px solid rgba(176, 38, 255, 0.2);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .game-content {
+            position: absolute;
+            top: 2px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--secondary);
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========== DAILY REWARDS ========== */
+        .daily-rewards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .daily-card {
+            background-color: rgba(27, 10, 46, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--neon-purple);
+            backdrop-filter: blur(5px);
+        }
+
+        .daily-card.unlocked {
+            background: linear-gradient(135deg, rgba(27, 10, 46, 0.7) 0%, rgba(59, 20, 100, 0.5) 100%);
+            box-shadow: var(--glow-purple);
+        }
+
+        .daily-card.locked {
+            opacity: 0.6;
+            filter: grayscale(60%);
+        }
+
+        .daily-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 8px;
+        }
+
+        .daily-label {
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .daily-timer {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .daily-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 5px var(--success);
+            display: none;
+        }
+
+        /* ========== TAP AREA ========== */
+        .tap-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .points-display {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 45, 117, 0.3);
+            animation: textGlow 2s infinite alternate;
+        }
+
+        .tap-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            max-width: 80vw;
+            max-height: 80vw;
+        }
+
+        .tap-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .tap-outer {
+            background: var(--gradient-main);
+            box-shadow: var(--glow-pink);
+            animation: gradient 3s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        .tap-inner {
+            width: 92%;
+            height: 92%;
+            background: radial-gradient(circle, rgba(59, 20, 100, 0.8) 0%, rgba(27, 10, 46, 0.9) 100%);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .character {
+            width: 60%;
+            height: 60%;
+        }
+
+        /* ========== PROGRESS BAR ========== */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .progress-level {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-count {
+            font-size: 12px;
+            color: #B0B3C0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(67, 67, 59, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: var(--gradient-main);
+            transition: width 0.5s ease;
+        }
+
+        /* ========== ENERGY BAR ========== */
+        .energy-container {
+            margin: 10px 0;
+        }
+
+        .energy-bar {
+            height: 6px;
+            background-color: rgba(67, 67, 59, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .energy-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--success) 0%, #00CCFF 100%);
+            transition: width 0.3s ease;
+        }
+
+        .energy-text {
+            font-size: 11px;
+            text-align: right;
+            color: var(--success);
+            margin-top: 2px;
+        }
+
+        /* ========== NAVIGATION ========== */
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(27, 10, 46, 0.9);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            z-index: 100;
+            border-top: 1px solid var(--neon-purple);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            background-color: rgba(255, 45, 117, 0.1);
+            box-shadow: 0 0 10px rgba(255, 45, 117, 0.2);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 5px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+        }
+
+        /* ========== EXCHANGE ITEMS ========== */
+        .exchange-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .exchange-card {
+            background-color: rgba(27, 10, 46, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--neon-purple);
+            transition: all 0.3s ease;
+        }
+
+        .exchange-card.unlocked {
+            background: linear-gradient(135deg, rgba(27, 10, 46, 0.7) 0%, rgba(59, 20, 100, 0.5) 100%);
+        }
+
+        .exchange-card.locked {
+            opacity: 0.5;
+            filter: grayscale(80%);
+        }
+
+        .exchange-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .exchange-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .exchange-profit {
+            font-size: 12px;
+            color: var(--success);
+        }
+
+        .exchange-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .exchange-btn {
+            background: var(--gradient-main);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .exchange-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 10px rgba(255, 45, 117, 0.3); }
+            100% { text-shadow: 0 0 20px rgba(255, 45, 117, 0.6); }
+        }
+
+        .click-effect {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            pointer-events: none;
+            animation: float 1s forwards;
+            text-shadow: 0 0 5px var(--primary);
+            z-index: 10;
+        }
+
+        /* ========== MISSION ITEMS ========== */
+        .mission-item {
+            background-color: rgba(27, 10, 46, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid var(--neon-purple);
+        }
+
+        .mission-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .mission-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .mission-reward {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .mission-progress {
+            height: 4px;
+            background-color: rgba(67, 67, 59, 0.3);
+            border-radius: 2px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .mission-progress-fill {
+            height: 100%;
+            background: var(--gradient-main);
+            border-radius: 2px;
+        }
+
+        .mission-btn {
+            background: var(--gradient-main);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .mission-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
 </head>
 <body>
-<div id="app" role="main" aria-label="Jeu Aether-Coin">
-  <div id="particles-container" aria-hidden="true"></div>
+    <div class="game-container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="profile">
+                <div class="profile-icon">
+                    <svg class="icon" viewBox="0 0 512 512" width="24" height="24">
+                        <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
+                    </svg>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name" id="username">Guest</div>
+                    <div class="profile-level">Level <span id="current-level">1</span></div>
+                </div>
+            </div>
+            <div class="profit-display">
+                <div class="profit-amount" id="profit-per-hour">0/h</div>
+            </div>
+        </header>
 
-  <header>
-    <div id="title" aria-label="Titre du jeu">
-      <img src="https://via.placeholder.com/24" alt="Logo Aether-Coin">
-      Aether-Coin Pro
+        <!-- Pages System -->
+        <div class="page active" id="page-exchange">
+            <div class="game-content">
+                <!-- Daily Rewards -->
+                <div class="daily-rewards">
+                    <div class="daily-card" id="daily-reward-1">
+                        <div class="daily-badge"></div>
+                        <svg class="daily-icon" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm1-13h-2v6h6v-2h-4z"/>
+                        </svg>
+                        <div class="daily-label">Daily Reward</div>
+                        <div class="daily-timer" id="daily-timer-1">Ready</div>
+                    </div>
+                    <div class="daily-card" id="daily-reward-2">
+                        <svg class="daily-icon" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
+                        </svg>
+                        <div class="daily-label">Daily Cipher</div>
+                        <div class="daily-timer" id="daily-timer-2">24:00</div>
+                    </div>
+                    <div class="daily-card" id="daily-reward-3">
+                        <svg class="daily-icon" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M19 19h-2v-4h2zm-7 0H9v-4h3zm-7 0H2v-4h3zm14-7h-2v-1c0-.5-.5-1 1-1h2v-1h-3c-.5 0-1-.5-1-1V5c0-.5.5-1 1-1h3v-1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h22v-1h-3c-.5 0-1-.5-1-1zm-14-3v-3h3v3zm7 0v-3h3v3z"/>
+                        </svg>
+                        <div class="daily-label">Daily Combo</div>
+                        <div class="daily-timer" id="daily-timer-3">24:00</div>
+                    </div>
+                </div>
+
+                <!-- Energy Bar -->
+                <div class="energy-container">
+                    <div class="energy-bar">
+                        <div class="energy-fill" id="energy-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="energy-text" id="energy-text">100/100</div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <div class="progress-level">Progress</div>
+                        <div class="progress-count"><span id="current-progress">0</span>/<span id="max-progress">100</span></div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Tap Area -->
+                <div class="tap-section">
+                    <div class="points-display" id="points-display">0</div>
+                    <div class="tap-container">
+                        <div class="tap-circle tap-outer">
+                            <div class="tap-circle tap-inner">
+                                <svg class="character" viewBox="0 0 512 512">
+                                    <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exchange Page -->
+        <div class="page" id="page-mine">
+            <div class="game-content">
+                <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Mining Station</h2>
+                <p style="color: var(--light); text-align: center; margin-top: 10px; margin-bottom: 20px;">Upgrade your mining power to earn more!</p>
+                
+                <div class="exchange-items" id="exchange-items">
+                    <!-- Cards will be added dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Friends Page -->
+        <div class="page" id="page-friends">
+            <div class="game-content" style="padding-bottom: 20px;">
+                <h2 style="color: var(--primary); text-align: center; margin-top: 20px; margin-bottom: 25px;">Invite Friends & Earn</h2>
+                
+                <!-- Rewards Card -->
+                <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
+                    <p style="color: var(--light); margin-bottom: 12px; font-size: 14px; text-align: center;">Earn <span style="color: var(--accent);">10%</span> from friends and <span style="color: var(--accent);">5%</span> from their friends</p>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <p style="color: var(--light); margin-bottom: 5px; font-size: 13px; text-align: center;">Available rewards</p>
+                        <p id="available-rewards" style="font-size: 24px; color: var(--success); font-weight: 700; text-align: center; margin: 5px 0;">0 AETH</p>
+                    </div>
+                    <button id="claim-rewards" style="background: var(--gradient-main); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; font-weight: 600; cursor: pointer;">CLAIM</button>
+                </div>
+
+                <!-- Stats Card -->
+                <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="color: var(--light);">Your referrals</span>
+                        <span id="referral-count" style="color: var(--accent); font-weight: 500;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--light);">Total earned</span>
+                        <span id="total-earned" style="color: var(--success); font-weight: 500;">0 AETH</span>
+                    </div>
+                </div>
+
+                <!-- Invite Card -->
+                <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
+                    <p style="color: var(--accent); margin-bottom: 15px; font-size: 16px; text-align: center; font-weight: 600;">YOUR INVITE CODE</p>
+                    <div id="referral-code-display" style="background: var(--dark); padding: 12px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: 1px; margin-bottom: 15px; word-break: break-all;">AETH-XXXX-XXXX</div>
+                    <button id="copy-invite-btn" style="background: var(--gradient-main); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; font-weight: 600; cursor: pointer;">COPY INVITE LINK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earn Page -->
+        <div class="page" id="page-earn">
+            <div class="game-content">
+                <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Earn Rewards</h2>
+                <p style="color: var(--light); text-align: center; margin-top: 10px; margin-bottom: 20px;">Complete missions to earn bonus coins!</p>
+                
+                <div id="missions-container">
+                    <!-- Missions will be added dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Airdrop Page -->
+        <div class="page" id="page-airdrop">
+            <div class="game-content">
+                <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Airdrop Hub</h2>
+                <p style="color: var(--light); text-align: center; margin-top: 10px; margin-bottom: 30px;">Claim your free token distributions!</p>
+                
+                <div style="margin: 0 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="color: var(--light);">Total coins earned</span>
+                        <span id="airdrop-total-coins" style="color: var(--accent); font-weight: 500;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="color: var(--light);">Your level</span>
+                        <span id="airdrop-level" style="color: var(--accent); font-weight: 500;">1</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+                        <span style="color: var(--light);">Referrals</span>
+                        <span id="airdrop-referrals" style="color: var(--accent); font-weight: 500;">0</span>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <p style="color: var(--light); margin-bottom: 5px; font-size: 13px; text-align: center;">Estimated airdrop</p>
+                        <p id="airdrop-estimate" style="font-size: 24px; color: var(--success); font-weight: 700; text-align: center; margin: 5px 0;">0 AETH</p>
+                    </div>
+                    <button style="background: #444; border: none; padding: 12px; border-radius: 8px; color: #999; width: 100%; font-weight: 600; cursor: not-allowed;">COMING SOON</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="navigation">
+            <div class="nav-item active" data-page="exchange">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
+                </svg>
+                <div class="nav-label">Exchange</div>
+            </div>
+            <div class="nav-item" data-page="mine">
+                <svg class="nav-icon" viewBox="0 0 32 32">
+                    <path fill="currentColor" d="M11.7 17.7c-.2-.2-.5-.3-.7-.3s-.5.1-.7.3l-6.6 6.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3l-.6-.6c-1-1-1.2-2.5-.5-3.7L6 12 3 9l-.6-1.8c-.2-.7 0-1.5.5-2l2.3-2.3c.4-.4.9-.6 1.4-.6.2 0 .4 0 .6.1L9 3l3 3 8-4.8c.5-.3 1-.4 1.5-.4.8 0 1.5.3 2.1.9l.6.6c.4.4.4 1 0 1.4l-6.6 6.6c-.4.4-.4 1 0 1.4l.6.6c.4.4.4 1 0 1.4l-4.6 4.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3L11.7 17.7zm19-9L18.7 14.7l-4 4 11.9 11.9c.4.4.9.6 1.4.6s1-.2 1.4-.6l1.2-1.2c.8-.8.8-2 0-2.8z"/>
+                </svg>
+                <div class="nav-label">Mine</div>
+            </div>
+            <div class="nav-item" data-page="friends">
+                <svg class="nav-icon" viewBox="0 0 28 28">
+                    <path fill="currentColor" d="M17.75 18c1 0 1.8.8 1.8 1.8v2h-1.8v-2h-6.5v2H9.5v-2c0-1-.8-1.8-1.8-1.8H7.6c1-.7 1.8-1.8 1.8-3.2v-1.3c0-1.4-.8-2.5-1.8-3.2H7.6c1-.7 1.8-1.8 1.8-3.2V7.6c0-1.4-.8-2.5-1.8-3.2h1.1c1 0 1.8-.8 1.8-1.8V1h1.8v1.8h6.5V1h1.8v1.8c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1c-1 0-1.8.8-1.8 1.8v1.3c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1zM14 10c1.9 0 3.5 1.6 3.5 3.5S15.9 17 14 17s-3.5-1.6-3.5-3.5S12.1 10 14 10zm6.5-6c1.9 0 3.5 1.6 3.5 3.5S22.4 11 20.5 11 17 9.4 17 7.5 18.6 4 20.5 4zM7.5 4C9.4 4 11 5.6 11 7.5S9.4 11 7.5 11 4 9.4 4 7.5 5.6 4 7.5 4z"/>
+                </svg>
+                <div class="nav-label">Friends</div>
+            </div>
+            <div class="nav-item" data-page="earn">
+                <svg class="nav-icon" viewBox="0 0 512 512">
+                    <path fill="currentColor" d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"/>
+                </svg>
+                <div class="nav-label">Earn</div>
+            </div>
+            <div class="nav-item" data-page="airdrop">
+                <svg class="nav-icon" viewBox="0 0 512 512">
+                    <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
+                </svg>
+                <div class="nav-label">Airdrop</div>
+            </div>
+        </nav>
     </div>
-    <div id="coins-display" aria-live="polite" aria-atomic="true" aria-label="Nombre de pièces">0</div>
-    <div id="energy-container" aria-label="Barre d'énergie">
-      <div id="energy-bar" role="progressbar" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="1000">
-        <div id="energy-fill"></div>
-      </div>
-      <div id="energy-text" aria-live="polite" aria-atomic="true">1000 / 1000</div>
-    </div>
-  </header>
 
-  <main>
-    <section id="principal" class="tab-content active" role="tabpanel" aria-labelledby="tab-principal" tabindex="0">
-      <button id="click-button" aria-pressed="false" aria-label="Bouton principal pour gagner des pièces">GAGNER</button>
-      
-      <div id="passive-income">
-        <div class="income-header">
-          <h3>Revenus passifs</h3>
-          <div class="income-rate">+<span id="income-rate">0</span>/sec</div>
-        </div>
-        
-        <div class="worker-card" id="worker-junior">
-          <div class="worker-info">
-            <div class="worker-icon">👨‍💼</div>
-            <div class="worker-details">
-              <div class="worker-name">Employé Junior</div>
-              <div class="worker-production">+0.2 pièces/sec</div>
-            </div>
-          </div>
-          <div class="worker-cost" data-cost="50">50 pièces</div>
-        </div>
-        
-        <div class="worker-card" id="worker-senior">
-          <div class="worker-info">
-            <div class="worker-icon">👨‍💻</div>
-            <div class="worker-details">
-              <div class="worker-name">Employé Senior</div>
-              <div class="worker-production">+1 pièce/sec</div>
-            </div>
-          </div>
-          <div class="worker-cost" data-cost="250">250 pièces</div>
-        </div>
-        
-        <div class="worker-card" id="worker-manager">
-          <div class="worker-info">
-            <div class="worker-icon">👔</div>
-            <div class="worker-details">
-              <div class="worker-name">Manager</div>
-              <div class="worker-production">+5 pièces/sec</div>
-            </div>
-          </div>
-          <div class="worker-cost" data-cost="1200">1200 pièces</div>
-        </div>
-      </div>
-      
-      <div id="quests-container">
-        <div class="quest-card" id="daily-quest">
-          <div class="quest-header">
-            <div class="quest-title">Quête du jour: 100 clics</div>
-            <div class="quest-reward">+200 pièces</div>
-          </div>
-          <div class="quest-progress">
-            <div class="quest-progress-bar" style="width: 0%"></div>
-          </div>
-        </div>
-        
-        <div class="quest-card" id="invite-quest">
-          <div class="quest-header">
-            <div class="quest-title">Inviter 1 ami</div>
-            <div class="quest-reward">+500 pièces</div>
-          </div>
-          <div class="quest-progress">
-            <div class="quest-progress-bar" style="width: 0%"></div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <script>
+        // ========== DISABLE ZOOM ==========
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
 
-    <section id="avantages" class="tab-content" role="tabpanel" aria-labelledby="tab-avantages" tabindex="0">
-      <div class="bonus-section">
-        <h3>Connexion Telegram</h3>
-        <button id="btn-telegram" class="btn-advantage telegram-connect">
-          <img src="https://telegram.org/img/t_logo.png" alt="Telegram Logo">
-          Se connecter avec Telegram
-        </button>
-        
-        <div id="ton-wallet">
-          <h3><img src="https://ton.org/download/ton_symbol.png" alt="TON Logo"> Portefeuille TON</h3>
-          <div id="wallet-address">Non connecté</div>
-          <button id="connect-wallet">
-            <img src="https://ton.org/download/ton_symbol.png" alt="TON Logo" width="16">
-            Connecter Wallet
-          </button>
-        </div>
-      </div>
-      
-      <div class="bonus-section">
-        <h3>Bonus</h3>
-        <button id="btn-subscribe" class="btn-advantage">
-          Bonus abonnement
-          <span class="badge">+1600 énergie</span>
-        </button>
-        <button id="btn-invite" class="btn-advantage">
-          Inviter des amis
-          <span class="badge">+100 énergie par ami</span>
-        </button>
-      </div>
-      
-      <div class="bonus-section">
-        <h3>Parrainage</h3>
-        <div class="referral-link">
-          <input type="text" id="referral-link-input" value="Chargement..." readonly>
-          <button id="copy-referral">Copier le lien</button>
-        </div>
-        <p style="font-size: 0.8rem; text-align: center;">
-          Recevez 10% des gains de vos filleuls!
-        </p>
-      </div>
-    </section>
+        document.addEventListener('touchmove', function(e) {
+            if(e.scale !== 1) e.preventDefault();
+        }, { passive: false });
 
-    <section id="classement" class="tab-content" role="tabpanel" aria-labelledby="tab-classement" tabindex="0">
-      <table>
-        <thead>
-          <tr><th>#</th><th>Pseudo</th><th>Pièces</th><th>TON</th></tr>
-        </thead>
-        <tbody id="ranking-body">
-          <!-- Rempli dynamiquement -->
-        </tbody>
-      </table>
-    </section>
+        // ======================
+        // GAME STATE MANAGEMENT
+        // ======================
+        const gameState = {
+            // Player Data
+            username: localStorage.getItem('username') || 'Guest',
+            coins: parseFloat(localStorage.getItem('coins')) || 0,
+            clickValue: parseFloat(localStorage.getItem('clickValue')) || 1,
+            profitPerHour: parseFloat(localStorage.getItem('profitPerHour')) || 0,
+            energy: parseInt(localStorage.getItem('energy')) || 100,
+            maxEnergy: 100,
+            lastEnergyUpdate: parseInt(localStorage.getItem('lastEnergyUpdate')) || Date.now(),
+            energyRechargeRate: 5000, // 5 seconds per energy point
+            
+            // Progression
+            level: parseInt(localStorage.getItem('level')) || 1,
+            progress: parseFloat(localStorage.getItem('progress')) || 0,
+            progressRequired: parseInt(localStorage.getItem('progressRequired')) || 100,
+            
+            // Cards
+            cards: JSON.parse(localStorage.getItem('cards')) || [],
+            cardDefinitions: [
+                { id: 1, name: "Basic Miner", price: 100, profitPerHour: 10, levelRequired: 1 },
+                { id: 2, name: "Advanced Miner", price: 500, profitPerHour: 50, levelRequired: 2 },
+                { id: 3, name: "Pro Miner", price: 2000, profitPerHour: 200, levelRequired: 3 },
+                { id: 4, name: "Expert Miner", price: 10000, profitPerHour: 1000, levelRequired: 5 },
+                { id: 5, name: "Elite Miner", price: 50000, profitPerHour: 5000, levelRequired: 8 }
+            ],
+            
+            // Daily Rewards
+            lastDailyClaim: {
+                reward: parseInt(localStorage.getItem('lastDailyClaimReward')) || 0,
+                cipher: parseInt(localStorage.getItem('lastDailyClaimCipher')) || 0,
+                combo: parseInt(localStorage.getItem('lastDailyClaimCombo')) || 0
+            },
+            
+            // Missions
+            missions: JSON.parse(localStorage.getItem('missions')) || [
+                { id: 1, name: "First Steps", description: "Collect 100 coins", target: 100, progress: 0, reward: 50, status: "active" },
+                { id: 2, name: "Beginner Miner", description: "Buy your first miner", target: 1, progress: 0, reward: 100, status: "locked" },
+                { id: 3, name: "Daily Grind", description: "Claim daily reward 3 times", target: 3, progress: 0, reward: 200, status: "locked" }
+            ],
+            lastMissionReset: parseInt(localStorage.getItem('lastMissionReset')) || Date.now(),
+            
+            // Referrals
+            referrals: JSON.parse(localStorage.getItem('referrals')) || [],
+            referralPendingCoins: parseFloat(localStorage.getItem('referralPendingCoins')) || 0,
+            totalEarnedFromReferrals: parseFloat(localStorage.getItem('totalEarnedFromReferrals')) || 0,
+            referralCode: localStorage.getItem('referralCode') || generateReferralCode(),
+            
+            // Active page
+            activePage: localStorage.getItem('activePage') || 'exchange'
+        };
 
-    <section id="profil" class="tab-content" role="tabpanel" aria-labelledby="tab-profil" tabindex="0">
-      <div class="profile-section">
-        <div id="profile-info">
-          <div id="profile-avatar">AC</div>
-          <div id="profile-details">
-            <div id="profile-username">-</div>
-            <div id="profile-telegram">Non connecté à Telegram</div>
-          </div>
-        </div>
-        
-        <div class="profile-stats">
-          <div class="stat-card">
-            <div class="stat-value" id="profile-coins">0</div>
-            <div class="stat-label">Pièces</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="profile-energy">0/0</div>
-            <div class="stat-label">Énergie</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="profile-ton">0</div>
-            <div class="stat-label">TON</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="profile-referrals">0</div>
-            <div class="stat-label">Filleuls</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="profile-section">
-        <h3>Progression</h3>
-        <div class="quest-card">
-          <div class="quest-header">
-            <div class="quest-title">Niveau actuel: <span id="profile-level">1</span></div>
-            <div class="quest-reward">XP: <span id="profile-xp">0</span>/100</div>
-          </div>
-          <div class="quest-progress">
-            <div class="quest-progress-bar" id="level-progress" style="width: 0%"></div>
-          </div>
-        </div>
-      </div>
-      
-      <button id="reset-game">Réinitialiser la partie</button>
-    </section>
-  </main>
+        // ======================
+        // DOM ELEMENTS
+        // ======================
+        const elements = {
+            username: document.getElementById('username'),
+            pointsDisplay: document.getElementById('points-display'),
+            currentLevel: document.getElementById('current-level'),
+            progressFill: document.getElementById('progress-fill'),
+            currentProgress: document.getElementById('current-progress'),
+            maxProgress: document.getElementById('max-progress'),
+            profitPerHour: document.getElementById('profit-per-hour'),
+            energyFill: document.getElementById('energy-fill'),
+            energyText: document.getElementById('energy-text'),
+            
+            // Daily Rewards
+            dailyTimers: {
+                reward: document.getElementById('daily-timer-1'),
+                cipher: document.getElementById('daily-timer-2'),
+                combo: document.getElementById('daily-timer-3')
+            },
+            dailyCards: {
+                reward: document.getElementById('daily-reward-1'),
+                cipher: document.getElementById('daily-reward-2'),
+                combo: document.getElementById('daily-reward-3')
+            },
+            
+            // Tap Area
+            tapArea: document.querySelector('.tap-outer'),
+            
+            // Exchange
+            exchangeItems: document.getElementById('exchange-items'),
+            
+            // Friends
+            availableRewards: document.getElementById('available-rewards'),
+            referralCount: document.getElementById('referral-count'),
+            totalEarned: document.getElementById('total-earned'),
+            referralCodeDisplay: document.getElementById('referral-code-display'),
+            claimRewardsBtn: document.getElementById('claim-rewards'),
+            copyInviteBtn: document.getElementById('copy-invite-btn'),
+            
+            // Missions
+            missionsContainer: document.getElementById('missions-container'),
+            
+            // Airdrop
+            airdropTotalCoins: document.getElementById('airdrop-total-coins'),
+            airdropLevel: document.getElementById('airdrop-level'),
+            airdropReferrals: document.getElementById('airdrop-referrals'),
+            airdropEstimate: document.getElementById('airdrop-estimate')
+        };
 
-  <nav role="tablist" aria-label="Navigation principale">
-    <button id="tab-principal" role="tab" aria-selected="true" tabindex="0" aria-controls="principal" class="active">
-      Principal
-    </button>
-    <button id="tab-avantages" role="tab" aria-selected="false" tabindex="-1" aria-controls="avantages">
-      Avantages
-    </button>
-    <button id="tab-classement" role="tab" aria-selected="false" tabindex="-1" aria-controls="classement">
-      Classement
-    </button>
-    <button id="tab-profil" role="tab" aria-selected="false" tabindex="-1" aria-controls="profil">
-      Profil
-    </button>
-  </nav>
-</div>
+        // ======================
+        // GAME INITIALIZATION
+        // ======================
+        function initGame() {
+            // Load saved data
+            loadGame();
+            
+            // Update UI
+            updateUI();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Start game loops
+            startGameLoops();
 
-<script>
-(() => {
-  // --- CONSTANTS ---
-  const COINS_PER_CLICK = 1;
-  const ENERGY_BASE = 1000;
-  const ENERGY_SUBSCRIBE_BONUS = 1600;
-  const ENERGY_INVITE_BONUS = 100;
-  const MAX_INVITES = 5;
-  const WORKERS = {
-    junior: { baseCost: 50, production: 0.2, owned: 0 },
-    senior: { baseCost: 250, production: 1, owned: 0 },
-    manager: { baseCost: 1200, production: 5, owned: 0 }
-  };
-  const QUESTS = {
-    dailyClicks: { target: 100, progress: 0, reward: 200, completed: false },
-    inviteFriend: { target: 1, progress: 0, reward: 500, completed: false }
-  };
-
-  // --- STATE ---
-  let username = null;
-  let coins = 0;
-  let energy = ENERGY_BASE;
-  let energyMax = ENERGY_BASE;
-  let subscribed = false;
-  let invitedFriends = 0;
-  let referralCode = generateReferralCode();
-  let rankingData = [];
-  let passiveIncome = 0;
-  let lastUpdate = Date.now();
-  let telegramConnected = false;
-  let telegramData = null;
-  let walletConnected = false;
-  let walletAddress = null;
-  let tonBalance = 0;
-  let level = 1;
-  let xp = 0;
-  let totalClicks = 0;
-
-  // --- DOM ELEMENTS ---
-  const coinsDisplay = document.getElementById("coins-display");
-  const energyFill = document.getElementById("energy-fill");
-  const energyText = document.getElementById("energy-text");
-  const clickButton = document.getElementById("click-button");
-  const btnSubscribe = document.getElementById("btn-subscribe");
-  const btnInvite = document.getElementById("btn-invite");
-  const btnTelegram = document.getElementById("btn-telegram");
-  const connectWallet = document.getElementById("connect-wallet");
-  const copyReferral = document.getElementById("copy-referral");
-  const referralInput = document.getElementById("referral-link-input");
-  const rankingBody = document.getElementById("ranking-body");
-  const profileUsername = document.getElementById("profile-username");
-  const profileTelegram = document.getElementById("profile-telegram");
-  const profileCoins = document.getElementById("profile-coins");
-  const profileEnergy = document.getElementById("profile-energy");
-  const profileTon = document.getElementById("profile-ton");
-  const profileReferrals = document.getElementById("profile-referrals");
-  const profileLevel = document.getElementById("profile-level");
-  const profileXp = document.getElementById("profile-xp");
-  const levelProgress = document.getElementById("level-progress");
-  const resetGameBtn = document.getElementById("reset-game");
-  const incomeRate = document.getElementById("income-rate");
-  const walletAddressDisplay = document.getElementById("wallet-address");
-  
-  // Worker elements
-  const workerJunior = document.getElementById("worker-junior");
-  const workerSenior = document.getElementById("worker-senior");
-  const workerManager = document.getElementById("worker-manager");
-  
-  // Quest elements
-  const dailyQuest = document.getElementById("daily-quest");
-  const inviteQuest = document.getElementById("invite-quest");
-  
-  // Tab elements
-  const tabButtons = {
-    principal: document.getElementById("tab-principal"),
-    avantages: document.getElementById("tab-avantages"),
-    classement: document.getElementById("tab-classement"),
-    profil: document.getElementById("tab-profil")
-  };
-  const tabSections = {
-    principal: document.getElementById("principal"),
-    avantages: document.getElementById("avantages"),
-    classement: document.getElementById("classement"),
-    profil: document.getElementById("profil")
-  };
-
-  // --- LOCAL STORAGE KEYS ---
-  const STORAGE_KEY = "aethercoin_pro_game_data";
-
-  // --- UTILITY FUNCTIONS ---
-  function generateReferralCode() {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-  }
-
-  function showNotification(message, type = "success") {
-    const notification = document.createElement("div");
-    notification.className = `notification ${type}`;
-    notification.innerHTML = message;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-      notification.style.opacity = "0";
-      setTimeout(() => notification.remove(), 300);
-    }, 3000);
-  }
-
-  function calculateWorkerCost(baseCost, owned) {
-    return Math.floor(baseCost * Math.pow(1.15, owned));
-  }
-
-  function calculatePassiveIncome() {
-    let income = 0;
-    income += WORKERS.junior.owned * WORKERS.junior.production;
-    income += WORKERS.senior.owned * WORKERS.senior.production;
-    income += WORKERS.manager.owned * WORKERS.manager.production;
-    return income;
-  }
-
-  function addXP(amount) {
-    xp += amount;
-    const xpNeeded = level * 100;
-    
-    if (xp >= xpNeeded) {
-      xp -= xpNeeded;
-      level++;
-      showNotification(`Niveau ${level} atteint!
-      showNotification(`Niveau ${level} atteint!`, "success");
-      energyMax += 200; // Augmente l'énergie max à chaque niveau
-      energy = energyMax; // Remplit l'énergie
-      updateEnergyDisplay();
-    }
-    
-    profileXp.textContent = `${xp}/${level * 100}`;
-    levelProgress.style.width = `${(xp / (level * 100)) * 100}%`;
-    profileLevel.textContent = level;
-    saveGame();
-  }
-
-  function createCoinFly(x, y) {
-    const coin = document.createElement("div");
-    coin.className = "coin-fly";
-    coin.style.left = `${x}px`;
-    coin.style.top = `${y}px`;
-    coin.style.setProperty("--x", (Math.random() * 100 - 50));
-    document.getElementById("app").appendChild(coin);
-    
-    setTimeout(() => coin.remove(), 1000);
-  }
-
-  function updateWorkerDisplays() {
-    // Junior
-    const juniorCost = calculateWorkerCost(WORKERS.junior.baseCost, WORKERS.junior.owned);
-    workerJunior.querySelector(".worker-cost").textContent = `${juniorCost} pièces`;
-    workerJunior.querySelector(".worker-cost").dataset.cost = juniorCost;
-    
-    // Senior
-    const seniorCost = calculateWorkerCost(WORKERS.senior.baseCost, WORKERS.senior.owned);
-    workerSenior.querySelector(".worker-cost").textContent = `${seniorCost} pièces`;
-    workerSenior.querySelector(".worker-cost").dataset.cost = seniorCost;
-    
-    // Manager
-    const managerCost = calculateWorkerCost(WORKERS.manager.baseCost, WORKERS.manager.owned);
-    workerManager.querySelector(".worker-cost").textContent = `${managerCost} pièces`;
-    workerManager.querySelector(".worker-cost").dataset.cost = managerCost;
-  }
-
-  function updatePassiveIncome() {
-    passiveIncome = calculatePassiveIncome();
-    incomeRate.textContent = passiveIncome.toFixed(1);
-  }
-
-  function updateQuestDisplays() {
-    // Quête des clics
-    const dailyProgress = (QUESTS.dailyClicks.progress / QUESTS.dailyClicks.target) * 100;
-    dailyQuest.querySelector(".quest-progress-bar").style.width = `${dailyProgress}%`;
-    
-    if (QUESTS.dailyClicks.completed) {
-      dailyQuest.classList.add("completed");
-    } else {
-      dailyQuest.classList.remove("completed");
-    }
-    
-    // Quête d'invitation
-    const inviteProgress = (QUESTS.inviteFriend.progress / QUESTS.inviteFriend.target) * 100;
-    inviteQuest.querySelector(".quest-progress-bar").style.width = `${inviteProgress}%`;
-    
-    if (QUESTS.inviteFriend.completed) {
-      inviteQuest.classList.add("completed");
-    } else {
-      inviteQuest.classList.remove("completed");
-    }
-  }
-
-  function updateEnergyDisplay() {
-    const percent = (energy / energyMax) * 100;
-    energyFill.style.width = `${percent}%`;
-    energyText.textContent = `${Math.floor(energy)} / ${energyMax}`;
-    
-    // Changement de couleur selon l'énergie
-    if (percent > 60) {
-      energyFill.style.background = "var(--color-energy-full)";
-      energyFill.style.boxShadow = "0 0 10px #43d84f, inset 0 0 5px rgba(255, 255, 255, 0.5)";
-    } else if (percent > 30) {
-      energyFill.style.background = "var(--color-energy-mid)";
-      energyFill.style.boxShadow = "0 0 10px #d8b94f, inset 0 0 5px rgba(255, 255, 255, 0.5)";
-    } else {
-      energyFill.style.background = "var(--color-energy-low)";
-      energyFill.style.boxShadow = "0 0 10px #b94141, inset 0 0 5px rgba(255, 255, 255, 0.5)";
-    }
-  }
-
-  function updateProfileDisplay() {
-    profileCoins.textContent = Math.floor(coins);
-    profileEnergy.textContent = `${Math.floor(energy)} / ${energyMax}`;
-    profileTon.textContent = tonBalance.toFixed(2);
-    profileReferrals.textContent = invitedFriends;
-    
-    if (telegramConnected && telegramData) {
-      profileUsername.textContent = telegramData.username || "-";
-      profileTelegram.textContent = `@${telegramData.username}`;
-    } else {
-      profileUsername.textContent = "-";
-      profileTelegram.textContent = "Non connecté à Telegram";
-    }
-    
-    if (walletConnected) {
-      walletAddressDisplay.textContent = walletAddress;
-      connectWallet.textContent = "Connecté";
-      connectWallet.style.background = "#4CAF50";
-    } else {
-      walletAddressDisplay.textContent = "Non connecté";
-      connectWallet.textContent = "Connecter Wallet";
-      connectWallet.style.background = "white";
-    }
-  }
-
-  function updateRankingDisplay() {
-    rankingBody.innerHTML = "";
-    
-    rankingData.slice(0, 20).forEach((player, index) => {
-      const row = document.createElement("tr");
-      if (player.isPlayer) row.className = "self-player";
-      
-      row.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${player.username}</td>
-        <td>${Math.floor(player.coins)}</td>
-        <td>${player.ton.toFixed(2)}</td>
-      `;
-      
-      rankingBody.appendChild(row);
-    });
-  }
-
-  function addCoins(amount, x, y) {
-    coins += amount;
-    coinsDisplay.textContent = Math.floor(coins);
-    profileCoins.textContent = Math.floor(coins);
-    
-    if (x && y) {
-      createCoinFly(x, y);
-    }
-    
-    saveGame();
-  }
-
-  function spendCoins(amount) {
-    if (coins >= amount) {
-      coins -= amount;
-      coinsDisplay.textContent = Math.floor(coins);
-      profileCoins.textContent = Math.floor(coins);
-      saveGame();
-      return true;
-    }
-    return false;
-  }
-
-  function spendEnergy(amount) {
-    if (energy >= amount) {
-      energy -= amount;
-      updateEnergyDisplay();
-      saveGame();
-      return true;
-    }
-    return false;
-  }
-
-  function buyWorker(workerType) {
-    const worker = WORKERS[workerType];
-    const cost = calculateWorkerCost(worker.baseCost, worker.owned);
-    
-    if (spendCoins(cost)) {
-      worker.owned++;
-      updateWorkerDisplays();
-      updatePassiveIncome();
-      showNotification(`${workerType === "junior" ? "Employé Junior" : workerType === "senior" ? "Employé Senior" : "Manager"} acheté!`, "success");
-      addXP(10);
-    } else {
-      showNotification("Pas assez de pièces!", "error");
-    }
-  }
-
-  function completeQuest(questType) {
-    const quest = QUESTS[questType];
-    
-    if (!quest.completed) {
-      quest.completed = true;
-      addCoins(quest.reward);
-      addXP(20);
-      showNotification(`Quête accomplie! +${quest.reward} pièces`, "success");
-      saveGame();
-    }
-  }
-
-  function claimSubscribeBonus() {
-    if (!subscribed) {
-      subscribed = true;
-      energyMax += ENERGY_SUBSCRIBE_BONUS;
-      energy = energyMax;
-      updateEnergyDisplay();
-      btnSubscribe.disabled = true;
-      showNotification(`Bonus abonnement activé! +${ENERGY_SUBSCRIBE_BONUS} énergie max`, "success");
-      saveGame();
-    }
-  }
-
-  function claimInviteBonus() {
-    if (invitedFriends < MAX_INVITES) {
-      invitedFriends++;
-      energyMax += ENERGY_INVITE_BONUS;
-      energy = energyMax;
-      updateEnergyDisplay();
-      
-      if (invitedFriends >= MAX_INVITES) {
-        btnInvite.disabled = true;
-      }
-      
-      showNotification(`Bonus parrainage! +${ENERGY_INVITE_BONUS} énergie max`, "success");
-      saveGame();
-    }
-  }
-
-  function connectTelegram() {
-    // Simulation de connexion Telegram
-    telegramConnected = true;
-    telegramData = {
-      username: "user_" + Math.random().toString(36).substring(2, 8),
-      photo_url: null
-    };
-    
-    btnTelegram.innerHTML = `
-      <img src="https://telegram.org/img/t_logo.png" alt="Telegram Logo">
-      Connecté: @${telegramData.username}
-    `;
-    
-    updateProfileDisplay();
-    showNotification("Connecté avec Telegram!", "success");
-    saveGame();
-  }
-
-  function connectWallet() {
-    // Simulation de connexion wallet TON
-    walletConnected = true;
-    walletAddress = "EQ" + Math.random().toString(36).substring(2, 24).toUpperCase();
-    tonBalance = Math.random() * 10;
-    
-    updateProfileDisplay();
-    showNotification("Portefeuille TON connecté!", "success");
-    saveGame();
-  }
-
-  function copyReferralLink() {
-    referralInput.select();
-    document.execCommand("copy");
-    showNotification("Lien de parrainage copié!", "success");
-  }
-
-  function resetGame() {
-    if (confirm("Êtes-vous sûr de vouloir réinitialiser votre progression? Tout sera perdu!")) {
-      localStorage.removeItem(STORAGE_KEY);
-      location.reload();
-    }
-  }
-
-  function saveGame() {
-    const gameData = {
-      username,
-      coins,
-      energy,
-      energyMax,
-      subscribed,
-      invitedFriends,
-      referralCode,
-      telegramConnected,
-      telegramData,
-      walletConnected,
-      walletAddress,
-      tonBalance,
-      workers: WORKERS,
-      quests: QUESTS,
-      level,
-      xp,
-      totalClicks,
-      lastUpdate: Date.now()
-    };
-    
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData));
-  }
-
-  function loadGame() {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    
-    if (savedData) {
-      const gameData = JSON.parse(savedData);
-      
-      username = gameData.username;
-      coins = gameData.coins || 0;
-      energy = gameData.energy || ENERGY_BASE;
-      energyMax = gameData.energyMax || ENERGY_BASE;
-      subscribed = gameData.subscribed || false;
-      invitedFriends = gameData.invitedFriends || 0;
-      referralCode = gameData.referralCode || generateReferralCode();
-      telegramConnected = gameData.telegramConnected || false;
-      telegramData = gameData.telegramData || null;
-      walletConnected = gameData.walletConnected || false;
-      walletAddress = gameData.walletAddress || null;
-      tonBalance = gameData.tonBalance || 0;
-      level = gameData.level || 1;
-      xp = gameData.xp || 0;
-      totalClicks = gameData.totalClicks || 0;
-      
-      // Workers
-      if (gameData.workers) {
-        WORKERS.junior.owned = gameData.workers.junior?.owned || 0;
-        WORKERS.senior.owned = gameData.workers.senior?.owned || 0;
-        WORKERS.manager.owned = gameData.workers.manager?.owned || 0;
-      }
-      
-      // Quests
-      if (gameData.quests) {
-        QUESTS.dailyClicks.progress = gameData.quests.dailyClicks?.progress || 0;
-        QUESTS.dailyClicks.completed = gameData.quests.dailyClicks?.completed || false;
-        QUESTS.inviteFriend.progress = gameData.quests.inviteFriend?.progress || 0;
-        QUESTS.inviteFriend.completed = gameData.quests.inviteFriend?.completed || false;
-      }
-      
-      lastUpdate = gameData.lastUpdate || Date.now();
-      
-      // Calculer les pièces gagnées passivement depuis la dernière connexion
-      if (gameData.lastUpdate) {
-        const timeDiff = (Date.now() - gameData.lastUpdate) / 1000; // en secondes
-        const passiveGain = timeDiff * calculatePassiveIncome();
-        if (passiveGain > 0) {
-          coins += passiveGain;
-          showNotification(`Vous avez gagné ${Math.floor(passiveGain)} pièces pendant votre absence!`, "success");
+            // Initialize active page
+            switchPage(gameState.activePage);
+            
+            // Generate exchange cards
+            generateExchangeCards();
+            
+            // Generate missions
+            generateMissions();
+            
+            // Update referral code display
+            elements.referralCodeDisplay.textContent = gameState.referralCode;
         }
-      }
-    }
-    
-    // Mettre à jour l'affichage
-    coinsDisplay.textContent = Math.floor(coins);
-    referralInput.value = `${window.location.origin}?ref=${referralCode}`;
-    
-    if (subscribed) {
-      btnSubscribe.disabled = true;
-    }
-    
-    if (invitedFriends >= MAX_INVITES) {
-      btnInvite.disabled = true;
-    }
-    
-    if (telegramConnected && telegramData) {
-      btnTelegram.innerHTML = `
-        <img src="https://telegram.org/img/t_logo.png" alt="Telegram Logo">
-        Connecté: @${telegramData.username}
-      `;
-    }
-    
-    updateWorkerDisplays();
-    updatePassiveIncome();
-    updateQuestDisplays();
-    updateEnergyDisplay();
-    updateProfileDisplay();
-    
-    // Simuler des données de classement
-    generateRankingData();
-  }
 
-  function generateRankingData() {
-    rankingData = [];
-    
-    // Ajouter le joueur actuel
-    rankingData.push({
-      username: telegramConnected ? telegramData.username : "Joueur",
-      coins: coins,
-      ton: tonBalance,
-      isPlayer: true
-    });
-    
-    // Ajouter des joueurs fictifs
-    for (let i = 0; i < 49; i++) {
-      rankingData.push({
-        username: `Joueur_${i + 1}`,
-        coins: Math.floor(Math.random() * 10000),
-        ton: Math.random() * 50,
-        isPlayer: false
-      });
-    }
-    
-    // Trier par pièces
-    rankingData.sort((a, b) => b.coins - a.coins);
-    updateRankingDisplay();
-  }
-
-  function handleClick(event) {
-    if (energy >= 1) {
-      const rect = clickButton.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      
-      if (spendEnergy(1)) {
-        addCoins(COINS_PER_CLICK, x, y);
-        totalClicks++;
-        
-        // Mettre à jour la quête des clics
-        if (!QUESTS.dailyClicks.completed) {
-          QUESTS.dailyClicks.progress++;
-          
-          if (QUESTS.dailyClicks.progress >= QUESTS.dailyClicks.target) {
-            QUESTS.dailyClicks.completed = true;
-            completeQuest("dailyClicks");
-          }
-          
-          updateQuestDisplays();
+        // ======================
+        // CORE GAME FUNCTIONS
+        // ======================
+        function loadGame() {
+            // Update all UI elements from gameState
+            elements.username.textContent = gameState.username;
+            elements.pointsDisplay.textContent = formatNumber(gameState.coins);
+            elements.currentLevel.textContent = gameState.level;
+            elements.currentProgress.textContent = Math.floor(gameState.progress);
+            elements.maxProgress.textContent = gameState.progressRequired;
+            elements.progressFill.style.width = `${(gameState.progress / gameState.progressRequired) * 100}%`;
+            elements.profitPerHour.textContent = `${formatNumber(gameState.profitPerHour)}/h`;
+            
+            // Update energy
+            updateEnergyDisplay();
+            
+            // Initialize daily rewards
+            updateDailyRewardsUI();
+            
+            // Update referral stats
+            updateReferralUI();
+            
+            // Update airdrop stats
+            updateAirdropUI();
         }
-        
-        // Animation du bouton
-        clickButton.classList.add("active-glow");
-        setTimeout(() => clickButton.classList.remove("active-glow"), 100);
-      } else {
-        showNotification("Plus d'énergie! Revenez plus tard.", "warning");
-      }
-    }
-  }
 
-  function switchTab(tabId) {
-    // Désactiver tous les onglets
-    Object.values(tabButtons).forEach(btn => {
-      btn.classList.remove("active");
-      btn.setAttribute("aria-selected", "false");
-      btn.tabIndex = -1;
-    });
-    
-    Object.values(tabSections).forEach(section => {
-      section.classList.remove("active");
-    });
-    
-    // Activer l'onglet sélectionné
-    tabButtons[tabId].classList.add("active");
-    tabButtons[tabId].setAttribute("aria-selected", "true");
-    tabButtons[tabId].tabIndex = 0;
-    tabSections[tabId].classList.add("active");
-  }
+        function updateUI() {
+            // Update points display with animation
+            animateValue(elements.pointsDisplay, parseFloat(elements.pointsDisplay.textContent.replace(/,/g, '')), gameState.coins, 500);
+            
+            // Update progress bar
+            elements.progressFill.style.width = `${(gameState.progress / gameState.progressRequired) * 100}%`;
+            elements.currentProgress.textContent = Math.floor(gameState.progress);
+            
+            // Update level if changed
+            elements.currentLevel.textContent = gameState.level;
+            
+            // Update profit per hour
+            elements.profitPerHour.textContent = `${formatNumber(gameState.profitPerHour)}/h`;
+            
+            // Update energy
+            updateEnergyDisplay();
+            
+            // Update missions
+            checkMissions();
+        }
 
-  function createParticles() {
-    const container = document.getElementById("particles-container");
-    const particleCount = 50;
-    
-    for (let i = 0; i < particleCount; i++) {
-      const particle = document.createElement("div");
-      particle.className = "particle";
-      
-      // Position aléatoire
-      const x = Math.random() * 100;
-      const y = Math.random() * 100;
-      const size = Math.random() * 2 + 1;
-      const opacity = Math.random() * 0.2 + 0.05;
-      const duration = Math.random() * 20 + 10;
-      const delay = Math.random() * 20;
-      
-      particle.style.left = `${x}%`;
-      particle.style.top = `${y}%`;
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
-      particle.style.opacity = opacity;
-      particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
-      
-      container.appendChild(particle);
-    }
-  }
+        function saveGame() {
+            // Save all game state to localStorage
+            localStorage.setItem('username', gameState.username);
+            localStorage.setItem('coins', gameState.coins.toString());
+            localStorage.setItem('clickValue', gameState.clickValue.toString());
+            localStorage.setItem('profitPerHour', gameState.profitPerHour.toString());
+            localStorage.setItem('energy', gameState.energy.toString());
+            localStorage.setItem('lastEnergyUpdate', gameState.lastEnergyUpdate.toString());
+            
+            // Save progression
+            localStorage.setItem('level', gameState.level.toString());
+            localStorage.setItem('progress', gameState.progress.toString());
+            localStorage.setItem('progressRequired', gameState.progressRequired.toString());
+            
+            // Save cards
+            localStorage.setItem('cards', JSON.stringify(gameState.cards));
+            
+            // Save daily rewards
+            localStorage.setItem('lastDailyClaimReward', gameState.lastDailyClaim.reward.toString());
+            localStorage.setItem('lastDailyClaimCipher', gameState.lastDailyClaim.cipher.toString());
+            localStorage.setItem('lastDailyClaimCombo', gameState.lastDailyClaim.combo.toString());
+            
+            // Save missions
+            localStorage.setItem('missions', JSON.stringify(gameState.missions));
+            localStorage.setItem('lastMissionReset', gameState.lastMissionReset.toString());
+            
+            // Save referrals
+            localStorage.setItem('referrals', JSON.stringify(gameState.referrals));
+            localStorage.setItem('referralPendingCoins', gameState.referralPendingCoins.toString());
+            localStorage.setItem('totalEarnedFromReferrals', gameState.totalEarnedFromReferrals.toString());
+            localStorage.setItem('referralCode', gameState.referralCode);
+            
+            // Save active page
+            localStorage.setItem('activePage', gameState.activePage);
+        }
 
-  // --- GAME LOOP ---
-  function gameLoop() {
-    const now = Date.now();
-    const deltaTime = (now - lastUpdate) / 1000; // en secondes
-    
-    if (deltaTime >= 1) {
-      // Gain passif
-      const passiveGain = passiveIncome * deltaTime;
-      if (passiveGain > 0) {
-        addCoins(passiveGain);
-      }
-      
-      // Régénération d'énergie
-      if (energy < energyMax) {
-        const energyRegen = deltaTime * (energyMax / 200); // 5 minutes pour recharger complètement
-        energy = Math.min(energy + energyRegen, energyMax);
-        updateEnergyDisplay();
-      }
-      
-      lastUpdate = now;
-    }
-    
-    requestAnimationFrame(gameLoop);
-  }
+        function formatNumber(num) {
+            return num.toLocaleString('en', { maximumFractionDigits: 2 });
+        }
 
-  // --- EVENT LISTENERS ---
-  clickButton.addEventListener("click", handleClick);
-  
-  // Achat de workers
-  workerJunior.addEventListener("click", () => buyWorker("junior"));
-  workerSenior.addEventListener("click", () => buyWorker("senior"));
-  workerManager.addEventListener("click", () => buyWorker("manager"));
-  
-  // Boutons bonus
-  btnSubscribe.addEventListener("click", claimSubscribeBonus);
-  btnInvite.addEventListener("click", claimInviteBonus);
-  btnTelegram.addEventListener("click", connectTelegram);
-  connectWallet.addEventListener("click", connectWallet);
-  copyReferral.addEventListener("click", copyReferralLink);
-  resetGameBtn.addEventListener("click", resetGame);
-  
-  // Navigation par onglets
-  Object.entries(tabButtons).forEach(([tabId, button]) => {
-    button.addEventListener("click", () => switchTab(tabId));
-  });
+        // ======================
+        // ENERGY SYSTEM
+        // ======================
+        function updateEnergyDisplay() {
+            elements.energyFill.style.width = `${(gameState.energy / gameState.maxEnergy) * 100}%`;
+            elements.energyText.textContent = `${gameState.energy}/${gameState.maxEnergy}`;
+        }
 
-  // --- INITIALIZATION ---
-  function init() {
-    loadGame();
-    createParticles();
-    gameLoop();
-    
-    // Vérifier si arrivée par référence
-    const urlParams = new URLSearchParams(window.location.search);
-    const refCode = urlParams.get("ref");
-    
-    if (refCode && refCode !== referralCode) {
-      showNotification(`Bienvenue parrainé par ${refCode}! Bonus de 50 pièces.`, "success");
-      addCoins(50);
-    }
-  }
+        function rechargeEnergy() {
+            const now = Date.now();
+            const timePassed = now - gameState.lastEnergyUpdate;
+            const energyToAdd = Math.floor(timePassed / gameState.energyRechargeRate);
+            
+            if (energyToAdd > 0) {
+                gameState.energy = Math.min(gameState.energy + energyToAdd, gameState.maxEnergy);
+                gameState.lastEnergyUpdate = now;
+                updateEnergyDisplay();
+                saveGame();
+            }
+        }
 
-  init();
-})();
-</script>
+        // ======================
+        // PAGE SYSTEM FUNCTIONS
+        // ======================
+        function switchPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(`page-${pageId}`).classList.add('active');
+            
+            // Update navigation styling
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`.nav-item[data-page="${pageId}"]`).classList.add('active');
+            
+            // Update game state
+            gameState.activePage = pageId;
+            saveGame();
+        }
+
+        // ======================
+        // GAME MECHANICS
+        // ======================
+        function handleTap() {
+            // Check if player has energy
+            if (gameState.energy <= 0) return;
+            
+            // Consume energy
+            gameState.energy--;
+            updateEnergyDisplay();
+            
+            // Increase coins and progress
+            gameState.coins += gameState.clickValue;
+            gameState.progress += gameState.clickValue;
+            
+            // Check for level up
+            if (gameState.progress >= gameState.progressRequired) {
+                levelUp();
+            }
+            
+            // Update UI and save
+            updateUI();
+            saveGame();
+            
+            // Create visual effect
+            createTapEffect(gameState.clickValue);
+        }
+
+        function levelUp() {
+            gameState.level += 1;
+            gameState.progress = 0;
+            gameState.progressRequired = Math.floor(100 * Math.pow(1.1, gameState.level - 1));
+            
+            // Update max progress display
+            elements.maxProgress.textContent = gameState.progressRequired;
+            
+            // Check for new unlocked cards
+            generateExchangeCards();
+            
+            // Check missions
+            checkMissions();
+            
+            // Visual feedback
+            elements.currentLevel.classList.add('pulse');
+            setTimeout(() => elements.currentLevel.classList.remove('pulse'), 1000);
+            
+            // Save game
+            saveGame();
+        }
+
+        function addCoins(amount) {
+            gameState.coins += amount;
+            gameState.progress += amount;
+            
+            // Check for level up
+            if (gameState.progress >= gameState.progressRequired) {
+                levelUp();
+            }
+            
+            // Update UI and save
+            updateUI();
+            saveGame();
+        }
+
+        // ======================
+        // EXCHANGE SYSTEM
+        // ======================
+        function generateExchangeCards() {
+            elements.exchangeItems.innerHTML = '';
+            
+            gameState.cardDefinitions.forEach(cardDef => {
+                const card = document.createElement('div');
+                card.className = `exchange-card ${cardDef.levelRequired > gameState.level ? 'locked' : 'unlocked'}`;
+                
+                const cardInfo = document.createElement('div');
+                cardInfo.className = 'exchange-info';
+                
+                const cardName = document.createElement('div');
+                cardName.className = 'exchange-name';
+                cardName.textContent = cardDef.name;
+                
+                const cardProfit = document.createElement('div');
+                cardProfit.className = 'exchange-profit';
+                cardProfit.textContent = `Profit: ${formatNumber(cardDef.profitPerHour)}/h`;
+                
+                cardInfo.appendChild(cardName);
+                cardInfo.appendChild(cardProfit);
+                
+                const cardPrice = document.createElement('div');
+                cardPrice.className = 'exchange-price';
+                cardPrice.textContent = formatNumber(cardDef.price);
+                
+                const cardBtn = document.createElement('button');
+                cardBtn.className = 'exchange-btn';
+                cardBtn.textContent = 'BUY';
+                cardBtn.disabled = cardDef.levelRequired > gameState.level || gameState.coins < cardDef.price;
+                
+                if (cardDef.levelRequired <= gameState.level) {
+                    cardBtn.addEventListener('click', () => buyCard(cardDef));
+                }
+                
+                card.appendChild(cardInfo);
+                card.appendChild(cardPrice);
+                card.appendChild(cardBtn);
+                
+                elements.exchangeItems.appendChild(card);
+            });
+        }
+
+        function buyCard(cardDef) {
+            if (gameState.coins >= cardDef.price) {
+                // Deduct coins
+                gameState.coins -= cardDef.price;
+                
+                // Add to owned cards
+                const ownedCard = gameState.cards.find(c => c.id === cardDef.id);
+                if (ownedCard) {
+                    ownedCard.count++;
+                } else {
+                    gameState.cards.push({
+                        id: cardDef.id,
+                        name: cardDef.name,
+                        count: 1,
+                        profitPerHour: cardDef.profitPerHour
+                    });
+                }
+                
+                // Update profit
+                updateProfit();
+                
+                // Update UI and save
+                updateUI();
+                generateExchangeCards();
+                saveGame();
+                
+                // Check missions
+                checkMissions();
+            }
+        }
+
+        function updateProfit() {
+            gameState.profitPerHour = gameState.cards.reduce((total, card) => {
+                return total + (card.profitPerHour * card.count);
+            }, 0);
+            
+            // Add referral bonuses (10% from level 1 referrals, 5% from level 2)
+            const level1Referrals = gameState.referrals.filter(r => r.level === 1).length;
+            const level2Referrals = gameState.referrals.filter(r => r.level === 2).length;
+            
+            const referralBonus = gameState.profitPerHour * (level1Referrals * 0.10 + level2Referrals * 0.05);
+            gameState.referralPendingCoins += referralBonus / 3600; // Add per second
+        }
+
+        // ======================
+        // DAILY REWARD SYSTEM
+        // ======================
+        function updateDailyRewardsUI() {
+            const now = Date.now();
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+            
+            // Daily Reward
+            updateDailyRewardUI(
+                'reward', 
+                gameState.lastDailyClaim.reward, 
+                now, 
+                twentyFourHours
+            );
+            
+            // Daily Cipher
+            updateDailyRewardUI(
+                'cipher', 
+                gameState.lastDailyClaim.cipher, 
+                now, 
+                twentyFourHours
+            );
+            
+            // Daily Combo
+            updateDailyRewardUI(
+                'combo', 
+                gameState.lastDailyClaim.combo, 
+                now, 
+                twentyFourHours
+            );
+        }
+
+        function updateDailyRewardUI(type, lastClaim, now, cooldown) {
+            const timeSinceLastClaim = now - lastClaim;
+            const card = elements.dailyCards[type];
+            const timer = elements.dailyTimers[type];
+            
+            if (timeSinceLastClaim >= cooldown || lastClaim === 0) {
+                // Reward is available
+                card.classList.add('unlocked');
+                card.classList.remove('locked');
+                timer.textContent = 'Ready';
+                
+                // Show notification badge for reward
+                if (type === 'reward') {
+                    card.querySelector('.daily-badge').style.display = 'block';
+                }
+            } else {
+                // Reward is on cooldown
+                card.classList.add('locked');
+                card.classList.remove('unlocked');
+                
+                // Calculate remaining time
+                const remainingTime = cooldown - timeSinceLastClaim;
+                const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                
+                timer.textContent = `${hours}h ${minutes}m`;
+                
+                // Hide notification badge
+                if (type === 'reward') {
+                    card.querySelector('.daily-badge').style.display = 'none';
+                }
+            }
+        }
+
+        function claimDailyReward(type) {
+            const now = Date.now();
+            let rewardAmount = 0;
+            
+            switch (type) {
+                case 'reward':
+                    rewardAmount = 1000 * gameState.level;
+                    gameState.lastDailyClaim.reward = now;
+                    break;
+                case 'cipher':
+                    rewardAmount = 2500 * gameState.level;
+                    gameState.lastDailyClaim.cipher = now;
+                    break;
+                case 'combo':
+                    rewardAmount = 5000 * gameState.level;
+                    gameState.lastDailyClaim.combo = now;
+                    break;
+            }
+            
+            addCoins(rewardAmount);
+            updateDailyRewardsUI();
+            
+            // Check missions
+            checkMissions();
+            
+            // Visual feedback
+            elements.dailyCards[type].classList.add('pulse');
+            setTimeout(() => elements.dailyCards[type].classList.remove('pulse'), 1000);
+        }
+
+        // ======================
+        // MISSION SYSTEM
+        // ======================
+        function generateMissions() {
+            elements.missionsContainer.innerHTML = '';
+            
+            gameState.missions.forEach(mission => {
+                if (mission.status === 'locked') return;
+                
+                const missionItem = document.createElement('div');
+                missionItem.className = 'mission-item';
+                
+                const missionHeader = document.createElement('div');
+                missionHeader.className = 'mission-header';
+                
+                const missionName = document.createElement('div');
+                missionName.className = 'mission-name';
+                missionName.textContent = mission.name;
+                
+                const missionReward = document.createElement('div');
+                missionReward.className = 'mission-reward';
+                missionReward.textContent = `${formatNumber(mission.reward)} coins`;
+                
+                missionHeader.appendChild(missionName);
+                missionHeader.appendChild(missionReward);
+                
+                const missionDesc = document.createElement('div');
+                missionDesc.style.color = 'var(--light)';
+                missionDesc.style.fontSize = '12px';
+                missionDesc.style.marginBottom = '8px';
+                missionDesc.textContent = mission.description;
+                
+                const missionProgress = document.createElement('div');
+                missionProgress.className = 'mission-progress';
+                
+                const missionProgressFill = document.createElement('div');
+                missionProgressFill.className = 'mission-progress-fill';
+                missionProgressFill.style.width = `${(mission.progress / mission.target) * 100}%`;
+                
+                missionProgress.appendChild(missionProgressFill);
+                
+                const missionBtn = document.createElement('button');
+                missionBtn.className = 'mission-btn';
+                
+                if (mission.progress >= mission.target) {
+                    missionBtn.textContent = 'CLAIM';
+                    missionBtn.addEventListener('click', () => claimMission(mission.id));
+                } else {
+                    missionBtn.textContent = `${Math.floor(mission.progress)}/${mission.target}`;
+                    missionBtn.disabled = true;
+                }
+                
+                missionItem.appendChild(missionHeader);
+                missionItem.appendChild(missionDesc);
+                missionItem.appendChild(missionProgress);
+                missionItem.appendChild(missionBtn);
+                
+                elements.missionsContainer.appendChild(missionItem);
+            });
+        }
+
+        function checkMissions() {
+            // Update mission progress
+            gameState.missions.forEach(mission => {
+                if (mission.status === 'completed') return;
+                
+                switch (mission.id) {
+                    case 1: // Collect 100 coins
+                        mission.progress = Math.min(gameState.coins, mission.target);
+                        break;
+                    case 2: // Buy first miner
+                        mission.progress = gameState.cards.length > 0 ? 1 : 0;
+                        if (mission.status === 'locked' && gameState.level >= 2) {
+                            mission.status = 'active';
+                        }
+                        break;
+                    case 3: // Claim daily reward 3 times
+                        if (mission.status === 'locked' && gameState.level >= 3) {
+                            mission.status = 'active';
+                        }
+                        // Progress is tracked in claimDailyReward function
+                        break;
+                }
+                
+                if (mission.progress >= mission.target && mission.status === 'active') {
+                    mission.status = 'ready';
+                }
+            });
+            
+            generateMissions();
+            saveGame();
+        }
+
+        function claimMission(missionId) {
+            const mission = gameState.missions.find(m => m.id === missionId);
+            if (mission && mission.status === 'ready') {
+                addCoins(mission.reward);
+                mission.status = 'completed';
+                generateMissions();
+                saveGame();
+            }
+        }
+
+        // ======================
+        // REFERRAL SYSTEM
+        // ======================
+        function generateReferralCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'AETH-';
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            code += '-';
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        function updateReferralUI() {
+            elements.availableRewards.textContent = `${formatNumber(gameState.referralPendingCoins)} AETH`;
+            elements.referralCount.textContent = gameState.referrals.length;
+            elements.totalEarned.textContent = `${formatNumber(gameState.totalEarnedFromReferrals)} AETH`;
+        }
+
+        function claimReferralRewards() {
+            if (gameState.referralPendingCoins > 0) {
+                addCoins(gameState.referralPendingCoins);
+                gameState.totalEarnedFromReferrals += gameState.referralPendingCoins;
+                gameState.referralPendingCoins = 0;
+                updateReferralUI();
+                updateAirdropUI();
+                saveGame();
+            }
+        }
+
+        // ======================
+        // AIRDROP SYSTEM
+        // ======================
+        function updateAirdropUI() {
+            elements.airdropTotalCoins.textContent = formatNumber(gameState.coins + gameState.totalEarnedFromReferrals);
+            elements.airdropLevel.textContent = gameState.level;
+            elements.airdropReferrals.textContent = gameState.referrals.length;
+            
+            // Simple estimation formula
+            const estimate = (gameState.coins * 0.001) + (gameState.level * 10) + (gameState.referrals.length * 5);
+            elements.airdropEstimate.textContent = `${formatNumber(estimate)} AETH`;
+        }
+
+        // ======================
+        // VISUAL EFFECTS
+        // ======================
+        function createTapEffect(value) {
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            effect.textContent = `+${formatNumber(value)}`;
+            effect.style.left = `${Math.random() * 60 + 20}%`;
+            effect.style.top = `${Math.random() * 60 + 20}%`;
+            elements.tapArea.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 1000);
+        }
+
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = formatNumber(value);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // ======================
+        // EVENT LISTENERS
+        // ======================
+        function setupEventListeners() {
+            // Tap area
+            elements.tapArea.addEventListener('click', handleTap);
+            
+            // Daily rewards
+            elements.dailyCards.reward.addEventListener('click', () => {
+                if (elements.dailyCards.reward.classList.contains('unlocked')) {
+                    claimDailyReward('reward');
+                    
+                    // Update mission progress for daily reward mission
+                    const dailyMission = gameState.missions.find(m => m.id === 3);
+                    if (dailyMission && dailyMission.status === 'active') {
+                        dailyMission.progress++;
+                        checkMissions();
+                    }
+                }
+            });
+            
+            elements.dailyCards.cipher.addEventListener('click', () => {
+                if (elements.dailyCards.cipher.classList.contains('unlocked')) {
+                    claimDailyReward('cipher');
+                }
+            });
+            
+            elements.dailyCards.combo.addEventListener('click', () => {
+                if (elements.dailyCards.combo.classList.contains('unlocked')) {
+                    claimDailyReward('combo');
+                }
+            });
+
+            // Navigation tabs
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const pageId = item.getAttribute('data-page');
+                    switchPage(pageId);
+                });
+            });
+            
+            // Referral claim button
+            elements.claimRewardsBtn.addEventListener('click', claimReferralRewards);
+            
+            // Copy invite button
+            elements.copyInviteBtn.addEventListener('click', () => {
+                const inviteLink = `${window.location.origin}?ref=${gameState.referralCode}`;
+                navigator.clipboard.writeText(inviteLink).then(() => {
+                    alert('Invite link copied to clipboard!');
+                });
+            });
+        }
+
+        // ======================
+        // GAME LOOPS
+        // ======================
+        function startGameLoops() {
+            // Update energy every second
+            setInterval(rechargeEnergy, 1000);
+            
+            // Update daily rewards every minute
+            setInterval(updateDailyRewardsUI, 60000);
+            
+            // Passive income every second
+            setInterval(() => {
+                if (gameState.profitPerHour > 0) {
+                    const coinsToAdd = gameState.profitPerHour / 3600; // Coins per second
+                    addCoins(coinsToAdd);
+                    
+                    // Update referral bonuses
+                    updateProfit();
+                }
+            }, 1000);
+            
+            // Check for mission reset every hour
+            setInterval(() => {
+                const now = Date.now();
+                if (now - gameState.lastMissionReset >= 24 * 60 * 60 * 1000) {
+                    // Reset daily missions
+                    gameState.missions.forEach(mission => {
+                        if (mission.id === 3) { // Daily reward mission
+                            mission.progress = 0;
+                            mission.status = 'active';
+                        }
+                    });
+                    gameState.lastMissionReset = now;
+                    saveGame();
+                    generateMissions();
+                }
+            }, 60 * 60 * 1000);
+        }
+
+        // ======================
+        // START THE GAME
+        // ======================
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
 </body>
 </html>
