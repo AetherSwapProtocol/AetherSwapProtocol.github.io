@@ -1,1541 +1,754 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>AetherSwap Elite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* ========== DISABLE ZOOM ========== */
-        html, body {
-            touch-action: manipulation;
-            -ms-touch-action: manipulation;
-            height: 100%;
-            overflow-x: hidden;
-            overscroll-behavior: contain;
-        }
-
-        /* ========== GLOBAL STYLES ========== */
-        :root {
-            /* Neon Color Scheme */
-            --primary: #FF2D75;        /* Vibrant Pink */
-            --secondary: #1B0A2E;      /* Deep Purple */
-            --dark: #110022;           /* Dark Purple-Black */
-            --light: #FFFFFF;          /* White */
-            --accent: #F9CB28;         /* Gold/Yellow */
-            --neon-purple: #B026FF;    /* Neon Purple */
-            --success: #00FF9D;        /* Neon Green */
-            
-            /* Effects */
-            --gradient-main: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-            --glow-pink: 0 0 15px rgba(255, 45, 117, 0.7);
-            --glow-purple: 0 0 15px rgba(176, 38, 255, 0.5);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Space Grotesk', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--dark);
-            color: var(--light);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            width: 100%;
-        }
-
-        /* ========== GAME CONTAINER ========== */
-        .game-container {
-            max-width: 600px;
-            width: 100%;
-            margin: 0 auto;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            padding-bottom: 80px;
-        }
-
-        /* ========== HEADER SECTION ========== */
-        .header {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(180deg, rgba(17,0,34,0.8) 0%, rgba(17,0,34,0) 100%);
-            z-index: 100;
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .profile-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background-color: var(--secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--neon-purple);
-        }
-
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .profile-name {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .profile-level {
-            font-size: 12px;
-            color: var(--accent);
-        }
-
-        /* ========== PAGE SYSTEM ========== */
-        .page {
-            display: none;
-            flex: 1;
-            position: relative;
-            background: var(--secondary);
-            border-top-left-radius: 30px;
-            border-top-right-radius: 30px;
-            margin-top: 10px;
-            animation: fadeIn 0.3s ease;
-            border: 1px solid rgba(176, 38, 255, 0.2);
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .game-content {
-            position: absolute;
-            top: 2px;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--secondary);
-            border-top-left-radius: 28px;
-            border-top-right-radius: 28px;
-            padding: 20px 15px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ========== DAILY REWARDS ========== */
-        .daily-rewards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .daily-card {
-            background-color: rgba(27, 10, 46, 0.7);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border: 1px solid var(--neon-purple);
-            backdrop-filter: blur(5px);
-        }
-
-        .daily-card.unlocked {
-            background: linear-gradient(135deg, rgba(27, 10, 46, 0.7) 0%, rgba(59, 20, 100, 0.5) 100%);
-            box-shadow: var(--glow-purple);
-        }
-
-        .daily-card.locked {
-            opacity: 0.6;
-            filter: grayscale(60%);
-        }
-
-        .daily-icon {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 8px;
-        }
-
-        .daily-label {
-            font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .daily-timer {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--accent);
-        }
-
-        .daily-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 8px;
-            height: 8px;
-            background-color: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 5px var(--success);
-            display: none;
-        }
-
-        /* ========== TAP AREA ========== */
-        .tap-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .points-display {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-align: center;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 10px rgba(255, 45, 117, 0.3);
-            animation: textGlow 2s infinite alternate;
-        }
-
-        .tap-container {
-            position: relative;
-            width: 250px;
-            height: 250px;
-            max-width: 80vw;
-            max-height: 80vw;
-        }
-
-        .tap-circle {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .tap-outer {
-            background: var(--gradient-main);
-            box-shadow: var(--glow-pink);
-            animation: gradient 3s ease infinite;
-            background-size: 200% 200%;
-        }
-
-        .tap-inner {
-            width: 92%;
-            height: 92%;
-            background: radial-gradient(circle, rgba(59, 20, 100, 0.8) 0%, rgba(27, 10, 46, 0.9) 100%);
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .character {
-            width: 60%;
-            height: 60%;
-        }
-
-        /* ========== PROGRESS BAR ========== */
-        .progress-container {
-            margin: 20px 0;
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-        }
-
-        .progress-level {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .progress-count {
-            font-size: 12px;
-            color: #B0B3C0;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background-color: rgba(67, 67, 59, 0.3);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            background: var(--gradient-main);
-            transition: width 0.5s ease;
-        }
-
-        /* ========== ENERGY BAR ========== */
-        .energy-container {
-            margin: 10px 0;
-        }
-
-        .energy-bar {
-            height: 6px;
-            background-color: rgba(67, 67, 59, 0.3);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .energy-fill {
-            height: 100%;
-            border-radius: 3px;
-            background: linear-gradient(90deg, var(--success) 0%, #00CCFF 100%);
-            transition: width 0.3s ease;
-        }
-
-        .energy-text {
-            font-size: 11px;
-            text-align: right;
-            color: var(--success);
-            margin-top: 2px;
-        }
-
-        /* ========== NAVIGATION ========== */
-        .navigation {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: rgba(27, 10, 46, 0.9);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-            z-index: 100;
-            border-top: 1px solid var(--neon-purple);
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 5px 10px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item.active {
-            background-color: rgba(255, 45, 117, 0.1);
-            box-shadow: 0 0 10px rgba(255, 45, 117, 0.2);
-        }
-
-        .nav-icon {
-            width: 24px;
-            height: 24px;
-            margin-bottom: 5px;
-        }
-
-        .nav-label {
-            font-size: 12px;
-        }
-
-        /* ========== EXCHANGE ITEMS ========== */
-        .exchange-items {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .exchange-card {
-            background-color: rgba(27, 10, 46, 0.7);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid var(--neon-purple);
-            transition: all 0.3s ease;
-        }
-
-        .exchange-card.unlocked {
-            background: linear-gradient(135deg, rgba(27, 10, 46, 0.7) 0%, rgba(59, 20, 100, 0.5) 100%);
-        }
-
-        .exchange-card.locked {
-            opacity: 0.5;
-            filter: grayscale(80%);
-        }
-
-        .exchange-info {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .exchange-name {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .exchange-profit {
-            font-size: 12px;
-            color: var(--success);
-        }
-
-        .exchange-price {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .exchange-btn {
-            background: var(--gradient-main);
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .exchange-btn:disabled {
-            background: #444;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        /* ========== ANIMATIONS ========== */
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes textGlow {
-            0% { text-shadow: 0 0 10px rgba(255, 45, 117, 0.3); }
-            100% { text-shadow: 0 0 20px rgba(255, 45, 117, 0.6); }
-        }
-
-        .click-effect {
-            position: absolute;
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            pointer-events: none;
-            animation: float 1s forwards;
-            text-shadow: 0 0 5px var(--primary);
-            z-index: 10;
-        }
-
-        /* ========== MISSION ITEMS ========== */
-        .mission-item {
-            background-color: rgba(27, 10, 46, 0.7);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid var(--neon-purple);
-        }
-
-        .mission-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .mission-name {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .mission-reward {
-            font-size: 12px;
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        .mission-progress {
-            height: 4px;
-            background-color: rgba(67, 67, 59, 0.3);
-            border-radius: 2px;
-            margin: 8px 0;
-            overflow: hidden;
-        }
-
-        .mission-progress-fill {
-            height: 100%;
-            background: var(--gradient-main);
-            border-radius: 2px;
-        }
-
-        .mission-btn {
-            background: var(--gradient-main);
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        .mission-btn:disabled {
-            background: #444;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aether-Coin - Clicker Game</title>
+<style>
+  /* Reset et base */
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin:0; padding:0; height:100%;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0d1a3f, #1a2a62);
+    color: #eef3f7;
+    display: flex; flex-direction: column; min-height: 100vh;
+  }
+  #app {
+    flex: 1;
+    display: flex; flex-direction: column;
+    max-width: 480px;
+    margin: auto;
+    border-radius: 12px;
+    background: #121c3d;
+    box-shadow:
+      0 0 8px 2px #4c8bf5,
+      inset 0 0 12px 2px #24497a;
+  }
+
+  /* Barre du haut : compteur + énergie + titre */
+  header {
+    padding: 12px 20px;
+    background: linear-gradient(90deg, #3f5efb, #7b66ff);
+    border-radius: 12px 12px 0 0;
+    display: flex; align-items: center; justify-content: space-between;
+    user-select: none;
+  }
+  #title {
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    color: #f0f5ff;
+  }
+  #coins-display {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #fff;
+    background: #273f91;
+    padding: 6px 12px;
+    border-radius: 20px;
+    min-width: 120px;
+    text-align: center;
+    box-shadow: 0 0 10px #2f51e9;
+  }
+  #energy-container {
+    display: flex; align-items: center; gap: 8px;
+    min-width: 140px;
+  }
+  #energy-bar {
+    flex: 1;
+    height: 14px;
+    border-radius: 8px;
+    background: #29355c;
+    overflow: hidden;
+    box-shadow: inset 0 0 5px #183067;
+  }
+  #energy-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #7bdb6e, #44a74b);
+    box-shadow: 0 0 8px #43d84f;
+    transition: width 0.3s ease-in-out;
+  }
+  #energy-text {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #bde9a8;
+    width: 40px;
+    text-align: right;
+    user-select: none;
+  }
+
+  /* Main content with tabs */
+  main {
+    flex: 1;
+    display: flex; flex-direction: column;
+    padding: 20px 24px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Onglets */
+  nav {
+    display: flex;
+    background: #1a2e63;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+    user-select: none;
+  }
+  nav button {
+    flex: 1;
+    padding: 12px 0;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #a7b5d6;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  nav button.active {
+    background: #455bb5;
+    color: #e7ecff;
+    box-shadow: inset 0 -4px 6px #2b3d89;
+  }
+  nav button:hover:not(.active) {
+    background: #32448c;
+    color: #dbe6ff;
+  }
+
+  /* Contenus des onglets */
+  section.tab-content {
+    display: none;
+    flex-direction: column;
+  }
+  section.tab-content.active {
+    display: flex;
+  }
+
+  /* --- Onglet Principal --- */
+  #principal {
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+  }
+  #click-button {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #5b7dea, #3552b5);
+    box-shadow:
+      0 8px 15px #1e2c68,
+      inset 0 4px 12px #7ea3fc,
+      inset 0 -4px 10px #2b448f;
+    border: 3px solid #3d54ac;
+    cursor: pointer;
+    transition: box-shadow 0.1s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+  #click-button:active {
+    box-shadow:
+      0 3px 8px #12205f,
+      inset 0 2px 5px #a1b3ff;
+    transform: translateY(3px);
+  }
+  #click-button .glow {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #94baff99 0%, transparent 70%);
+    filter: blur(12px);
+    z-index: 0;
+  }
+  #click-text {
+    font-weight: 700;
+    font-size: 1.7rem;
+    color: #dde7ff;
+    z-index: 1;
+    text-shadow: 0 0 8px #bdd1ff;
+  }
+
+  /* Animation des pièces qui volent */
+  .coin-fly {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    background: radial-gradient(circle at 50% 50%, #6cff9c, #26a530);
+    border-radius: 50%;
+    box-shadow: 0 0 5px #40ff6f;
+    pointer-events: none;
+    animation: flyUp 1s ease forwards;
+    filter: drop-shadow(0 0 3px #37d949);
+    z-index: 10;
+  }
+  @keyframes flyUp {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(calc(var(--x, 0) * 1px), -80px) scale(0.5);
+    }
+  }
+
+  /* --- Onglet Avantages --- */
+  #avantages {
+    gap: 12px;
+  }
+  .advantage-item {
+    background: #1f2f70;
+    padding: 14px 18px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 8px #2f4ab1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .advantage-desc {
+    font-weight: 600;
+    color: #c3d0ff;
+  }
+  .advantage-button {
+    background: #4466cc;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 700;
+    color: #eef5ff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    user-select: none;
+  }
+  .advantage-button:disabled {
+    background: #253a7a;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  .advantage-button:hover:not(:disabled) {
+    background: #5d84f4;
+  }
+
+  /* --- Onglet Classement --- */
+  #classement {
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1a2b5f;
+    border-radius: 12px;
+    box-shadow: inset 0 0 15px #334f9d;
+  }
+  thead tr {
+    background: #304b9c;
+  }
+  thead th {
+    padding: 12px 8px;
+    color: #c8d6ff;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: left;
+    border-bottom: 2px solid #4a67bf;
+    user-select: none;
+  }
+  tbody tr {
+    border-bottom: 1px solid #2d3e7a;
+    transition: background-color 0.25s;
+  }
+  tbody tr:hover {
+    background-color: #3a519d;
+  }
+  tbody td {
+    padding: 10px 8px;
+    color: #d2defc;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  tbody tr.self-player {
+    background: linear-gradient(90deg, #35d45a88, #2ea24888);
+    font-weight: 700;
+    color: #1a280f;
+  }
+  tbody tr.self-player:hover {
+    background: linear-gradient(90deg, #2fa74dcc, #298c43cc);
+  }
+
+  /* --- Onglet Profil --- */
+  #profil {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    color: #dceaff;
+  }
+  #profil h2 {
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .profile-info {
+    background: #243d87;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: inset 0 0 10px #2f4db5;
+  }
+  .profile-line {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 6px 0;
+    border-bottom: 1px solid #3a529e;
+  }
+  .profile-line:last-child {
+    border-bottom: none;
+  }
+  button#reset-game {
+    margin-top: 20px;
+    background: #c64545;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 12px 0;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 0 8px #d24a4a;
+    transition: background-color 0.3s ease;
+  }
+  button#reset-game:hover {
+    background: #a63a3a;
+  }
+
+  /* Scrollbar for main content */
+  main::-webkit-scrollbar {
+    width: 6px;
+  }
+  main::-webkit-scrollbar-thumb {
+    background-color: #4a65b8;
+    border-radius: 3px;
+  }
+  main::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Responsive */
+  @media (max-width: 520px) {
+    #app {
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      max-width: none;
+    }
+    #click-button {
+      width: 140px;
+      height: 140px;
+    }
+  }
+</style>
 </head>
 <body>
-    <div class="game-container">
-        <!-- Header Section -->
-        <header class="header">
-            <div class="profile">
-                <div class="profile-icon">
-                    <svg class="icon" viewBox="0 0 512 512" width="24" height="24">
-                        <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
-                    </svg>
-                </div>
-                <div class="profile-info">
-                    <div class="profile-name" id="username">Guest</div>
-                    <div class="profile-level">Level <span id="current-level">1</span></div>
-                </div>
-            </div>
-            <div class="profit-display">
-                <div class="profit-amount" id="profit-per-hour">0/h</div>
-            </div>
-        </header>
-
-        <!-- Pages System -->
-        <div class="page active" id="page-exchange">
-            <div class="game-content">
-                <!-- Daily Rewards -->
-                <div class="daily-rewards">
-                    <div class="daily-card" id="daily-reward-1">
-                        <div class="daily-badge"></div>
-                        <svg class="daily-icon" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm1-13h-2v6h6v-2h-4z"/>
-                        </svg>
-                        <div class="daily-label">Daily Reward</div>
-                        <div class="daily-timer" id="daily-timer-1">Ready</div>
-                    </div>
-                    <div class="daily-card" id="daily-reward-2">
-                        <svg class="daily-icon" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
-                        </svg>
-                        <div class="daily-label">Daily Cipher</div>
-                        <div class="daily-timer" id="daily-timer-2">24:00</div>
-                    </div>
-                    <div class="daily-card" id="daily-reward-3">
-                        <svg class="daily-icon" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M19 19h-2v-4h2zm-7 0H9v-4h3zm-7 0H2v-4h3zm14-7h-2v-1c0-.5-.5-1 1-1h2v-1h-3c-.5 0-1-.5-1-1V5c0-.5.5-1 1-1h3v-1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1H1v3h22v-1h-3c-.5 0-1-.5-1-1zm-14-3v-3h3v3zm7 0v-3h3v3z"/>
-                        </svg>
-                        <div class="daily-label">Daily Combo</div>
-                        <div class="daily-timer" id="daily-timer-3">24:00</div>
-                    </div>
-                </div>
-
-                <!-- Energy Bar -->
-                <div class="energy-container">
-                    <div class="energy-bar">
-                        <div class="energy-fill" id="energy-fill" style="width: 100%"></div>
-                    </div>
-                    <div class="energy-text" id="energy-text">100/100</div>
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="progress-container">
-                    <div class="progress-header">
-                        <div class="progress-level">Progress</div>
-                        <div class="progress-count"><span id="current-progress">0</span>/<span id="max-progress">100</span></div>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <!-- Tap Area -->
-                <div class="tap-section">
-                    <div class="points-display" id="points-display">0</div>
-                    <div class="tap-container">
-                        <div class="tap-circle tap-outer">
-                            <div class="tap-circle tap-inner">
-                                <svg class="character" viewBox="0 0 512 512">
-                                    <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Exchange Page -->
-        <div class="page" id="page-mine">
-            <div class="game-content">
-                <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Mining Station</h2>
-                <p style="color: var(--light); text-align: center; margin-top: 10px; margin-bottom: 20px;">Upgrade your mining power to earn more!</p>
-                
-                <div class="exchange-items" id="exchange-items">
-                    <!-- Cards will be added dynamically -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Friends Page -->
-        <div class="page" id="page-friends">
-            <div class="game-content" style="padding-bottom: 20px;">
-                <h2 style="color: var(--primary); text-align: center; margin-top: 20px; margin-bottom: 25px;">Invite Friends & Earn</h2>
-                
-                <!-- Rewards Card -->
-                <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
-                    <p style="color: var(--light); margin-bottom: 12px; font-size: 14px; text-align: center;">Earn <span style="color: var(--accent);">10%</span> from friends and <span style="color: var(--accent);">5%</span> from their friends</p>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <p style="color: var(--light); margin-bottom: 5px; font-size: 13px; text-align: center;">Available rewards</p>
-                        <p id="available-rewards" style="font-size: 24px; color: var(--success); font-weight: 700; text-align: center; margin: 5px 0;">0 AETH</p>
-                    </div>
-                    <button id="claim-rewards" style="background: var(--gradient-main); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; font-weight: 600; cursor: pointer;">CLAIM</button>
-                </div>
-
-                <!-- Stats Card -->
-                <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                        <span style="color: var(--light);">Your referrals</span>
-                        <span id="referral-count" style="color: var(--accent); font-weight: 500;">0</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: var(--light);">Total earned</span>
-                        <span id="total-earned" style="color: var(--success); font-weight: 500;">0 AETH</span>
-                    </div>
-                </div>
-
-                <!-- Invite Card -->
-                <div style="margin: 0 20px 15px 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
-                    <p style="color: var(--accent); margin-bottom: 15px; font-size: 16px; text-align: center; font-weight: 600;">YOUR INVITE CODE</p>
-                    <div id="referral-code-display" style="background: var(--dark); padding: 12px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: 1px; margin-bottom: 15px; word-break: break-all;">AETH-XXXX-XXXX</div>
-                    <button id="copy-invite-btn" style="background: var(--gradient-main); border: none; padding: 12px; border-radius: 8px; color: white; width: 100%; font-weight: 600; cursor: pointer;">COPY INVITE LINK</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Earn Page -->
-        <div class="page" id="page-earn">
-            <div class="game-content">
-                <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Earn Rewards</h2>
-                <p style="color: var(--light); text-align: center; margin-top: 10px; margin-bottom: 20px;">Complete missions to earn bonus coins!</p>
-                
-                <div id="missions-container">
-                    <!-- Missions will be added dynamically -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Airdrop Page -->
-        <div class="page" id="page-airdrop">
-            <div class="game-content">
-                <h2 style="color: var(--primary); text-align: center; margin-top: 20px;">Airdrop Hub</h2>
-                <p style="color: var(--light); text-align: center; margin-top: 10px; margin-bottom: 30px;">Claim your free token distributions!</p>
-                
-                <div style="margin: 0 20px; padding: 20px; background: rgba(27,10,46,0.7); border-radius: 12px; border: 1px solid var(--neon-purple);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                        <span style="color: var(--light);">Total coins earned</span>
-                        <span id="airdrop-total-coins" style="color: var(--accent); font-weight: 500;">0</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                        <span style="color: var(--light);">Your level</span>
-                        <span id="airdrop-level" style="color: var(--accent); font-weight: 500;">1</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
-                        <span style="color: var(--light);">Referrals</span>
-                        <span id="airdrop-referrals" style="color: var(--accent); font-weight: 500;">0</span>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <p style="color: var(--light); margin-bottom: 5px; font-size: 13px; text-align: center;">Estimated airdrop</p>
-                        <p id="airdrop-estimate" style="font-size: 24px; color: var(--success); font-weight: 700; text-align: center; margin: 5px 0;">0 AETH</p>
-                    </div>
-                    <button style="background: #444; border: none; padding: 12px; border-radius: 8px; color: #999; width: 100%; font-weight: 600; cursor: not-allowed;">COMING SOON</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Navigation -->
-        <nav class="navigation">
-            <div class="nav-item active" data-page="exchange">
-                <svg class="nav-icon" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M19 3h-3V1h-2v2H8V1H6v2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V8h18v11zM13 10h-2v7h2v-7z"/>
-                </svg>
-                <div class="nav-label">Exchange</div>
-            </div>
-            <div class="nav-item" data-page="mine">
-                <svg class="nav-icon" viewBox="0 0 32 32">
-                    <path fill="currentColor" d="M11.7 17.7c-.2-.2-.5-.3-.7-.3s-.5.1-.7.3l-6.6 6.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3l-.6-.6c-1-1-1.2-2.5-.5-3.7L6 12 3 9l-.6-1.8c-.2-.7 0-1.5.5-2l2.3-2.3c.4-.4.9-.6 1.4-.6.2 0 .4 0 .6.1L9 3l3 3 8-4.8c.5-.3 1-.4 1.5-.4.8 0 1.5.3 2.1.9l.6.6c.4.4.4 1 0 1.4l-6.6 6.6c-.4.4-.4 1 0 1.4l.6.6c.4.4.4 1 0 1.4l-4.6 4.6c-.2.2-.5.3-.7.3s-.5-.1-.7-.3L11.7 17.7zm19-9L18.7 14.7l-4 4 11.9 11.9c.4.4.9.6 1.4.6s1-.2 1.4-.6l1.2-1.2c.8-.8.8-2 0-2.8z"/>
-                </svg>
-                <div class="nav-label">Mine</div>
-            </div>
-            <div class="nav-item" data-page="friends">
-                <svg class="nav-icon" viewBox="0 0 28 28">
-                    <path fill="currentColor" d="M17.75 18c1 0 1.8.8 1.8 1.8v2h-1.8v-2h-6.5v2H9.5v-2c0-1-.8-1.8-1.8-1.8H7.6c1-.7 1.8-1.8 1.8-3.2v-1.3c0-1.4-.8-2.5-1.8-3.2H7.6c1-.7 1.8-1.8 1.8-3.2V7.6c0-1.4-.8-2.5-1.8-3.2h1.1c1 0 1.8-.8 1.8-1.8V1h1.8v1.8h6.5V1h1.8v1.8c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1c-1 0-1.8.8-1.8 1.8v1.3c0 1 .8 1.8 1.8 1.8h1.1c-1 .7-1.8 1.8-1.8 3.2v1.3c0 1.4.8 2.5 1.8 3.2h-1.1zM14 10c1.9 0 3.5 1.6 3.5 3.5S15.9 17 14 17s-3.5-1.6-3.5-3.5S12.1 10 14 10zm6.5-6c1.9 0 3.5 1.6 3.5 3.5S22.4 11 20.5 11 17 9.4 17 7.5 18.6 4 20.5 4zM7.5 4C9.4 4 11 5.6 11 7.5S9.4 11 7.5 11 4 9.4 4 7.5 5.6 4 7.5 4z"/>
-                </svg>
-                <div class="nav-label">Friends</div>
-            </div>
-            <div class="nav-item" data-page="earn">
-                <svg class="nav-icon" viewBox="0 0 512 512">
-                    <path fill="currentColor" d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"/>
-                </svg>
-                <div class="nav-label">Earn</div>
-            </div>
-            <div class="nav-item" data-page="airdrop">
-                <svg class="nav-icon" viewBox="0 0 512 512">
-                    <path fill="currentColor" d="M0 135.4c0 27.8 13.6 54.7 37.6 71 18.6-53.5 51.5-106 95.7-142.7C76.5 26.2 0 67 0 135.4zm378.7-71.6c43.4 36 76.7 88 95.7 142.7C498.3 190.2 512 163.3 512 135.4 512 67 435.5 26.3 378.7 63.8zm-122.7-14.2c-.1 0-.3 0-.4 0-114-14-202.3-157.7-202.3-267.2 0-111.6 89.2-159.7 202.3-159.7 113 0 202.3 48 202.3 159.7C458.3 193.4 370 49.6 256 49.6zm79.5 112.7c12.2 0 22 9.9 22 22s-9.9 22-22 22-22-9.9-22-22 9.9-22 22-22zm-159 0c12.2 0 22 9.9 22 22s-9.9 22-22 22c-12.2 0-22-9.9-22-22s9.9-22 22-22zm170.3 195.2c-11.7 8.3-25.6 12.6-39.5 12.6v30.1c0 9.2-7.5 16.7-16.7 16.7H221.4c-9.2 0-16.7-7.5-16.7-16.7v-30.1c-14-.2-27.8-4.3-39.5-12.6-18.2-13-28.6-33-28.6-55.5 0-9.2 7.5-16.7 16.7 16.7s16.7 7.5 16.7 16.7c0 11.4 5.3 21.7 14.6 28.3 23.1 16.5 54.8-.3 54.8-28.3 0-1.2.1-2.4.4-3.5l-33.5-38.7c-9.3-10.8-1.7-27.6 12.6-27.6h74.5c14.3 0 22 16.8 12.6 27.6l-33.5 38.7c.2 1.1.4 2.3.4 3.5 0 27.8 31.5 44.8 54.8 28.2 9.3-6.6 14.6-16.9 14.6-28.2 0-9.2 7.5-16.7 16.7-16.7 9.2 0 16.7 7.5 16.7 16.7.1 22.5-10.3 42.7-28.5 55.7z"/>
-                </svg>
-                <div class="nav-label">Airdrop</div>
-            </div>
-        </nav>
+<div id="app" role="main" aria-label="Jeu Aether-Coin">
+  <header>
+    <div id="title" aria-live="polite" aria-atomic="true" aria-relevant="text">Aether-Coin</div>
+    <div id="coins-display" aria-live="polite" aria-atomic="true" aria-relevant="text" aria-label="Nombre de Aether-Coins">0</div>
+    <div id="energy-container" aria-label="Barre d'énergie">
+      <div id="energy-bar" role="progressbar" aria-valuemin="0" aria-valuemax="2000" aria-valuenow="100">
+        <div id="energy-fill"></div>
+      </div>
+      <div id="energy-text">0</div>
     </div>
+  </header>
 
-    <script>
-        // ========== DISABLE ZOOM ==========
-        document.addEventListener('gesturestart', function(e) {
-            e.preventDefault();
-        });
+  <main>
+    <!-- Onglet Principal -->
+    <section id="principal" class="tab-content active" role="tabpanel" aria-label="Onglet principal">
+      <button id="click-button" aria-pressed="false" aria-label="Cliquez pour gagner des Aether-Coins" type="button">
+        <div class="glow"></div>
+        <span id="click-text">GAGNER</span>
+      </button>
+    </section>
 
-        document.addEventListener('touchmove', function(e) {
-            if(e.scale !== 1) e.preventDefault();
-        }, { passive: false });
+    <!-- Onglet Avantages -->
+    <section id="avantages" class="tab-content" role="tabpanel" aria-label="Onglet avantages">
+      <div class="advantage-item">
+        <div class="advantage-desc">S’abonner au canal Telegram (+1600 énergie)</div>
+        <button id="btn-subscribe" class="advantage-button" type="button">Valider</button>
+      </div>
+      <div class="advantage-item">
+        <div class="advantage-desc">Inviter un ami (+100 énergie)</div>
+        <button id="btn-invite" class="advantage-button" type="button">Valider</button>
+      </div>
+    </section>
 
-        // ======================
-        // GAME STATE MANAGEMENT
-        // ======================
-        const gameState = {
-            // Player Data
-            username: localStorage.getItem('username') || 'Guest',
-            coins: parseFloat(localStorage.getItem('coins')) || 0,
-            clickValue: parseFloat(localStorage.getItem('clickValue')) || 1,
-            profitPerHour: parseFloat(localStorage.getItem('profitPerHour')) || 0,
-            energy: parseInt(localStorage.getItem('energy')) || 100,
-            maxEnergy: 100,
-            lastEnergyUpdate: parseInt(localStorage.getItem('lastEnergyUpdate')) || Date.now(),
-            energyRechargeRate: 5000, // 5 seconds per energy point
-            
-            // Progression
-            level: parseInt(localStorage.getItem('level')) || 1,
-            progress: parseFloat(localStorage.getItem('progress')) || 0,
-            progressRequired: parseInt(localStorage.getItem('progressRequired')) || 100,
-            
-            // Cards
-            cards: JSON.parse(localStorage.getItem('cards')) || [],
-            cardDefinitions: [
-                { id: 1, name: "Basic Miner", price: 100, profitPerHour: 10, levelRequired: 1 },
-                { id: 2, name: "Advanced Miner", price: 500, profitPerHour: 50, levelRequired: 2 },
-                { id: 3, name: "Pro Miner", price: 2000, profitPerHour: 200, levelRequired: 3 },
-                { id: 4, name: "Expert Miner", price: 10000, profitPerHour: 1000, levelRequired: 5 },
-                { id: 5, name: "Elite Miner", price: 50000, profitPerHour: 5000, levelRequired: 8 }
-            ],
-            
-            // Daily Rewards
-            lastDailyClaim: {
-                reward: parseInt(localStorage.getItem('lastDailyClaimReward')) || 0,
-                cipher: parseInt(localStorage.getItem('lastDailyClaimCipher')) || 0,
-                combo: parseInt(localStorage.getItem('lastDailyClaimCombo')) || 0
-            },
-            
-            // Missions
-            missions: JSON.parse(localStorage.getItem('missions')) || [
-                { id: 1, name: "First Steps", description: "Collect 100 coins", target: 100, progress: 0, reward: 50, status: "active" },
-                { id: 2, name: "Beginner Miner", description: "Buy your first miner", target: 1, progress: 0, reward: 100, status: "locked" },
-                { id: 3, name: "Daily Grind", description: "Claim daily reward 3 times", target: 3, progress: 0, reward: 200, status: "locked" }
-            ],
-            lastMissionReset: parseInt(localStorage.getItem('lastMissionReset')) || Date.now(),
-            
-            // Referrals
-            referrals: JSON.parse(localStorage.getItem('referrals')) || [],
-            referralPendingCoins: parseFloat(localStorage.getItem('referralPendingCoins')) || 0,
-            totalEarnedFromReferrals: parseFloat(localStorage.getItem('totalEarnedFromReferrals')) || 0,
-            referralCode: localStorage.getItem('referralCode') || generateReferralCode(),
-            
-            // Active page
-            activePage: localStorage.getItem('activePage') || 'exchange'
-        };
+    <!-- Onglet Classement -->
+    <section id="classement" class="tab-content" role="tabpanel" aria-label="Onglet classement">
+      <table aria-label="Tableau du classement des joueurs">
+        <thead>
+          <tr>
+            <th scope="col">Rang</th>
+            <th scope="col">Pseudo</th>
+            <th scope="col">Aether-Coins</th>
+          </tr>
+        </thead>
+        <tbody id="ranking-body">
+          <!-- Ligne classement générée par JS -->
+        </tbody>
+      </table>
+    </section>
 
-        // ======================
-        // DOM ELEMENTS
-        // ======================
-        const elements = {
-            username: document.getElementById('username'),
-            pointsDisplay: document.getElementById('points-display'),
-            currentLevel: document.getElementById('current-level'),
-            progressFill: document.getElementById('progress-fill'),
-            currentProgress: document.getElementById('current-progress'),
-            maxProgress: document.getElementById('max-progress'),
-            profitPerHour: document.getElementById('profit-per-hour'),
-            energyFill: document.getElementById('energy-fill'),
-            energyText: document.getElementById('energy-text'),
-            
-            // Daily Rewards
-            dailyTimers: {
-                reward: document.getElementById('daily-timer-1'),
-                cipher: document.getElementById('daily-timer-2'),
-                combo: document.getElementById('daily-timer-3')
-            },
-            dailyCards: {
-                reward: document.getElementById('daily-reward-1'),
-                cipher: document.getElementById('daily-reward-2'),
-                combo: document.getElementById('daily-reward-3')
-            },
-            
-            // Tap Area
-            tapArea: document.querySelector('.tap-outer'),
-            
-            // Exchange
-            exchangeItems: document.getElementById('exchange-items'),
-            
-            // Friends
-            availableRewards: document.getElementById('available-rewards'),
-            referralCount: document.getElementById('referral-count'),
-            totalEarned: document.getElementById('total-earned'),
-            referralCodeDisplay: document.getElementById('referral-code-display'),
-            claimRewardsBtn: document.getElementById('claim-rewards'),
-            copyInviteBtn: document.getElementById('copy-invite-btn'),
-            
-            // Missions
-            missionsContainer: document.getElementById('missions-container'),
-            
-            // Airdrop
-            airdropTotalCoins: document.getElementById('airdrop-total-coins'),
-            airdropLevel: document.getElementById('airdrop-level'),
-            airdropReferrals: document.getElementById('airdrop-referrals'),
-            airdropEstimate: document.getElementById('airdrop-estimate')
-        };
+    <!-- Onglet Profil -->
+    <section id="profil" class="tab-content" role="tabpanel" aria-label="Onglet profil">
+      <h2>Profil</h2>
+      <div class="profile-info">
+        <div class="profile-line"><span>Pseudo :</span> <span id="profile-username">-</span></div>
+        <div class="profile-line"><span>Aether-Coins :</span> <span id="profile-coins">0</span></div>
+        <div class="profile-line"><span>Énergie :</span> <span id="profile-energy">0</span></div>
+      </div>
+      <button id="reset-game" type="button" aria-label="Réinitialiser le jeu">Réinitialiser le jeu</button>
+    </section>
+  </main>
 
-        // ======================
-        // GAME INITIALIZATION
-        // ======================
-        function initGame() {
-            // Load saved data
-            loadGame();
-            
-            // Update UI
-            updateUI();
-            
-            // Setup event listeners
-            setupEventListeners();
-            
-            // Start game loops
-            startGameLoops();
+  <!-- Barre de navigation -->
+  <nav role="tablist" aria-label="Navigation principale">
+    <button role="tab" aria-selected="true" aria-controls="principal" id="tab-principal" class="active" tabindex="0">Principal</button>
+    <button role="tab" aria-selected="false" aria-controls="avantages" id="tab-avantages" tabindex="-1">Avantages</button>
+    <button role="tab" aria-selected="false" aria-controls="classement" id="tab-classement" tabindex="-1">Classement</button>
+    <button role="tab" aria-selected="false" aria-controls="profil" id="tab-profil" tabindex="-1">Profil</button>
+  </nav>
+</div>
 
-            // Initialize active page
-            switchPage(gameState.activePage);
-            
-            // Generate exchange cards
-            generateExchangeCards();
-            
-            // Generate missions
-            generateMissions();
-            
-            // Update referral code display
-            elements.referralCodeDisplay.textContent = gameState.referralCode;
-        }
+<script>
+(() => {
+  "use strict";
 
-        // ======================
-        // CORE GAME FUNCTIONS
-        // ======================
-        function loadGame() {
-            // Update all UI elements from gameState
-            elements.username.textContent = gameState.username;
-            elements.pointsDisplay.textContent = formatNumber(gameState.coins);
-            elements.currentLevel.textContent = gameState.level;
-            elements.currentProgress.textContent = Math.floor(gameState.progress);
-            elements.maxProgress.textContent = gameState.progressRequired;
-            elements.progressFill.style.width = `${(gameState.progress / gameState.progressRequired) * 100}%`;
-            elements.profitPerHour.textContent = `${formatNumber(gameState.profitPerHour)}/h`;
-            
-            // Update energy
-            updateEnergyDisplay();
-            
-            // Initialize daily rewards
-            updateDailyRewardsUI();
-            
-            // Update referral stats
-            updateReferralUI();
-            
-            // Update airdrop stats
-            updateAirdropUI();
-        }
+  /* --- Constantes --- */
+  const ENERGY_BASE = 100;
+  const ENERGY_SUBSCRIBE_BONUS = 1600;
+  const ENERGY_INVITE_BONUS = 100;
+  const ENERGY_BASE_MAX = 2000;
 
-        function updateUI() {
-            // Update points display with animation
-            animateValue(elements.pointsDisplay, parseFloat(elements.pointsDisplay.textContent.replace(/,/g, '')), gameState.coins, 500);
-            
-            // Update progress bar
-            elements.progressFill.style.width = `${(gameState.progress / gameState.progressRequired) * 100}%`;
-            elements.currentProgress.textContent = Math.floor(gameState.progress);
-            
-            // Update level if changed
-            elements.currentLevel.textContent = gameState.level;
-            
-            // Update profit per hour
-            elements.profitPerHour.textContent = `${formatNumber(gameState.profitPerHour)}/h`;
-            
-            // Update energy
-            updateEnergyDisplay();
-            
-            // Update missions
-            checkMissions();
-        }
+  const COINS_PER_CLICK = 1;
 
-        function saveGame() {
-            // Save all game state to localStorage
-            localStorage.setItem('username', gameState.username);
-            localStorage.setItem('coins', gameState.coins.toString());
-            localStorage.setItem('clickValue', gameState.clickValue.toString());
-            localStorage.setItem('profitPerHour', gameState.profitPerHour.toString());
-            localStorage.setItem('energy', gameState.energy.toString());
-            localStorage.setItem('lastEnergyUpdate', gameState.lastEnergyUpdate.toString());
-            
-            // Save progression
-            localStorage.setItem('level', gameState.level.toString());
-            localStorage.setItem('progress', gameState.progress.toString());
-            localStorage.setItem('progressRequired', gameState.progressRequired.toString());
-            
-            // Save cards
-            localStorage.setItem('cards', JSON.stringify(gameState.cards));
-            
-            // Save daily rewards
-            localStorage.setItem('lastDailyClaimReward', gameState.lastDailyClaim.reward.toString());
-            localStorage.setItem('lastDailyClaimCipher', gameState.lastDailyClaim.cipher.toString());
-            localStorage.setItem('lastDailyClaimCombo', gameState.lastDailyClaim.combo.toString());
-            
-            // Save missions
-            localStorage.setItem('missions', JSON.stringify(gameState.missions));
-            localStorage.setItem('lastMissionReset', gameState.lastMissionReset.toString());
-            
-            // Save referrals
-            localStorage.setItem('referrals', JSON.stringify(gameState.referrals));
-            localStorage.setItem('referralPendingCoins', gameState.referralPendingCoins.toString());
-            localStorage.setItem('totalEarnedFromReferrals', gameState.totalEarnedFromReferrals.toString());
-            localStorage.setItem('referralCode', gameState.referralCode);
-            
-            // Save active page
-            localStorage.setItem('activePage', gameState.activePage);
-        }
+  /* --- Éléments DOM --- */
+  const coinsDisplay = document.getElementById("coins-display");
+  const energyFill = document.getElementById("energy-fill");
+  const energyText = document.getElementById("energy-text");
+  const energyBar = document.getElementById("energy-bar");
 
-        function formatNumber(num) {
-            return num.toLocaleString('en', { maximumFractionDigits: 2 });
-        }
+  const clickButton = document.getElementById("click-button");
 
-        // ======================
-        // ENERGY SYSTEM
-        // ======================
-        function updateEnergyDisplay() {
-            elements.energyFill.style.width = `${(gameState.energy / gameState.maxEnergy) * 100}%`;
-            elements.energyText.textContent = `${gameState.energy}/${gameState.maxEnergy}`;
-        }
+  const tabButtons = {
+    principal: document.getElementById("tab-principal"),
+    avantages: document.getElementById("tab-avantages"),
+    classement: document.getElementById("tab-classement"),
+    profil: document.getElementById("tab-profil"),
+  };
 
-        function rechargeEnergy() {
-            const now = Date.now();
-            const timePassed = now - gameState.lastEnergyUpdate;
-            const energyToAdd = Math.floor(timePassed / gameState.energyRechargeRate);
-            
-            if (energyToAdd > 0) {
-                gameState.energy = Math.min(gameState.energy + energyToAdd, gameState.maxEnergy);
-                gameState.lastEnergyUpdate = now;
-                updateEnergyDisplay();
-                saveGame();
-            }
-        }
+  const tabSections = {
+    principal: document.getElementById("principal"),
+    avantages: document.getElementById("avantages"),
+    classement: document.getElementById("classement"),
+    profil: document.getElementById("profil"),
+  };
 
-        // ======================
-        // PAGE SYSTEM FUNCTIONS
-        // ======================
-        function switchPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Show selected page
-            document.getElementById(`page-${pageId}`).classList.add('active');
-            
-            // Update navigation styling
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`.nav-item[data-page="${pageId}"]`).classList.add('active');
-            
-            // Update game state
-            gameState.activePage = pageId;
-            saveGame();
-        }
+  const btnSubscribe = document.getElementById("btn-subscribe");
+  const btnInvite = document.getElementById("btn-invite");
 
-        // ======================
-        // GAME MECHANICS
-        // ======================
-        function handleTap() {
-            // Check if player has energy
-            if (gameState.energy <= 0) return;
-            
-            // Consume energy
-            gameState.energy--;
-            updateEnergyDisplay();
-            
-            // Increase coins and progress
-            gameState.coins += gameState.clickValue;
-            gameState.progress += gameState.clickValue;
-            
-            // Check for level up
-            if (gameState.progress >= gameState.progressRequired) {
-                levelUp();
-            }
-            
-            // Update UI and save
-            updateUI();
-            saveGame();
-            
-            // Create visual effect
-            createTapEffect(gameState.clickValue);
-        }
+  const rankingBody = document.getElementById("ranking-body");
 
-        function levelUp() {
-            gameState.level += 1;
-            gameState.progress = 0;
-            gameState.progressRequired = Math.floor(100 * Math.pow(1.1, gameState.level - 1));
-            
-            // Update max progress display
-            elements.maxProgress.textContent = gameState.progressRequired;
-            
-            // Check for new unlocked cards
-            generateExchangeCards();
-            
-            // Check missions
-            checkMissions();
-            
-            // Visual feedback
-            elements.currentLevel.classList.add('pulse');
-            setTimeout(() => elements.currentLevel.classList.remove('pulse'), 1000);
-            
-            // Save game
-            saveGame();
-        }
+  const profileUsername = document.getElementById("profile-username");
+  const profileCoins = document.getElementById("profile-coins");
+  const profileEnergy = document.getElementById("profile-energy");
 
-        function addCoins(amount) {
-            gameState.coins += amount;
-            gameState.progress += amount;
-            
-            // Check for level up
-            if (gameState.progress >= gameState.progressRequired) {
-                levelUp();
-            }
-            
-            // Update UI and save
-            updateUI();
-            saveGame();
-        }
+  const resetGameBtn = document.getElementById("reset-game");
 
-        // ======================
-        // EXCHANGE SYSTEM
-        // ======================
-        function generateExchangeCards() {
-            elements.exchangeItems.innerHTML = '';
-            
-            gameState.cardDefinitions.forEach(cardDef => {
-                const card = document.createElement('div');
-                card.className = `exchange-card ${cardDef.levelRequired > gameState.level ? 'locked' : 'unlocked'}`;
-                
-                const cardInfo = document.createElement('div');
-                cardInfo.className = 'exchange-info';
-                
-                const cardName = document.createElement('div');
-                cardName.className = 'exchange-name';
-                cardName.textContent = cardDef.name;
-                
-                const cardProfit = document.createElement('div');
-                cardProfit.className = 'exchange-profit';
-                cardProfit.textContent = `Profit: ${formatNumber(cardDef.profitPerHour)}/h`;
-                
-                cardInfo.appendChild(cardName);
-                cardInfo.appendChild(cardProfit);
-                
-                const cardPrice = document.createElement('div');
-                cardPrice.className = 'exchange-price';
-                cardPrice.textContent = formatNumber(cardDef.price);
-                
-                const cardBtn = document.createElement('button');
-                cardBtn.className = 'exchange-btn';
-                cardBtn.textContent = 'BUY';
-                cardBtn.disabled = cardDef.levelRequired > gameState.level || gameState.coins < cardDef.price;
-                
-                if (cardDef.levelRequired <= gameState.level) {
-                    cardBtn.addEventListener('click', () => buyCard(cardDef));
-                }
-                
-                card.appendChild(cardInfo);
-                card.appendChild(cardPrice);
-                card.appendChild(cardBtn);
-                
-                elements.exchangeItems.appendChild(card);
-            });
-        }
+  /* --- Variables de jeu --- */
+  let username = null;
+  let coins = 0;
+  let energy = ENERGY_BASE;
+  let energyMax = ENERGY_BASE_MAX;
+  let subscribed = false;
+  let invitedFriends = 0;
 
-        function buyCard(cardDef) {
-            if (gameState.coins >= cardDef.price) {
-                // Deduct coins
-                gameState.coins -= cardDef.price;
-                
-                // Add to owned cards
-                const ownedCard = gameState.cards.find(c => c.id === cardDef.id);
-                if (ownedCard) {
-                    ownedCard.count++;
-                } else {
-                    gameState.cards.push({
-                        id: cardDef.id,
-                        name: cardDef.name,
-                        count: 1,
-                        profitPerHour: cardDef.profitPerHour
-                    });
-                }
-                
-                // Update profit
-                updateProfit();
-                
-                // Update UI and save
-                updateUI();
-                generateExchangeCards();
-                saveGame();
-                
-                // Check missions
-                checkMissions();
-            }
-        }
+  /* --- Données de classement (mock) */
+  let rankingData = [
+    { pseudo: "Alpha", coins: 3800 },
+    { pseudo: "Beta", coins: 2200 },
+    { pseudo: "Charlie", coins: 1600 },
+    { pseudo: "Delta", coins: 1200 },
+    { pseudo: "Echo", coins: 850 },
+    { pseudo: "Foxtrot", coins: 400 },
+    { pseudo: "Golf", coins: 200 }
+  ];
 
-        function updateProfit() {
-            gameState.profitPerHour = gameState.cards.reduce((total, card) => {
-                return total + (card.profitPerHour * card.count);
-            }, 0);
-            
-            // Add referral bonuses (10% from level 1 referrals, 5% from level 2)
-            const level1Referrals = gameState.referrals.filter(r => r.level === 1).length;
-            const level2Referrals = gameState.referrals.filter(r => r.level === 2).length;
-            
-            const referralBonus = gameState.profitPerHour * (level1Referrals * 0.10 + level2Referrals * 0.05);
-            gameState.referralPendingCoins += referralBonus / 3600; // Add per second
-        }
+  /* --- Fonctions de stockage local --- */
+  function saveGame() {
+    const data = {
+      username,
+      coins,
+      energy,
+      energyMax,
+      subscribed,
+      invitedFriends,
+    };
+    localStorage.setItem("aethercoin_save", JSON.stringify(data));
+  }
 
-        // ======================
-        // DAILY REWARD SYSTEM
-        // ======================
-        function updateDailyRewardsUI() {
-            const now = Date.now();
-            const twentyFourHours = 24 * 60 * 60 * 1000;
-            
-            // Daily Reward
-            updateDailyRewardUI(
-                'reward', 
-                gameState.lastDailyClaim.reward, 
-                now, 
-                twentyFourHours
-            );
-            
-            // Daily Cipher
-            updateDailyRewardUI(
-                'cipher', 
-                gameState.lastDailyClaim.cipher, 
-                now, 
-                twentyFourHours
-            );
-            
-            // Daily Combo
-            updateDailyRewardUI(
-                'combo', 
-                gameState.lastDailyClaim.combo, 
-                now, 
-                twentyFourHours
-            );
-        }
+  function loadGame() {
+    const data = localStorage.getItem("aethercoin_save");
+    if (data) {
+      try {
+        const obj = JSON.parse(data);
+        username = obj.username || null;
+        coins = Number(obj.coins) || 0;
+        energy = Number(obj.energy) || ENERGY_BASE;
+        energyMax = Number(obj.energyMax) || ENERGY_BASE_MAX;
+        subscribed = !!obj.subscribed;
+        invitedFriends = Number(obj.invitedFriends) || 0;
+      } catch {
+        resetGame();
+      }
+    }
+  }
 
-        function updateDailyRewardUI(type, lastClaim, now, cooldown) {
-            const timeSinceLastClaim = now - lastClaim;
-            const card = elements.dailyCards[type];
-            const timer = elements.dailyTimers[type];
-            
-            if (timeSinceLastClaim >= cooldown || lastClaim === 0) {
-                // Reward is available
-                card.classList.add('unlocked');
-                card.classList.remove('locked');
-                timer.textContent = 'Ready';
-                
-                // Show notification badge for reward
-                if (type === 'reward') {
-                    card.querySelector('.daily-badge').style.display = 'block';
-                }
-            } else {
-                // Reward is on cooldown
-                card.classList.add('locked');
-                card.classList.remove('unlocked');
-                
-                // Calculate remaining time
-                const remainingTime = cooldown - timeSinceLastClaim;
-                const hours = Math.floor(remainingTime / (1000 * 60 * 60));
-                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-                
-                timer.textContent = `${hours}h ${minutes}m`;
-                
-                // Hide notification badge
-                if (type === 'reward') {
-                    card.querySelector('.daily-badge').style.display = 'none';
-                }
-            }
-        }
+  function resetGame() {
+    username = null;
+    coins = 0;
+    energy = ENERGY_BASE;
+    energyMax = ENERGY_BASE_MAX;
+    subscribed = false;
+    invitedFriends = 0;
+    saveGame();
+  }
 
-        function claimDailyReward(type) {
-            const now = Date.now();
-            let rewardAmount = 0;
-            
-            switch (type) {
-                case 'reward':
-                    rewardAmount = 1000 * gameState.level;
-                    gameState.lastDailyClaim.reward = now;
-                    break;
-                case 'cipher':
-                    rewardAmount = 2500 * gameState.level;
-                    gameState.lastDailyClaim.cipher = now;
-                    break;
-                case 'combo':
-                    rewardAmount = 5000 * gameState.level;
-                    gameState.lastDailyClaim.combo = now;
-                    break;
-            }
-            
-            addCoins(rewardAmount);
-            updateDailyRewardsUI();
-            
-            // Check missions
-            checkMissions();
-            
-            // Visual feedback
-            elements.dailyCards[type].classList.add('pulse');
-            setTimeout(() => elements.dailyCards[type].classList.remove('pulse'), 1000);
-        }
+  /* --- Mise à jour affichage --- */
+  function updateDisplay() {
+    coinsDisplay.textContent = coins.toLocaleString();
+    energyText.textContent = `${energy} / ${energyMax}`;
+    energyFill.style.width = `${Math.min(energy, energyMax) / energyMax * 100}%`;
+    energyBar.setAttribute("aria-valuenow", Math.min(energy, energyMax));
+    profileCoins.textContent = coins.toLocaleString();
+    profileEnergy.textContent = `${energy} / ${energyMax}`;
+    profileUsername.textContent = username || "-";
+  }
 
-        // ======================
-        // MISSION SYSTEM
-        // ======================
-        function generateMissions() {
-            elements.missionsContainer.innerHTML = '';
-            
-            gameState.missions.forEach(mission => {
-                if (mission.status === 'locked') return;
-                
-                const missionItem = document.createElement('div');
-                missionItem.className = 'mission-item';
-                
-                const missionHeader = document.createElement('div');
-                missionHeader.className = 'mission-header';
-                
-                const missionName = document.createElement('div');
-                missionName.className = 'mission-name';
-                missionName.textContent = mission.name;
-                
-                const missionReward = document.createElement('div');
-                missionReward.className = 'mission-reward';
-                missionReward.textContent = `${formatNumber(mission.reward)} coins`;
-                
-                missionHeader.appendChild(missionName);
-                missionHeader.appendChild(missionReward);
-                
-                const missionDesc = document.createElement('div');
-                missionDesc.style.color = 'var(--light)';
-                missionDesc.style.fontSize = '12px';
-                missionDesc.style.marginBottom = '8px';
-                missionDesc.textContent = mission.description;
-                
-                const missionProgress = document.createElement('div');
-                missionProgress.className = 'mission-progress';
-                
-                const missionProgressFill = document.createElement('div');
-                missionProgressFill.className = 'mission-progress-fill';
-                missionProgressFill.style.width = `${(mission.progress / mission.target) * 100}%`;
-                
-                missionProgress.appendChild(missionProgressFill);
-                
-                const missionBtn = document.createElement('button');
-                missionBtn.className = 'mission-btn';
-                
-                if (mission.progress >= mission.target) {
-                    missionBtn.textContent = 'CLAIM';
-                    missionBtn.addEventListener('click', () => claimMission(mission.id));
-                } else {
-                    missionBtn.textContent = `${Math.floor(mission.progress)}/${mission.target}`;
-                    missionBtn.disabled = true;
-                }
-                
-                missionItem.appendChild(missionHeader);
-                missionItem.appendChild(missionDesc);
-                missionItem.appendChild(missionProgress);
-                missionItem.appendChild(missionBtn);
-                
-                elements.missionsContainer.appendChild(missionItem);
-            });
-        }
+  /* --- Gestion onglets --- */
+  function setActiveTab(tab) {
+    for (const key in tabButtons) {
+      if (key === tab) {
+        tabButtons[key].classList.add("active");
+        tabButtons[key].setAttribute("aria-selected", "true");
+        tabButtons[key].setAttribute("tabindex", "0");
+        tabSections[key].classList.add("active");
+      } else {
+        tabButtons[key].classList.remove("active");
+        tabButtons[key].setAttribute("aria-selected", "false");
+        tabButtons[key].setAttribute("tabindex", "-1");
+        tabSections[key].classList.remove("active");
+      }
+    }
+  }
 
-        function checkMissions() {
-            // Update mission progress
-            gameState.missions.forEach(mission => {
-                if (mission.status === 'completed') return;
-                
-                switch (mission.id) {
-                    case 1: // Collect 100 coins
-                        mission.progress = Math.min(gameState.coins, mission.target);
-                        break;
-                    case 2: // Buy first miner
-                        mission.progress = gameState.cards.length > 0 ? 1 : 0;
-                        if (mission.status === 'locked' && gameState.level >= 2) {
-                            mission.status = 'active';
-                        }
-                        break;
-                    case 3: // Claim daily reward 3 times
-                        if (mission.status === 'locked' && gameState.level >= 3) {
-                            mission.status = 'active';
-                        }
-                        // Progress is tracked in claimDailyReward function
-                        break;
-                }
-                
-                if (mission.progress >= mission.target && mission.status === 'active') {
-                    mission.status = 'ready';
-                }
-            });
-            
-            generateMissions();
-            saveGame();
-        }
+  /* --- Gestion du clic sur le bouton principal --- */
+  function onClickMainButton() {
+    if (energy <= 0) {
+      // Pas assez d'énergie
+      alert("Plus d'énergie ! Utilisez un avantage pour en récupérer.");
+      return;
+    }
+    coins += COINS_PER_CLICK;
+    energy--;
+    saveGame();
+    updateDisplay();
+    spawnFlyingCoin();
 
-        function claimMission(missionId) {
-            const mission = gameState.missions.find(m => m.id === missionId);
-            if (mission && mission.status === 'ready') {
-                addCoins(mission.reward);
-                mission.status = 'completed';
-                generateMissions();
-                saveGame();
-            }
-        }
+    // Update classement joueur dans rankingData
+    updateRankingData();
+  }
 
-        // ======================
-        // REFERRAL SYSTEM
-        // ======================
-        function generateReferralCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let code = 'AETH-';
-            for (let i = 0; i < 4; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            code += '-';
-            for (let i = 0; i < 4; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
+  /* --- Animation pièce volante --- */
+  function spawnFlyingCoin() {
+    const coin = document.createElement("div");
+    coin.className = "coin-fly";
+    // Position coin au centre du bouton
+    const rect = clickButton.getBoundingClientRect();
+    coin.style.left = `${rect.left + rect.width/2 - 14}px`;
+    coin.style.top = `${rect.top + rect.height/2 - 14}px`;
+    // Direction x aléatoire entre -30 et 30 px
+    coin.style.setProperty("--x", (Math.random() * 60 - 30).toFixed(0));
+    document.body.appendChild(coin);
+    setTimeout(() => coin.remove(), 1100);
+  }
 
-        function updateReferralUI() {
-            elements.availableRewards.textContent = `${formatNumber(gameState.referralPendingCoins)} AETH`;
-            elements.referralCount.textContent = gameState.referrals.length;
-            elements.totalEarned.textContent = `${formatNumber(gameState.totalEarnedFromReferrals)} AETH`;
-        }
+  /* --- Gestion des avantages --- */
+  function applySubscribeBonus() {
+    if (subscribed) {
+      alert("Vous avez déjà validé l'abonnement.");
+      return;
+    }
+    subscribed = true;
+    increaseEnergy(ENERGY_SUBSCRIBE_BONUS);
+    saveGame();
+    updateDisplay();
+    alert("Bonus abonnement appliqué ! +1600 énergie");
+  }
 
-        function claimReferralRewards() {
-            if (gameState.referralPendingCoins > 0) {
-                addCoins(gameState.referralPendingCoins);
-                gameState.totalEarnedFromReferrals += gameState.referralPendingCoins;
-                gameState.referralPendingCoins = 0;
-                updateReferralUI();
-                updateAirdropUI();
-                saveGame();
-            }
-        }
+  function applyInviteBonus() {
+    if (invitedFriends >= 5) {
+      alert("Nombre maximal d'invitations atteint.");
+      return;
+    }
+    invitedFriends++;
+    increaseEnergy(ENERGY_INVITE_BONUS);
+    saveGame();
+    updateDisplay();
+    alert(`Invitation validée ! +100 énergie (total invitations: ${invitedFriends})`);
+  }
 
-        // ======================
-        // AIRDROP SYSTEM
-        // ======================
-        function updateAirdropUI() {
-            elements.airdropTotalCoins.textContent = formatNumber(gameState.coins + gameState.totalEarnedFromReferrals);
-            elements.airdropLevel.textContent = gameState.level;
-            elements.airdropReferrals.textContent = gameState.referrals.length;
-            
-            // Simple estimation formula
-            const estimate = (gameState.coins * 0.001) + (gameState.level * 10) + (gameState.referrals.length * 5);
-            elements.airdropEstimate.textContent = `${formatNumber(estimate)} AETH`;
-        }
+  function increaseEnergy(amount) {
+    energyMax += amount;
+    energy += amount;
+    // Clamp energy to new max
+    if (energy > energyMax) energy = energyMax;
+  }
 
-        // ======================
-        // VISUAL EFFECTS
-        // ======================
-        function createTapEffect(value) {
-            const effect = document.createElement('div');
-            effect.className = 'click-effect';
-            effect.textContent = `+${formatNumber(value)}`;
-            effect.style.left = `${Math.random() * 60 + 20}%`;
-            effect.style.top = `${Math.random() * 60 + 20}%`;
-            elements.tapArea.appendChild(effect);
-            
-            setTimeout(() => {
-                effect.remove();
-            }, 1000);
-        }
+  /* --- Gestion du classement --- */
+  function updateRankingData() {
+    // Trouver joueur dans le ranking, ou l'ajouter
+    const idx = rankingData.findIndex(item => item.pseudo === username);
+    if (idx >= 0) {
+      rankingData[idx].coins = coins;
+    } else {
+      rankingData.push({ pseudo: username, coins });
+    }
+    // Trier classement (décroissant)
+    rankingData.sort((a,b) => b.coins - a.coins);
+    renderRanking();
+  }
 
-        function animateValue(element, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const value = Math.floor(progress * (end - start) + start);
-                element.textContent = formatNumber(value);
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
-        }
+  function renderRanking() {
+    rankingBody.innerHTML = "";
+    rankingData.forEach((player, i) => {
+      const tr = document.createElement("tr");
+      if (player.pseudo === username) {
+        tr.classList.add("self-player");
+      }
+      const tdRank = document.createElement("td");
+      tdRank.textContent = i + 1;
+      const tdPseudo = document.createElement("td");
+      tdPseudo.textContent = player.pseudo;
+      const tdCoins = document.createElement("td");
+      tdCoins.textContent = player.coins.toLocaleString();
+      tr.append(tdRank, tdPseudo, tdCoins);
+      rankingBody.appendChild(tr);
+    });
+  }
 
-        // ======================
-        // EVENT LISTENERS
-        // ======================
-        function setupEventListeners() {
-            // Tap area
-            elements.tapArea.addEventListener('click', handleTap);
-            
-            // Daily rewards
-            elements.dailyCards.reward.addEventListener('click', () => {
-                if (elements.dailyCards.reward.classList.contains('unlocked')) {
-                    claimDailyReward('reward');
-                    
-                    // Update mission progress for daily reward mission
-                    const dailyMission = gameState.missions.find(m => m.id === 3);
-                    if (dailyMission && dailyMission.status === 'active') {
-                        dailyMission.progress++;
-                        checkMissions();
-                    }
-                }
-            });
-            
-            elements.dailyCards.cipher.addEventListener('click', () => {
-                if (elements.dailyCards.cipher.classList.contains('unlocked')) {
-                    claimDailyReward('cipher');
-                }
-            });
-            
-            elements.dailyCards.combo.addEventListener('click', () => {
-                if (elements.dailyCards.combo.classList.contains('unlocked')) {
-                    claimDailyReward('combo');
-                }
-            });
+  /* --- Récupération username Telegram --- */
+  function detectTelegramUsername() {
+    if (window.Telegram?.WebApp) {
+      const user = Telegram.WebApp.initDataUnsafe?.user;
+      if (user) {
+        return user.username || `user_${user.id}`;
+      }
+    }
+    return null;
+  }
 
-            // Navigation tabs
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const pageId = item.getAttribute('data-page');
-                    switchPage(pageId);
-                });
-            });
-            
-            // Referral claim button
-            elements.claimRewardsBtn.addEventListener('click', claimReferralRewards);
-            
-            // Copy invite button
-            elements.copyInviteBtn.addEventListener('click', () => {
-                const inviteLink = `${window.location.origin}?ref=${gameState.referralCode}`;
-                navigator.clipboard.writeText(inviteLink).then(() => {
-                    alert('Invite link copied to clipboard!');
-                });
-            });
-        }
+  /* --- Demande pseudo si pas détecté --- */
+  function askUsername() {
+    let stored = localStorage.getItem("aethercoin_username");
+    if (stored) return stored;
+    let input = "";
+    do {
+      input = prompt("Entrez votre pseudo pour Aether-Coin (lettres, chiffres, _)", "");
+      if (input) input = input.trim().replace(/[^a-zA-Z0-9_]/g, "");
+    } while (!input);
+    localStorage.setItem("aethercoin_username", input);
+    return input;
+  }
 
-        // ======================
-        // GAME LOOPS
-        // ======================
-        function startGameLoops() {
-            // Update energy every second
-            setInterval(rechargeEnergy, 1000);
-            
-            // Update daily rewards every minute
-            setInterval(updateDailyRewardsUI, 60000);
-            
-            // Passive income every second
-            setInterval(() => {
-                if (gameState.profitPerHour > 0) {
-                    const coinsToAdd = gameState.profitPerHour / 3600; // Coins per second
-                    addCoins(coinsToAdd);
-                    
-                    // Update referral bonuses
-                    updateProfit();
-                }
-            }, 1000);
-            
-            // Check for mission reset every hour
-            setInterval(() => {
-                const now = Date.now();
-                if (now - gameState.lastMissionReset >= 24 * 60 * 60 * 1000) {
-                    // Reset daily missions
-                    gameState.missions.forEach(mission => {
-                        if (mission.id === 3) { // Daily reward mission
-                            mission.progress = 0;
-                            mission.status = 'active';
-                        }
-                    });
-                    gameState.lastMissionReset = now;
-                    saveGame();
-                    generateMissions();
-                }
-            }, 60 * 60 * 1000);
-        }
+  /* --- Initialisation --- */
+  function init() {
+    loadGame();
 
-        // ======================
-        // START THE GAME
-        // ======================
-        document.addEventListener('DOMContentLoaded', initGame);
-    </script>
+    // Detect username Telegram or fallback
+    let detected = detectTelegramUsername();
+    if (detected) {
+      username = detected;
+      localStorage.setItem("aethercoin_username", username);
+    } else {
+      username = localStorage.getItem("aethercoin_username");
+      if (!username) {
+        username = askUsername();
+      }
+    }
+
+    // Save username in game data for consistency
+    saveGame();
+
+    updateDisplay();
+    renderRanking();
+    updateRankingData();
+
+    // Initial energy buttons state
+    updateAdvantageButtons();
+
+    // Événements
+    clickButton.addEventListener("click", () => {
+      clickButton.setAttribute("aria-pressed", "true");
+      onClickMainButton();
+      setTimeout(() => clickButton.setAttribute("aria-pressed", "false"), 150);
+    });
+
+    btnSubscribe.addEventListener("click", () => {
+      applySubscribeBonus();
+      updateAdvantageButtons();
+    });
+
+    btnInvite.addEventListener("click", () => {
+      applyInviteBonus();
+      updateAdvantageButtons();
+    });
+
+    resetGameBtn.addEventListener("click", () => {
+      if (confirm("Confirmez-vous la réinitialisation complète du jeu ?")) {
+        resetGame();
+        username = askUsername();
+        saveGame();
+        updateDisplay();
+        renderRanking();
+        updateRankingData();
+        updateAdvantageButtons();
+      }
+    });
+
+    // Navigation onglets
+    Object.entries(tabButtons).forEach(([key, btn]) => {
+      btn.addEventListener("click", () => {
+        setActiveTab(key);
+      });
+    });
+
+    setActiveTab("principal");
+  }
+
+  function updateAdvantageButtons() {
+    btnSubscribe.disabled = subscribed;
+    btnInvite.disabled = invitedFriends >= 5;
+  }
+
+  // Démarrage
+  window.addEventListener("load", init);
+})();
+</script>
 </body>
 </html>
