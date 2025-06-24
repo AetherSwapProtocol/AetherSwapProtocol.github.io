@@ -1,293 +1,724 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aether-Coin ULTRA</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aether-Coin - Jeu Web autonome</title>
 <style>
-/* --- Base 8K avec tes variables CSS originales --- */
-:root {
-  --gold-primary: linear-gradient(145deg, #FFD700 0%, #FFAA00 100%);
-  --quantum-blue: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  --energy-glow: 0 0 15px 5px rgba(100, 255, 200, 0.7);
-}
-
-/* --- Adapté de ton CSS original avec upgrades --- */
-body {
-  margin: 0;
-  font-family: 'Rajdhani', sans-serif;
-  background: var(--quantum-blue);
-  color: white;
-  overflow-x: hidden;
-  touch-action: manipulation;
-}
-
-#app {
-  position: relative;
-  max-width: 480px;
-  margin: 0 auto;
-  min-height: 100vh;
-  background: #121c3d;
-  box-shadow: 
-    0 0 30px 15px rgba(76, 139, 245, 0.4),
-    inset 0 0 20px 5px rgba(36, 73, 122, 0.6);
-  overflow: hidden;
-}
-
-/* Effets cosmiques */
-.cosmic-particle {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: white;
-  border-radius: 50%;
-  opacity: 0;
-  animation: float 15s infinite linear;
-  filter: blur(0.5px);
-}
-
-@keyframes float {
-  0% { transform: translateY(100vh); opacity: 0; }
-  10% { opacity: 0.7; }
-  90% { opacity: 0.7; }
-  100% { transform: translateY(-100px); opacity: 0; }
-}
-
-/* --- Header amélioré --- */
-header {
-  position: relative;
-  padding: 12px 20px;
-  background: linear-gradient(90deg, #3f5efb, #7b66ff);
-  border-radius: 12px 12px 0 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 10;
-}
-
-#coins-display {
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: #fff;
-  background: #273f91;
-  padding: 6px 12px;
-  border-radius: 20px;
-  min-width: 120px;
-  text-align: center;
-  box-shadow: 
-    0 0 10px #2f51e9,
-    0 0 20px 5px rgba(47, 81, 233, 0.3);
-}
-
-/* --- Bouton principal ULTRA --- */
-#click-button {
-  position: relative;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #5b7dea, #3552b5);
-  box-shadow:
-    0 8px 25px #1e2c68,
-    inset 0 4px 20px #7ea3fc,
-    inset 0 -4px 15px #2b448f,
-    0 0 30px 10px rgba(100, 150, 255, 0.5);
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 5;
-}
-
-#click-button:active {
-  transform: translateY(5px) scale(0.98);
-  box-shadow:
-    0 3px 15px #12205f,
-    inset 0 2px 10px #a1b3ff,
-    0 0 20px 5px rgba(100, 150, 255, 0.3);
-}
-
-/* Glow dynamique basé sur l'énergie */
-#click-button::after {
-  content: '';
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(100, 200, 255, 0.3) 0%, transparent 70%);
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-#click-button.active-glow::after {
-  opacity: 1;
-}
-
-/* --- Animation pièce améliorée --- */
-.coin-fly {
-  position: absolute;
-  width: 28px;
-  height: 28px;
-  background: radial-gradient(circle at 50% 50%, #6cff9c, #26a530);
-  border-radius: 50%;
-  box-shadow: 0 0 10px #40ff6f;
-  pointer-events: none;
-  animation: flyUp 1s ease-out forwards;
-  filter: drop-shadow(0 0 5px #37d949);
-  z-index: 20;
-}
-
-@keyframes flyUp {
-  0% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
+  /* === VARIABLES === */
+  :root {
+    --color-bg: #121c3d;
+    --color-primary: #5b7dea;
+    --color-primary-dark: #3552b5;
+    --color-glow: rgba(100, 150, 255, 0.6);
+    --color-text: #eee;
+    --color-energy-full: #44a74b;
+    --color-energy-mid: #d8b94f;
+    --color-energy-low: #b94141;
+    --font-main: 'Rajdhani', sans-serif;
   }
-  100% {
-    opacity: 0;
-    transform: translate(calc(var(--x, 0) * 1px), -100px) scale(0.3);
+
+  /* === RESET & BASE === */
+  * {
+    box-sizing: border-box;
   }
-}
+  body {
+    margin: 0; padding: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-main);
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    overflow-x: hidden;
+  }
 
-/* --- Barre d'énergie premium --- */
-#energy-fill {
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(90deg, 
-    #7bdb6e 0%, 
-    #44a74b 50%, 
-    #2ecc71 100%);
-  box-shadow: 
-    0 0 10px #43d84f,
-    inset 0 0 5px rgba(255, 255, 255, 0.5);
-  transition: width 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
-}
+  #app {
+    max-width: 480px;
+    margin: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(145deg, #121c3d 0%, #1a2a5a 100%);
+    box-shadow:
+      0 0 30px 15px rgba(76, 139, 245, 0.3),
+      inset 0 0 20px 5px rgba(36, 73, 122, 0.5);
+    position: relative;
+  }
 
-/* --- Onglets avec effet néon --- */
-nav button.active {
-  background: linear-gradient(to bottom, #455bb5, #3a4da8);
-  color: #e7ecff;
-  box-shadow: 
-    inset 0 -4px 10px #2b3d89,
-    0 0 10px rgba(69, 91, 181, 0.7);
-}
+  /* === HEADER === */
+  header {
+    padding: 12px 20px;
+    background: linear-gradient(90deg, #3f5efb, #7b66ff);
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
 
-/* --- Particules de fond --- */
-#particles-js {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
+  #title {
+    color: white;
+    user-select: none;
+  }
+
+  #coins-display {
+    background: #273f91;
+    padding: 6px 14px;
+    border-radius: 20px;
+    min-width: 120px;
+    text-align: center;
+    box-shadow: 0 0 10px #2f51e9, 0 0 20px 5px rgba(47, 81, 233, 0.3);
+    font-feature-settings: "tnum";
+  }
+
+  #energy-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 100px;
+    user-select: none;
+  }
+
+  #energy-bar {
+    width: 120px;
+    height: 14px;
+    background: #25365c;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow:
+      inset 0 0 10px rgba(0,0,0,0.4);
+    margin-bottom: 4px;
+  }
+
+  #energy-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--color-energy-full);
+    transition: width 0.4s ease;
+    box-shadow:
+      0 0 10px #43d84f,
+      inset 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+
+  #energy-text {
+    font-size: 0.75rem;
+    color: #d7e6ffcc;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  /* === MAIN CONTENT === */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #1c2a56;
+    padding: 24px 20px 60px;
+    position: relative;
+  }
+
+  /* === TABS NAV === */
+  nav {
+    display: flex;
+    justify-content: space-around;
+    background: #273f91;
+    border-radius: 0 0 12px 12px;
+    padding: 6px 0;
+    user-select: none;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+
+  nav button {
+    background: transparent;
+    border: none;
+    color: #aabbffaa;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 8px 16px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  nav button:hover {
+    color: white;
+  }
+
+  nav button.active {
+    background: #455bb5;
+    color: #e7ecff;
+    box-shadow: inset 0 -4px 10px #2b3d89, 0 0 10px rgba(69, 91, 181, 0.7);
+  }
+
+  /* === TAB CONTENT === */
+  .tab-content {
+    display: none;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+
+  .tab-content.active {
+    display: flex;
+  }
+
+  /* === PRINCIPAL TAB === */
+  #principal {
+    align-items: center;
+    justify-content: center;
+  }
+
+  #click-button {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, var(--color-primary), var(--color-primary-dark));
+    box-shadow:
+      0 8px 25px #1e2c68,
+      inset 0 4px 20px #7ea3fc,
+      inset 0 -4px 15px #2b448f,
+      0 0 30px 10px var(--color-glow);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: white;
+    user-select: none;
+  }
+
+  #click-button:active {
+    transform: translateY(5px) scale(0.98);
+    box-shadow:
+      0 3px 15px #12205f,
+      inset 0 2px 10px #a1b3ff,
+      0 0 20px 5px rgba(100, 150, 255, 0.3);
+  }
+
+  #click-button.active-glow {
+    animation: glowPulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes glowPulse {
+    0%, 100% {
+      box-shadow:
+        0 0 20px 10px var(--color-glow),
+        inset 0 4px 20px #7ea3fc,
+        inset 0 -4px 15px #2b448f;
+    }
+    50% {
+      box-shadow:
+        0 0 40px 15px var(--color-glow),
+        inset 0 6px 25px #a2c0ff,
+        inset 0 -6px 20px #4570d1;
+    }
+  }
+
+  /* === COINS FLY ANIMATION === */
+  .coin-fly {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    background: radial-gradient(circle at 50% 50%, #6cff9c, #26a530);
+    border-radius: 50%;
+    box-shadow: 0 0 10px #40ff6f;
+    pointer-events: none;
+    animation: flyUp 1s ease-out forwards;
+    filter: drop-shadow(0 0 5px #37d949);
+    z-index: 1000;
+  }
+
+  @keyframes flyUp {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--x, 0)px, -100px) scale(0.3);
+    }
+  }
+
+  /* === AVANTAGES TAB === */
+  #avantages {
+    padding: 12px 0;
+  }
+
+  .btn-advantage {
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0;
+    background: linear-gradient(145deg, #3b5d99, #244376);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow:
+      0 0 12px #234675;
+    transition: background 0.3s ease;
+  }
+
+  .btn-advantage:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .btn-advantage:not(:disabled):hover {
+    background: linear-gradient(145deg, #4a72bd, #3559a0);
+    box-shadow: 0 0 16px #3360bb;
+  }
+
+  /* === CLASSEMENT TAB === */
+  #classement table {
+    width: 100%;
+    border-collapse: collapse;
+    user-select: none;
+  }
+
+  #classement th, #classement td {
+    padding: 10px 8px;
+    text-align: left;
+  }
+
+  #classement thead {
+    background: #3f5efb;
+    color: white;
+  }
+
+  #classement tbody tr:nth-child(odd) {
+    background: #2d3f88;
+  }
+
+  #classement tbody tr:nth-child(even) {
+    background: #384d9e;
+  }
+
+  #classement tbody tr.self-player {
+    background: #9de37f !important;
+    color: #0b2508;
+    font-weight: 700;
+  }
+
+  /* === PROFIL TAB === */
+  #profil {
+    padding: 12px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  #profil p {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  #profil button {
+    width: 100%;
+    padding: 14px;
+    background: #b94141;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 0 12px #c44747;
+    transition: background 0.3s ease;
+  }
+
+  #profil button:hover {
+    background: #d35656;
+  }
+
+  /* === PARTICULES BACKGROUND === */
+  #particles-container {
+    position: fixed;
+    top: 0; left: 50%;
+    width: 480px;
+    height: 100vh;
+    margin-left: -240px;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 1;
+  }
+
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.15;
+    filter: blur(0.6px);
+    will-change: transform, opacity;
+  }
+
+  /* Scrollbar minimal */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #1a2a5a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #3552b5;
+    border-radius: 4px;
+  }
 </style>
 </head>
 <body>
+<div id="app" role="main" aria-label="Jeu Aether-Coin">
+  <div id="particles-container" aria-hidden="true"></div>
 
-<!-- Structure identique à ton original mais avec effets visuels ajoutés -->
-<div id="app">
-  <div id="particles-js"></div>
-  
   <header>
-    <div id="title">Aether-Coin ULTRA</div>
-    <div id="coins-display">0</div>
-    <div id="energy-container">
-      <div id="energy-bar">
+    <div id="title" aria-label="Titre du jeu">Aether-Coin</div>
+    <div id="coins-display" aria-live="polite" aria-atomic="true" aria-label="Nombre de pièces">0</div>
+    <div id="energy-container" aria-label="Barre d'énergie">
+      <div id="energy-bar" role="progressbar" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="1000">
         <div id="energy-fill"></div>
       </div>
-      <div id="energy-text">1000/1000</div>
+      <div id="energy-text" aria-live="polite" aria-atomic="true">1000 / 1000</div>
     </div>
   </header>
 
   <main>
-    <section id="principal" class="tab-content active">
-      <button id="click-button">
-        <span id="click-text">GAGNER</span>
-      </button>
+    <section id="principal" class="tab-content active" role="tabpanel" aria-labelledby="tab-principal" tabindex="0">
+      <button id="click-button" aria-pressed="false" aria-label="Bouton principal pour gagner des pièces">GAGNER</button>
     </section>
 
-    <!-- Sections avantages/classement/profil identiques à ton original -->
-    <!-- ... -->
+    <section id="avantages" class="tab-content" role="tabpanel" aria-labelledby="tab-avantages" tabindex="0">
+      <button id="btn-subscribe" class="btn-advantage" aria-label="Bénéficier du bonus abonnement Telegram">Bonus abonnement (+1600 énergie)</button>
+      <button id="btn-invite" class="btn-advantage" aria-label="Bénéficier du bonus invitation d'amis">Bonus invitation (+100 énergie, max 5)</button>
+    </section>
+
+    <section id="classement" class="tab-content" role="tabpanel" aria-labelledby="tab-classement" tabindex="0">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Pseudo</th><th>Pièces</th></tr>
+        </thead>
+        <tbody id="ranking-body">
+          <!-- Rempli dynamiquement -->
+        </tbody>
+      </table>
+    </section>
+
+    <section id="profil" class="tab-content" role="tabpanel" aria-labelledby="tab-profil" tabindex="0">
+      <p><strong>Utilisateur :</strong> <span id="profile-username">-</span></p>
+      <p><strong>Pièces :</strong> <span id="profile-coins">0</span></p>
+      <p><strong>Énergie :</strong> <span id="profile-energy">0 / 0</span></p>
+      <button id="reset-game" aria-label="Réinitialiser la partie">Réinitialiser la partie</button>
+    </section>
   </main>
 
-  <nav>
-    <!-- Onglets identiques -->
-    <!-- ... -->
+  <nav role="tablist" aria-label="Navigation principale">
+    <button id="tab-principal" role="tab" aria-selected="true" tabindex="0" aria-controls="principal" class="active">Principal</button>
+    <button id="tab-avantages" role="tab" aria-selected="false" tabindex="-1" aria-controls="avantages">Avantages</button>
+    <button id="tab-classement" role="tab" aria-selected="false" tabindex="-1" aria-controls="classement">Classement</button>
+    <button id="tab-profil" role="tab" aria-selected="false" tabindex="-1" aria-controls="profil">Profil</button>
   </nav>
 </div>
 
-<!-- Librairies pour effets premium -->
-<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
-
 <script>
-// --- Ton code JavaScript original (700 lignes) --- //
-// Avec ces AJOUTS :
+(() => {
+  // --- CONST ---
+  const COINS_PER_CLICK = 1;
+  const ENERGY_BASE = 1000;
+  const ENERGY_SUBSCRIBE_BONUS = 1600;
+  const ENERGY_INVITE_BONUS = 100;
+  const MAX_INVITES = 5;
 
-// Initialisation des particules de fond
-particlesJS("particles-js", {
-  particles: {
-    number: { value: 80, density: { enable: true, value_area: 800 } },
-    color: { value: "#ffffff" },
-    opacity: { value: 0.5, random: true },
-    size: { value: 3, random: true },
-    line_linked: { enable: true, distance: 150, color: "#4a65b8", opacity: 0.4, width: 1 },
-    move: { enable: true, speed: 2, direction: "none", random: true, straight: false }
+  // --- STATE ---
+  let username = null;
+  let coins = 0;
+  let energy = ENERGY_BASE;
+  let energyMax = ENERGY_BASE;
+  let subscribed = false;
+  let invitedFriends = 0;
+  let rankingData = [];
+
+  // --- DOM ---
+  const coinsDisplay = document.getElementById("coins-display");
+  const energyFill = document.getElementById("energy-fill");
+  const energyText = document.getElementById("energy-text");
+  const clickButton = document.getElementById("click-button");
+  const btnSubscribe = document.getElementById("btn-subscribe");
+  const btnInvite = document.getElementById("btn-invite");
+  const rankingBody = document.getElementById("ranking-body");
+  const profileUsername = document.getElementById("profile-username");
+  const profileCoins = document.getElementById("profile-coins");
+  const profileEnergy = document.getElementById("profile-energy");
+  const resetGameBtn = document.getElementById("reset-game");
+  const tabButtons = {
+    principal: document.getElementById("tab-principal"),
+    avantages: document.getElementById("tab-avantages"),
+    classement: document.getElementById("tab-classement"),
+    profil: document.getElementById("tab-profil")
+  };
+  const tabSections = {
+    principal: document.getElementById("principal"),
+    avantages: document.getElementById("avantages"),
+    classement: document.getElementById("classement"),
+    profil: document.getElementById("profil")
+  };
+
+  // --- LOCAL STORAGE KEYS ---
+  const STORAGE_KEY = "aethercoin_game_data";
+
+  // --- LOAD GAME DATA ---
+  function loadGame() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (!data) {
+      resetGame();
+      return;
+    }
+    try {
+      const obj = JSON.parse(data);
+      username = obj.username || null;
+      coins = Number(obj.coins) || 0;
+      energy = Number(obj.energy) || ENERGY_BASE;
+      energyMax = Number(obj.energyMax) || ENERGY_BASE;
+      subscribed = !!obj.subscribed;
+      invitedFriends = Number(obj.invitedFriends) || 0;
+      rankingData = obj.rankingData || [];
+    } catch {
+      resetGame();
+    }
   }
-});
 
-// Upgrade de spawnFlyingCoin()
-function spawnFlyingCoin() {
-  const coin = document.createElement("div");
-  coin.className = "coin-fly";
-  
-  // Position aléatoire autour du bouton
-  const angle = Math.random() * Math.PI * 2;
-  const distance = 50 + Math.random() * 30;
-  coin.style.left = `calc(50% + ${Math.cos(angle) * distance}px)`;
-  coin.style.top = `calc(50% + ${Math.sin(angle) * distance}px)`;
-  
-  // Direction de vol aléatoire
-  coin.style.setProperty("--x", (Math.random() * 100 - 50));
-  
-  // Effet de scale aléatoire
-  gsap.fromTo(coin, 
-    { scale: 0.5 }, 
-    { scale: 1.2, duration: 0.3, yoyo: true, repeat: 1 }
-  );
-  
-  document.getElementById("principal").appendChild(coin);
-  setTimeout(() => coin.remove(), 1000);
-}
+  // --- SAVE GAME DATA ---
+  function saveGame() {
+    const data = {
+      username,
+      coins,
+      energy,
+      energyMax,
+      subscribed,
+      invitedFriends,
+      rankingData
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
 
-// Upgrade visuel de l'énergie
-function updateEnergyDisplay() {
-  const percent = energy / energyMax;
-  
-  // Couleur dynamique
-  const hue = Math.floor(percent * 120);
-  energyFill.style.background = `linear-gradient(90deg, 
-    hsl(${hue}, 80%, 60%) 0%, 
-    hsl(${hue}, 90%, 50%) 100%)`;
-  
-  // Effet de pulsation si énergie basse
-  if (percent < 0.2) {
-    gsap.to(energyFill, {
-      opacity: 0.7,
-      duration: 0.5,
-      repeat: -1,
-      yoyo: true
+  // --- UPDATE DISPLAY ---
+  function updateDisplay() {
+    coinsDisplay.textContent = coins.toLocaleString();
+    energyText.textContent = `${energy} / ${energyMax}`;
+    energyFill.style.width = `${(energy / energyMax) * 100}%`;
+
+    // Color energy bar by level
+    const ratio = energy / energyMax;
+    if (ratio > 0.5) {
+      energyFill.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-energy-full');
+    } else if (ratio > 0.2) {
+      energyFill.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-energy-mid');
+    } else {
+      energyFill.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-energy-low');
+    }
+
+    // Glow bouton si énergie > 50%
+    if (ratio > 0.5) clickButton.classList.add("active-glow");
+    else clickButton.classList.remove("active-glow");
+
+    // Profil update
+    profileUsername.textContent = username || "-";
+    profileCoins.textContent = coins.toLocaleString();
+    profileEnergy.textContent = `${energy} / ${energyMax}`;
+
+    // Boutons avantages désactivation
+    btnSubscribe.disabled = subscribed;
+    btnInvite.disabled = invitedFriends >= MAX_INVITES;
+
+    // Classement update
+    updateRanking();
+  }
+
+  // --- UPDATE RANKING ---
+  function updateRanking() {
+    // Met à jour rankingData avec cet utilisateur
+    if (username) {
+      const existing = rankingData.findIndex(e => e.username === username);
+      if (existing !== -1) {
+        rankingData[existing].coins = coins;
+      } else {
+        rankingData.push({username, coins});
+      }
+      // Trie par coins desc
+      rankingData.sort((a,b) => b.coins - a.coins);
+      // Garder max 50 joueurs
+      if (rankingData.length > 50) rankingData.length = 50;
+    }
+
+    // Affichage tableau
+    rankingBody.innerHTML = "";
+    rankingData.forEach((player, i) => {
+      const tr = document.createElement("tr");
+      if(player.username === username) tr.classList.add("self-player");
+      tr.innerHTML = `<td>${i+1}</td><td>${player.username}</td><td>${player.coins.toLocaleString()}</td>`;
+      rankingBody.appendChild(tr);
     });
-  } else {
-    gsap.killTweensOf(energyFill);
-    energyFill.style.opacity = "1";
   }
-  
-  // Mise à jour du glow du bouton
-  clickButton.classList.toggle("active-glow", percent > 0.5);
-}
 
-// Ajouter cette ligne dans ta fonction updateDisplay()
-updateEnergyDisplay();
+  // --- SPAWN COIN ANIMATION ---
+  function spawnFlyingCoin() {
+    const coin = document.createElement("div");
+    coin.className = "coin-fly";
+
+    // Position aléatoire autour du bouton
+    const angle = Math.random() * 2 * Math.PI;
+    const dist = 50 + Math.random() * 30;
+    coin.style.left = `calc(50% + ${Math.cos(angle)*dist}px)`;
+    coin.style.top = `calc(50% + ${Math.sin(angle)*dist}px)`;
+
+    // Direction vol aléatoire pour keyframe
+    coin.style.setProperty('--x', (Math.random()*100 - 50));
+
+    document.getElementById("principal").appendChild(coin);
+
+    setTimeout(() => coin.remove(), 1000);
+  }
+
+  // --- PARTICLES BACKGROUND ---
+  const particlesCount = 80;
+  const particlesContainer = document.getElementById("particles-container");
+  let particles = [];
+
+  function createParticle() {
+    const p = document.createElement("div");
+    p.className = "particle";
+    p.style.left = Math.random() * 480 + "px";
+    p.style.top = Math.random() * window.innerHeight + "px";
+    p.speedY = 0.3 + Math.random() * 0.7;
+    p.opacity = 0.1 + Math.random() * 0.3;
+    p.style.opacity = p.opacity;
+    particlesContainer.appendChild(p);
+    return p;
+  }
+
+  function animateParticles() {
+    particles.forEach(p => {
+      let y = parseFloat(p.style.top);
+      y -= p.speedY;
+      if (y < -10) y = window.innerHeight + 10;
+      p.style.top = y + "px";
+    });
+    requestAnimationFrame(animateParticles);
+  }
+
+  // --- HANDLE CLICK ---
+  function handleClick() {
+    if (energy < 1) return; // Pas d'énergie = pas de clic
+
+    coins += COINS_PER_CLICK;
+    energy = Math.max(energy - 1, 0);
+
+    spawnFlyingCoin();
+    updateDisplay();
+    saveGame();
+  }
+
+  // --- BONUS ABONNEMENT ---
+  function subscribeBonus() {
+    if (subscribed) return;
+    subscribed = true;
+    energyMax += ENERGY_SUBSCRIBE_BONUS;
+    energy = Math.min(energy + ENERGY_SUBSCRIBE_BONUS, energyMax);
+    updateDisplay();
+    saveGame();
+  }
+
+  // --- BONUS INVITATION ---
+  function inviteBonus() {
+    if (invitedFriends >= MAX_INVITES) return;
+    invitedFriends++;
+    energyMax += ENERGY_INVITE_BONUS;
+    energy = Math.min(energy + ENERGY_INVITE_BONUS, energyMax);
+    updateDisplay();
+    saveGame();
+  }
+
+  // --- RESET GAME ---
+  function resetGame() {
+    username = null;
+    coins = 0;
+    energyMax = ENERGY_BASE;
+    energy = energyMax;
+    subscribed = false;
+    invitedFriends = 0;
+    rankingData = [];
+    localStorage.removeItem(STORAGE_KEY);
+    askUsername();
+  }
+
+  // --- ASK USERNAME ---
+  function askUsername() {
+    // Essaie récupérer username Telegram automatiquement
+    if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+      username = window.Telegram.WebApp.initDataUnsafe.user?.username || null;
+    }
+    // Fallback prompt si pas trouvé
+    if(!username) {
+      let u = prompt("Entrez votre pseudo (Telegram username recommandé) :", "");
+      if(u) username = u.trim().slice(0, 20);
+      else username = "Player" + Math.floor(Math.random()*9999);
+    }
+    saveGame();
+    updateDisplay();
+  }
+
+  // --- TAB NAVIGATION ---
+  function switchTab(toTab) {
+    Object.keys(tabButtons).forEach(key => {
+      const isActive = key === toTab;
+      tabButtons[key].classList.toggle("active", isActive);
+      tabButtons[key].setAttribute("aria-selected", isActive ? "true" : "false");
+      tabButtons[key].setAttribute("tabindex", isActive ? "0" : "-1");
+      tabSections[key].classList.toggle("active", isActive);
+    });
+    tabSections[toTab].focus();
+  }
+
+  // --- EVENTS ---
+  clickButton.addEventListener("click", () => {
+    handleClick();
+    clickButton.setAttribute("aria-pressed", "true");
+    setTimeout(() => clickButton.setAttribute("aria-pressed", "false"), 150);
+  });
+
+  btnSubscribe.addEventListener("click", subscribeBonus);
+  btnInvite.addEventListener("click", inviteBonus);
+  resetGameBtn.addEventListener("click", () => {
+    if(confirm("Voulez-vous vraiment réinitialiser la partie ?")) resetGame();
+  });
+
+  Object.keys(tabButtons).forEach(key => {
+    tabButtons[key].addEventListener("click", () => switchTab(key));
+  });
+
+  // --- INIT ---
+  function init() {
+    for(let i=0; i<particlesCount; i++) {
+      particles.push(createParticle());
+    }
+    animateParticles();
+
+    loadGame();
+    if(!username) askUsername();
+    updateDisplay();
+    switchTab("principal");
+  }
+
+  // Lancement
+  window.onload = init;
+
+})();
 </script>
 </body>
 </html>
