@@ -1,754 +1,281 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Aether-Coin - Clicker Game</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aether-Coin Ultra HD</title>
 <style>
-  /* Reset et base */
-  * {
-    box-sizing: border-box;
-  }
-  body, html {
-    margin:0; padding:0; height:100%;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #0d1a3f, #1a2a62);
-    color: #eef3f7;
-    display: flex; flex-direction: column; min-height: 100vh;
-  }
-  #app {
-    flex: 1;
-    display: flex; flex-direction: column;
-    max-width: 480px;
-    margin: auto;
-    border-radius: 12px;
-    background: #121c3d;
-    box-shadow:
-      0 0 8px 2px #4c8bf5,
-      inset 0 0 12px 2px #24497a;
-  }
+/* Base 8K-ready */
+:root {
+  --gold-primary: linear-gradient(145deg, #FFD700 0%, #FFAA00 100%);
+  --platinum-glow: 0 0 30px 10px rgba(255, 221, 0, 0.7);
+  --quantum-blue: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+}
 
-  /* Barre du haut : compteur + énergie + titre */
-  header {
-    padding: 12px 20px;
-    background: linear-gradient(90deg, #3f5efb, #7b66ff);
-    border-radius: 12px 12px 0 0;
-    display: flex; align-items: center; justify-content: space-between;
-    user-select: none;
-  }
-  #title {
-    font-weight: 700;
-    font-size: 1.3rem;
-    letter-spacing: 2px;
-    color: #f0f5ff;
-  }
-  #coins-display {
-    font-weight: 700;
-    font-size: 1.25rem;
-    color: #fff;
-    background: #273f91;
-    padding: 6px 12px;
-    border-radius: 20px;
-    min-width: 120px;
-    text-align: center;
-    box-shadow: 0 0 10px #2f51e9;
-  }
-  #energy-container {
-    display: flex; align-items: center; gap: 8px;
-    min-width: 140px;
-  }
-  #energy-bar {
-    flex: 1;
-    height: 14px;
-    border-radius: 8px;
-    background: #29355c;
-    overflow: hidden;
-    box-shadow: inset 0 0 5px #183067;
-  }
-  #energy-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #7bdb6e, #44a74b);
-    box-shadow: 0 0 8px #43d84f;
-    transition: width 0.3s ease-in-out;
-  }
-  #energy-text {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: #bde9a8;
-    width: 40px;
-    text-align: right;
-    user-select: none;
-  }
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--quantum-blue);
+  color: white;
+  touch-action: manipulation;
+}
 
-  /* Main content with tabs */
-  main {
-    flex: 1;
-    display: flex; flex-direction: column;
-    padding: 20px 24px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+#game-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  perspective: 1000px;
+}
 
-  /* Onglets */
-  nav {
-    display: flex;
-    background: #1a2e63;
-    border-radius: 0 0 12px 12px;
-    overflow: hidden;
-    user-select: none;
-  }
-  nav button {
-    flex: 1;
-    padding: 12px 0;
-    font-weight: 600;
-    font-size: 1rem;
-    color: #a7b5d6;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-  }
-  nav button.active {
-    background: #455bb5;
-    color: #e7ecff;
-    box-shadow: inset 0 -4px 6px #2b3d89;
-  }
-  nav button:hover:not(.active) {
-    background: #32448c;
-    color: #dbe6ff;
-  }
+/* Bouton principal en 8K simulé */
+#quantum-button {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: 
+    radial-gradient(circle at 30% 30%, 
+      rgba(255, 255, 255, 0.8) 0%, 
+      rgba(255, 215, 0, 0.6) 50%, 
+      transparent 70%),
+    var(--gold-primary);
+  box-shadow:
+    var(--platinum-glow),
+    inset 0 0 50px rgba(255, 255, 255, 0.5);
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 10;
+  backdrop-filter: blur(2px);
+}
 
-  /* Contenus des onglets */
-  section.tab-content {
-    display: none;
-    flex-direction: column;
-  }
-  section.tab-content.active {
-    display: flex;
-  }
+/* Effets de lumière dynamiques */
+.light-ray {
+  position: absolute;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(circle, 
+    rgba(255, 255, 255, 0.15) 0%, 
+    transparent 70%);
+  animation: rotate 60s linear infinite;
+  z-index: -1;
+}
 
-  /* --- Onglet Principal --- */
-  #principal {
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-  }
-  #click-button {
-    position: relative;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: linear-gradient(145deg, #5b7dea, #3552b5);
-    box-shadow:
-      0 8px 15px #1e2c68,
-      inset 0 4px 12px #7ea3fc,
-      inset 0 -4px 10px #2b448f;
-    border: 3px solid #3d54ac;
-    cursor: pointer;
-    transition: box-shadow 0.1s ease, transform 0.1s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-  }
-  #click-button:active {
-    box-shadow:
-      0 3px 8px #12205f,
-      inset 0 2px 5px #a1b3ff;
-    transform: translateY(3px);
-  }
-  #click-button .glow {
-    position: absolute;
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #94baff99 0%, transparent 70%);
-    filter: blur(12px);
-    z-index: 0;
-  }
-  #click-text {
-    font-weight: 700;
-    font-size: 1.7rem;
-    color: #dde7ff;
-    z-index: 1;
-    text-shadow: 0 0 8px #bdd1ff;
-  }
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 
-  /* Animation des pièces qui volent */
-  .coin-fly {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    background: radial-gradient(circle at 50% 50%, #6cff9c, #26a530);
-    border-radius: 50%;
-    box-shadow: 0 0 5px #40ff6f;
-    pointer-events: none;
-    animation: flyUp 1s ease forwards;
-    filter: drop-shadow(0 0 3px #37d949);
-    z-index: 10;
-  }
-  @keyframes flyUp {
-    0% {
-      opacity: 1;
-      transform: translate(0, 0) scale(1);
-    }
-    100% {
-      opacity: 0;
-      transform: translate(calc(var(--x, 0) * 1px), -80px) scale(0.5);
-    }
-  }
+/* Particules quantiques */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+  opacity: 0;
+  filter: blur(1px);
+  animation: float 15s infinite linear;
+}
 
-  /* --- Onglet Avantages --- */
-  #avantages {
-    gap: 12px;
+@keyframes float {
+  0% { 
+    transform: translateY(0) rotate(0deg);
+    opacity: 0; 
   }
-  .advantage-item {
-    background: #1f2f70;
-    padding: 14px 18px;
-    border-radius: 10px;
-    box-shadow: inset 0 0 8px #2f4ab1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  10% { opacity: 0.7; }
+  90% { opacity: 0.7; }
+  100% { 
+    transform: translateY(-100vh) rotate(720deg);
+    opacity: 0;
   }
-  .advantage-desc {
-    font-weight: 600;
-    color: #c3d0ff;
-  }
-  .advantage-button {
-    background: #4466cc;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-weight: 700;
-    color: #eef5ff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    user-select: none;
-  }
-  .advantage-button:disabled {
-    background: #253a7a;
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-  .advantage-button:hover:not(:disabled) {
-    background: #5d84f4;
-  }
+}
 
-  /* --- Onglet Classement --- */
-  #classement {
-    overflow-x: auto;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #1a2b5f;
-    border-radius: 12px;
-    box-shadow: inset 0 0 15px #334f9d;
-  }
-  thead tr {
-    background: #304b9c;
-  }
-  thead th {
-    padding: 12px 8px;
-    color: #c8d6ff;
-    font-weight: 700;
-    font-size: 1rem;
-    text-align: left;
-    border-bottom: 2px solid #4a67bf;
-    user-select: none;
-  }
-  tbody tr {
-    border-bottom: 1px solid #2d3e7a;
-    transition: background-color 0.25s;
-  }
-  tbody tr:hover {
-    background-color: #3a519d;
-  }
-  tbody td {
-    padding: 10px 8px;
-    color: #d2defc;
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-  tbody tr.self-player {
-    background: linear-gradient(90deg, #35d45a88, #2ea24888);
-    font-weight: 700;
-    color: #1a280f;
-  }
-  tbody tr.self-player:hover {
-    background: linear-gradient(90deg, #2fa74dcc, #298c43cc);
-  }
+/* UI Néon */
+#hud {
+  position: fixed;
+  top: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  font-size: 1.8rem;
+  text-shadow: 0 0 10px #00ffff;
+  font-weight: 700;
+  z-index: 100;
+}
 
-  /* --- Onglet Profil --- */
-  #profil {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    color: #dceaff;
-  }
-  #profil h2 {
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .profile-info {
-    background: #243d87;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: inset 0 0 10px #2f4db5;
-  }
-  .profile-line {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 600;
-    font-size: 1rem;
-    padding: 6px 0;
-    border-bottom: 1px solid #3a529e;
-  }
-  .profile-line:last-child {
-    border-bottom: none;
-  }
-  button#reset-game {
-    margin-top: 20px;
-    background: #c64545;
-    border: none;
-    border-radius: 10px;
-    color: #fff;
-    font-weight: 700;
-    font-size: 1rem;
-    padding: 12px 0;
-    cursor: pointer;
-    user-select: none;
-    box-shadow: 0 0 8px #d24a4a;
-    transition: background-color 0.3s ease;
-  }
-  button#reset-game:hover {
-    background: #a63a3a;
-  }
-
-  /* Scrollbar for main content */
-  main::-webkit-scrollbar {
-    width: 6px;
-  }
-  main::-webkit-scrollbar-thumb {
-    background-color: #4a65b8;
-    border-radius: 3px;
-  }
-  main::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  /* Responsive */
-  @media (max-width: 520px) {
-    #app {
-      width: 100vw;
-      height: 100vh;
-      border-radius: 0;
-      max-width: none;
-    }
-    #click-button {
-      width: 140px;
-      height: 140px;
-    }
-  }
+/* Effet de distortion au clic */
+@keyframes quantumPulse {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(0.9); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
 </style>
 </head>
 <body>
-<div id="app" role="main" aria-label="Jeu Aether-Coin">
-  <header>
-    <div id="title" aria-live="polite" aria-atomic="true" aria-relevant="text">Aether-Coin</div>
-    <div id="coins-display" aria-live="polite" aria-atomic="true" aria-relevant="text" aria-label="Nombre de Aether-Coins">0</div>
-    <div id="energy-container" aria-label="Barre d'énergie">
-      <div id="energy-bar" role="progressbar" aria-valuemin="0" aria-valuemax="2000" aria-valuenow="100">
-        <div id="energy-fill"></div>
-      </div>
-      <div id="energy-text">0</div>
-    </div>
-  </header>
 
-  <main>
-    <!-- Onglet Principal -->
-    <section id="principal" class="tab-content active" role="tabpanel" aria-label="Onglet principal">
-      <button id="click-button" aria-pressed="false" aria-label="Cliquez pour gagner des Aether-Coins" type="button">
-        <div class="glow"></div>
-        <span id="click-text">GAGNER</span>
-      </button>
-    </section>
-
-    <!-- Onglet Avantages -->
-    <section id="avantages" class="tab-content" role="tabpanel" aria-label="Onglet avantages">
-      <div class="advantage-item">
-        <div class="advantage-desc">S’abonner au canal Telegram (+1600 énergie)</div>
-        <button id="btn-subscribe" class="advantage-button" type="button">Valider</button>
-      </div>
-      <div class="advantage-item">
-        <div class="advantage-desc">Inviter un ami (+100 énergie)</div>
-        <button id="btn-invite" class="advantage-button" type="button">Valider</button>
-      </div>
-    </section>
-
-    <!-- Onglet Classement -->
-    <section id="classement" class="tab-content" role="tabpanel" aria-label="Onglet classement">
-      <table aria-label="Tableau du classement des joueurs">
-        <thead>
-          <tr>
-            <th scope="col">Rang</th>
-            <th scope="col">Pseudo</th>
-            <th scope="col">Aether-Coins</th>
-          </tr>
-        </thead>
-        <tbody id="ranking-body">
-          <!-- Ligne classement générée par JS -->
-        </tbody>
-      </table>
-    </section>
-
-    <!-- Onglet Profil -->
-    <section id="profil" class="tab-content" role="tabpanel" aria-label="Onglet profil">
-      <h2>Profil</h2>
-      <div class="profile-info">
-        <div class="profile-line"><span>Pseudo :</span> <span id="profile-username">-</span></div>
-        <div class="profile-line"><span>Aether-Coins :</span> <span id="profile-coins">0</span></div>
-        <div class="profile-line"><span>Énergie :</span> <span id="profile-energy">0</span></div>
-      </div>
-      <button id="reset-game" type="button" aria-label="Réinitialiser le jeu">Réinitialiser le jeu</button>
-    </section>
-  </main>
-
-  <!-- Barre de navigation -->
-  <nav role="tablist" aria-label="Navigation principale">
-    <button role="tab" aria-selected="true" aria-controls="principal" id="tab-principal" class="active" tabindex="0">Principal</button>
-    <button role="tab" aria-selected="false" aria-controls="avantages" id="tab-avantages" tabindex="-1">Avantages</button>
-    <button role="tab" aria-selected="false" aria-controls="classement" id="tab-classement" tabindex="-1">Classement</button>
-    <button role="tab" aria-selected="false" aria-controls="profil" id="tab-profil" tabindex="-1">Profil</button>
-  </nav>
+<div id="game-container">
+  <div class="light-ray"></div>
+  <div id="quantum-button"></div>
+  <div id="hud">
+    <div id="coins-display">0 ⚡</div>
+    <div id="energy-display">1000/1000 💫</div>
+  </div>
 </div>
 
+<!-- Three.js pour effets 3D -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- GSAP pour animations pro -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+
 <script>
-(() => {
-  "use strict";
+// Config 8K
+const DPR = Math.min(2, window.devicePixelRatio || 1);
+const PARTICLES_COUNT = 150;
 
-  /* --- Constantes --- */
-  const ENERGY_BASE = 100;
-  const ENERGY_SUBSCRIBE_BONUS = 1600;
-  const ENERGY_INVITE_BONUS = 100;
-  const ENERGY_BASE_MAX = 2000;
+// Init Three.js
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ 
+  alpha: true,
+  antialias: true 
+});
+renderer.setPixelRatio(DPR);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.domElement.style.position = 'fixed';
+renderer.domElement.style.top = '0';
+renderer.domElement.style.zIndex = '-1';
+document.body.prepend(renderer.domElement);
 
-  const COINS_PER_CLICK = 1;
+// Effets de lumière
+const ambientLight = new THREE.AmbientLight(0x404040);
+scene.add(ambientLight);
 
-  /* --- Éléments DOM --- */
-  const coinsDisplay = document.getElementById("coins-display");
-  const energyFill = document.getElementById("energy-fill");
-  const energyText = document.getElementById("energy-text");
-  const energyBar = document.getElementById("energy-bar");
+const pointLight = new THREE.PointLight(0xffaa00, 1, 100);
+pointLight.position.set(0, 0, 10);
+scene.add(pointLight);
 
-  const clickButton = document.getElementById("click-button");
+// Particules quantiques
+const particlesGeometry = new THREE.BufferGeometry();
+const particlesCnt = 5000;
+const posArray = new Float32Array(particlesCnt * 3);
 
-  const tabButtons = {
-    principal: document.getElementById("tab-principal"),
-    avantages: document.getElementById("tab-avantages"),
-    classement: document.getElementById("tab-classement"),
-    profil: document.getElementById("tab-profil"),
-  };
+for(let i = 0; i < particlesCnt * 3; i++) {
+  posArray[i] = (Math.random() - 0.5) * 10;
+}
 
-  const tabSections = {
-    principal: document.getElementById("principal"),
-    avantages: document.getElementById("avantages"),
-    classement: document.getElementById("classement"),
-    profil: document.getElementById("profil"),
-  };
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+const particlesMaterial = new THREE.PointsMaterial({
+  size: 0.02,
+  color: 0xffffff,
+  transparent: true,
+  opacity: 0.8,
+  blending: THREE.AdditiveBlending
+});
+const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+scene.add(particlesMesh);
 
-  const btnSubscribe = document.getElementById("btn-subscribe");
-  const btnInvite = document.getElementById("btn-invite");
+camera.position.z = 5;
 
-  const rankingBody = document.getElementById("ranking-body");
+// Animation loop
+function animate() {
+  requestAnimationFrame(animate);
+  
+  particlesMesh.rotation.x += 0.0005;
+  particlesMesh.rotation.y += 0.0005;
+  
+  renderer.render(scene, camera);
+}
+animate();
 
-  const profileUsername = document.getElementById("profile-username");
-  const profileCoins = document.getElementById("profile-coins");
-  const profileEnergy = document.getElementById("profile-energy");
+// Game Logic
+let coins = 0;
+let energy = 1000;
+const energyMax = 1000;
 
-  const resetGameBtn = document.getElementById("reset-game");
+// UI
+const coinsDisplay = document.getElementById('coins-display');
+const energyDisplay = document.getElementById('energy-display');
+const quantumButton = document.getElementById('quantum-button');
 
-  /* --- Variables de jeu --- */
-  let username = null;
-  let coins = 0;
-  let energy = ENERGY_BASE;
-  let energyMax = ENERGY_BASE_MAX;
-  let subscribed = false;
-  let invitedFriends = 0;
+// Créer particules 2D
+for(let i = 0; i < PARTICLES_COUNT; i++) {
+  const particle = document.createElement('div');
+  particle.classList.add('particle');
+  particle.style.width = `${Math.random() * 8 + 2}px`;
+  particle.style.height = particle.style.width;
+  particle.style.left = `${Math.random() * 100}vw`;
+  particle.style.top = `${Math.random() * 100}vh`;
+  particle.style.animationDelay = `${Math.random() * 15}s`;
+  particle.style.backgroundColor = `hsl(${Math.random() * 60 + 180}, 100%, 80%)`;
+  document.body.appendChild(particle);
+}
 
-  /* --- Données de classement (mock) */
-  let rankingData = [
-    { pseudo: "Alpha", coins: 3800 },
-    { pseudo: "Beta", coins: 2200 },
-    { pseudo: "Charlie", coins: 1600 },
-    { pseudo: "Delta", coins: 1200 },
-    { pseudo: "Echo", coins: 850 },
-    { pseudo: "Foxtrot", coins: 400 },
-    { pseudo: "Golf", coins: 200 }
-  ];
-
-  /* --- Fonctions de stockage local --- */
-  function saveGame() {
-    const data = {
-      username,
-      coins,
-      energy,
-      energyMax,
-      subscribed,
-      invitedFriends,
-    };
-    localStorage.setItem("aethercoin_save", JSON.stringify(data));
+// Click effect
+quantumButton.addEventListener('click', () => {
+  // Animation
+  gsap.to(quantumButton, {
+    scale: 0.95,
+    duration: 0.1,
+    yoyo: true,
+    repeat: 1
+  });
+  
+  // Effet visuel
+  for(let i = 0; i < 15; i++) {
+    createSpark();
   }
+  
+  // Game logic
+  coins += 1;
+  energy = Math.max(0, energy - 1);
+  updateUI();
+});
 
-  function loadGame() {
-    const data = localStorage.getItem("aethercoin_save");
-    if (data) {
-      try {
-        const obj = JSON.parse(data);
-        username = obj.username || null;
-        coins = Number(obj.coins) || 0;
-        energy = Number(obj.energy) || ENERGY_BASE;
-        energyMax = Number(obj.energyMax) || ENERGY_BASE_MAX;
-        subscribed = !!obj.subscribed;
-        invitedFriends = Number(obj.invitedFriends) || 0;
-      } catch {
-        resetGame();
-      }
-    }
-  }
+function createSpark() {
+  const spark = document.createElement('div');
+  spark.className = 'spark';
+  spark.style.left = `${50 + (Math.random() - 0.5) * 20}%`;
+  spark.style.top = '50%';
+  spark.style.width = `${Math.random() * 10 + 5}px`;
+  spark.style.height = spark.style.width;
+  spark.style.backgroundColor = `hsl(${Math.random() * 30 + 40}, 100%, 50%)`;
+  spark.style.boxShadow = `0 0 ${Math.random() * 20 + 10}px gold`;
+  document.body.appendChild(spark);
+  
+  gsap.to(spark, {
+    x: `${(Math.random() - 0.5) * 500}px`,
+    y: `${Math.random() * -300 - 100}px`,
+    opacity: 0,
+    scale: 0.1,
+    duration: Math.random() * 1 + 0.5,
+    onComplete: () => spark.remove()
+  });
+}
 
-  function resetGame() {
-    username = null;
-    coins = 0;
-    energy = ENERGY_BASE;
-    energyMax = ENERGY_BASE_MAX;
-    subscribed = false;
-    invitedFriends = 0;
-    saveGame();
-  }
+function updateUI() {
+  coinsDisplay.textContent = `${coins} ⚡`;
+  energyDisplay.textContent = `${energy}/${energyMax} 💫`;
+  
+  // Update energy bar color
+  const energyPercent = energy / energyMax;
+  quantumButton.style.boxShadow = `
+    0 0 ${20 + energyPercent * 30}px rgba(255, ${Math.floor(255 * energyPercent)}, 0, 0.7),
+    inset 0 0 50px rgba(255, 255, 255, ${0.3 + energyPercent * 0.5})
+  `;
+}
 
-  /* --- Mise à jour affichage --- */
-  function updateDisplay() {
-    coinsDisplay.textContent = coins.toLocaleString();
-    energyText.textContent = `${energy} / ${energyMax}`;
-    energyFill.style.width = `${Math.min(energy, energyMax) / energyMax * 100}%`;
-    energyBar.setAttribute("aria-valuenow", Math.min(energy, energyMax));
-    profileCoins.textContent = coins.toLocaleString();
-    profileEnergy.textContent = `${energy} / ${energyMax}`;
-    profileUsername.textContent = username || "-";
-  }
+// Responsive
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
-  /* --- Gestion onglets --- */
-  function setActiveTab(tab) {
-    for (const key in tabButtons) {
-      if (key === tab) {
-        tabButtons[key].classList.add("active");
-        tabButtons[key].setAttribute("aria-selected", "true");
-        tabButtons[key].setAttribute("tabindex", "0");
-        tabSections[key].classList.add("active");
-      } else {
-        tabButtons[key].classList.remove("active");
-        tabButtons[key].setAttribute("aria-selected", "false");
-        tabButtons[key].setAttribute("tabindex", "-1");
-        tabSections[key].classList.remove("active");
-      }
-    }
-  }
-
-  /* --- Gestion du clic sur le bouton principal --- */
-  function onClickMainButton() {
-    if (energy <= 0) {
-      // Pas assez d'énergie
-      alert("Plus d'énergie ! Utilisez un avantage pour en récupérer.");
-      return;
-    }
-    coins += COINS_PER_CLICK;
-    energy--;
-    saveGame();
-    updateDisplay();
-    spawnFlyingCoin();
-
-    // Update classement joueur dans rankingData
-    updateRankingData();
-  }
-
-  /* --- Animation pièce volante --- */
-  function spawnFlyingCoin() {
-    const coin = document.createElement("div");
-    coin.className = "coin-fly";
-    // Position coin au centre du bouton
-    const rect = clickButton.getBoundingClientRect();
-    coin.style.left = `${rect.left + rect.width/2 - 14}px`;
-    coin.style.top = `${rect.top + rect.height/2 - 14}px`;
-    // Direction x aléatoire entre -30 et 30 px
-    coin.style.setProperty("--x", (Math.random() * 60 - 30).toFixed(0));
-    document.body.appendChild(coin);
-    setTimeout(() => coin.remove(), 1100);
-  }
-
-  /* --- Gestion des avantages --- */
-  function applySubscribeBonus() {
-    if (subscribed) {
-      alert("Vous avez déjà validé l'abonnement.");
-      return;
-    }
-    subscribed = true;
-    increaseEnergy(ENERGY_SUBSCRIBE_BONUS);
-    saveGame();
-    updateDisplay();
-    alert("Bonus abonnement appliqué ! +1600 énergie");
-  }
-
-  function applyInviteBonus() {
-    if (invitedFriends >= 5) {
-      alert("Nombre maximal d'invitations atteint.");
-      return;
-    }
-    invitedFriends++;
-    increaseEnergy(ENERGY_INVITE_BONUS);
-    saveGame();
-    updateDisplay();
-    alert(`Invitation validée ! +100 énergie (total invitations: ${invitedFriends})`);
-  }
-
-  function increaseEnergy(amount) {
-    energyMax += amount;
-    energy += amount;
-    // Clamp energy to new max
-    if (energy > energyMax) energy = energyMax;
-  }
-
-  /* --- Gestion du classement --- */
-  function updateRankingData() {
-    // Trouver joueur dans le ranking, ou l'ajouter
-    const idx = rankingData.findIndex(item => item.pseudo === username);
-    if (idx >= 0) {
-      rankingData[idx].coins = coins;
-    } else {
-      rankingData.push({ pseudo: username, coins });
-    }
-    // Trier classement (décroissant)
-    rankingData.sort((a,b) => b.coins - a.coins);
-    renderRanking();
-  }
-
-  function renderRanking() {
-    rankingBody.innerHTML = "";
-    rankingData.forEach((player, i) => {
-      const tr = document.createElement("tr");
-      if (player.pseudo === username) {
-        tr.classList.add("self-player");
-      }
-      const tdRank = document.createElement("td");
-      tdRank.textContent = i + 1;
-      const tdPseudo = document.createElement("td");
-      tdPseudo.textContent = player.pseudo;
-      const tdCoins = document.createElement("td");
-      tdCoins.textContent = player.coins.toLocaleString();
-      tr.append(tdRank, tdPseudo, tdCoins);
-      rankingBody.appendChild(tr);
-    });
-  }
-
-  /* --- Récupération username Telegram --- */
-  function detectTelegramUsername() {
-    if (window.Telegram?.WebApp) {
-      const user = Telegram.WebApp.initDataUnsafe?.user;
-      if (user) {
-        return user.username || `user_${user.id}`;
-      }
-    }
-    return null;
-  }
-
-  /* --- Demande pseudo si pas détecté --- */
-  function askUsername() {
-    let stored = localStorage.getItem("aethercoin_username");
-    if (stored) return stored;
-    let input = "";
-    do {
-      input = prompt("Entrez votre pseudo pour Aether-Coin (lettres, chiffres, _)", "");
-      if (input) input = input.trim().replace(/[^a-zA-Z0-9_]/g, "");
-    } while (!input);
-    localStorage.setItem("aethercoin_username", input);
-    return input;
-  }
-
-  /* --- Initialisation --- */
-  function init() {
-    loadGame();
-
-    // Detect username Telegram or fallback
-    let detected = detectTelegramUsername();
-    if (detected) {
-      username = detected;
-      localStorage.setItem("aethercoin_username", username);
-    } else {
-      username = localStorage.getItem("aethercoin_username");
-      if (!username) {
-        username = askUsername();
-      }
-    }
-
-    // Save username in game data for consistency
-    saveGame();
-
-    updateDisplay();
-    renderRanking();
-    updateRankingData();
-
-    // Initial energy buttons state
-    updateAdvantageButtons();
-
-    // Événements
-    clickButton.addEventListener("click", () => {
-      clickButton.setAttribute("aria-pressed", "true");
-      onClickMainButton();
-      setTimeout(() => clickButton.setAttribute("aria-pressed", "false"), 150);
-    });
-
-    btnSubscribe.addEventListener("click", () => {
-      applySubscribeBonus();
-      updateAdvantageButtons();
-    });
-
-    btnInvite.addEventListener("click", () => {
-      applyInviteBonus();
-      updateAdvantageButtons();
-    });
-
-    resetGameBtn.addEventListener("click", () => {
-      if (confirm("Confirmez-vous la réinitialisation complète du jeu ?")) {
-        resetGame();
-        username = askUsername();
-        saveGame();
-        updateDisplay();
-        renderRanking();
-        updateRankingData();
-        updateAdvantageButtons();
-      }
-    });
-
-    // Navigation onglets
-    Object.entries(tabButtons).forEach(([key, btn]) => {
-      btn.addEventListener("click", () => {
-        setActiveTab(key);
-      });
-    });
-
-    setActiveTab("principal");
-  }
-
-  function updateAdvantageButtons() {
-    btnSubscribe.disabled = subscribed;
-    btnInvite.disabled = invitedFriends >= 5;
-  }
-
-  // Démarrage
-  window.addEventListener("load", init);
-})();
+// Start
+updateUI();
 </script>
 </body>
 </html>
