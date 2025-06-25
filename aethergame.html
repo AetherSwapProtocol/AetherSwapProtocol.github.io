@@ -1139,79 +1139,86 @@
                 </div>
             </div>
             
-            <!-- Market Page -->
-            <div id="market-page" class="page">
-                <div class="market-container">
-                    <h2>Marché NFT</h2>
-                    <div class="market-tabs">
-                        <button class="market-tab active" data-tab="miners">Mineurs</button>
-                        <button class="market-tab" data-tab="powerups">Power-ups</button>
-                        <button class="market-tab" data-tab="skins">Skins</button>
-                        <button class="market-tab" data-tab="collectibles">Collectibles</button>
-                    </div>
-                    <div class="market-items" id="market-miners">
-                        <!-- Miner NFTs will be added here dynamically -->
-                    </div>
-                    <div class="market-items" id="market-powerups" style="display: none;">
-                        <!-- Power-up NFTs will be added here dynamically -->
-                    </div>
-                    <div class="market-items" id="market-skins" style="display: none;">
-                        <!-- Skin NFTs will be added here dynamically -->
-                    </div>
-                    <div class="market-items" id="market-collectibles" style="display: none;">
-                        <!-- Collectible NFTs will be added here dynamically -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Leaderboard Page -->
-            <div id="leaderboard-page" class="page">
-                <div class="leaderboard-container">
-                    <h2>Classement</h2>
-                    <div class="leaderboard-tabs">
-                        <button class="leaderboard-tab active" data-tab="global">Global</button>
-                        <button class="leaderboard-tab" data-tab="friends">Amis</button>
-                        <button class="leaderboard-tab" data-tab="guilds">Guildes</button>
-                    </div>
-                    <div class="leaderboard-list" id="leaderboard-global">
-                        <!-- Leaderboard entries will be added here dynamically -->
-                    </div>
-                    <div class="leaderboard-list" id="leaderboard-friends" style="display: none;">
-                        <!-- Friends leaderboard entries will be added here dynamically -->
-                    </div>
-                    <div class="leaderboard-list" id="leaderboard-guilds" style="display: none;">
-                        <!-- Guilds leaderboard entries will be added here dynamically -->
-                    </div>
-                </div>
-            </div>
-        </main>
+            <!-- Market Page - Contenu enrichi -->
+<div id="market-page" class="page">
+    <div class="market-container">
+        <h2>Marché NFT</h2>
+        <div class="market-tabs">
+            <button class="market-tab active" data-tab="miners">⛏️ Mineurs</button>
+            <button class="market-tab" data-tab="powerups">⚡ Boosters</button>
+            <button class="market-tab" data-tab="skins">🎨 Skins</button>
+            <button class="market-tab" data-tab="collectibles">🏆 Collectibles</button>
+        </div>
         
-      <nav class="nav">
-    <!-- Bouton Minage -->
+        <!-- Mineurs -->
+        <div class="market-items" id="market-miners">
+            <div class="market-item">
+                <div class="market-item-img" style="background: linear-gradient(135deg, #00f0ff, #7b2cbf);">
+                    ⛏️
+                </div>
+                <div class="market-item-info">
+                    <div class="market-item-name">Mineur Novice</div>
+                    <div class="market-item-desc">+0.5 AETH/sec</div>
+                    <div class="market-item-price">50 AETH</div>
+                </div>
+                <button class="market-item-btn">Acheter</button>
+            </div>
+        </div>
+        
+        <!-- Boosters (caché par défaut) -->
+        <div class="market-items" id="market-powerups" style="display: none;">
+            <!-- Contenu similaire -->
+        </div>
+    </div>
+</div>
+
+<!-- Leaderboard Page - Données exemple -->
+<div id="leaderboard-page" class="page">
+    <div class="leaderboard-container">
+        <h2>Classement</h2>
+        <div class="leaderboard-tabs">
+            <button class="leaderboard-tab active" data-tab="global">🌍 Global</button>
+            <button class="leaderboard-tab" data-tab="friends">👥 Amis</button>
+            <button class="leaderboard-tab" data-tab="guilds">⚔️ Guildes</button>
+        </div>
+        
+        <div class="leaderboard-list" id="leaderboard-global">
+            <div class="leaderboard-player player-you">
+                <div class="player-rank">5</div>
+                <div class="player-avatar">VOUS</div>
+                <div class="player-info">
+                    <div class="player-name">Joueur</div>
+                    <div class="player-level">Niveau 1</div>
+                </div>
+                <div class="player-score">100 AETH</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation Basse - Style amélioré -->
+<nav class="nav">
     <button class="nav-btn active" data-page="mining-page">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        <svg class="nav-icon" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z"/>
         </svg>
         <span>Minage</span>
     </button>
-    <!-- Bouton Améliorations -->
     <button class="nav-btn" data-page="upgrades-page">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M5.636 5.636l3.536 3.536m-3.536 5.656l3.536-3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <svg class="nav-icon" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
         </svg>
         <span>Upgrades</span>
     </button>
-    <!-- Bouton Marché -->
     <button class="nav-btn" data-page="market-page">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        <svg class="nav-icon" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M5,6H23V18H5V6M14,9A3,3 0 0,1 17,12A3,3 0 0,1 14,15A3,3 0 0,1 11,12A3,3 0 0,1 14,9M9,8A2,2 0 0,1 7,10V14A2,2 0 0,1 9,16H19A2,2 0 0,1 21,14V10A2,2 0 0,1 19,8H9M1,10H3V20H19V22H1V10Z"/>
         </svg>
         <span>Marché</span>
     </button>
-    <!-- Bouton Classement -->
     <button class="nav-btn" data-page="leaderboard-page">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        <svg class="nav-icon" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M19,5V7H15V5H19M9,5V11H5V5H9M19,13V19H15V13H19M9,17V19H5V17H9M21,3H13V9H21V3M11,3H3V13H11V3M21,11H13V21H21V11M11,15H3V21H11V15Z"/>
         </svg>
         <span>Classement</span>
     </button>
