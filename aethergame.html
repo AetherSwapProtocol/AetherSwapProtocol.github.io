@@ -1044,6 +1044,35 @@
         .tooltip:hover::after {
             opacity: 1;
         }
+        /* Animation du bouton de minage */
+.miner-circle {
+    animation: pulse 2s infinite alternate;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.miner-circle:active {
+    transform: scale(0.95) !important;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 20px var(--primary); }
+    100% { transform: scale(1.05); box-shadow: 0 0 40px var(--primary); }
+}
+
+/* Onglets actifs */
+.market-tab.active, 
+.leaderboard-tab.active {
+    background: rgba(0, 240, 255, 0.2) !important;
+    color: var(--primary) !important;
+    font-weight: bold;
+}
+
+/* Cartes interactives */
+.market-item:hover {
+    transform: translateY(-5px);
+    border: 1px solid var(--primary) !important;
+}
     </style>
 </head>
 <body>
