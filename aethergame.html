@@ -828,7 +828,435 @@
                             throw new Error('MetaMask not installed');
                         }
                         provider = new ethers.providers.Web3Provider(window.ethereum);
-                        await window.ethereum.request({ method: 'eth_request (remaining JavaScript code)
+                        await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        address = (await provider.listAccounts())[0];
+                        break;
+                        
+                    case 'walletconnect':
+                        showNotification('WalletConnect not implemented in demo', 'error');
+                        return;
+                        
+                    case 'coinbase':
+                        if (!window.ethereum?.isCoinbaseWallet) {
+                            throw new Error('Coinbase Wallet not detected');
+                        }
+                        provider = new ethers.providers.Web3Provider(window.ethereum);
+                        address = (await provider.listAccounts())[0];
+                        break;
+                        
+                    default:
+                        throw new Error('Unknown wallet type');
+                }
+                
+                // Get ENS name if available
+                let ens = null;
+                try {
+                    ens = await provider.lookupAddress(address);
+                } catch (e) {
+                    console.log("Couldn't resolve ENS:", e);
+                }
+                
+                // Update game state
+                gameState.wallet = {
+                    connected: true,
+                    address,
+                    ens
+                };
+                
+                // Update UI
+                updateWalletDisplay();
+                toggleWalletModal();
+                
+                // Give connection bonus
+                gameState.coins += 50;
+                activateBooster(1.5, 60000);
+                showNotification(`Connected: ${ens || shortenAddress(address)}`, 'success');
+                
+                // Refresh leaderboard
+                updateLeaderboard();
+                
+            } catch (error) {
+                console.error('Wallet connection error:', error);
+                showNotification(`Connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        function updateWalletDisplay() {
+            if (gameState.wallet.connected) {
+                const displayName = gameState.wallet.ens || shortenAddress(gameState.wallet.address);
+                elements.walletAddress.innerHTML = `
+                    <svg class="wallet-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    ${displayName}
+                `;
+                elements.userAvatar.textContent = displayName.slice(0, 2).toUpperCase();
+            }
+        }
+
+        function toggleWalletModal() {
+            elements.walletModal.classList.toggle('active');
+        }
+
+        function shortenAddress(address) {
+            return `${address.slice(0, 6)}...${address.slice(-4)}`;
+        }
+
+        // ======================
+        // ⚡ BOOSTER SYSTEM
+        // ======================
+
+        function activateBooster(multiplier, duration) {
+            const booster = {
+                multiplier,
+                endTime: Date.now() + duration
+            };
+            
+            gameState.activeBoosters.push(booster);
+            updateMultiplier();
+            
+            setTimeout(() => {
+                gameState.activeBoosters = gameState.activeBoosters.filter(b => b !== booster);
+                updateMultiplier();
+            }, duration);
+            
+            showNotification(`Booster activated: ${multiplier}x for ${duration/1000}s`, 'success');
+        }
+
+        function updateMultiplier() {
+            let totalMultiplier = 1;
+            gameState.activeBoosters.forEach(booster => {
+                totalMultiplier *= booster.multiplier;
+            });
+            
+            gameState.multiplier = totalMultiplier;
+            
+            if (gameState.activeBoosters.length > 0) {
+                elements.multiplierSource.textContent = `${gameState.activeBoosters.length} active boosters`;
+            } else {
+                elements.multiplierSource.textContent = 'Base';
+            }
+            
+            elements.multiplierDisplay.textContent = `${gameState.multiplier.toFixed(1)}x`;
+        }
+
+        // ======================
+        // ⛏️ MINING FUNCTIONS
+        // ======================
+
+        function mine() {
+            if (gameState.energy > 0) {
+                const coinsGained = gameState.power * gameState.multiplier;
+                gameState.coins += coinsGained;
+                gameState.energy -= 10;
+                
+                if (gameState.energy < 0) gameState.energy = 0;
+                
+                // Update UI
+                updateCoinsDisplay();
+                updateEnergyDisplay();
+                
+                // Visual feedback
+                animateMining();
+                createMiningParticles();
+                
+                // Progress level
+                updatePowerProgress();
+            } else {
+                showNotification("Out of energy! Wait for recharge", 'error');
+            }
+        }
+
+        function updatePowerProgress() {
+            gameState.powerProgress += gameState.power;
+            
+            if (gameState.powerProgress >= gameState.powerMax) {
+                levelUp();
+            }
+            
+            const percent = (gameState.powerProgress / gameState.powerMax) * 100;
+            elements.powerProgressBar.style.width = `${percent}%`;
+        }
+
+        function levelUp() {
+            gameState.level++;
+            gameState.powerProgress = 0;
+            gameState.powerMax = Math.floor(gameState.powerMax * 1.5);
+            
+            const reward = gameState.level * 10;
+            gameState.coins += reward;
+            
+            updateCoinsDisplay();
+            elements.levelDisplay.textContent = gameState.level;
+            
+            showNotification(`Level ${gameState.level} reached! +${reward} AETH`, 'success');
+        }
+
+        // ======================
+        // 📊 DISPLAY UPDATES
+        // ======================
+
+        function updateCoinsDisplay() {
+            elements.coinsDisplay.textContent = Math.floor(gameState.coins).toLocaleString();
+            elements.coinsPerSec.textContent = `+${gameState.coinsPerSecond.toFixed(1)}/sec`;
+        }
+
+        function updateEnergyDisplay() {
+            const percent = (gameState.energy / gameState.energyMax) * 100;
+            elements.minerEnergy.textContent = `${Math.floor(gameState.energy)}/${gameState.energyMax}`;
+        }
+
+        // ======================
+        // 🎮 GAME LOOP
+        // ======================
+
+        function gameLoop() {
+            // Passive income
+            gameState.coins += gameState.coinsPerSecond / 10; // Divided by 10 because loop runs 10x/sec
+            
+            // Energy regeneration
+            if (gameState.energy < gameState.energyMax) {
+                gameState.energy += gameState.energyRegen / 10;
+                if (gameState.energy > gameState.energyMax) gameState.energy = gameState.energyMax;
+                updateEnergyDisplay();
+            }
+            
+            // Update boosters
+            const now = Date.now();
+            gameState.activeBoosters = gameState.activeBoosters.filter(b => b.endTime > now);
+            if (gameState.activeBoosters.length > 0) {
+                updateMultiplier();
+            }
+            
+            // Update UI
+            updateCoinsDisplay();
+        }
+
+        // ======================
+        // ✨ VISUAL EFFECTS
+        // ======================
+
+        function animateMining() {
+            elements.minerCircle.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                elements.minerCircle.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        function createMiningParticles() {
+            const canvas = elements.particlesCanvas;
+            const ctx = canvas.getContext('2d');
+            const rect = elements.minerCircle.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2 - canvas.offsetLeft;
+            const centerY = rect.top + rect.height / 2 - canvas.offsetTop;
+            
+            const particles = [];
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: centerX,
+                    y: centerY,
+                    size: Math.random() * 4 + 2,
+                    speedX: (Math.random() - 0.5) * 10,
+                    speedY: (Math.random() - 0.5) * 10,
+                    color: `hsl(${Math.random() * 60 + 180}, 100%, 50%)`,
+                    life: 100
+                });
+            }
+            
+            function explode() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                let particlesAlive = false;
+                particles.forEach(p => {
+                    if (p.life > 0) {
+                        particlesAlive = true;
+                        ctx.fillStyle = p.color;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        p.x += p.speedX;
+                        p.y += p.speedY;
+                        p.speedY += 0.1;
+                        p.life--;
+                    }
+                });
+                
+                if (particlesAlive) {
+                    requestAnimationFrame(explode);
+                }
+            }
+            
+            explode();
+        }
+
+        function initParticles() {
+            const canvas = elements.particlesCanvas;
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const particles = [];
+            const particleCount = window.innerWidth < 768 ? 30 : 100;
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 3 + 1,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.5,
+                    color: `rgba(0, 240, 255, ${Math.random() * 0.5 + 0.1})`
+                });
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(p => {
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    
+                    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+            
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // ======================
+        // 📢 NOTIFICATIONS
+        // ======================
+
+        function showNotification(message, type = 'info') {
+            elements.notification.className = `notification notification-${type}`;
+            elements.notificationMessage.textContent = message;
+            
+            elements.notification.style.display = 'flex';
+            setTimeout(() => {
+                elements.notification.style.opacity = '1';
+            }, 10);
+            
+            setTimeout(() => {
+                elements.notification.style.opacity = '0';
+                setTimeout(() => {
+                    elements.notification.style.display = 'none';
+                }, 300);
+            }, 3000);
+        }
+
+        // ======================
+        // 🏆 LEADERBOARD
+        // ======================
+
+        function updateLeaderboard() {
+            // In a real app, this would fetch from a backend
+            gameState.leaderboard = [
+                { rank: 1, name: 'CryptoKing', score: 125000, level: 42 },
+                { rank: 2, name: 'BlockchainQueen', score: 98700, level: 38 },
+                { rank: 3, name: 'AetherMaster', score: 85400, level: 35 },
+                { rank: 4, name: 'DeFiDude', score: 72300, level: 32 }
+            ];
+            
+            // Add current player if connected
+            if (gameState.wallet.connected) {
+                gameState.leaderboard.push({
+                    rank: gameState.leaderboard.length + 1,
+                    name: gameState.wallet.ens || shortenAddress(gameState.wallet.address),
+                    score: Math.floor(gameState.coins),
+                    level: gameState.level,
+                    you: true
+                });
+            }
+            
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            elements.leaderboardGlobalList.innerHTML = '';
+            
+            gameState.leaderboard.forEach(player => {
+                const playerEl = document.createElement('div');
+                playerEl.className = `leaderboard-player ${player.you ? 'player-you' : ''}`;
+                playerEl.innerHTML = `
+                    <div class="player-rank">${player.rank}</div>
+                    <div class="player-avatar">${player.name.slice(0, 2).toUpperCase()}</div>
+                    <div class="player-info">
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-level">Level ${player.level}</div>
+                    </div>
+                    <div class="player-score">${player.score.toLocaleString()} AETH</div>
+                `;
+                elements.leaderboardGlobalList.appendChild(playerEl);
+            });
+        }
+
+        // ======================
+        // 🛠️ INITIALIZATION
+        // ======================
+
+        function initGame() {
+            // Set up event listeners
+            elements.minerCircle.addEventListener('click', mine);
+            elements.walletAddress.addEventListener('click', toggleWalletModal);
+            elements.walletModalClose.addEventListener('click', toggleWalletModal);
+            
+            document.querySelectorAll('.wallet-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const walletType = option.getAttribute('data-wallet');
+                    connectWallet(walletType);
+                });
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const pageId = btn.getAttribute('data-page');
+                    document.querySelectorAll('.page').forEach(page => {
+                        page.classList.remove('active');
+                    });
+                    document.getElementById(pageId).classList.add('active');
+                    
+                    document.querySelectorAll('.nav-btn').forEach(navBtn => {
+                        navBtn.classList.remove('active');
+                    });
+                    btn.classList.add('active');
+                });
+            });
+            
+            // Initialize systems
+            initParticles();
+            
+            // Start game loop
+            setInterval(gameLoop, 100);
+            
+            // Hide loading screen
+            setTimeout(() => {
+                elements.loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    elements.loadingScreen.style.display = 'none';
+                    elements.gameContainer.style.opacity = '1';
+                }, 500);
+            }, 2000);
+        }
+
+        // Start the game when page loads
+        window.addEventListener('load', initGame);
     </script>
 </body>
 </html>
