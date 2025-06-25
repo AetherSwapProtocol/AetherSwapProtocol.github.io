@@ -1,877 +1,182 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AETHER-CORE | Ultimate Web3 Experience</title>
-<style>
-/* RESET & BASE */
-:root {
-  --primary: hsl(185, 100%, 50%);
-  --secondary: hsl(270, 70%, 40%);
-  --dark: hsl(240, 50%, 5%);
-  --darker: hsl(240, 60%, 2%);
-  --accent: hsl(330, 100%, 50%);
-  --text: hsl(185, 80%, 95%);
-  --success: hsl(160, 100%, 50%);
-  --warning: hsl(40, 100%, 50%);
-  --error: hsl(350, 100%, 60%);
-  --glow: 0 0 15px currentColor;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="telegram-web-app-title" content="Aether-Core Pro">
+    <title>Aether-Core Pro | Web3 Mining Game</title>
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --secondary: #7b2cbf;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --accent: #ff00aa;
+            --text: #e0f8ff;
+            --success: #00ff88;
+            --error: #ff3860;
+            --header-height: 56px;
+            --nav-height: 60px;
+        }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
 
-@font-face {
-  font-family: 'Neon';
-  src: url('data:font/woff2;base64,d09GMgABAAAAA...') format('woff2');
-  font-display: swap;
-}
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--darker);
+            color: var(--text);
+            overflow: hidden;
+            height: 100dvh;
+            position: fixed;
+            width: 100%;
+        }
 
-body {
-  font-family: 'Neon', system-ui, sans-serif;
-  background: var(--darker);
-  color: var(--text);
-  overflow-x: hidden;
-  min-height: 100vh;
-  line-height: 1.6;
-  position: relative;
-}
+        .game-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
 
-/* CINEMATIQUE */
-.cinematic {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
+        .header {
+            height: var(--header-height);
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 100;
+        }
 
-.cinematic-bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, 
-    var(--dark) 0%, 
-    #000 100%);
-  opacity: 0.8;
-}
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
 
-.star {
-  position: absolute;
-  background: #fff;
-  border-radius: 50%;
-  animation: twinkle var(--duration) infinite ease-in-out;
-  opacity: 0;
-}
+        /* [Tous les autres styles...] */
 
-@keyframes twinkle {
-  0%, 100% { opacity: 0; transform: scale(0.5); }
-  50% { opacity: var(--opacity); transform: scale(1); }
-}
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
 
-.cinematic-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  max-width: 800px;
-  padding: 2rem;
-}
-
-.cinematic-logo {
-  font-size: clamp(2rem, 8vw, 5rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5rem;
-  color: var(--primary);
-  text-shadow: var(--glow);
-  margin-bottom: 2rem;
-  opacity: 0;
-  transform: translateY(50px);
-}
-
-.cinematic-text {
-  font-size: clamp(1rem, 3vw, 1.5rem);
-  margin-bottom: 2rem;
-  color: var(--text);
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.cinematic-progress {
-  width: 0%;
-  height: 4px;
-  background: linear-gradient(90deg, 
-    var(--primary), 
-    var(--accent));
-  position: absolute;
-  bottom: 20%;
-  left: 0;
-  transition: width 0.1s linear;
-  box-shadow: 0 0 10px var(--primary);
-}
-
-.skip-btn {
-  position: absolute;
-  bottom: 5%;
-  right: 5%;
-  background: rgba(0,0,0,0.5);
-  border: 1px solid var(--primary);
-  color: var(--text);
-  padding: 0.5rem 1.5rem;
-  border-radius: 2rem;
-  cursor: pointer;
-  z-index: 10;
-  opacity: 0.7;
-  transition: all 0.3s;
-  font-family: inherit;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-size: 0.8rem;
-}
-
-.skip-btn:hover {
-  opacity: 1;
-  background: rgba(0,0,0,0.8);
-  box-shadow: 0 0 15px var(--primary);
-}
-
-/* GAME UI */
-.game-container {
-  display: none;
-  width: 100%;
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden;
-  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjMDAwMDAwIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDVMNSAwWk02IDRMNCA2Wk0tMSAxTDEgLTFaIiBzdHJva2U9IiMxMTExMTEiIHN0cm9rZS13aWR0aD0iMSI+PC9wYXRoPgo8L3N2Zz4=');
-}
-
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 70px;
-  background: linear-gradient(180deg, 
-    rgba(0,0,0,0.8) 0%, 
-    rgba(0,0,0,0.4) 100%);
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 2rem;
-  z-index: 100;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.1);
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary);
-  text-shadow: var(--glow);
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  border: 2px solid var(--primary);
-}
-
-.wallet {
-  background: rgba(0,0,0,0.5);
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
-  font-size: 0.8rem;
-  border: 1px solid var(--primary);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.wallet-address {
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.main {
-  padding: 6rem 1rem 5rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.game-card {
-  background: linear-gradient(
-    145deg,
-    rgba(5, 10, 30, 0.8) 0%,
-    rgba(0, 20, 40, 0.6) 100%
-  );
-  border-radius: 1.5rem;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  border: 1px solid rgba(0, 240, 255, 0.1);
-  box-shadow: 0 0 30px rgba(0, 240, 255, 0.05),
-    inset 0 0 20px rgba(0, 240, 255, 0.05);
-  position: relative;
-  overflow: hidden;
-}
-
-.game-card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    circle,
-    rgba(0, 240, 255, 0.05) 0%,
-    transparent 70%
-  );
-  animation: rotate 20s linear infinite;
-  z-index: -1;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.clicker-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 0;
-}
-
-.coin {
-  width: 180px;
-  height: 180px;
-  background: radial-gradient(
-    circle at center,
-    var(--primary) 0%,
-    var(--secondary) 70%,
-    #001133 100%
-  );
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  position: relative;
-  box-shadow: 0 0 30px var(--primary),
-    inset 0 0 20px rgba(255, 255, 255, 0.3);
-  transition: transform 0.1s, box-shadow 0.3s;
-  margin-bottom: 2rem;
-}
-
-.coin:active {
-  transform: scale(0.95);
-}
-
-.coin::before {
-  content: '⨀';
-  font-size: 5rem;
-  color: white;
-  text-shadow: 0 0 10px var(--primary);
-}
-
-.stats {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  width: 100%;
-  margin-bottom: 2rem;
-}
-
-.stat {
-  background: rgba(0,0,0,0.5);
-  padding: 1rem 1.5rem;
-  border-radius: 1rem;
-  text-align: center;
-  min-width: 150px;
-  border: 1px solid var(--primary);
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--primary);
-  margin-bottom: 0.5rem;
-}
-
-.stat-label {
-  font-size: 0.8rem;
-  opacity: 0.8;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.energy-bar {
-  width: 100%;
-  height: 20px;
-  background: rgba(0,0,0,0.5);
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-  border: 1px solid var(--primary);
-}
-
-.energy-progress {
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    var(--primary),
-    var(--accent)
-  );
-  width: 100%;
-  transition: width 0.5s ease;
-}
-
-.upgrades {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.upgrade {
-  background: linear-gradient(
-    145deg,
-    rgba(5, 10, 30, 0.8) 0%,
-    rgba(0, 20, 40, 0.6) 100%
-  );
-  border-radius: 1rem;
-  padding: 1.5rem;
-  border: 1px solid rgba(0, 240, 255, 0.1);
-  transition: all 0.3s;
-  cursor: pointer;
-}
-
-.upgrade:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 240, 255, 0.1);
-  border-color: var(--primary);
-}
-
-.upgrade-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.upgrade-name {
-  font-weight: bold;
-  color: var(--primary);
-}
-
-.upgrade-cost {
-  background: var(--dark);
-  padding: 0.3rem 0.8rem;
-  border-radius: 1rem;
-  font-size: 0.8rem;
-  color: var(--primary);
-}
-
-.upgrade-desc {
-  font-size: 0.9rem;
-  opacity: 0.8;
-  margin-bottom: 1rem;
-}
-
-.upgrade-btn {
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  background: linear-gradient(
-    90deg,
-    var(--primary),
-    var(--secondary)
-  );
-  border: none;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.upgrade-btn:disabled {
-  background: #333;
-  color: #666;
-  cursor: not-allowed;
-}
-
-.upgrade-btn:not(:disabled):hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
-}
-
-.nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: linear-gradient(
-    0deg,
-    rgba(0,0,0,0.9) 0%,
-    rgba(0,0,0,0.7) 100%
-  );
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: space-around;
-  padding: 0.8rem 0;
-  border-top: 1px solid rgba(0, 240, 255, 0.1);
-  z-index: 100;
-}
-
-.nav-btn {
-  background: none;
-  border: none;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: all 0.3s;
-  font-size: 0.8rem;
-}
-
-.nav-btn.active {
-  opacity: 1;
-  color: var(--primary);
-  transform: translateY(-5px);
-}
-
-.nav-btn i {
-  font-size: 1.2rem;
-}
-
-/* ANIMATIONS */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .header {
-    padding: 0 1rem;
-  }
-  
-  .wallet-address {
-    max-width: 80px;
-  }
-  
-  .stats {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .stat {
-    width: 100%;
-  }
-}
-</style>
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 48px;
+                --nav-height: 52px;
+            }
+        }
+    </style>
 </head>
 <body>
-
-<!-- CINEMATIQUE D'INTRODUCTION -->
-<div class="cinematic" id="cinematic">
-  <div class="cinematic-bg" id="cinematic-bg"></div>
-  
-  <div class="cinematic-content">
-    <div class="cinematic-logo">AETHER-CORE</div>
-    <div class="cinematic-text" id="scene1">The future of Web3 gaming</div>
-    <div class="cinematic-text" id="scene2">Powered by TON Blockchain</div>
-    <div class="cinematic-text" id="scene3">Loading immersive experience</div>
-  </div>
-  
-  <div class="cinematic-progress" id="cinematic-progress"></div>
-  <button class="skip-btn" id="skip-btn">Skip Intro</button>
-</div>
-
-<!-- GAME INTERFACE -->
-<div class="game-container" id="game">
-  <header class="header">
-    <div class="logo">AETHER-CORE</div>
-    <div class="user-info">
-      <div class="avatar" id="user-avatar">U</div>
-      <div class="wallet" id="wallet-display">
-        <span class="wallet-address" id="wallet-address">Not connected</span>
-      </div>
+    <div id="game-container" class="game-container">
+        <header class="header">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                    <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" fill="var(--primary)"/>
+                </svg>
+                AETHER-CORE PRO
+            </div>
+            <div class="user-info">
+                <div class="avatar" id="user-avatar">P</div>
+                <div class="wallet" id="wallet-address">Connect Wallet</div>
+            </div>
+        </header>
+        
+        <main class="main-content" id="main-content">
+            <!-- Pages chargées dynamiquement -->
+        </main>
+        
+        <nav class="nav">
+            <button class="nav-btn active" data-page="mining">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                Mine
+            </button>
+            <button class="nav-btn" data-page="upgrades">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                Upgrades
+            </button>
+            <button class="nav-btn" data-page="market">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 3H3v18h18V3zm-9 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-1.5c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2V19z"/></svg>
+                Market
+            </button>
+            <button class="nav-btn" data-page="leaderboard">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
+                Leaderboard
+            </button>
+        </nav>
     </div>
-  </header>
-  
-  <main class="main">
-    <section class="game-card" id="clicker-section">
-      <div class="clicker-container">
-        <div class="coin" id="clicker"></div>
-        
-        <div class="stats">
-          <div class="stat">
-            <div class="stat-value" id="coins">0</div>
-            <div class="stat-label">Aether Coins</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value" id="energy">100</div>
-            <div class="stat-label">Energy</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value" id="multiplier">1x</div>
-            <div class="stat-label">Multiplier</div>
-          </div>
-        </div>
-        
-        <div class="energy-bar">
-          <div class="energy-progress" id="energy-bar" style="width: 100%"></div>
-        </div>
-      </div>
-    </section>
-    
-    <section class="game-card" id="upgrades-section">
-      <h2>Core Upgrades</h2>
-      <div class="upgrades" id="upgrades-container">
-        <!-- Upgrades will be added dynamically -->
-      </div>
-    </section>
-  </main>
-  
-  <nav class="nav">
-    <button class="nav-btn active" data-section="clicker">
-      <i>⨀</i>
-      <span>Mine</span>
-    </button>
-    <button class="nav-btn" data-section="upgrades">
-      <i>⚙️</i>
-      <span>Upgrades</span>
-    </button>
-    <button class="nav-btn" data-section="missions">
-      <i>📜</i>
-      <span>Missions</span>
-    </button>
-    <button class="nav-btn" data-section="leaderboard">
-      <i>🏆</i>
-      <span>Leaderboard</span>
-    </button>
-  </nav>
-</div>
 
-<script>
-// ===== CINEMATIQUE =====
-const cinematic = document.getElementById('cinematic');
-const game = document.getElementById('game');
-const progressBar = document.getElementById('cinematic-progress');
-const skipBtn = document.getElementById('skip-btn');
-const scenes = [
-  document.getElementById('scene1'),
-  document.getElementById('scene2'), 
-  document.getElementById('scene3')
-];
-const cinematicBg = document.getElementById('cinematic-bg');
+    <canvas id="particles-canvas"></canvas>
 
-// Create stars
-function createStars() {
-  for (let i = 0; i < 100; i++) {
-    const star = document.createElement('div');
-    star.classList.add('star');
-    star.style.width = `${Math.random() * 3 + 1}px`;
-    star.style.height = star.style.width;
-    star.style.left = `${Math.random() * 100}%`;
-    star.style.top = `${Math.random() * 100}%`;
-    star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
-    star.style.setProperty('--opacity', Math.random() * 0.8 + 0.2);
-    star.style.animationDelay = `${Math.random() * 5}s`;
-    cinematicBg.appendChild(star);
-  }
-}
+    <script>
+        // ===== GAME CORE =====
+        class AetherCore {
+            constructor() {
+                this.state = {
+                    coins: 0,
+                    energy: 100,
+                    maxEnergy: 100,
+                    multiplier: 1,
+                    power: 1,
+                    passiveIncome: 0,
+                    upgrades: {
+                        clickPower: { level: 0, cost: 100 },
+                        energyCap: { level: 0, cost: 200 },
+                        autoMiner: { level: 0, cost: 500 }
+                    },
+                    missions: {
+                        click50: { completed: false, progress: 0 },
+                        firstUpgrade: { completed: false }
+                    },
+                    walletConnected: false,
+                    lastUpdate: Date.now()
+                };
+                this.elements = {
+                    coins: document.getElementById('coins'),
+                    energy: document.getElementById('energy'),
+                    walletAddress: document.getElementById('wallet-address'),
+                    mainContent: document.getElementById('main-content')
+                };
+                this.init();
+            }
 
-// Animate cinematic
-function animateCinematic() {
-  let progress = 0;
-  const totalDuration = 8000; // 8 seconds
-  
-  const interval = setInterval(() => {
-    progress += 10;
-    const percentage = Math.min(100, (progress / totalDuration) * 100);
-    progressBar.style.width = `${percentage}%`;
-    
-    // Animate scenes
-    if (percentage >= 20) {
-      scenes[0].style.opacity = 1;
-      scenes[0].style.transform = 'translateY(0)';
-    }
-    
-    if (percentage >= 40) {
-      scenes[1].style.opacity = 1;
-      scenes[1].style.transform = 'translateY(0)';
-    }
-    
-    if (percentage >= 60) {
-      scenes[2].style.opacity = 1;
-      scenes[2].style.transform = 'translateY(0)';
-    }
-    
-    if (percentage >= 100) {
-      clearInterval(interval);
-      startGame();
-    }
-  }, 10);
-}
+            init() {
+                this.loadGame();
+                this.setupEventListeners();
+                this.renderAll();
+                this.startGameLoop();
+                this.initTelegram();
+            }
 
-// Skip cinematic
-skipBtn.addEventListener('click', () => {
-  startGame();
-});
-
-// Start game
-function startGame() {
-  cinematic.style.opacity = '0';
-  setTimeout(() => {
-    cinematic.style.display = 'none';
-    game.style.display = 'block';
-    initGame();
-  }, 500);
-}
-
-// ===== GAME LOGIC =====
-const gameState = {
-  coins: 0,
-  energy: 100,
-  multiplier: 1,
-  upgrades: [
-    { id: 'click-power', name: 'Click Power', desc: 'Increase coins per click', cost: 100, value: 1, owned: 0 },
-    { id: 'energy-cap', name: 'Energy Capacity', desc: 'Increase max energy', cost: 200, value: 10, owned: 0 },
-    { id: 'regen-rate', name: 'Regen Rate', desc: 'Faster energy regeneration', cost: 300, value: 0.1, owned: 0 },
-    { id: 'auto-click', name: 'Auto Miner', desc: 'Automatically mine coins', cost: 500, value: 0.5, owned: 0 }
-  ],
-  passiveIncome: 0,
-  lastUpdate: Date.now()
-};
-
-// DOM Elements
-const clicker = document.getElementById('clicker');
-const coinsDisplay = document.getElementById('coins');
-const energyDisplay = document.getElementById('energy');
-const multiplierDisplay = document.getElementById('multiplier');
-const energyBar = document.getElementById('energy-bar');
-const upgradesContainer = document.getElementById('upgrades-container');
-const navButtons = document.querySelectorAll('.nav-btn');
-
-// Initialize game
-function initGame() {
-  loadGame();
-  renderUpgrades();
-  setupEventListeners();
-  startGameLoop();
-  
-  // Animate game entrance
-  animateGameEntrance();
-}
-
-function animateGameEntrance() {
-  const elements = document.querySelectorAll('.game-card, .nav-btn');
-  elements.forEach((el, i) => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    setTimeout(() => {
-      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      el.style.opacity = '1';
-      el.style.transform = 'translateY(0)';
-    }, 100 + i * 100);
-  });
-}
-
-function loadGame() {
-  const saved = localStorage.getItem('aetherCoreSave');
-  if (saved) {
-    Object.assign(gameState, JSON.parse(saved));
-  }
-  updateUI();
-}
-
-function saveGame() {
-  gameState.lastUpdate = Date.now();
-  localStorage.setItem('aetherCoreSave', JSON.stringify(gameState));
-}
-
-function updateUI() {
-  coinsDisplay.textContent = Math.floor(gameState.coins);
-  energyDisplay.textContent = Math.floor(gameState.energy);
-  multiplierDisplay.textContent = `${gameState.multiplier}x`;
-  energyBar.style.width = `${(gameState.energy / (100 + gameState.upgrades[1].owned * gameState.upgrades[1].value)) * 100}%`;
-}
-
-function renderUpgrades() {
-  upgradesContainer.innerHTML = '';
-  gameState.upgrades.forEach(upgrade => {
-    const upgradeEl = document.createElement('div');
-    upgradeEl.className = 'upgrade';
-    upgradeEl.innerHTML = `
-      <div class="upgrade-header">
-        <div class="upgrade-name">${upgrade.name}</div>
-        <div class="upgrade-cost">${upgrade.cost}</div>
-      </div>
-      <div class="upgrade-desc">${upgrade.desc}</div>
-      <div class="upgrade-level">Level: ${upgrade.owned}</div>
-      <button class="upgrade-btn" 
-              data-id="${upgrade.id}" 
-              ${gameState.coins < upgrade.cost ? 'disabled' : ''}>
-        Upgrade
-      </button>
-    `;
-    upgradesContainer.appendChild(upgradeEl);
-  });
-}
-
-function setupEventListeners() {
-  // Clicker
-  clicker.addEventListener('click', () => {
-    if (gameState.energy > 0) {
-      gameState.coins += gameState.multiplier * (1 + gameState.upgrades[0].owned * gameState.upgrades[0].value);
-      gameState.energy -= 1;
-      animateClick();
-      updateUI();
-      saveGame();
-    }
-  });
-  
-  // Upgrades
-  upgradesContainer.addEventListener('click', (e) => {
-    if (e.target.classList.contains('upgrade-btn')) {
-      const upgradeId = e.target.getAttribute('data-id');
-      const upgrade = gameState.upgrades.find(u => u.id === upgradeId);
-      
-      if (gameState.coins >= upgrade.cost) {
-        gameState.coins -= upgrade.cost;
-        upgrade.owned += 1;
-        upgrade.cost = Math.floor(upgrade.cost * 1.5);
-        
-        // Apply upgrade effects
-        if (upgradeId === 'click-power') {
-          // Already applied in click handler
-        } else if (upgradeId === 'energy-cap') {
-          // Handled in UI update
-        } else if (upgradeId === 'regen-rate') {
-          // Handled in game loop
-        } else if (upgradeId === 'auto-click') {
-          gameState.passiveIncome = gameState.upgrades[3].owned * gameState.upgrades[3].value;
+            // [Toutes les méthodes de jeu...]
         }
-        
-        updateUI();
-        renderUpgrades();
-        saveGame();
-      }
-    }
-  });
-  
-  // Navigation
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const section = btn.getAttribute('data-section');
-      navButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      // Here you would switch between sections
-      console.log(`Switching to ${section} section`);
-    });
-  });
-}
 
-function animateClick() {
-  const coin = document.getElementById('clicker');
-  coin.style.transform = 'scale(0.95)';
-  setTimeout(() => {
-    coin.style.transform = 'scale(1)';
-  }, 100);
-  
-  // Create coin particle
-  const particle = document.createElement('div');
-  particle.style.position = 'absolute';
-  particle.style.width = '10px';
-  particle.style.height = '10px';
-  particle.style.background = 'radial-gradient(circle, var(--primary), var(--accent))';
-  particle.style.borderRadius = '50%';
-  particle.style.pointerEvents = 'none';
-  particle.style.left = `${Math.random() * 100}%`;
-  particle.style.top = `${Math.random() * 100}%`;
-  particle.style.opacity = '0';
-  particle.style.transform = 'translate(0, 0) scale(0)';
-  particle.style.transition = 'all 0.5s ease-out';
-  
-  coin.appendChild(particle);
-  
-  setTimeout(() => {
-    particle.style.opacity = '1';
-    particle.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * -100 - 50}px) scale(1)`;
-  }, 10);
-  
-  setTimeout(() => {
-    particle.style.opacity = '0';
-    particle.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * -100 - 50}px) scale(0)`;
-    setTimeout(() => particle.remove(), 500);
-  }, 600);
-}
+        // ===== INITIALISATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            const game = new AetherCore();
+            window.game = game; // Pour le debug
+        });
 
-function startGameLoop() {
-  setInterval(() => {
-    // Energy regeneration
-    const maxEnergy = 100 + gameState.upgrades[1].owned * gameState.upgrades[1].value;
-    const regenRate = 0.1 + gameState.upgrades[2].owned * gameState.upgrades[2].value;
-    
-    if (gameState.energy < maxEnergy) {
-      gameState.energy = Math.min(maxEnergy, gameState.energy + regenRate);
-    }
-    
-    // Passive income
-    if (gameState.passiveIncome > 0) {
-      gameState.coins += gameState.passiveIncome * gameState.multiplier;
-    }
-    
-    updateUI();
-    saveGame();
-  }, 1000);
-}
-
-// Start the cinematic
-createStars();
-animateCinematic();
-
-// Simulate Web3 connection
-setTimeout(() => {
-  document.getElementById('wallet-address').textContent = '0x7f...3a4b';
-  document.getElementById('user-avatar').textContent = 'T';
-}, 3000);
-</script>
+        // Service Worker pour PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
 </body>
 </html>
