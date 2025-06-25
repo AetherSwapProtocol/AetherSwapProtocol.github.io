@@ -1,182 +1,215 @@
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="telegram-web-app-title" content="Aether-Core Pro">
-    <title>Aether-Core Pro | Web3 Mining Game</title>
-    <style>
-        :root {
-            --primary: #00f0ff;
-            --secondary: #7b2cbf;
-            --dark: #0a0a1a;
-            --darker: #050510;
-            --accent: #ff00aa;
-            --text: #e0f8ff;
-            --success: #00ff88;
-            --error: #ff3860;
-            --header-height: 56px;
-            --nav-height: 60px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aether-Core Pro | Web3 Mining Game</title>
+  <style>
+    :root {
+      --primary: #00f0ff;
+      --text: #e0f8ff;
+      --dark: #050510;
+      --error: #ff3860;
+      --success: #00ff88;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-        }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100dvh;
+      overflow: hidden;
+    }
 
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--darker);
-            color: var(--text);
-            overflow: hidden;
-            height: 100dvh;
-            position: fixed;
-            width: 100%;
-        }
+    header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
 
-        .game-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
+    .username {
+      font-size: 0.9rem;
+      color: var(--success);
+    }
 
-        .header {
-            height: var(--header-height);
-            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 16px;
-            z-index: 100;
-        }
+    .stats {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-        .logo {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-        }
+    .stats div {
+      margin: 8px 0;
+    }
 
-        /* [Tous les autres styles...] */
+    button {
+      background: var(--primary);
+      color: black;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 5px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        #particles-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 1000;
-        }
+    button svg {
+      height: 20px;
+      width: 20px;
+      fill: black;
+    }
 
-        @media (max-width: 768px) {
-            :root {
-                --header-height: 48px;
-                --nav-height: 52px;
-            }
-        }
-    </style>
+    button:disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+
+    #log {
+      font-size: 0.8rem;
+      color: var(--error);
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div id="game-container" class="game-container">
-        <header class="header">
-            <div class="logo">
-                <svg class="logo-icon" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-                    <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" fill="var(--primary)"/>
-                </svg>
-                AETHER-CORE PRO
-            </div>
-            <div class="user-info">
-                <div class="avatar" id="user-avatar">P</div>
-                <div class="wallet" id="wallet-address">Connect Wallet</div>
-            </div>
-        </header>
-        
-        <main class="main-content" id="main-content">
-            <!-- Pages chargées dynamiquement -->
-        </main>
-        
-        <nav class="nav">
-            <button class="nav-btn active" data-page="mining">
-                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                Mine
-            </button>
-            <button class="nav-btn" data-page="upgrades">
-                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                Upgrades
-            </button>
-            <button class="nav-btn" data-page="market">
-                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 3H3v18h18V3zm-9 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-1.5c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2V19z"/></svg>
-                Market
-            </button>
-            <button class="nav-btn" data-page="leaderboard">
-                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
-                Leaderboard
-            </button>
-        </nav>
-    </div>
+  <header>
+    <h1>Aether-Core Pro</h1>
+    <div id="telegram-user" class="username">Connecté : Anonyme</div>
+  </header>
 
-    <canvas id="particles-canvas"></canvas>
+  <div class="stats">
+    <div><strong>Coins:</strong> <span id="coins">0</span></div>
+    <div><strong>Énergie:</strong> <span id="energy">100</span> / <span id="max-energy">100</span></div>
+    <div><strong>Puissance:</strong> <span id="power">1</span> × <span id="multiplier">1</span></div>
+  </div>
 
-    <script>
-        // ===== GAME CORE =====
-        class AetherCore {
-            constructor() {
-                this.state = {
-                    coins: 0,
-                    energy: 100,
-                    maxEnergy: 100,
-                    multiplier: 1,
-                    power: 1,
-                    passiveIncome: 0,
-                    upgrades: {
-                        clickPower: { level: 0, cost: 100 },
-                        energyCap: { level: 0, cost: 200 },
-                        autoMiner: { level: 0, cost: 500 }
-                    },
-                    missions: {
-                        click50: { completed: false, progress: 0 },
-                        firstUpgrade: { completed: false }
-                    },
-                    walletConnected: false,
-                    lastUpdate: Date.now()
-                };
-                this.elements = {
-                    coins: document.getElementById('coins'),
-                    energy: document.getElementById('energy'),
-                    walletAddress: document.getElementById('wallet-address'),
-                    mainContent: document.getElementById('main-content')
-                };
-                this.init();
+  <button id="mine-btn">
+    <svg viewBox="0 0 24 24"><path d="M12 2L15 8H9L12 2Z" /></svg>
+    Miner
+  </button>
+
+  <button id="upgrade-btn">
+    <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zm7-18L5.33 9h13.34L12 2zM12 4.83 15.66 9H8.34L12 4.83z" /></svg>
+    Améliorer (<span id="upgrade-cost">100</span>)
+  </button>
+
+  <div id="log"></div>
+
+  <script>
+    class AetherCore {
+      constructor() {
+        this.state = JSON.parse(localStorage.getItem("aether-core")) || {
+          coins: 0,
+          energy: 100,
+          maxEnergy: 100,
+          power: 1,
+          multiplier: 1,
+          missionClicks: 0,
+          upgradeCost: 100
+        };
+
+        this.ui = {
+          coins: document.getElementById("coins"),
+          energy: document.getElementById("energy"),
+          maxEnergy: document.getElementById("max-energy"),
+          power: document.getElementById("power"),
+          multiplier: document.getElementById("multiplier"),
+          user: document.getElementById("telegram-user"),
+          log: document.getElementById("log"),
+          mineBtn: document.getElementById("mine-btn"),
+          upgradeBtn: document.getElementById("upgrade-btn"),
+          upgradeCost: document.getElementById("upgrade-cost")
+        };
+
+        this.init();
+      }
+
+      init() {
+        this.loadTelegramUser();
+        this.updateUI();
+        this.ui.mineBtn.onclick = () => this.mine();
+        this.ui.upgradeBtn.onclick = () => this.upgrade();
+        setInterval(() => this.gameLoop(), 1000);
+      }
+
+      loadTelegramUser() {
+        try {
+          if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
+            const user = Telegram.WebApp.initDataUnsafe.user;
+            if (user && user.first_name) {
+              this.ui.user.textContent = "Connecté : " + user.first_name;
             }
+          }
+        } catch (e) {
+          this.ui.user.textContent = "Connecté : Anonyme";
+        }
+      }
 
-            init() {
-                this.loadGame();
-                this.setupEventListeners();
-                this.renderAll();
-                this.startGameLoop();
-                this.initTelegram();
-            }
+      updateUI() {
+        const s = this.state;
+        this.ui.coins.textContent = s.coins;
+        this.ui.energy.textContent = s.energy;
+        this.ui.maxEnergy.textContent = s.maxEnergy;
+        this.ui.power.textContent = s.power;
+        this.ui.multiplier.textContent = s.multiplier;
+        this.ui.upgradeCost.textContent = s.upgradeCost;
+      }
 
-            // [Toutes les méthodes de jeu...]
+      mine() {
+        if (this.state.energy <= 0) {
+          this.log("Énergie insuffisante !");
+          return;
         }
 
-        // ===== INITIALISATION =====
-        document.addEventListener('DOMContentLoaded', () => {
-            const game = new AetherCore();
-            window.game = game; // Pour le debug
-        });
+        const gain = this.state.power * this.state.multiplier;
+        this.state.coins += gain;
+        this.state.energy -= 1;
+        this.state.missionClicks += 1;
 
-        // Service Worker pour PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js');
-            });
+        this.updateUI();
+        this.save();
+      }
+
+      upgrade() {
+        const cost = this.state.upgradeCost;
+        if (this.state.coins < cost) {
+          this.log("Pas assez de coins.");
+          return;
         }
-    </script>
+
+        this.state.coins -= cost;
+        this.state.power += 1;
+        this.state.upgradeCost = Math.floor(this.state.upgradeCost * 1.5);
+        this.updateUI();
+        this.save();
+      }
+
+      gameLoop() {
+        if (this.state.energy < this.state.maxEnergy) {
+          this.state.energy += 1;
+          this.updateUI();
+        }
+      }
+
+      save() {
+        localStorage.setItem("aether-core", JSON.stringify(this.state));
+      }
+
+      log(msg) {
+        this.ui.log.textContent = msg;
+        setTimeout(() => {
+          this.ui.log.textContent = "";
+        }, 2000);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => new AetherCore());
+  </script>
 </body>
 </html>
