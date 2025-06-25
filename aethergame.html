@@ -81,6 +81,12 @@
             to { transform: rotate(360deg); }
         }
 
+        .loading-text {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+
         /* Game Container */
         .game-container {
             opacity: 0;
@@ -102,7 +108,434 @@
             border-bottom: 1px solid rgba(0, 240, 255, 0.1);
         }
 
-        /* ... (Additional CSS styles) ... */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .wallet {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(0, 240, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .wallet:hover {
+            background: rgba(0, 240, 255, 0.2);
+        }
+
+        .wallet-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Mining Page */
+        .mining-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            padding-top: 20px;
+        }
+
+        .miner-circle-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin-bottom: 30px;
+        }
+
+        .miner-circle-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,240,255,0.1) 0%, rgba(0,240,255,0) 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+        }
+
+        .miner-circle {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+            overflow: hidden;
+        }
+
+        .miner-circle:active {
+            transform: scale(0.95);
+        }
+
+        .miner-core {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            filter: blur(10px);
+            animation: core-pulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes core-pulse {
+            from { transform: scale(1); opacity: 0.7; }
+            to { transform: scale(1.1); opacity: 1; }
+        }
+
+        .miner-energy {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            color: var(--primary);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .stat-card {
+            background: rgba(10, 10, 26, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(0, 240, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: rgba(0, 240, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+        }
+
+        .stat-subvalue {
+            display: block;
+            font-size: 12px;
+            color: var(--success);
+            margin-top: 2px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(0, 240, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        /* Navigation */
+        .nav {
+            height: var(--nav-height);
+            display: flex;
+            background: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(0, 240, 255, 0.1);
+        }
+
+        .nav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .nav-btn.active {
+            color: var(--primary);
+        }
+
+        .nav-btn:hover {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 2, 7, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--dark);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            padding: 25px;
+            position: relative;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            box-shadow: var(--elevation-3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .modal-title {
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .wallet-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0, 240, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 240, 255, 0.1);
+        }
+
+        .wallet-option:hover {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+
+        .wallet-icon-lg {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 240, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        .wallet-icon-lg svg {
+            width: 24px;
+            height: 24px;
+            stroke-width: 1.5;
+        }
+
+        .wallet-name {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .wallet-desc {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--elevation-2);
+            z-index: 1002;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+
+        .notification.success {
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        .notification.error {
+            border-color: rgba(255, 56, 96, 0.3);
+        }
+
+        .notification.warning {
+            border-color: rgba(255, 170, 0, 0.3);
+        }
+
+        .notification-icon {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        .notification.success .notification-icon {
+            stroke: var(--success);
+        }
+
+        .notification.error .notification-icon {
+            stroke: var(--error);
+        }
+
+        .notification.warning .notification-icon {
+            stroke: var(--warning);
+        }
+
+        /* Particles */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .miner-circle-container {
+                width: 200px;
+                height: 200px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -138,178 +571,183 @@
         <main class="main-content" id="main-content">
             <!-- Mining Page -->
             <div id="mining-page" class="page active">
-                <!-- ... (Mining page content) ... -->
+                <div class="mining-container">
+                    <div class="miner-circle-container">
+                        <div class="miner-circle-bg"></div>
+                        <div class="miner-circle" id="miner-circle">
+                            <div class="miner-core"></div>
+                        </div>
+                        <div class="miner-energy" id="miner-energy">100/100</div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-card">
+                            <span class="stat-label">AETH Coins</span>
+                            <span class="stat-value" id="coins-display">0</span>
+                            <span class="stat-subvalue" id="coins-per-sec">+0/sec</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Power</span>
+                            <span class="stat-value" id="power-display">1</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="power-progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Multiplier</span>
+                            <span class="stat-value" id="multiplier-display">1x</span>
+                            <span class="stat-subvalue" id="multiplier-source">Base</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Level</span>
+                            <span class="stat-value" id="level-display">1</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="level-progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Upgrades Page -->
             <div id="upgrades-page" class="page">
-                <!-- ... (Upgrades page content) ... -->
+                <div class="upgrades-container">
+                    <h2>Upgrades</h2>
+                    <div class="upgrade-tabs">
+                        <button class="upgrade-tab active" data-tab="mining">Mining</button>
+                        <button class="upgrade-tab" data-tab="energy">Energy</button>
+                        <button class="upgrade-tab" data-tab="boosters">Boosters</button>
+                    </div>
+                    <div class="upgrade-list" id="mining-upgrades"></div>
+                    <div class="upgrade-list" id="energy-upgrades" style="display: none;"></div>
+                    <div class="upgrade-list" id="booster-upgrades" style="display: none;"></div>
+                </div>
             </div>
             
             <!-- NFT Market Page -->
             <div id="market-page" class="page">
-                <!-- ... (Market page content) ... -->
+                <div class="market-container">
+                    <h2>NFT Market</h2>
+                    <div class="market-tabs">
+                        <button class="market-tab active" data-tab="miners">⛏️ Miners</button>
+                        <button class="market-tab" data-tab="powerups">⚡ Powerups</button>
+                        <button class="market-tab" data-tab="skins">🎨 Skins</button>
+                        <button class="market-tab" data-tab="collectibles">🏆 Collectibles</button>
+                    </div>
+                    <div class="market-items" id="market-miners"></div>
+                    <div class="market-items" id="market-powerups" style="display: none;"></div>
+                    <div class="market-items" id="market-skins" style="display: none;"></div>
+                    <div class="market-items" id="market-collectibles" style="display: none;"></div>
+                </div>
             </div>
             
             <!-- Leaderboard Page -->
             <div id="leaderboard-page" class="page">
-                <!-- ... (Leaderboard content) ... -->
+                <div class="leaderboard-container">
+                    <h2>Leaderboard</h2>
+                    <div class="leaderboard-tabs">
+                        <button class="leaderboard-tab active" data-tab="global">🌍 Global</button>
+                        <button class="leaderboard-tab" data-tab="friends">👥 Friends</button>
+                        <button class="leaderboard-tab" data-tab="guilds">⚔️ Guilds</button>
+                    </div>
+                    <div class="leaderboard-list" id="leaderboard-global"></div>
+                    <div class="leaderboard-list" id="leaderboard-friends" style="display: none;"></div>
+                    <div class="leaderboard-list" id="leaderboard-guilds" style="display: none;"></div>
+                </div>
             </div>
         </main>
         
         <!-- Navigation -->
         <nav class="nav">
-            <!-- ... (Navigation buttons) ... -->
+            <button class="nav-btn active" data-page="mining-page">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z"/>
+                </svg>
+                <span>Mine</span>
+            </button>
+            <button class="nav-btn" data-page="upgrades-page">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                </svg>
+                <span>Upgrades</span>
+            </button>
+            <button class="nav-btn" data-page="market-page">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M5,6H23V18H5V6M14,9A3,3 0 0,1 17,12A3,3 0 0,1 14,15A3,3 0 0,1 11,12A3,3 0 0,1 14,9M9,8A2,2 0 0,1 7,10V14A2,2 0 0,1 9,16H19A2,2 0 0,1 21,14V10A2,2 0 0,1 19,8H9M1,10H3V20H19V22H1V10Z"/>
+                </svg>
+                <span>Market</span>
+            </button>
+            <button class="nav-btn" data-page="leaderboard-page">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M19,5V7H15V5H19M9,5V11H5V5H9M19,13V19H15V13H19M9,17V19H5V17H9M21,3H13V9H21V3M11,3H3V13H11V3M21,11H13V21H21V11M11,15H3V21H11V15Z"/>
+                </svg>
+                <span>Leaderboard</span>
+            </button>
         </nav>
     </div>
     
     <!-- Wallet Modal -->
     <div id="wallet-modal" class="modal">
-        <!-- ... (Wallet connection options) ... -->
+        <div class="modal-content">
+            <button class="modal-close" id="wallet-modal-close">&times;</button>
+            <h3 class="modal-title">Connect Wallet</h3>
+            <div class="wallet-options">
+                <div class="wallet-option" data-wallet="metamask">
+                    <div class="wallet-icon-lg">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="wallet-name">MetaMask</div>
+                        <div class="wallet-desc">Browser Extension</div>
+                    </div>
+                </div>
+                <div class="wallet-option" data-wallet="walletconnect">
+                    <div class="wallet-icon-lg">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                            <line x1="9" y1="9" x2="9.01" y2="9"/>
+                            <line x1="15" y1="9" x2="15.01" y2="9"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="wallet-name">WalletConnect</div>
+                        <div class="wallet-desc">Mobile & Apps</div>
+                    </div>
+                </div>
+                <div class="wallet-option" data-wallet="coinbase">
+                    <div class="wallet-icon-lg">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="wallet-name">Coinbase Wallet</div>
+                        <div class="wallet-desc">Mobile & Extension</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Notification -->
     <div id="notification" class="notification" style="display: none;">
-        <!-- ... (Notification content) ... -->
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        <span id="notification-message">Transaction confirmed!</span>
     </div>
     
     <!-- Visual Effects -->
     <canvas id="particles-canvas"></canvas>
     
-    // ======================
-// ⚡ BOOSTER SYSTEM
-// ======================
-
-class BoosterSystem {
-    constructor() {
-        this.activeBoosters = [];
-    }
-
-    activate(multiplier, duration) {
-        const booster = {
-            multiplier,
-            endTime: Date.now() + duration
-        };
-        
-        this.activeBoosters.push(booster);
-        this.updateMultiplier();
-        
-        setTimeout(() => {
-            this.activeBoosters = this.activeBoosters.filter(b => b !== booster);
-            this.updateMultiplier();
-        }, duration);
-    }
-
-    updateMultiplier() {
-        let totalMultiplier = 1;
-        this.activeBoosters.forEach(booster => {
-            totalMultiplier *= booster.multiplier;
-        });
-        
-        gameState.multiplier = totalMultiplier;
-        updateMultiplierDisplay();
-    }
-}
-
-// ======================
-// 📊 LEADERBOARD SYSTEM
-// ======================
-
-class Leaderboard {
-    constructor() {
-        this.players = [];
-    }
-
-    async load() {
-        try {
-            // In a real app, this would fetch from a backend
-            this.players = [
-                { rank: 1, name: 'CryptoKing', score: 125000, level: 42 },
-                { rank: 2, name: 'BlockchainQueen', score: 98700, level: 38 },
-                // ... more players
-            ];
-            
-            // Add current player if wallet is connected
-            if (gameState.wallet.connected) {
-                this.players.push({
-                    rank: this.players.length + 1,
-                    name: gameState.wallet.ens || shortenAddress(gameState.wallet.address),
-                    score: gameState.coins,
-                    level: gameState.level,
-                    you: true
-                });
-            }
-            
-            this.render();
-        } catch (error) {
-            console.error('Failed to load leaderboard:', error);
-        }
-    }
-
-    render() {
-        // Update leaderboard UI
-        // ... (implementation)
-    }
-}
-
-// ======================
-// 🛠️ UTILITY FUNCTIONS
-// ======================
-
-function shortenAddress(address) {
-    return address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '';
-}
-
-function showNotification(message, type = 'info') {
-    const notification = document.getElementById('notification');
-    notification.className = `notification notification-${type}`;
-    notification.querySelector('#notification-message').textContent = message;
+    <!-- Ethers.js for wallet connection -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
     
-    notification.style.display = 'flex';
-    setTimeout(() => {
-        notification.style.opacity = '1';
-    }, 10);
-    
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => {
-            notification.style.display = 'none';
-        }, 300);
-    }, 3000);
-}
-
-// ======================
-// 🎮 GAME INSTANCE
-// ======================
-
-class AetherGame {
-    constructor() {
-        this.walletService = new WalletService();
-        this.boosterSystem = new BoosterSystem();
-        this.leaderboard = new Leaderboard();
-        this.init();
-    }
-
-    async init() {
-        this.initEventListeners();
-        await this.loadGameData();
-        this.startGameLoop();
-        this.hideLoadingScreen();
-    }
-
-    // ... (other game methods)
-}
-
-// Start the game when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    const game = new AetherGame();
-});
-
-// Modern JavaScript features check
-if (typeof window.ethereum === 'undefined') {
-    console.warn('Web3 wallet not detected');
-    document.getElementById('wallet-address').textContent = 'Install MetaMask';
-}
+    <!-- Main Game Script -->
     <script>
         // ======================
         // 🎮 GAME CORE
@@ -344,163 +782,53 @@ if (typeof window.ethereum === 'undefined') {
         const elements = {
             loadingScreen: document.getElementById('loading-screen'),
             gameContainer: document.getElementById('game-container'),
+            minerCircle: document.getElementById('miner-circle'),
+            minerEnergy: document.getElementById('miner-energy'),
+            coinsDisplay: document.getElementById('coins-display'),
+            coinsPerSec: document.getElementById('coins-per-sec'),
+            powerDisplay: document.getElementById('power-display'),
+            powerProgressBar: document.getElementById('power-progress'),
+            multiplierDisplay: document.getElementById('multiplier-display'),
+            multiplierSource: document.getElementById('multiplier-source'),
+            levelDisplay: document.getElementById('level-display'),
+            levelProgressBar: document.getElementById('level-progress'),
             walletAddress: document.getElementById('wallet-address'),
             userAvatar: document.getElementById('user-avatar'),
             walletModal: document.getElementById('wallet-modal'),
+            walletModalClose: document.getElementById('wallet-modal-close'),
             notification: document.getElementById('notification'),
-            // ... (other elements)
+            notificationMessage: document.getElementById('notification-message'),
+            particlesCanvas: document.getElementById('particles-canvas'),
+            miningUpgradesList: document.getElementById('mining-upgrades'),
+            energyUpgradesList: document.getElementById('energy-upgrades'),
+            boosterUpgradesList: document.getElementById('booster-upgrades'),
+            marketMinersList: document.getElementById('market-miners'),
+            marketPowerupsList: document.getElementById('market-powerups'),
+            marketSkinsList: document.getElementById('market-skins'),
+            marketCollectiblesList: document.getElementById('market-collectibles'),
+            leaderboardGlobalList: document.getElementById('leaderboard-global'),
+            leaderboardFriendsList: document.getElementById('leaderboard-friends'),
+            leaderboardGuildsList: document.getElementById('leaderboard-guilds')
         };
 
         // ======================
         // 🔌 WALLET INTEGRATION
         // ======================
         
-        class WalletService {
-            static async connect(walletType) {
-                try {
-                    let provider;
-                    switch(walletType) {
-                        case 'metamask':
-                            provider = await this.connectMetaMask();
-                            break;
-                        case 'walletconnect':
-                            provider = await this.connectWalletConnect();
-                            break;
-                        default:
-                            throw new Error('Unsupported wallet type');
-                    }
-                    
-                    const accounts = await provider.request({ method: 'eth_requestAccounts' });
-                    const address = accounts[0];
-                    const ens = await this.resolveENS(address);
-                    
-                    return { address, ens };
-                } catch (error) {
-                    console.error('Wallet connection error:', error);
-                    throw error;
-                }
-            }
-
-            static async connectMetaMask() {
-                if (!window.ethereum) {
-                    throw new Error('MetaMask not installed');
-                }
-                return window.ethereum;
-            }
-
-            static async connectWalletConnect() {
-                // WalletConnect implementation
-                // Requires WalletConnect library
-                throw new Error('WalletConnect not implemented');
-            }
-
-            static async resolveENS(address) {
-                try {
-                    if (!window.ethereum) return null;
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    const name = await provider.lookupAddress(address);
-                    return name;
-                } catch {
-                    return null;
-                }
-            }
-        }
-
-        // ======================
-        // 🚀 GAME INITIALIZATION
-        // ======================
-
-        class Game {
-            constructor() {
-                this.init();
-            }
-
-            async init() {
-                try {
-                    await this.initGameData();
-                    this.initEventListeners();
-                    this.startGameLoop();
-                    
-                    // Hide loading screen
-                    setTimeout(() => {
-                        elements.loadingScreen.style.opacity = '0';
-                        setTimeout(() => {
-                            elements.loadingScreen.style.display = 'none';
-                            elements.gameContainer.style.opacity = '1';
-                        }, 500);
-                    }, 2000);
-                } catch (error) {
-                    console.error('Initialization error:', error);
-                    this.showError('Failed to initialize game');
-                }
-            }
-
-            async initGameData() {
-                // Initialize upgrades, market items, etc.
-                // ... (implementation)
-            }
-
-            initEventListeners() {
-                // Set up all game event listeners
-                // ... (implementation)
-            }
-
-            startGameLoop() {
-                // Main game loop
-                setInterval(() => this.update(), 1000);
-            }
-
-            update() {
-                // Game state updates
-                // ... (implementation)
-            }
-        }
-
-        // ======================
-        // 🎮 GAME FUNCTIONS
-        // ======================
-
-        // Mining function
-        function mine() {
-            if (gameState.energy > 0) {
-                const coinsGained = gameState.power * gameState.multiplier;
-                gameState.coins += coinsGained;
-                gameState.energy -= 10;
+        async function connectWallet(walletType) {
+            try {
+                let provider;
+                let address;
                 
-                // Update UI
-                updateUI();
+                showNotification(`Connecting to ${walletType}...`, 'warning');
                 
-                // Visual feedback
-                animateMining();
-            } else {
-                showNotification("Out of energy! Recharge", 'error');
-            }
-        }
-
-        // Upgrade functions
-        function purchaseUpgrade(upgradeId) {
-            // ... (implementation)
-        }
-
-        // ======================
-        // 🖼️ UI UPDATES
-        // ======================
-
-        function updateUI() {
-            // Update all UI elements based on game state
-            // ... (implementation)
-        }
-
-        // ======================
-        // 🚀 START THE GAME
-        // ======================
-
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new Game();
-        });
-
-        // ... (remaining JavaScript code)
+                switch(walletType) {
+                    case 'metamask':
+                        if (!window.ethereum) {
+                            throw new Error('MetaMask not installed');
+                        }
+                        provider = new ethers.providers.Web3Provider(window.ethereum);
+                        await window.ethereum.request({ method: 'eth_request (remaining JavaScript code)
     </script>
 </body>
 </html>
