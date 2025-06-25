@@ -1,870 +1,877 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-<title>Aether-Coin 2025 - Jeu Web3 Ultra Premium</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AETHER-CORE | Ultimate Web3 Experience</title>
 <style>
-/* Styles condensés pour néon, responsive, layout, animations */
-*{margin:0;padding:0;box-sizing:border-box;}
-body,html{width:100%;height:100%;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:#0a0f1a;color:#ade7ff;overflow:hidden;}
-#intro,#app{width:100%;height:100%;position:absolute;top:0;left:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#0a0f1a;}
-#intro{z-index:1000;flex-wrap:wrap;}
-@keyframes glowPulse {
-  0%,100%{text-shadow:0 0 10px #33ffff,0 0 20px #33ffff,0 0 30px #00ffff;}
-  50%{text-shadow:0 0 20px #00ffff,0 0 40px #00ffff,0 0 60px #00ffff;}
+/* RESET & BASE */
+:root {
+  --primary: hsl(185, 100%, 50%);
+  --secondary: hsl(270, 70%, 40%);
+  --dark: hsl(240, 50%, 5%);
+  --darker: hsl(240, 60%, 2%);
+  --accent: hsl(330, 100%, 50%);
+  --text: hsl(185, 80%, 95%);
+  --success: hsl(160, 100%, 50%);
+  --warning: hsl(40, 100%, 50%);
+  --error: hsl(350, 100%, 60%);
+  --glow: 0 0 15px currentColor;
 }
-#intro-logo {
-  font-size: 3.5rem;
-  font-weight: 900;
-  color:#33ffff;
-  animation: glowPulse 2.5s infinite;
-  margin-bottom:15px;
-  user-select:none;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
-#intro-coin {
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle at center, #33ffff, #0077aa);
-  border-radius: 50%;
-  box-shadow: 0 0 15px #33ffff inset;
+
+@font-face {
+  font-family: 'Neon';
+  src: url('data:font/woff2;base64,d09GMgABAAAAA...') format('woff2');
+  font-display: swap;
+}
+
+body {
+  font-family: 'Neon', system-ui, sans-serif;
+  background: var(--darker);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+  line-height: 1.6;
   position: relative;
-  animation: spinCoin 3s linear infinite;
 }
-#intro-coin::before, #intro-coin::after {
-  content: "";
+
+/* CINEMATIQUE */
+.cinematic {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.cinematic-bg {
   position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, 
+    var(--dark) 0%, 
+    #000 100%);
+  opacity: 0.8;
+}
+
+.star {
+  position: absolute;
+  background: #fff;
   border-radius: 50%;
-}
-#intro-coin::before {
-  top: 10px; left: 10px; right: 10px; bottom: 10px;
-  background: radial-gradient(circle at center, #55ffff, #005577);
-  box-shadow: 0 0 10px #55ffff inset;
-}
-#intro-coin::after {
-  top: 50%; left: 50%; width: 60px; height: 60px;
-  background: radial-gradient(circle at center, #66ffff, #004466);
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 15px #66ffff;
-}
-@keyframes spinCoin {
-  from {transform: rotate(0deg);}
-  to {transform: rotate(360deg);}
+  animation: twinkle var(--duration) infinite ease-in-out;
+  opacity: 0;
 }
 
-#app {
-  flex-direction: column;
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: var(--opacity); transform: scale(1); }
+}
+
+.cinematic-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 800px;
+  padding: 2rem;
+}
+
+.cinematic-logo {
+  font-size: clamp(2rem, 8vw, 5rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5rem;
+  color: var(--primary);
+  text-shadow: var(--glow);
+  margin-bottom: 2rem;
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.cinematic-text {
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  margin-bottom: 2rem;
+  color: var(--text);
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.cinematic-progress {
+  width: 0%;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    var(--primary), 
+    var(--accent));
+  position: absolute;
+  bottom: 20%;
+  left: 0;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 10px var(--primary);
+}
+
+.skip-btn {
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--primary);
+  color: var(--text);
+  padding: 0.5rem 1.5rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0.7;
+  transition: all 0.3s;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.8rem;
+}
+
+.skip-btn:hover {
+  opacity: 1;
+  background: rgba(0,0,0,0.8);
+  box-shadow: 0 0 15px var(--primary);
+}
+
+/* GAME UI */
+.game-container {
   display: none;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjMDAwMDAwIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDVMNSAwWk02IDRMNCA2Wk0tMSAxTDEgLTFaIiBzdHJva2U9IiMxMTExMTEiIHN0cm9rZS13aWR0aD0iMSI+PC9wYXRoPgo8L3N2Zz4=');
 }
-header {
-  height: 50px;
-  background: linear-gradient(90deg, #0ff, #06f);
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background: linear-gradient(180deg, 
+    rgba(0,0,0,0.8) 0%, 
+    rgba(0,0,0,0.4) 100%);
+  backdrop-filter: blur(10px);
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
-  color: #002;
-  font-weight: 700;
-  text-shadow: 0 0 4px #0ff;
-  user-select:none;
-}
-header #username {
-  font-size: 1rem;
-}
-header #walletAddress {
-  font-family: monospace;
-  font-size: 0.9rem;
-  background: #001122bb;
-  padding: 3px 8px;
-  border-radius: 12px;
-  color: #aaffff;
-  user-select: text;
-  max-width: 40vw;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-header #langSelector {
-  background: transparent;
-  border: none;
-  color: #00ffff;
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
-  user-select:none;
-  width: 50px;
-}
-
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(135deg, #001128, #000a1a);
-  overflow: hidden;
-}
-
-/* Nav Tabs */
-nav {
-  height: 55px;
-  background: #001022cc;
-  display: flex;
-  justify-content: space-around;
   align-items: center;
-  box-shadow: 0 0 10px #00ffff88 inset;
+  padding: 0 2rem;
+  z-index: 100;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.1);
 }
-nav button {
-  background: none;
-  border: none;
-  color: #00ffffaa;
+
+.logo {
+  font-size: 1.5rem;
   font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 8px 12px;
-  user-select:none;
-  border-bottom: 3px solid transparent;
-  transition: border-color 0.3s ease;
-}
-nav button.active {
-  color: #33ffff;
-  border-bottom: 3px solid #33ffff;
-  text-shadow: 0 0 5px #33ffff;
-}
-nav button:hover:not(.active) {
-  color: #55ffff;
+  color: var(--primary);
+  text-shadow: var(--glow);
 }
 
-/* Views */
-.view {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 12px;
-  color: #ade7ff;
-  -webkit-overflow-scrolling: touch;
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-/* Scrollbar */
-.view::-webkit-scrollbar {
-  width: 6px;
-}
-.view::-webkit-scrollbar-track {
-  background: transparent;
-}
-.view::-webkit-scrollbar-thumb {
-  background: #33ffff88;
-  border-radius: 3px;
-}
-
-/* === Accueil - Clicker === */
-#accueil .clicker-container {
-  flex: 1;
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   display: flex;
   justify-content: center;
   align-items: center;
-}
-#clicker-button {
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  background: radial-gradient(circle at center, #00ffff, #005577);
-  box-shadow: 0 0 20px #00ffff;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  position: relative;
-  user-select:none;
-  transition: box-shadow 0.3s ease, transform 0.15s ease;
-}
-#clicker-button:active {
-  transform: scale(0.92);
-  box-shadow: 0 0 35px #00ffff;
-}
-#clicker-button::before {
-  content: '⨀';
-  position: absolute;
-  font-size: 4rem;
-  color: #aaffff;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events:none;
-  user-select:none;
-  text-shadow: 0 0 5px #00ffff;
-}
-#accueil .stats {
-  margin-top: 18px;
-  text-align: center;
-  font-weight: 700;
-  font-size: 1.3rem;
-  text-shadow: 0 0 8px #33ffff;
-  user-select:none;
+  font-weight: bold;
+  border: 2px solid var(--primary);
 }
 
-/* Barre énergie */
-#energy-bar-container {
-  width: 80%;
-  height: 24px;
-  margin: 20px auto 0;
-  background: #00335555;
-  border-radius: 12px;
+.wallet {
+  background: rgba(0,0,0,0.5);
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.8rem;
+  border: 1px solid var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wallet-address {
+  max-width: 100px;
   overflow: hidden;
-  box-shadow: inset 0 0 8px #00ffffaa;
+  text-overflow: ellipsis;
 }
-#energy-bar {
+
+.main {
+  padding: 6rem 1rem 5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.game-card {
+  background: linear-gradient(
+    145deg,
+    rgba(5, 10, 30, 0.8) 0%,
+    rgba(0, 20, 40, 0.6) 100%
+  );
+  border-radius: 1.5rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.05),
+    inset 0 0 20px rgba(0, 240, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 240, 255, 0.05) 0%,
+    transparent 70%
+  );
+  animation: rotate 20s linear infinite;
+  z-index: -1;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.clicker-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.coin {
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(
+    circle at center,
+    var(--primary) 0%,
+    var(--secondary) 70%,
+    #001133 100%
+  );
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 0 30px var(--primary),
+    inset 0 0 20px rgba(255, 255, 255, 0.3);
+  transition: transform 0.1s, box-shadow 0.3s;
+  margin-bottom: 2rem;
+}
+
+.coin:active {
+  transform: scale(0.95);
+}
+
+.coin::before {
+  content: '⨀';
+  font-size: 5rem;
+  color: white;
+  text-shadow: 0 0 10px var(--primary);
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.stat {
+  background: rgba(0,0,0,0.5);
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  text-align: center;
+  min-width: 150px;
+  border: 1px solid var(--primary);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.energy-bar {
+  width: 100%;
+  height: 20px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  border: 1px solid var(--primary);
+}
+
+.energy-progress {
   height: 100%;
-  background: linear-gradient(90deg, #00ffcc, #00aaff);
-  width: 0%;
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--accent)
+  );
+  width: 100%;
   transition: width 0.5s ease;
-  box-shadow: 0 0 12px #00ffffaa;
-}
-#energy-text {
-  margin-top: 8px;
-  text-align: center;
-  font-weight: 600;
-  color: #00ffffcc;
-  text-shadow: 0 0 6px #00cccccc;
-  user-select:none;
 }
 
-/* === Avantages === */
-#avantages button {
-  width: 100%;
-  margin: 12px 0;
-  padding: 12px 16px;
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: #00ffffcc;
-  border: 2px solid #00ffff88;
-  background: transparent;
-  border-radius: 12px;
+.upgrades {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.upgrade {
+  background: linear-gradient(
+    145deg,
+    rgba(5, 10, 30, 0.8) 0%,
+    rgba(0, 20, 40, 0.6) 100%
+  );
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  transition: all 0.3s;
   cursor: pointer;
-  text-shadow: 0 0 6px #00cccccc;
-  transition: background 0.3s ease, color 0.3s ease;
-  user-select:none;
-}
-#avantages button:hover {
-  background: #00ffff22;
-  color: #00ffffee;
-}
-#avantages .status {
-  margin-top: 8px;
-  font-weight: 600;
-  color: #33ffffcc;
-  text-align: center;
-  user-select:none;
 }
 
-/* === Missions === */
-#missions .mission {
-  background: #001126cc;
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 14px;
-  box-shadow: 0 0 10px #00ffff55;
+.upgrade:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 240, 255, 0.1);
+  border-color: var(--primary);
 }
-#missions .mission h3 {
-  margin-bottom: 8px;
-  color: #55ffff;
-  user-select:none;
+
+.upgrade-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
-#missions .mission p {
-  font-size: 0.95rem;
-  margin-bottom: 10px;
-  user-select:none;
+
+.upgrade-name {
+  font-weight: bold;
+  color: var(--primary);
 }
-#missions .mission button {
-  padding: 10px 16px;
-  font-weight: 700;
-  font-size: 1rem;
-  border-radius: 12px;
+
+.upgrade-cost {
+  background: var(--dark);
+  padding: 0.3rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  color: var(--primary);
+}
+
+.upgrade-desc {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: 1rem;
+}
+
+.upgrade-btn {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--secondary)
+  );
   border: none;
+  color: white;
+  font-weight: bold;
   cursor: pointer;
-  user-select:none;
-  color: #002222;
-  background: #00ffffcc;
-  box-shadow: 0 0 8px #00ffffcc;
-  transition: background 0.3s ease;
-}
-#missions .mission button:disabled {
-  background: #00446688;
-  cursor: default;
-  color: #002222cc;
-  box-shadow: none;
+  transition: all 0.3s;
 }
 
-/* === Classement === */
-#classement table {
-  width: 100%;
-  border-collapse: collapse;
-  color: #00ffffcc;
-}
-#classement th, #classement td {
-  border: 1px solid #00ffff44;
-  padding: 8px 12px;
-  text-align: center;
-  user-select:none;
-}
-#classement th {
-  background: #002244cc;
-}
-#classement tbody tr:nth-child(odd) {
-  background: #001122aa;
-}
-#classement tbody tr:hover {
-  background: #004466bb;
+.upgrade-btn:disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
 }
 
-/* Wallet Connect Button */
-#wallet-connect-btn {
+.upgrade-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
+}
+
+.nav {
   position: fixed;
-  top: 12px;
-  right: 12px;
-  background: #00ffffbb;
-  border: none;
-  border-radius: 12px;
-  padding: 10px 18px;
-  font-weight: 800;
-  color: #002222;
-  cursor: pointer;
-  z-index: 1500;
-  box-shadow: 0 0 10px #00ffffaa;
-  user-select:none;
-  transition: background 0.3s ease;
-}
-#wallet-connect-btn:hover {
-  background: #00ffffdd;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(
+    0deg,
+    rgba(0,0,0,0.9) 0%,
+    rgba(0,0,0,0.7) 100%
+  );
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.8rem 0;
+  border-top: 1px solid rgba(0, 240, 255, 0.1);
+  z-index: 100;
 }
 
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  #clicker-button {
-    width: 130px;
-    height: 130px;
+.nav-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.3s;
+  font-size: 0.8rem;
+}
+
+.nav-btn.active {
+  opacity: 1;
+  color: var(--primary);
+  transform: translateY(-5px);
+}
+
+.nav-btn i {
+  font-size: 1.2rem;
+}
+
+/* ANIMATIONS */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .header {
+    padding: 0 1rem;
   }
-  header {
-    font-size: 0.9rem;
+  
+  .wallet-address {
+    max-width: 80px;
+  }
+  
+  .stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .stat {
+    width: 100%;
   }
 }
 </style>
 </head>
 <body>
 
-<!-- Intro Animation -->
-<div id="intro" role="dialog" aria-modal="true" aria-label="Intro Animation">
-  <div id="intro-logo" aria-live="polite" aria-atomic="true">AETHER-COIN</div>
-  <div id="intro-coin" aria-hidden="true"></div>
-  <div style="margin-top:15px;color:#00ffffcc;font-weight:700;user-select:none;">Chargement...</div>
+<!-- CINEMATIQUE D'INTRODUCTION -->
+<div class="cinematic" id="cinematic">
+  <div class="cinematic-bg" id="cinematic-bg"></div>
+  
+  <div class="cinematic-content">
+    <div class="cinematic-logo">AETHER-CORE</div>
+    <div class="cinematic-text" id="scene1">The future of Web3 gaming</div>
+    <div class="cinematic-text" id="scene2">Powered by TON Blockchain</div>
+    <div class="cinematic-text" id="scene3">Loading immersive experience</div>
+  </div>
+  
+  <div class="cinematic-progress" id="cinematic-progress"></div>
+  <button class="skip-btn" id="skip-btn">Skip Intro</button>
 </div>
 
-<!-- App Container -->
-<div id="app" role="main" aria-live="polite" aria-atomic="true" aria-label="Jeu Aether Coin">
-
-  <header>
-    <div id="username" aria-label="Nom utilisateur Telegram ou pseudo">—</div>
-    <button id="langSelector" aria-label="Changer la langue" title="Changer la langue">FR</button>
-    <div id="walletAddress" aria-label="Adresse Wallet connectée" title="Adresse Wallet connectée">—</div>
+<!-- GAME INTERFACE -->
+<div class="game-container" id="game">
+  <header class="header">
+    <div class="logo">AETHER-CORE</div>
+    <div class="user-info">
+      <div class="avatar" id="user-avatar">U</div>
+      <div class="wallet" id="wallet-display">
+        <span class="wallet-address" id="wallet-address">Not connected</span>
+      </div>
+    </div>
   </header>
-
-  <main>
-    <!-- Vues -->
-    <section id="accueil" class="view" tabindex="0" aria-label="Accueil - Clicker">
+  
+  <main class="main">
+    <section class="game-card" id="clicker-section">
       <div class="clicker-container">
-        <button id="clicker-button" aria-pressed="false" aria-label="Bouton de clic pour gagner des pièces"></button>
-      </div>
-      <div class="stats" aria-live="polite">
-        <div id="points-display">Pièces : 0</div>
-        <div id="energy-bar-container" aria-label="Barre d'énergie restante">
-          <div id="energy-bar" style="width: 0%;"></div>
+        <div class="coin" id="clicker"></div>
+        
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-value" id="coins">0</div>
+            <div class="stat-label">Aether Coins</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="energy">100</div>
+            <div class="stat-label">Energy</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="multiplier">1x</div>
+            <div class="stat-label">Multiplier</div>
+          </div>
         </div>
-        <div id="energy-text">Énergie : 0</div>
+        
+        <div class="energy-bar">
+          <div class="energy-progress" id="energy-bar" style="width: 100%"></div>
+        </div>
       </div>
     </section>
-
-    <section id="avantages" class="view" tabindex="0" aria-label="Avantages - Boosts et bonus">
-      <button id="btn-subscribe" aria-label="Simuler abonnement au canal Telegram">S’abonner au canal (+1600 énergie)</button>
-      <button id="btn-invite" aria-label="Simuler invitation d’un ami (+100 énergie)">Inviter un ami (+100 énergie)</button>
-      <button id="btn-passive" aria-pressed="false" aria-label="Activer/Désactiver le boost passif">Activer Boost passif</button>
-      <div class="status" id="boost-status">Boost passif désactivé</div>
+    
+    <section class="game-card" id="upgrades-section">
+      <h2>Core Upgrades</h2>
+      <div class="upgrades" id="upgrades-container">
+        <!-- Upgrades will be added dynamically -->
+      </div>
     </section>
-
-    <section id="missions" class="view" tabindex="0" aria-label="Missions journalières">
-      <div id="missions-list"></div>
-    </section>
-
-    <section id="classement" class="view" tabindex="0" aria-label="Classement local">
-      <table aria-label="Tableau du classement local">
-        <thead>
-          <tr><th>Rang</th><th>Utilisateur</th><th>Pièces</th></tr>
-        </thead>
-        <tbody id="leaderboard-body"></tbody>
-      </table>
-    </section>
-
   </main>
-
-  <nav role="tablist" aria-label="Navigation principale">
-    <button class="tab-btn active" data-target="accueil" role="tab" aria-selected="true" aria-controls="accueil">Accueil</button>
-    <button class="tab-btn" data-target="avantages" role="tab" aria-selected="false" aria-controls="avantages">Avantages</button>
-    <button class="tab-btn" data-target="missions" role="tab" aria-selected="false" aria-controls="missions">Missions</button>
-    <button class="tab-btn" data-target="classement" role="tab" aria-selected="false" aria-controls="classement">Classement</button>
+  
+  <nav class="nav">
+    <button class="nav-btn active" data-section="clicker">
+      <i>⨀</i>
+      <span>Mine</span>
+    </button>
+    <button class="nav-btn" data-section="upgrades">
+      <i>⚙️</i>
+      <span>Upgrades</span>
+    </button>
+    <button class="nav-btn" data-section="missions">
+      <i>📜</i>
+      <span>Missions</span>
+    </button>
+    <button class="nav-btn" data-section="leaderboard">
+      <i>🏆</i>
+      <span>Leaderboard</span>
+    </button>
   </nav>
-
-  <button id="wallet-connect-btn" aria-label="Connecter ou déconnecter votre wallet Telegram">Connecter Wallet</button>
-
 </div>
 
 <script>
-(() => {
-  'use strict';
+// ===== CINEMATIQUE =====
+const cinematic = document.getElementById('cinematic');
+const game = document.getElementById('game');
+const progressBar = document.getElementById('cinematic-progress');
+const skipBtn = document.getElementById('skip-btn');
+const scenes = [
+  document.getElementById('scene1'),
+  document.getElementById('scene2'), 
+  document.getElementById('scene3')
+];
+const cinematicBg = document.getElementById('cinematic-bg');
 
-  // ==== Traductions ====
-  const translations = {
-    fr: {
-      pieces: 'Pièces',
-      energie: 'Énergie',
-      subscribeBtn: 'S’abonner au canal (+1600 énergie)',
-      inviteBtn: 'Inviter un ami (+100 énergie)',
-      passiveBtnActivate: 'Activer Boost passif',
-      passiveBtnDeactivate: 'Désactiver Boost passif',
-      boostActive: 'Boost passif activé',
-      boostInactive: 'Boost passif désactivé',
-      missionsTitle: 'Missions',
-      missionStart: 'Start',
-      missionInProgress: 'En cours',
-      missionClaim: 'Claim',
-      missionCompleted: 'Terminé',
-      mission1Desc: 'Faire 10 clics',
-      mission2Desc: 'Avoir au moins 50 d’énergie',
-      mission3Desc: 'Activer le boost passif',
-      walletConnect: 'Connecter Wallet',
-      walletDisconnect: 'Déconnecter Wallet',
-      usernameUnknown: '—',
-      loadingText: 'Chargement...',
-    },
-    en: {
-      pieces: 'Coins',
-      energie: 'Energy',
-      subscribeBtn: 'Subscribe channel (+1600 energy)',
-      inviteBtn: 'Invite friend (+100 energy)',
-      passiveBtnActivate: 'Activate Passive Boost',
-      passiveBtnDeactivate: 'Deactivate Passive Boost',
-      boostActive: 'Passive Boost ON',
-      boostInactive: 'Passive Boost OFF',
-      missionsTitle: 'Missions',
-      missionStart: 'Start',
-      missionInProgress: 'In progress',
-      missionClaim: 'Claim',
-      missionCompleted: 'Completed',
-      mission1Desc: 'Make 10 clicks',
-      mission2Desc: 'Have at least 50 energy',
-      mission3Desc: 'Activate passive boost',
-      walletConnect: 'Connect Wallet',
-      walletDisconnect: 'Disconnect Wallet',
-      usernameUnknown: '—',
-      loadingText: 'Loading...',
-    },
-    zh: {
-      pieces: '硬币',
-      energie: '能量',
-      subscribeBtn: '订阅频道 (+1600 能量)',
-      inviteBtn: '邀请朋友 (+100 能量)',
-      passiveBtnActivate: '激活被动加成',
-      passiveBtnDeactivate: '关闭被动加成',
-      boostActive: '被动加成开启',
-      boostInactive: '被动加成关闭',
-      missionsTitle: '任务',
-      missionStart: '开始',
-      missionInProgress: '进行中',
-      missionClaim: '领取',
-      missionCompleted: '完成',
-      mission1Desc: '点击10次',
-      mission2Desc: '能量至少达到50',
-      mission3Desc: '激活被动加成',
-      walletConnect: '连接钱包',
-      walletDisconnect: '断开钱包',
-      usernameUnknown: '—',
-      loadingText: '加载中...',
-    }
-  };
-
-  let currentLang = localStorage.getItem('aethercoin-lang') || 'fr';
-
-  // ==== Variables de progression ====
-  let state = {
-    points: 0,
-    energy: 100,
-    passiveBoost: false,
-    missions: [],
-    wallet: null,
-    username: null,
-    leaderboard: [],
-  };
-
-  // ==== Mini App Telegram detection ====
-  let tg = window.Telegram ? window.Telegram.WebApp : null;
-
-  // ==== DOM éléments ====
-  const introEl = document.getElementById('intro');
-  const appEl = document.getElementById('app');
-  const usernameEl = document.getElementById('username');
-  const walletAddressEl = document.getElementById('walletAddress');
-  const langSelectorBtn = document.getElementById('langSelector');
-  const pointsDisplayEl = document.getElementById('points-display');
-  const energyBarEl = document.getElementById('energy-bar');
-  const energyTextEl = document.getElementById('energy-text');
-  const clickerBtn = document.getElementById('clicker-button');
-  const tabButtons = document.querySelectorAll('nav button.tab-btn');
-  const views = document.querySelectorAll('.view');
-  const subscribeBtn = document.getElementById('btn-subscribe');
-  const inviteBtn = document.getElementById('btn-invite');
-  const passiveBtn = document.getElementById('btn-passive');
-  const boostStatusEl = document.getElementById('boost-status');
-  const missionsListEl = document.getElementById('missions-list');
-  const leaderboardBodyEl = document.getElementById('leaderboard-body');
-  const walletConnectBtn = document.getElementById('wallet-connect-btn');
-
-  // ==== Fonctions traduction ====
-  function t(key) {
-    return translations[currentLang] && translations[currentLang][key] || key;
-  }
-  function updateTranslations() {
-    // Header
-    usernameEl.textContent = state.username || t('usernameUnknown');
-    langSelectorBtn.textContent = currentLang.toUpperCase();
-
-    // Accueil
-    pointsDisplayEl.textContent = `${t('pieces')} : ${state.points.toLocaleString()}`;
-    energyTextEl.textContent = `${t('energie')} : ${state.energy.toLocaleString()}`;
-    subscribeBtn.textContent = t('subscribeBtn');
-    inviteBtn.textContent = t('inviteBtn');
-    passiveBtn.textContent = state.passiveBoost ? t('passiveBtnDeactivate') : t('passiveBtnActivate');
-    boostStatusEl.textContent = state.passiveBoost ? t('boostActive') : t('boostInactive');
-    walletConnectBtn.textContent = state.wallet ? t('walletDisconnect') : t('walletConnect');
-
-    // Missions titre
-    missionsListEl.setAttribute('aria-label', t('missionsTitle'));
-  }
-
-  // ==== Sauvegarde / Chargement localStorage ====
-  function saveState() {
-    try {
-      localStorage.setItem('aethercoin-state', JSON.stringify(state));
-      localStorage.setItem('aethercoin-lang', currentLang);
-    } catch(e) {
-      console.error('Erreur sauvegarde localStorage:', e);
-    }
-  }
-  function loadState() {
-    try {
-      let saved = localStorage.getItem('aethercoin-state');
-      if (saved) {
-        let parsed = JSON.parse(saved);
-        state = Object.assign(state, parsed);
-      }
-      let savedLang = localStorage.getItem('aethercoin-lang');
-      if (savedLang && translations[savedLang]) {
-        currentLang = savedLang;
-      }
-    } catch(e) {
-      console.error('Erreur chargement localStorage:', e);
-    }
-  }
-
-  // ==== Navigation ====
-  function switchView(targetId) {
-    views.forEach(v => {
-      v.style.display = (v.id === targetId) ? 'block' : 'none';
-    });
-    tabButtons.forEach(btn => {
-      const active = btn.dataset.target === targetId;
-      btn.classList.toggle('active', active);
-      btn.setAttribute('aria-selected', active);
-    });
-  }
-
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      switchView(btn.dataset.target);
-    });
-  });
-
-  // ==== Clicker ====
-  function canClick() {
-    return state.energy > 0;
-  }
-  function clickAction() {
-    if (!canClick()) return;
-    state.points += 1;
-    state.energy = Math.max(0, state.energy - 1);
-    updateEnergyBar();
-    updateTranslations();
-    saveState();
-    updateLeaderboard(state.username, state.points);
-  }
-  clickerBtn.addEventListener('click', () => {
-    clickAction();
-  });
-
-  // ==== Energy bar update ====
-  function updateEnergyBar() {
-    let percent = Math.min(100, (state.energy / 100) * 100);
-    energyBarEl.style.width = percent + '%';
-  }
-
-  // ==== Avantages ====
-  subscribeBtn.addEventListener('click', () => {
-    state.energy += 1600;
-    saveState();
-    updateEnergyBar();
-    updateTranslations();
-  });
-  inviteBtn.addEventListener('click', () => {
-    state.energy += 100;
-    saveState();
-    updateEnergyBar();
-    updateTranslations();
-  });
-  passiveBtn.addEventListener('click', () => {
-    state.passiveBoost = !state.passiveBoost;
-    saveState();
-    updateTranslations();
-  });
-
-  // ==== Missions ====
-  // Exemple simple de missions journalières
-  const missionTemplates = [
-    {id:'mission1', descKey:'mission1Desc', rewardPoints:100, rewardEnergy:50, condition:()=>state.points >= 10},
-    {id:'mission2', descKey:'mission2Desc', rewardPoints:200, rewardEnergy:100, condition:()=>state.energy >= 50},
-    {id:'mission3', descKey:'mission3Desc', rewardPoints:500, rewardEnergy:300, condition:()=>state.passiveBoost},
-  ];
-
-  function renderMissions() {
-    missionsListEl.innerHTML = '';
-    missionTemplates.forEach(m => {
-      let missionState = state.missions.find(ms => ms.id === m.id);
-      if(!missionState) {
-        missionState = {id:m.id, status:'idle'}; // idle, started, completed, claimed
-        state.missions.push(missionState);
-      }
-      const div = document.createElement('div');
-      div.className = 'mission';
-      const title = document.createElement('h3');
-      title.textContent = t('missionsTitle');
-      const desc = document.createElement('p');
-      desc.textContent = t(m.descKey);
-      const btn = document.createElement('button');
-      btn.disabled = missionState.status === 'claimed';
-      if(missionState.status === 'idle') {
-        btn.textContent = t('missionStart');
-      } else if (missionState.status === 'started') {
-        btn.textContent = t('missionInProgress');
-        btn.disabled = true;
-      } else if (missionState.status === 'completed') {
-        btn.textContent = t('missionClaim');
-      } else if (missionState.status === 'claimed') {
-        btn.textContent = t('missionCompleted');
-        btn.disabled = true;
-      }
-      btn.addEventListener('click', () => {
-        if(missionState.status === 'idle') {
-          missionState.status = 'started';
-          saveState();
-          renderMissions();
-        } else if (missionState.status === 'completed') {
-          state.points += m.rewardPoints;
-          state.energy += m.rewardEnergy;
-          missionState.status = 'claimed';
-          saveState();
-          updateEnergyBar();
-          updateTranslations();
-          renderMissions();
-          updateLeaderboard(state.username, state.points);
-        }
-      });
-      div.appendChild(desc);
-      div.appendChild(btn);
-      missionsListEl.appendChild(div);
-    });
-  }
-
-  // Checker missions complétées en continu
-  function checkMissionsProgress() {
-    state.missions.forEach(ms => {
-      if(ms.status === 'started') {
-        const missionTemplate = missionTemplates.find(m => m.id === ms.id);
-        if(missionTemplate && missionTemplate.condition()) {
-          ms.status = 'completed';
-          saveState();
-          renderMissions();
-        }
-      }
-    });
-  }
-
-  // ==== Leaderboard local ====
-  function updateLeaderboard(username, points) {
-    if(!username) return;
-    let existing = state.leaderboard.find(u => u.username === username);
-    if(existing) {
-      if(points > existing.points) existing.points = points;
-    } else {
-      state.leaderboard.push({username, points});
-    }
-    // Trier descendant
-    state.leaderboard.sort((a,b) => b.points - a.points);
-    saveState();
-    renderLeaderboard();
-  }
-  function renderLeaderboard() {
-    leaderboardBodyEl.innerHTML = '';
-    state.leaderboard.forEach((u,i) => {
-      const tr = document.createElement('tr');
-      const rankTd = document.createElement('td');
-      rankTd.textContent = (i+1).toString();
-      const userTd = document.createElement('td');
-      userTd.textContent = u.username;
-      const pointsTd = document.createElement('td');
-      pointsTd.textContent = u.points.toLocaleString();
-      tr.appendChild(rankTd);
-      tr.appendChild(userTd);
-      tr.appendChild(pointsTd);
-      leaderboardBodyEl.appendChild(tr);
-    });
-  }
-
-  // ==== TON Connect SDK intégration (officielle minifiée inline) ====
-
-// Le SDK officiel est ici intégralement inclus (version simplifiée mais fonctionnelle)
-// https://github.com/toncenter/ton-connect-sdk
-
-// Minified et adapté pour usage inline:
-
-// TonConnect Class - version ultra simplifiée, pour vraie connexion wallet Telegram Mini App
-class TonConnect {
-  constructor(options = {}) {
-    this.options = options;
-    this.connected = false;
-    this.account = null;
-    this.listeners = {};
-    if (window.Telegram && window.Telegram.WebApp) {
-      this.tg = window.Telegram.WebApp;
-      this.user = this.tg.initDataUnsafe?.user || null;
-    }
-  }
-
-  async connect() {
-    if (!this.tg) throw new Error("TON Connect: Telegram WebApp not detected");
-    if (this.connected) return this.account;
-    try {
-      // La vraie méthode officielle pour request TON wallet connection via telegram mini app
-      const request = await this.tg.sendData('ton_connect_request');
-      if (request) {
-        // En vrai il faut écouter réponse / callback, ici simulation
-        this.account = this.user?.wallet || null;
-        this.connected = !!this.account;
-      }
-    } catch(e) {
-      console.error("TON Connect error:", e);
-      throw e;
-    }
-    return this.account;
-  }
-
-  async disconnect() {
-    this.connected = false;
-    this.account = null;
-  }
-
-  on(event, fn) {
-    this.listeners[event] = fn;
-  }
-
-  off(event) {
-    delete this.listeners[event];
+// Create stars
+function createStars() {
+  for (let i = 0; i < 100; i++) {
+    const star = document.createElement('div');
+    star.classList.add('star');
+    star.style.width = `${Math.random() * 3 + 1}px`;
+    star.style.height = star.style.width;
+    star.style.left = `${Math.random() * 100}%`;
+    star.style.top = `${Math.random() * 100}%`;
+    star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+    star.style.setProperty('--opacity', Math.random() * 0.8 + 0.2);
+    star.style.animationDelay = `${Math.random() * 5}s`;
+    cinematicBg.appendChild(star);
   }
 }
 
-const tonConnect = new TonConnect();
-
-async function walletConnectToggle() {
-  if(state.wallet) {
-    if(confirm('Déconnecter le wallet ?')) {
-      await tonConnect.disconnect();
-      state.wallet = null;
-      walletAddressEl.textContent = '—';
-      saveState();
-      updateTranslations();
+// Animate cinematic
+function animateCinematic() {
+  let progress = 0;
+  const totalDuration = 8000; // 8 seconds
+  
+  const interval = setInterval(() => {
+    progress += 10;
+    const percentage = Math.min(100, (progress / totalDuration) * 100);
+    progressBar.style.width = `${percentage}%`;
+    
+    // Animate scenes
+    if (percentage >= 20) {
+      scenes[0].style.opacity = 1;
+      scenes[0].style.transform = 'translateY(0)';
     }
-  } else {
-    try {
-      const account = await tonConnect.connect();
-      if(account) {
-        state.wallet = account;
-        walletAddressEl.textContent = account;
-        saveState();
-        updateTranslations();
-      } else {
-        alert('Connexion wallet annulée ou échouée.');
-      }
-    } catch(e) {
-      alert('Erreur de connexion wallet: ' + e.message);
+    
+    if (percentage >= 40) {
+      scenes[1].style.opacity = 1;
+      scenes[1].style.transform = 'translateY(0)';
     }
-  }
-}
-walletConnectBtn.addEventListener('click', walletConnectToggle);
-
-// ==== Username Telegram Mini App detection ====
-if(tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-  state.username = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name || t('usernameUnknown');
-} else {
-  if(!state.username) {
-    state.username = t('usernameUnknown');
-  }
+    
+    if (percentage >= 60) {
+      scenes[2].style.opacity = 1;
+      scenes[2].style.transform = 'translateY(0)';
+    }
+    
+    if (percentage >= 100) {
+      clearInterval(interval);
+      startGame();
+    }
+  }, 10);
 }
 
-// ==== Passive boost gain automatique ====
-setInterval(() => {
-  if(state.passiveBoost && canClick()) {
-    state.points += 1;
-    updateTranslations();
-    updateLeaderboard(state.username, state.points);
-    saveState();
-  }
-}, 5000);
-
-// ==== Lang selector ====
-langSelectorBtn.addEventListener('click', () => {
-  const langs = Object.keys(translations);
-  let idx = langs.indexOf(currentLang);
-  idx = (idx + 1) % langs.length;
-  currentLang = langs[idx];
-  localStorage.setItem('aethercoin-lang', currentLang);
-  updateTranslations();
-  renderMissions();
+// Skip cinematic
+skipBtn.addEventListener('click', () => {
+  startGame();
 });
 
-// ==== Init ====
-function init() {
-  loadState();
-  updateTranslations();
-  updateEnergyBar();
-  renderMissions();
-  renderLeaderboard();
-  switchView('accueil');
-
-  // Intro anim 3s puis afficher app
+// Start game
+function startGame() {
+  cinematic.style.opacity = '0';
   setTimeout(() => {
-    introEl.style.display = 'none';
-    appEl.style.display = 'flex';
-  }, 3000);
+    cinematic.style.display = 'none';
+    game.style.display = 'block';
+    initGame();
+  }, 500);
 }
 
-init();
+// ===== GAME LOGIC =====
+const gameState = {
+  coins: 0,
+  energy: 100,
+  multiplier: 1,
+  upgrades: [
+    { id: 'click-power', name: 'Click Power', desc: 'Increase coins per click', cost: 100, value: 1, owned: 0 },
+    { id: 'energy-cap', name: 'Energy Capacity', desc: 'Increase max energy', cost: 200, value: 10, owned: 0 },
+    { id: 'regen-rate', name: 'Regen Rate', desc: 'Faster energy regeneration', cost: 300, value: 0.1, owned: 0 },
+    { id: 'auto-click', name: 'Auto Miner', desc: 'Automatically mine coins', cost: 500, value: 0.5, owned: 0 }
+  ],
+  passiveIncome: 0,
+  lastUpdate: Date.now()
+};
 
-// ==== Check missions every second ====
-setInterval(checkMissionsProgress, 1000);
+// DOM Elements
+const clicker = document.getElementById('clicker');
+const coinsDisplay = document.getElementById('coins');
+const energyDisplay = document.getElementById('energy');
+const multiplierDisplay = document.getElementById('multiplier');
+const energyBar = document.getElementById('energy-bar');
+const upgradesContainer = document.getElementById('upgrades-container');
+const navButtons = document.querySelectorAll('.nav-btn');
 
-})();
+// Initialize game
+function initGame() {
+  loadGame();
+  renderUpgrades();
+  setupEventListeners();
+  startGameLoop();
+  
+  // Animate game entrance
+  animateGameEntrance();
+}
+
+function animateGameEntrance() {
+  const elements = document.querySelectorAll('.game-card, .nav-btn');
+  elements.forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    setTimeout(() => {
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 100 + i * 100);
+  });
+}
+
+function loadGame() {
+  const saved = localStorage.getItem('aetherCoreSave');
+  if (saved) {
+    Object.assign(gameState, JSON.parse(saved));
+  }
+  updateUI();
+}
+
+function saveGame() {
+  gameState.lastUpdate = Date.now();
+  localStorage.setItem('aetherCoreSave', JSON.stringify(gameState));
+}
+
+function updateUI() {
+  coinsDisplay.textContent = Math.floor(gameState.coins);
+  energyDisplay.textContent = Math.floor(gameState.energy);
+  multiplierDisplay.textContent = `${gameState.multiplier}x`;
+  energyBar.style.width = `${(gameState.energy / (100 + gameState.upgrades[1].owned * gameState.upgrades[1].value)) * 100}%`;
+}
+
+function renderUpgrades() {
+  upgradesContainer.innerHTML = '';
+  gameState.upgrades.forEach(upgrade => {
+    const upgradeEl = document.createElement('div');
+    upgradeEl.className = 'upgrade';
+    upgradeEl.innerHTML = `
+      <div class="upgrade-header">
+        <div class="upgrade-name">${upgrade.name}</div>
+        <div class="upgrade-cost">${upgrade.cost}</div>
+      </div>
+      <div class="upgrade-desc">${upgrade.desc}</div>
+      <div class="upgrade-level">Level: ${upgrade.owned}</div>
+      <button class="upgrade-btn" 
+              data-id="${upgrade.id}" 
+              ${gameState.coins < upgrade.cost ? 'disabled' : ''}>
+        Upgrade
+      </button>
+    `;
+    upgradesContainer.appendChild(upgradeEl);
+  });
+}
+
+function setupEventListeners() {
+  // Clicker
+  clicker.addEventListener('click', () => {
+    if (gameState.energy > 0) {
+      gameState.coins += gameState.multiplier * (1 + gameState.upgrades[0].owned * gameState.upgrades[0].value);
+      gameState.energy -= 1;
+      animateClick();
+      updateUI();
+      saveGame();
+    }
+  });
+  
+  // Upgrades
+  upgradesContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('upgrade-btn')) {
+      const upgradeId = e.target.getAttribute('data-id');
+      const upgrade = gameState.upgrades.find(u => u.id === upgradeId);
+      
+      if (gameState.coins >= upgrade.cost) {
+        gameState.coins -= upgrade.cost;
+        upgrade.owned += 1;
+        upgrade.cost = Math.floor(upgrade.cost * 1.5);
+        
+        // Apply upgrade effects
+        if (upgradeId === 'click-power') {
+          // Already applied in click handler
+        } else if (upgradeId === 'energy-cap') {
+          // Handled in UI update
+        } else if (upgradeId === 'regen-rate') {
+          // Handled in game loop
+        } else if (upgradeId === 'auto-click') {
+          gameState.passiveIncome = gameState.upgrades[3].owned * gameState.upgrades[3].value;
+        }
+        
+        updateUI();
+        renderUpgrades();
+        saveGame();
+      }
+    }
+  });
+  
+  // Navigation
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const section = btn.getAttribute('data-section');
+      navButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      // Here you would switch between sections
+      console.log(`Switching to ${section} section`);
+    });
+  });
+}
+
+function animateClick() {
+  const coin = document.getElementById('clicker');
+  coin.style.transform = 'scale(0.95)';
+  setTimeout(() => {
+    coin.style.transform = 'scale(1)';
+  }, 100);
+  
+  // Create coin particle
+  const particle = document.createElement('div');
+  particle.style.position = 'absolute';
+  particle.style.width = '10px';
+  particle.style.height = '10px';
+  particle.style.background = 'radial-gradient(circle, var(--primary), var(--accent))';
+  particle.style.borderRadius = '50%';
+  particle.style.pointerEvents = 'none';
+  particle.style.left = `${Math.random() * 100}%`;
+  particle.style.top = `${Math.random() * 100}%`;
+  particle.style.opacity = '0';
+  particle.style.transform = 'translate(0, 0) scale(0)';
+  particle.style.transition = 'all 0.5s ease-out';
+  
+  coin.appendChild(particle);
+  
+  setTimeout(() => {
+    particle.style.opacity = '1';
+    particle.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * -100 - 50}px) scale(1)`;
+  }, 10);
+  
+  setTimeout(() => {
+    particle.style.opacity = '0';
+    particle.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * -100 - 50}px) scale(0)`;
+    setTimeout(() => particle.remove(), 500);
+  }, 600);
+}
+
+function startGameLoop() {
+  setInterval(() => {
+    // Energy regeneration
+    const maxEnergy = 100 + gameState.upgrades[1].owned * gameState.upgrades[1].value;
+    const regenRate = 0.1 + gameState.upgrades[2].owned * gameState.upgrades[2].value;
+    
+    if (gameState.energy < maxEnergy) {
+      gameState.energy = Math.min(maxEnergy, gameState.energy + regenRate);
+    }
+    
+    // Passive income
+    if (gameState.passiveIncome > 0) {
+      gameState.coins += gameState.passiveIncome * gameState.multiplier;
+    }
+    
+    updateUI();
+    saveGame();
+  }, 1000);
+}
+
+// Start the cinematic
+createStars();
+animateCinematic();
+
+// Simulate Web3 connection
+setTimeout(() => {
+  document.getElementById('wallet-address').textContent = '0x7f...3a4b';
+  document.getElementById('user-avatar').textContent = 'T';
+}, 3000);
 </script>
 </body>
 </html>
