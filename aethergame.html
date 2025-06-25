@@ -176,7 +176,140 @@
     <!-- Visual Effects -->
     <canvas id="particles-canvas"></canvas>
     
-    <!-- JavaScript -->
+    // ======================
+// ⚡ BOOSTER SYSTEM
+// ======================
+
+class BoosterSystem {
+    constructor() {
+        this.activeBoosters = [];
+    }
+
+    activate(multiplier, duration) {
+        const booster = {
+            multiplier,
+            endTime: Date.now() + duration
+        };
+        
+        this.activeBoosters.push(booster);
+        this.updateMultiplier();
+        
+        setTimeout(() => {
+            this.activeBoosters = this.activeBoosters.filter(b => b !== booster);
+            this.updateMultiplier();
+        }, duration);
+    }
+
+    updateMultiplier() {
+        let totalMultiplier = 1;
+        this.activeBoosters.forEach(booster => {
+            totalMultiplier *= booster.multiplier;
+        });
+        
+        gameState.multiplier = totalMultiplier;
+        updateMultiplierDisplay();
+    }
+}
+
+// ======================
+// 📊 LEADERBOARD SYSTEM
+// ======================
+
+class Leaderboard {
+    constructor() {
+        this.players = [];
+    }
+
+    async load() {
+        try {
+            // In a real app, this would fetch from a backend
+            this.players = [
+                { rank: 1, name: 'CryptoKing', score: 125000, level: 42 },
+                { rank: 2, name: 'BlockchainQueen', score: 98700, level: 38 },
+                // ... more players
+            ];
+            
+            // Add current player if wallet is connected
+            if (gameState.wallet.connected) {
+                this.players.push({
+                    rank: this.players.length + 1,
+                    name: gameState.wallet.ens || shortenAddress(gameState.wallet.address),
+                    score: gameState.coins,
+                    level: gameState.level,
+                    you: true
+                });
+            }
+            
+            this.render();
+        } catch (error) {
+            console.error('Failed to load leaderboard:', error);
+        }
+    }
+
+    render() {
+        // Update leaderboard UI
+        // ... (implementation)
+    }
+}
+
+// ======================
+// 🛠️ UTILITY FUNCTIONS
+// ======================
+
+function shortenAddress(address) {
+    return address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '';
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.getElementById('notification');
+    notification.className = `notification notification-${type}`;
+    notification.querySelector('#notification-message').textContent = message;
+    
+    notification.style.display = 'flex';
+    setTimeout(() => {
+        notification.style.opacity = '1';
+    }, 10);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 300);
+    }, 3000);
+}
+
+// ======================
+// 🎮 GAME INSTANCE
+// ======================
+
+class AetherGame {
+    constructor() {
+        this.walletService = new WalletService();
+        this.boosterSystem = new BoosterSystem();
+        this.leaderboard = new Leaderboard();
+        this.init();
+    }
+
+    async init() {
+        this.initEventListeners();
+        await this.loadGameData();
+        this.startGameLoop();
+        this.hideLoadingScreen();
+    }
+
+    // ... (other game methods)
+}
+
+// Start the game when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    const game = new AetherGame();
+});
+
+// Modern JavaScript features check
+if (typeof window.ethereum === 'undefined') {
+    console.warn('Web3 wallet not detected');
+    document.getElementById('wallet-address').textContent = 'Install MetaMask';
+}
     <script>
         // ======================
         // 🎮 GAME CORE
@@ -369,6 +502,5 @@
 
         // ... (remaining JavaScript code)
     </script>
-    <script src="game.js"></script>
 </body>
 </html>
