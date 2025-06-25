@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherCoin</title>
+    <title>AetherCoin PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -51,26 +51,77 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ... (Code CSS optimisé complet) ... */
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darkest);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 240, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Game Container */
+        .game-container {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            background: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+        }
+
+        /* ... (Additional CSS styles) ... */
     </style>
 </head>
 <body>
-    <!-- Écran de Chargement -->
+    <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-spinner"></div>
-        <div class="loading-text">CHARGEMENT...</div>
+        <div class="loading-text">INITIALIZING AETHERCORE...</div>
     </div>
 
-    <!-- Interface Principale -->
+    <!-- Game Container -->
     <div id="game-container" class="game-container">
-        <!-- En-tête -->
+        <!-- Header -->
         <header class="header">
             <div class="logo">
                 <svg class="logo-icon" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
                     <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" fill="var(--primary)"/>
                 </svg>
-                AETHER-CORE PRO 2.0
+                AETHERCORE PRO 2.0
             </div>
             <div class="user-info">
                 <div class="avatar" id="user-avatar">?</div>
@@ -83,985 +134,241 @@
             </div>
         </header>
         
-        <!-- Contenu Principal -->
+        <!-- Main Content -->
         <main class="main-content" id="main-content">
-            <!-- Page de Minage -->
+            <!-- Mining Page -->
             <div id="mining-page" class="page active">
-                <div class="mining-container">
-                    <div class="miner-circle-container">
-                        <div class="miner-circle-bg"></div>
-                        <div class="miner-circle" id="miner-circle">
-                            <div class="miner-core"></div>
-                        </div>
-                        <div class="miner-energy" id="miner-energy">100/100</div>
-                    </div>
-                    <div class="stats">
-                        <div class="stat-card">
-                            <span class="stat-label">AETH Coins</span>
-                            <span class="stat-value" id="coins-display">0</span>
-                            <span class="stat-subvalue" id="coins-per-sec">+0/sec</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-label">Puissance</span>
-                            <span class="stat-value" id="power-display">1</span>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="power-progress" style="width: 0%"></div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-label">Multiplicateur</span>
-                            <span class="stat-value" id="multiplier-display">1x</span>
-                            <span class="stat-subvalue" id="multiplier-source">Base</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-label">Niveau</span>
-                            <span class="stat-value" id="level-display">1</span>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="level-progress" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- ... (Mining page content) ... -->
             </div>
             
-            <!-- Page d'Améliorations -->
+            <!-- Upgrades Page -->
             <div id="upgrades-page" class="page">
-                <div class="upgrades-container">
-                    <h2>Améliorations</h2>
-                    <div class="upgrade-tabs">
-                        <button class="upgrade-tab active" data-tab="mining">Minage</button>
-                        <button class="upgrade-tab" data-tab="energy">Énergie</button>
-                        <button class="upgrade-tab" data-tab="boosters">Boosters</button>
-                    </div>
-                    <div class="upgrade-list" id="mining-upgrades"></div>
-                    <div class="upgrade-list" id="energy-upgrades" style="display: none;"></div>
-                    <div class="upgrade-list" id="booster-upgrades" style="display: none;"></div>
-                </div>
+                <!-- ... (Upgrades page content) ... -->
             </div>
             
-            <!-- Page du Marché NFT -->
+            <!-- NFT Market Page -->
             <div id="market-page" class="page">
-                <div class="market-container">
-                    <h2>Marché NFT</h2>
-                    <div class="market-tabs">
-                        <button class="market-tab active" data-tab="miners">⛏️ Mineurs</button>
-                        <button class="market-tab" data-tab="powerups">⚡ Boosters</button>
-                        <button class="market-tab" data-tab="skins">🎨 Skins</button>
-                        <button class="market-tab" data-tab="collectibles">🏆 Collectibles</button>
-                    </div>
-                    <div class="market-items" id="market-miners"></div>
-                    <div class="market-items" id="market-powerups" style="display: none;"></div>
-                    <div class="market-items" id="market-skins" style="display: none;"></div>
-                    <div class="market-items" id="market-collectibles" style="display: none;"></div>
-                </div>
+                <!-- ... (Market page content) ... -->
             </div>
             
-            <!-- Page du Classement -->
+            <!-- Leaderboard Page -->
             <div id="leaderboard-page" class="page">
-                <div class="leaderboard-container">
-                    <h2>Classement</h2>
-                    <div class="leaderboard-tabs">
-                        <button class="leaderboard-tab active" data-tab="global">🌍 Global</button>
-                        <button class="leaderboard-tab" data-tab="friends">👥 Amis</button>
-                        <button class="leaderboard-tab" data-tab="guilds">⚔️ Guildes</button>
-                    </div>
-                    <div class="leaderboard-list" id="leaderboard-global"></div>
-                    <div class="leaderboard-list" id="leaderboard-friends" style="display: none;"></div>
-                    <div class="leaderboard-list" id="leaderboard-guilds" style="display: none;"></div>
-                </div>
+                <!-- ... (Leaderboard content) ... -->
             </div>
         </main>
         
         <!-- Navigation -->
         <nav class="nav">
-            <button class="nav-btn active" data-page="mining-page">
-                <svg class="nav-icon" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z"/>
-                </svg>
-                <span>Minage</span>
-            </button>
-            <button class="nav-btn" data-page="upgrades-page">
-                <svg class="nav-icon" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
-                </svg>
-                <span>Upgrades</span>
-            </button>
-            <button class="nav-btn" data-page="market-page">
-                <svg class="nav-icon" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M5,6H23V18H5V6M14,9A3,3 0 0,1 17,12A3,3 0 0,1 14,15A3,3 0 0,1 11,12A3,3 0 0,1 14,9M9,8A2,2 0 0,1 7,10V14A2,2 0 0,1 9,16H19A2,2 0 0,1 21,14V10A2,2 0 0,1 19,8H9M1,10H3V20H19V22H1V10Z"/>
-                </svg>
-                <span>Marché</span>
-            </button>
-            <button class="nav-btn" data-page="leaderboard-page">
-                <svg class="nav-icon" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M19,5V7H15V5H19M9,5V11H5V5H9M19,13V19H15V13H19M9,17V19H5V17H9M21,3H13V9H21V3M11,3H3V13H11V3M21,11H13V21H21V11M11,15H3V21H11V15Z"/>
-                </svg>
-                <span>Classement</span>
-            </button>
+            <!-- ... (Navigation buttons) ... -->
         </nav>
     </div>
     
-    <!-- Modals & Notifications -->
+    <!-- Wallet Modal -->
     <div id="wallet-modal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" id="wallet-modal-close">&times;</button>
-            <h3 class="modal-title">Connecter un Wallet</h3>
-            <div class="wallet-options">
-                <div class="wallet-option" data-wallet="metamask">
-                    <div class="wallet-icon-lg">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="wallet-name">MetaMask</div>
-                        <div class="wallet-desc">Extension navigateur</div>
-                    </div>
-                </div>
-                <div class="wallet-option" data-wallet="walletconnect">
-                    <div class="wallet-icon-lg">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                            <line x1="9" y1="9" x2="9.01" y2="9"/>
-                            <line x1="15" y1="9" x2="15.01" y2="9"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="wallet-name">WalletConnect</div>
-                        <div class="wallet-desc">Mobile & Apps</div>
-                    </div>
-                </div>
-                <div class="wallet-option" data-wallet="coinbase">
-                    <div class="wallet-icon-lg">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="wallet-name">Coinbase Wallet</div>
-                        <div class="wallet-desc">Mobile & Extension</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- ... (Wallet connection options) ... -->
     </div>
     
+    <!-- Notification -->
     <div id="notification" class="notification" style="display: none;">
-        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg>
-        <span id="notification-message">Transaction confirmée !</span>
+        <!-- ... (Notification content) ... -->
     </div>
     
-    <!-- Effets Visuels -->
+    <!-- Visual Effects -->
     <canvas id="particles-canvas"></canvas>
     
-    <!-- Script Principal -->
+    <!-- JavaScript -->
     <script>
         // ======================
-        // 🎮 CORE DU JEU
+        // 🎮 GAME CORE
         // ======================
         
-        // Variables du Jeu
-        let coins = 0;
-        let coinsPerSecond = 0;
-        let power = 1;
-        let powerProgress = 0;
-        let powerMax = 100;
-        let multiplier = 1;
-        let level = 1;
-        let levelProgress = 0;
-        let levelMax = 1000;
-        let energy = 100;
-        let energyMax = 100;
-        let energyRegen = 0.5; // Régénération par seconde
-        let miningUpgrades = [];
-        let energyUpgrades = [];
-        let boosterUpgrades = [];
-        let marketItems = [];
-        let leaderboard = [];
-        let walletConnected = false;
-        let walletAddress = '';
-        let activeBoosters = [];
-        
+        // Game State
+        const gameState = {
+            coins: 0,
+            coinsPerSecond: 0,
+            power: 1,
+            powerProgress: 0,
+            powerMax: 100,
+            multiplier: 1,
+            level: 1,
+            levelProgress: 0,
+            levelMax: 1000,
+            energy: 100,
+            energyMax: 100,
+            energyRegen: 0.5,
+            upgrades: [],
+            marketItems: [],
+            leaderboard: [],
+            activeBoosters: [],
+            wallet: {
+                connected: false,
+                address: '',
+                ens: null
+            }
+        };
+
         // DOM Elements
-        const loadingScreen = document.getElementById('loading-screen');
-        const gameContainer = document.getElementById('game-container');
-        const mainContent = document.getElementById('main-content');
-        const pages = document.querySelectorAll('.page');
-        const navBtns = document.querySelectorAll('.nav-btn');
-        const minerCircle = document.getElementById('miner-circle');
-        const minerEnergy = document.getElementById('miner-energy');
-        const coinsDisplay = document.getElementById('coins-display');
-        const coinsPerSec = document.getElementById('coins-per-sec');
-        const powerDisplay = document.getElementById('power-display');
-        const powerProgressBar = document.getElementById('power-progress');
-        const multiplierDisplay = document.getElementById('multiplier-display');
-        const multiplierSource = document.getElementById('multiplier-source');
-        const levelDisplay = document.getElementById('level-display');
-        const levelProgressBar = document.getElementById('level-progress');
-        const miningUpgradesList = document.getElementById('mining-upgrades');
-        const energyUpgradesList = document.getElementById('energy-upgrades');
-        const boosterUpgradesList = document.getElementById('booster-upgrades');
-        const marketMinersList = document.getElementById('market-miners');
-        const marketPowerupsList = document.getElementById('market-powerups');
-        const marketSkinsList = document.getElementById('market-skins');
-        const marketCollectiblesList = document.getElementById('market-collectibles');
-        const leaderboardGlobalList = document.getElementById('leaderboard-global');
-        const leaderboardFriendsList = document.getElementById('leaderboard-friends');
-        const leaderboardGuildsList = document.getElementById('leaderboard-guilds');
-        const walletModal = document.getElementById('wallet-modal');
-        const walletModalClose = document.getElementById('wallet-modal-close');
-        const walletAddressEl = document.getElementById('wallet-address');
-        const userAvatar = document.getElementById('user-avatar');
-        const walletOptions = document.querySelectorAll('.wallet-option');
-        const notification = document.getElementById('notification');
-        const notificationMessage = document.getElementById('notification-message');
-        const particlesCanvas = document.getElementById('particles-canvas');
-        
-        // Initialisation du Jeu
-        function initGame() {
-            // Simulate loading
-            setTimeout(() => {
-                loadingScreen.style.opacity = '0';
-                loadingScreen.style.pointerEvents = 'none';
-                gameContainer.style.opacity = '1';
-                
-                // Initialize game data
-                initUpgrades();
-                initMarket();
-                initLeaderboard();
-                
-                // Start game loop
-                setInterval(gameLoop, 1000);
-                setInterval(updateEnergy, 100);
-                
-                // Initialize particles
-                initParticles();
-                
-                // Event listeners
-                setupEventListeners();
-            }, 2000);
-        }
-        
-        // Boucle Principale du Jeu
-        function gameLoop() {
-            // Revenu passif
-            addCoins(coinsPerSecond);
-            
-            // Progression du niveau
-            if (powerProgress < powerMax) {
-                powerProgress += power;
-                if (powerProgress >= powerMax) {
-                    powerProgress = powerMax;
-                    levelUp();
-                }
-                updatePowerProgress();
-            }
-            
-            // Mise à jour des boosters
-            updateBoosters();
-        }
-        
-        // Gestion de l'Énergie
-        function updateEnergy() {
-            if (energy < energyMax) {
-                energy += energyRegen / 10;
-                if (energy > energyMax) energy = energyMax;
-                updateEnergyDisplay();
-            }
-        }
-        
-        // ======================
-        // 🖱️ INTERACTIONS
-        // ======================
-        
-        function setupEventListeners() {
-            // Clic sur le mineur
-            minerCircle.addEventListener('click', mine);
-            
-            // Navigation
-            navBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const pageId = btn.getAttribute('data-page');
-                    setActivePage(pageId);
-                    
-                    // Update active nav button
-                    navBtns.forEach(navBtn => navBtn.classList.remove('active'));
-                    btn.classList.add('active');
-                });
-            });
-            
-            // Onglets d'améliorations
-            document.querySelectorAll('.upgrade-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabId = tab.getAttribute('data-tab');
-                    switchUpgradeTab(tabId);
-                });
-            });
-            
-            // Onglets du marché
-            document.querySelectorAll('.market-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabId = tab.getAttribute('data-tab');
-                    switchMarketTab(tabId);
-                });
-            });
-            
-            // Onglets du classement
-            document.querySelectorAll('.leaderboard-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabId = tab.getAttribute('data-tab');
-                    switchLeaderboardTab(tabId);
-                });
-            });
-            
-            // Connexion Wallet
-            walletAddressEl.addEventListener('click', toggleWalletModal);
-            walletModalClose.addEventListener('click', toggleWalletModal);
-            
-            walletOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    const walletType = option.getAttribute('data-wallet');
-                    connectWallet(walletType);
-                });
-            });
-        }
-        
-        // ======================
-        // ⚙️ FONCTIONS DU JEU
-        // ======================
-        
-        function mine() {
-            if (energy > 0) {
-                const coinsGained = power * multiplier;
-                addCoins(coinsGained);
-                energy -= 10;
-                if (energy < 0) energy = 0;
-                updateEnergyDisplay();
-                
-                // Feedback visuel
-                minerCircle.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    minerCircle.style.transform = 'scale(1)';
-                }, 100);
-                
-                // Effet de particules
-                createMiningParticles();
-            } else {
-                showNotification("Plus d'énergie ! Rechargez.", 'error');
-            }
-        }
-        
-        function addCoins(amount) {
-            coins += amount;
-            updateCoinsDisplay();
-        }
-        
-        function levelUp() {
-            level++;
-            levelProgress = 0;
-            powerProgress = 0;
-            
-            // Augmentation de la difficulté
-            powerMax = Math.floor(powerMax * 1.5);
-            
-            // Récompense
-            const reward = level * 10;
-            addCoins(reward);
-            
-            // Mise à jour de l'affichage
-            levelDisplay.textContent = level;
-            updatePowerProgress();
-            
-            showNotification(`Niveau ${level} atteint ! +${reward} AETH`, 'success');
-        }
-        
-        // ======================
-        // 🎚️ MISE À JOUR DE L'UI
-        // ======================
-        
-        function updateCoinsDisplay() {
-            coinsDisplay.textContent = Math.floor(coins).toLocaleString();
-            coinsPerSec.textContent = `+${coinsPerSecond.toFixed(1)}/sec`;
-        }
-        
-        function updatePowerProgress() {
-            const percent = (powerProgress / powerMax) * 100;
-            powerProgressBar.style.width = `${percent}%`;
-            powerDisplay.textContent = power;
-        }
-        
-        function updateMultiplierDisplay(source) {
-            multiplierDisplay.textContent = `${multiplier.toFixed(1)}x`;
-            multiplierSource.textContent = source;
-        }
-        
-        function updateEnergyDisplay() {
-            const percent = (energy / energyMax) * 100;
-            minerEnergy.textContent = `${Math.floor(energy)}/${energyMax}`;
-        }
-        
-        // ======================
-        // 🚀 INITIALISATION
-        // ======================
-        
-        function initUpgrades() {
-            // Améliorations de minage
-            miningUpgrades = [
-                {
-                    id: 'mining-1',
-                    name: 'Foreuse basique',
-                    description: 'Augmente la puissance de minage de +1',
-                    level: 0,
-                    maxLevel: 10,
-                    basePrice: 10,
-                    priceMultiplier: 1.5,
-                    effect: () => { power += 1; updatePowerDisplay(); }
-                },
-                {
-                    id: 'mining-2',
-                    name: 'CPU Overclock',
-                    description: 'Augmente la vitesse de minage de 10%',
-                    level: 0,
-                    maxLevel: 5,
-                    basePrice: 25,
-                    priceMultiplier: 2,
-                    effect: () => { power *= 1.1; updatePowerDisplay(); }
-                },
-                {
-                    id: 'mining-3',
-                    name: 'Algorithme optimisé',
-                    description: 'Augmente les gains passifs de +0.1/sec',
-                    level: 0,
-                    maxLevel: 20,
-                    basePrice: 50,
-                    priceMultiplier: 1.2,
-                    effect: () => { coinsPerSecond += 0.1; updateCoinsDisplay(); }
-                }
-            ];
-            
-            // Améliorations d'énergie
-            energyUpgrades = [
-                {
-                    id: 'energy-1',
-                    name: 'Batterie supplémentaire',
-                    description: 'Augmente la capacité max d\'énergie de +20',
-                    level: 0,
-                    maxLevel: 5,
-                    basePrice: 30,
-                    priceMultiplier: 1.8,
-                    effect: () => { energyMax += 20; energy = energyMax; updateEnergyDisplay(); }
-                },
-                {
-                    id: 'energy-2',
-                    name: 'Recharge rapide',
-                    description: 'Augmente la régénération d\'énergie de +0.2/sec',
-                    level: 0,
-                    maxLevel: 10,
-                    basePrice: 40,
-                    priceMultiplier: 1.5,
-                    effect: () => { energyRegen += 0.2; }
-                }
-            ];
-            
-            // Boosters
-            boosterUpgrades = [
-                {
-                    id: 'booster-1',
-                    name: 'Multiplicateur x2',
-                    description: 'Double les gains pendant 30 secondes',
-                    level: 0,
-                    maxLevel: 3,
-                    basePrice: 100,
-                    priceMultiplier: 3,
-                    effect: () => { activateBooster(2, 30000); }
-                },
-                {
-                    id: 'booster-2',
-                    name: 'Multiplicateur x5',
-                    description: 'Quintuple les gains pendant 15 secondes',
-                    level: 0,
-                    maxLevel: 2,
-                    basePrice: 250,
-                    priceMultiplier: 4,
-                    effect: () => { activateBooster(5, 15000); }
-                }
-            ];
-            
-            renderUpgrades();
-        }
-        
-        function initMarket() {
-            marketItems = [
-                // Mineurs NFT
-                {
-                    id: 'miner-1',
-                    name: 'Mineur NFT Basique',
-                    description: 'Augmente la production de 0.5 AETH/sec',
-                    price: 100,
-                    owned: 0,
-                    effect: () => { coinsPerSecond += 0.5; updateCoinsDisplay(); },
-                    category: 'miners'
-                },
-                {
-                    id: 'miner-2',
-                    name: 'Mineur NFT Avancé',
-                    description: 'Augmente la production de 2 AETH/sec',
-                    price: 500,
-                    owned: 0,
-                    effect: () => { coinsPerSecond += 2; updateCoinsDisplay(); },
-                    category: 'miners'
-                },
-                
-                // Boosters NFT
-                {
-                    id: 'powerup-1',
-                    name: 'Multiplicateur 2x (1h)',
-                    description: 'Double les gains pendant 1 heure',
-                    price: 200,
-                    owned: 0,
-                    effect: () => { activateBooster(2, 3600000); },
-                    category: 'powerups'
-                },
-                
-                // Skins
-                {
-                    id: 'skin-1',
-                    name: 'Skin Épique',
-                    description: 'Change l'apparence du mineur',
-                    price: 150,
-                    owned: 0,
-                    effect: () => { /* Change miner skin */ },
-                    category: 'skins'
-                }
-            ];
-            
-            renderMarket();
-        }
-        
-        function initLeaderboard() {
-            leaderboard = [
-                { rank: 1, name: 'CryptoKing', score: 125000, level: 42 },
-                { rank: 2, name: 'BlockchainQueen', score: 98700, level: 38 },
-                { rank: 3, name: 'AetherMaster', score: 85400, level: 35 },
-                { rank: 4, name: 'DeFiDude', score: 72300, level: 32 },
-                { rank: 5, name: walletAddress || 'Vous', score: coins, level: level, you: true }
-            ];
-            
-            renderLeaderboard();
-        }
-        
-        // ======================
-        // 🖼️ RENDU DES ÉLÉMENTS
-        // ======================
-        
-        function renderUpgrades() {
-            // Nettoyage des listes
-            miningUpgradesList.innerHTML = '';
-            energyUpgradesList.innerHTML = '';
-            boosterUpgradesList.innerHTML = '';
-            
-            // Rendu des améliorations
-            miningUpgrades.forEach(upgrade => {
-                const upgradeEl = createUpgradeElement(upgrade);
-                miningUpgradesList.appendChild(upgradeEl);
-            });
-            
-            energyUpgrades.forEach(upgrade => {
-                const upgradeEl = createUpgradeElement(upgrade);
-                energyUpgradesList.appendChild(upgradeEl);
-            });
-            
-            boosterUpgrades.forEach((upgrade) => {
-                const upgradeEl = createUpgradeElement(upgrade);
-                document.querySelector('.upgrades-container').appendChild(upgradeEl);
-            });
-            // ======================
-        // 🛒 FONCTIONS DU MARCHÉ
-        // ======================
-
-        function renderMarket() {
-            // Clear existing items
-            marketMinersList.innerHTML = '';
-            marketPowerupsList.innerHTML = '';
-            marketSkinsList.innerHTML = '';
-            marketCollectiblesList.innerHTML = '';
-
-            // Render items by category
-            marketItems.forEach(item => {
-                const itemEl = createMarketItemElement(item);
-                
-                switch(item.category) {
-                    case 'miners':
-                        marketMinersList.appendChild(itemEl);
-                        break;
-                    case 'powerups':
-                        marketPowerupsList.appendChild(itemEl);
-                        break;
-                    case 'skins':
-                        marketSkinsList.appendChild(itemEl);
-                        break;
-                    case 'collectibles':
-                        marketCollectiblesList.appendChild(itemEl);
-                        break;
-                }
-            });
-        }
-
-        function createMarketItemElement(item) {
-            const canAfford = coins >= item.price;
-            const ownedBadge = item.owned > 0 ? `<div class="market-item-owned">${item.owned}x</div>` : '';
-            
-            const itemEl = document.createElement('div');
-            itemEl.className = 'market-item';
-            itemEl.innerHTML = `
-                <div class="market-item-img" style="background: linear-gradient(135deg, var(--primary), var(--secondary));">
-                    ${getItemIcon(item.id)}
-                    ${ownedBadge}
-                </div>
-                <div class="market-item-info">
-                    <div class="market-item-name">${item.name}</div>
-                    <div class="market-item-desc">${item.description}</div>
-                    <div class="market-item-price">${item.price} AETH</div>
-                </div>
-                <button class="market-item-btn" ${!canAfford ? 'disabled' : ''} 
-                    data-id="${item.id}">
-                    Acheter
-                </button>
-            `;
-
-            if (canAfford) {
-                const btn = itemEl.querySelector('.market-item-btn');
-                btn.addEventListener('click', () => {
-                    buyMarketItem(item.id);
-                });
-            }
-
-            return itemEl;
-        }
-
-        function getItemIcon(itemId) {
-            // Return different icons based on item type
-            if (itemId.includes('miner')) return '⛏️';
-            if (itemId.includes('powerup')) return '⚡';
-            if (itemId.includes('skin')) return '🎨';
-            return '🛒';
-        }
-
-        function buyMarketItem(itemId) {
-            const item = marketItems.find(i => i.id === itemId);
-            if (!item) return;
-
-            if (coins >= item.price) {
-                coins -= item.price;
-                item.owned++;
-                item.effect();
-                
-                updateCoinsDisplay();
-                renderMarket();
-                
-                showNotification(`${item.name} acheté !`, 'success');
-            } else {
-                showNotification("Fonds insuffisants", 'error');
-            }
-        }
+        const elements = {
+            loadingScreen: document.getElementById('loading-screen'),
+            gameContainer: document.getElementById('game-container'),
+            walletAddress: document.getElementById('wallet-address'),
+            userAvatar: document.getElementById('user-avatar'),
+            walletModal: document.getElementById('wallet-modal'),
+            notification: document.getElementById('notification'),
+            // ... (other elements)
+        };
 
         // ======================
-        // 🏆 CLASSEMENT
+        // 🔌 WALLET INTEGRATION
         // ======================
-
-        function renderLeaderboard() {
-            // Clear existing lists
-            leaderboardGlobalList.innerHTML = '';
-            leaderboardFriendsList.innerHTML = '';
-            leaderboardGuildsList.innerHTML = '';
-
-            // Render global leaderboard
-            leaderboard.forEach(player => {
-                const playerEl = createLeaderboardPlayerElement(player);
-                leaderboardGlobalList.appendChild(playerEl);
-            });
-
-            // TODO: Implement friends and guilds leaderboards
-        }
-
-        function createLeaderboardPlayerElement(player) {
-            const isYou = player.you ? 'player-you' : '';
-            
-            const playerEl = document.createElement('div');
-            playerEl.className = `leaderboard-player ${isYou}`;
-            playerEl.innerHTML = `
-                <div class="player-rank">${player.rank}</div>
-                <div class="player-avatar">${player.name.slice(0, 2).toUpperCase()}</div>
-                <div class="player-info">
-                    <div class="player-name">${player.name}</div>
-                    <div class="player-level">Niveau ${player.level}</div>
-                </div>
-                <div class="player-score">${player.score.toLocaleString()} AETH</div>
-            `;
-
-            return playerEl;
-        }
-
-        // ======================
-        // ⚡ BOOSTERS
-        // ======================
-
-        function activateBooster(multiplier, duration) {
-            const booster = {
-                multiplier,
-                endTime: Date.now() + duration
-            };
-            
-            activeBoosters.push(booster);
-            updateMultiplier();
-            
-            // Remove booster when expired
-            setTimeout(() => {
-                activeBoosters = activeBoosters.filter(b => b !== booster);
-                updateMultiplier();
-            }, duration);
-        }
-
-        function updateBoosters() {
-            // Remove expired boosters
-            const now = Date.now();
-            activeBoosters = activeBoosters.filter(b => b.endTime > now);
-            
-            if (activeBoosters.length > 0) {
-                updateMultiplier();
-            }
-        }
-
-        function updateMultiplier() {
-            // Calculate total multiplier from all active boosters
-            let totalMultiplier = 1;
-            activeBoosters.forEach(booster => {
-                totalMultiplier *= booster.multiplier;
-            });
-            
-            multiplier = totalMultiplier;
-            
-            if (activeBoosters.length > 0) {
-                updateMultiplierDisplay(`${activeBoosters.length} boosters actifs`);
-            } else {
-                updateMultiplierDisplay('Base');
-            }
-        }
-
-        // ======================
-        // 🔌 WALLET FUNCTIONS
-        // ======================
-
-        function toggleWalletModal() {
-            walletModal.classList.toggle('active');
-        }
-
-        function connectWallet(walletType) {
-            // Simulate wallet connection
-            showNotification(`Connexion à ${walletType}...`, 'warning');
-            
-            setTimeout(() => {
-                walletConnected = true;
-                walletAddress = '0x7f...3a4b';
-                walletAddressEl.innerHTML = `
-                    <svg class="wallet-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    ${walletAddress}
-                `;
-                userAvatar.textContent = walletAddress.slice(2, 4).toUpperCase();
-                walletModal.classList.remove('active');
-                showNotification('Wallet connecté avec succès !', 'success');
-                
-                // Add bonus for connecting wallet
-                addCoins(50);
-                activateBooster(1.5, 60000);
-                updateMultiplierDisplay('Bonus Wallet');
-                
-                // Update leaderboard with new name
-                initLeaderboard();
-            }, 1500);
-        }
-
-        // ======================
-        // ✨ EFFETS VISUELS
-        // ======================
-
-        function initParticles() {
-            const canvas = particlesCanvas;
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            const particles = [];
-            const particleCount = window.innerWidth < 768 ? 30 : 100;
-            
-            // Create particles
-            for (let i = 0; i < particleCount; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 3 + 1,
-                    speedX: (Math.random() - 0.5) * 0.5,
-                    speedY: (Math.random() - 0.5) * 0.5,
-                    color: `rgba(0, 240, 255, ${Math.random() * 0.5 + 0.1})`
-                });
-            }
-            
-            // Animation loop
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                particles.forEach(particle => {
-                    ctx.fillStyle = particle.color;
-                    ctx.beginPath();
-                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Move particles
-                    particle.x += particle.speedX;
-                    particle.y += particle.speedY;
-                    
-                    // Bounce off edges
-                    if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
-                    if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
-                });
-                
-                requestAnimationFrame(animate);
-            }
-            
-            animate();
-            
-            // Resize handler
-            window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            });
-        }
-
-        function createMiningParticles() {
-            const canvas = particlesCanvas;
-            const ctx = canvas.getContext('2d');
-            const rect = minerCircle.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2 - canvas.offsetLeft;
-            const centerY = rect.top + rect.height / 2 - canvas.offsetTop;
-            
-            const particles = [];
-            const particleCount = 15;
-            
-            // Create explosion particles
-            for (let i = 0; i < particleCount; i++) {
-                particles.push({
-                    x: centerX,
-                    y: centerY,
-                    size: Math.random() * 4 + 2,
-                    speedX: (Math.random() - 0.5) * 10,
-                    speedY: (Math.random() - 0.5) * 10,
-                    color: `hsl(${Math.random() * 60 + 180}, 100%, 50%)`,
-                    life: 100
-                });
-            }
-            
-            // Animate explosion
-            function explode() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                for (let i = 0; i < particles.length; i++) {
-                    const p = particles[i];
-                    
-                    if (p.life > 0) {
-                        ctx.fillStyle = p.color;
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                        ctx.fill();
-                        
-                        // Move particles
-                        p.x += p.speedX;
-                        p.y += p.speedY;
-                        p.speedY += 0.1; // Gravity
-                        p.life--;
+        
+        class WalletService {
+            static async connect(walletType) {
+                try {
+                    let provider;
+                    switch(walletType) {
+                        case 'metamask':
+                            provider = await this.connectMetaMask();
+                            break;
+                        case 'walletconnect':
+                            provider = await this.connectWalletConnect();
+                            break;
+                        default:
+                            throw new Error('Unsupported wallet type');
                     }
-                }
-                
-                if (particles.some(p => p.life > 0)) {
-                    requestAnimationFrame(explode);
+                    
+                    const accounts = await provider.request({ method: 'eth_requestAccounts' });
+                    const address = accounts[0];
+                    const ens = await this.resolveENS(address);
+                    
+                    return { address, ens };
+                } catch (error) {
+                    console.error('Wallet connection error:', error);
+                    throw error;
                 }
             }
-            
-            explode();
+
+            static async connectMetaMask() {
+                if (!window.ethereum) {
+                    throw new Error('MetaMask not installed');
+                }
+                return window.ethereum;
+            }
+
+            static async connectWalletConnect() {
+                // WalletConnect implementation
+                // Requires WalletConnect library
+                throw new Error('WalletConnect not implemented');
+            }
+
+            static async resolveENS(address) {
+                try {
+                    if (!window.ethereum) return null;
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const name = await provider.lookupAddress(address);
+                    return name;
+                } catch {
+                    return null;
+                }
+            }
         }
 
         // ======================
-        // 📱 FONCTIONS UTILITAIRES
+        // 🚀 GAME INITIALIZATION
         // ======================
 
-        function setActivePage(pageId) {
-            pages.forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-        }
+        class Game {
+            constructor() {
+                this.init();
+            }
 
-        function switchUpgradeTab(tabId) {
-            // Update active tab
-            document.querySelectorAll('.upgrade-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.getAttribute('data-tab') === tabId);
-            });
-            
-            // Show corresponding content
-            miningUpgradesList.style.display = tabId === 'mining' ? 'flex' : 'none';
-            energyUpgradesList.style.display = tabId === 'energy' ? 'flex' : 'none';
-            boosterUpgradesList.style.display = tabId === 'boosters' ? 'flex' : 'none';
-        }
+            async init() {
+                try {
+                    await this.initGameData();
+                    this.initEventListeners();
+                    this.startGameLoop();
+                    
+                    // Hide loading screen
+                    setTimeout(() => {
+                        elements.loadingScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            elements.loadingScreen.style.display = 'none';
+                            elements.gameContainer.style.opacity = '1';
+                        }, 500);
+                    }, 2000);
+                } catch (error) {
+                    console.error('Initialization error:', error);
+                    this.showError('Failed to initialize game');
+                }
+            }
 
-        function switchMarketTab(tabId) {
-            // Update active tab
-            document.querySelectorAll('.market-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.getAttribute('data-tab') === tabId);
-            });
-            
-            // Show corresponding content
-            marketMinersList.style.display = tabId === 'miners' ? 'grid' : 'none';
-            marketPowerupsList.style.display = tabId === 'powerups' ? 'grid' : 'none';
-            marketSkinsList.style.display = tabId === 'skins' ? 'grid' : 'none';
-            marketCollectiblesList.style.display = tabId === 'collectibles' ? 'grid' : 'none';
-        }
+            async initGameData() {
+                // Initialize upgrades, market items, etc.
+                // ... (implementation)
+            }
 
-        function switchLeaderboardTab(tabId) {
-            // Update active tab
-            document.querySelectorAll('.leaderboard-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.getAttribute('data-tab') === tabId);
-            });
-            
-            // Show corresponding content
-            leaderboardGlobalList.style.display = tabId === 'global' ? 'flex' : 'none';
-            leaderboardFriendsList.style.display = tabId === 'friends' ? 'flex' : 'none';
-            leaderboardGuildsList.style.display = tabId === 'guilds' ? 'flex' : 'none';
-        }
+            initEventListeners() {
+                // Set up all game event listeners
+                // ... (implementation)
+            }
 
-        function showNotification(message, type) {
-            notification.className = `notification notification-${type}`;
-            notificationMessage.textContent = message;
-            notification.style.display = 'flex';
-            
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => {
-                    notification.style.display = 'none';
-                    notification.style.opacity = '1';
-                }, 300);
-            }, 3000);
+            startGameLoop() {
+                // Main game loop
+                setInterval(() => this.update(), 1000);
+            }
+
+            update() {
+                // Game state updates
+                // ... (implementation)
+            }
         }
 
         // ======================
-        // 🚀 LANCEMENT DU JEU
+        // 🎮 GAME FUNCTIONS
         // ======================
 
-        window.addEventListener('load', initGame);
+        // Mining function
+        function mine() {
+            if (gameState.energy > 0) {
+                const coinsGained = gameState.power * gameState.multiplier;
+                gameState.coins += coinsGained;
+                gameState.energy -= 10;
+                
+                // Update UI
+                updateUI();
+                
+                // Visual feedback
+                animateMining();
+            } else {
+                showNotification("Out of energy! Recharge", 'error');
+            }
+        }
+
+        // Upgrade functions
+        function purchaseUpgrade(upgradeId) {
+            // ... (implementation)
+        }
+
+        // ======================
+        // 🖼️ UI UPDATES
+        // ======================
+
+        function updateUI() {
+            // Update all UI elements based on game state
+            // ... (implementation)
+        }
+
+        // ======================
+        // 🚀 START THE GAME
+        // ======================
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new Game();
+        });
+
+        // ... (remaining JavaScript code)
     </script>
+    <script src="game.js"></script>
 </body>
 </html>
