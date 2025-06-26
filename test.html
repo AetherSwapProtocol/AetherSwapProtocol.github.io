@@ -3,142 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap | Solana Token Swap</title>
-  <script src="https://terminal.jup.ag/main-v4.js" defer></script>
+  <title>AetherSwap | Token Exchange</title>
   <style>
     :root {
-      --primary-gradient: linear-gradient(90deg, #00c3ff, #5e00ff);
-      --background: #0f0f2d;
-      --modal-bg: #121229;
-      --text-light: #ffffff;
+      --primary: #6e45e2;
+      --secondary: #88d3ce;
+      --dark: #0f0f2d;
+      --light: #ffffff;
     }
     
     body {
       margin: 0;
       font-family: 'Arial', sans-serif;
-      background: var(--background);
+      background: var(--dark);
+      color: var(--light);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
-      color: var(--text-light);
     }
     
     .swap-container {
-      text-align: center;
+      width: 100%;
+      max-width: 420px;
+      background: rgba(18, 18, 41, 0.9);
+      border-radius: 16px;
       padding: 2rem;
-      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     }
     
-    #swap-btn {
-      padding: 1rem 2rem;
-      font-size: 1.3rem;
-      background: var(--primary-gradient);
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      box-shadow: 0 0 15px rgba(0, 195, 255, 0.5);
-      transition: transform 0.2s, box-shadow 0.2s;
-      font-weight: 600;
+    .swap-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
     }
     
-    #swap-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(0, 195, 255, 0.7);
+    .swap-header h1 {
+      margin: 0;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
     
-    #swap-btn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
+    #swap-interface {
+      min-height: 300px;
+      position: relative;
     }
     
-    .loader {
-      display: none;
+    .powered-by {
+      text-align: center;
       margin-top: 1rem;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top: 3px solid #00c3ff;
-      width: 20px;
-      height: 20px;
-      animation: spin 1s linear infinite;
-      margin: 10px auto;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.5);
     }
     
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    /* Hide Jupiter branding */
+    .jus-modal-wrapper {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    
+    .jus-modal-header {
+      display: none !important;
+    }
+    
+    .jus-powered-by {
+      display: none !important;
     }
   </style>
 </head>
 <body>
   <div class="swap-container">
-    <h1>AetherSwap</h1>
-    <p>Get the best rates across Solana DEXs</p>
-    <button id="swap-btn">Launch Swap</button>
-    <div id="loader" class="loader"></div>
-    <p class="disclaimer">Powered by Jupiter Aggregator</p>
+    <div class="swap-header">
+      <h1>AetherSwap</h1>
+      <p>Instant token exchange</p>
+    </div>
+    
+    <div id="swap-interface">
+      <!-- Jupiter will inject content here -->
+    </div>
+    
+    <p class="powered-by">Secured by Solana</p>
   </div>
 
+  <script src="https://terminal.jup.ag/main-v4.js" defer></script>
   <script>
-    // Configuration
-    const JUPITER_CONFIG = {
-      displayMode: 'modal',
-      containerClassName: 'aether-terminal',
-      endpoint: 'https://api.mainnet-beta.solana.com',
-      platformFeeAndAccounts: {
-        feeBps: 10, // 0.1% platform fee
-        referralAccount: 'H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw'
-      },
-      theme: {
-        modal: { background: 'var(--modal-bg)' },
-        container: { color: 'var(--text-light)' }
-      }
-    };
-
-    // DOM Elements
-    const swapBtn = document.getElementById('swap-btn');
-    const loader = document.getElementById('loader');
-
-    // Swap Initialization
-    swapBtn.addEventListener('click', async () => {
-      try {
-        swapBtn.disabled = true;
-        loader.style.display = 'block';
-        
+    document.addEventListener('DOMContentLoaded', () => {
+      const initSwap = () => {
         if (!window.Jupiter) {
-          throw new Error('Jupiter SDK not loaded. Please refresh the page.');
+          setTimeout(initSwap, 200);
+          return;
         }
 
-        const jupiter = window.Jupiter.init(JUPITER_CONFIG);
-        
-        jupiter.then(() => {
-          // Success handler
-          window.Jupiter.onSuccess(({ txid }) => {
-            console.log('Swap successful:', txid);
-            // Optional: Add analytics tracking here
-          });
-          
-          // Error handler
-          window.Jupiter.onSwapError(({ error }) => {
-            console.error('Swap failed:', error);
-          });
+        window.Jupiter.init({
+          displayMode: 'integrated',
+          integratedTargetId: 'swap-interface',
+          endpoint: 'https://api.mainnet-beta.solana.com',
+          platformFeeAndAccounts: {
+            feeBps: 10,
+            referralAccount: 'H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw'
+          },
+          theme: {
+            container: {
+              background: 'transparent',
+              borderRadius: '12px',
+            },
+            secondary: {
+              background: 'rgba(110, 69, 226, 0.1)',
+            },
+            accent: 'var(--primary)',
+            primary: 'var(--dark)',
+          },
+          onSuccess: ({ txid }) => {
+            console.log('Swap completed:', txid);
+          },
+          onSwapError: (error) => {
+            console.error('Swap error:', error);
+          }
         });
-      } catch (error) {
-        console.error('Initialization error:', error);
-        alert(`Error: ${error.message}`);
-      } finally {
-        loader.style.display = 'none';
-        swapBtn.disabled = false;
-      }
-    });
+      };
 
-    // Check if Jupiter is loaded
-    const checkJupiter = setInterval(() => {
-      if (window.Jupiter) {
-        clearInterval(checkJupiter);
-        swapBtn.style.opacity = '1';
-      }
-    }, 500);
+      // Start initialization check
+      setTimeout(initSwap, 500);
+      
+      // Style overrides to remove Jupiter branding
+      const observer = new MutationObserver(() => {
+        document.querySelectorAll('.jus-powered-by, .jus-modal-header')
+          .forEach(el => el.style.display = 'none');
+      });
+      
+      observer.observe(document.body, { 
+        childList: true, 
+        subtree: true 
+      });
+    });
   </script>
 </body>
 </html>
