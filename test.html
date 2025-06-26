@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap</title>
+  <title>AetherSwap PRO</title>
+  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
   <style>
     :root {
       --primary: #6e45e2;
@@ -27,10 +28,11 @@
       padding: 24px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
-    .token-input {
-      background: rgba(255, 255, 255, 0.05);
+    .token-selector {
+      background: rgba(255,255,255,0.1);
       border-radius: 12px;
-      padding: 16px;
+      padding: 12px;
+      cursor: pointer;
       margin-bottom: 12px;
     }
     .swap-button {
@@ -42,135 +44,114 @@
       color: white;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 8px;
-    }
-    .rate-info {
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
-      margin: 12px 0;
+      margin-top: 16px;
     }
   </style>
 </head>
 <body>
   <div class="swap-card">
-    <h2 style="text-align: center; margin-bottom: 24px;">AetherSwap</h2>
+    <h2 style="text-align: center;">AetherSwap PRO</h2>
     
-    <div class="token-input">
-      <div style="display: flex; justify-content: space-between;">
-        <span>You pay</span>
-        <span>Balance: 0</span>
-      </div>
-      <div style="display: flex; align-items: center; margin-top: 8px;">
-        <input type="number" placeholder="0.0" style="
-          background: transparent;
-          border: none;
-          color: white;
-          font-size: 24px;
-          width: 70%;
-          outline: none;
-        ">
-        <select style="
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          border: none;
-          padding: 8px;
-          border-radius: 8px;
-          margin-left: auto;
-        ">
-          <option>SOL</option>
-          <option>USDC</option>
-        </select>
-      </div>
+    <div class="token-selector" id="input-token">
+      <div>From</div>
+      <div style="font-size: 24px; margin-top: 8px;">SOL</div>
     </div>
 
-    <div style="text-align: center; margin: 8px 0;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M16 10L12 14L8 10" stroke="currentColor" stroke-width="2"/>
+    <div style="text-align: center; margin: -8px 0;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path d="M12 5v14m0 0l-4-4m4 4l4-4"/>
       </svg>
     </div>
 
-    <div class="token-input">
-      <div style="display: flex; justify-content: space-between;">
-        <span>You receive</span>
-        <span>Balance: 0</span>
-      </div>
-      <div style="display: flex; align-items: center; margin-top: 8px;">
-        <input type="number" placeholder="0.0" style="
-          background: transparent;
-          border: none;
-          color: white;
-          font-size: 24px;
-          width: 70%;
-          outline: none;
-        ">
-        <select style="
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          border: none;
-          padding: 8px;
-          border-radius: 8px;
-          margin-left: auto;
-        ">
-          <option>TRUMP</option>
-          <option>USDT</option>
-        </select>
-      </div>
+    <div class="token-selector" id="output-token">
+      <div>To</div>
+      <div style="font-size: 24px; margin-top: 8px;">Select token</div>
     </div>
 
-    <div class="rate-info">
+    <div style="margin: 16px 0; font-size: 14px;">
       <div>Rate: 1 SOL ≈ 15,733.414 TRUMP</div>
-      <div style="margin-top: 4px;">Router: <span id="router-name">AetherSwap</span></div>
-      <div style="margin-top: 4px;">Fee: 0.1%</div>
+      <div style="margin-top: 4px;">Network fee: 0.0005 SOL</div>
+      <div style="margin-top: 4px;">Protocol fee: 0.1%</div>
     </div>
 
-    <button class="swap-button" id="swap-button">Swap</button>
+    <button class="swap-button" id="connect-button">Connect Wallet</button>
   </div>
 
-  <script src="https://terminal.jup.ag/main-v4.js" defer></script>
+  <script src="https://terminal.jup.ag/main-v4.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const swapButton = document.getElementById('swap-button');
+    // Configuration
+    const REFERRAL_ACCOUNT = 'H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw'; // VOTRE WALLET POUR LES COMMISSIONS
+    const FEE_BPS = 10; // 0.1%
+
+    // Éléments DOM
+    const connectButton = document.getElementById('connect-button');
+    let walletConnected = false;
+    let userWallet;
+
+    // Initialisation Jupiter
+    async function initJupiter() {
+      if (!window.Jupiter) throw new Error("Jupiter SDK not loaded");
       
-      swapButton.addEventListener('click', async () => {
-        try {
-          swapButton.disabled = true;
-          swapButton.textContent = 'Processing...';
-          
-          // Execute swap silently via Jupiter
-          if (window.Jupiter) {
-            const { txid } = await window.Jupiter.swap({
-              inputMint: 'So11111111111111111111111111111111111111112', // SOL
-              outputMint: 'TRUMPxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // TRUMP (example)
-              amount: 1000000, // 1 SOL in lamports
-              slippageBps: 50,
-              feeBps: 10,
-              referralAccount: 'H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw'
-            });
-            
-            console.log('Swap completed silently. TXID:', txid);
-            alert('Swap completed successfully!');
-          } else {
-            throw new Error('Swap engine not ready');
-          }
-        } catch (error) {
-          console.error('Silent swap failed:', error);
-          alert('Swap failed: ' + error.message);
-        } finally {
-          swapButton.disabled = false;
-          swapButton.textContent = 'Swap';
+      await window.Jupiter.init({
+        displayMode: 'hidden',
+        endpoint: 'https://api.mainnet-beta.solana.com',
+        platformFeeAndAccounts: {
+          feeBps: FEE_BPS,
+          referralAccount: REFERRAL_ACCOUNT
         }
       });
+    }
 
-      // Hide Jupiter initialization
-      setTimeout(() => {
-        if (window.Jupiter) {
-          window.Jupiter.init({
-            displayMode: 'hidden',
-            endpoint: 'https://api.mainnet-beta.solana.com'
-          });
+    // Connexion Wallet
+    async function connectWallet() {
+      if (window.solana && window.solana.isPhantom) {
+        try {
+          userWallet = await window.solana.connect();
+          connectButton.textContent = `Connected: ${userWallet.publicKey.toString().slice(0, 4)}...${userWallet.publicKey.toString().slice(-4)}`;
+          walletConnected = true;
+          initJupiter();
+        } catch (error) {
+          console.error("Connection error:", error);
         }
-      }, 1000);
-    });
+      } else {
+        alert("Phantom Wallet not detected!");
+      }
+    }
+
+    // Exécution du Swap
+    async function executeSwap() {
+      if (!walletConnected) return connectWallet();
+      
+      try {
+        connectButton.disabled = true;
+        connectButton.textContent = "Processing...";
+
+        const swapResult = await window.Jupiter.swap({
+          inputMint: 'So11111111111111111111111111111111111111112', // SOL
+          outputMint: 'TRUMPxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // À remplacer
+          amount: 1000000000, // 1 SOL en lamports
+          slippageBps: 50,
+          userPublicKey: userWallet.publicKey
+        });
+
+        console.log("Swap successful:", swapResult.txid);
+        alert(`Swap completed! TX: ${swapResult.txid}`);
+      } catch (error) {
+        console.error("Swap error:", error);
+        alert("Swap failed: " + error.message);
+      } finally {
+        connectButton.disabled = false;
+        connectButton.textContent = "Swap Now";
+      }
+    }
+
+    // Événements
+    connectButton.addEventListener('click', walletConnected ? executeSwap : connectWallet);
+
+    // Chargement initial
+    setTimeout(() => {
+      if (window.Jupiter) initJupiter();
+    }, 1000);
   </script>
 </body>
 </html>
