@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,6 +47,38 @@
       cursor: pointer;
       margin-top: 16px;
     }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      width: 90%;
+      max-width: 360px;
+      background: #1e1e3f;
+      border-radius: 16px;
+      padding: 16px;
+      overflow: hidden;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      border: none;
+      border-radius: 8px;
+    }
+    .token-item {
+      padding: 8px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+    }
+    .token-item:hover {
+      background: #2e2e5f;
+    }
   </style>
 </head>
 <body>
@@ -78,23 +109,34 @@
     <button class="swap-button" id="connect-button">Connect Wallet</button>
   </div>
 
+  <div class="modal" id="token-modal">
+    <div class="modal-content">
+      <input type="text" id="token-search" placeholder="Search token name or paste address"/>
+      <div id="token-list"></div>
+    </div>
+  </div>
+
   <script>
     const REFERRAL_ACCOUNT = 'H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw';
     const FEE_BPS = 10;
 
     const TOKENS = {
-      SOL: "So11111111111111111111111111111111111111112",
-      USDC: "Es9vMFrzaCERZ3ZB2zE3AdU4uPaFCQz7f7GNwMreXGfH",
-      USDT: "BQVrxtzQ9bGExx3Rp8yfBD3YxumcYjDvUXeBB9xhpbdR",
-      BONK: "DezX7FCsHKjZZz5Y4KaJq7P5cHka84gHe1TdMZ2xNoHG"
+      SOL: { name: "SOL", mint: "So11111111111111111111111111111111111111112" },
+      USDC: { name: "USDC", mint: "Es9vMFrzaCERZ3ZB2zE3AdU4uPaFCQz7f7GNwMreXGfH" },
+      USDT: { name: "USDT", mint: "BQVrxtzQ9bGExx3Rp8yfBD3YxumcYjDvUXeBB9xhpbdR" },
+      BONK: { name: "BONK", mint: "DezX7FCsHKjZZz5Y4KaJq7P5cHka84gHe1TdMZ2xNoHG" }
     };
 
-    let inputMint = TOKENS.SOL;
+    let inputMint = TOKENS.SOL.mint;
     let outputMint = null;
     let walletConnected = false;
     let userWallet;
+    let selectTarget = null;
 
     const connectButton = document.getElementById("connect-button");
+    const modal = document.getElementById("token-modal");
+    const tokenList = document.getElementById("token-list");
+    const searchInput = document.getElementById("token-search");
 
     async function initJupiter() {
       await window.Jupiter.init({
@@ -160,16 +202,49 @@
       else executeSwap();
     });
 
-    document.getElementById("output-token").addEventListener("click", () => {
-      const choice = prompt("Enter token: SOL / USDC / USDT / BONK");
-      const token = choice?.toUpperCase();
-      if (TOKENS[token]) {
-        outputMint = TOKENS[token];
-        document.getElementById("output-token-name").innerText = token;
-      } else {
-        alert("Invalid token selected.");
+    function openModal(target) {
+      selectTarget = target;
+      searchInput.value = "";
+      renderTokenList("");
+      modal.style.display = "flex";
+    }
+
+    function renderTokenList(query) {
+      tokenList.innerHTML = "";
+      const filtered = Object.values(TOKENS).filter(t => 
+        t.name.toLowerCase().includes(query.toLowerCase()) || t.mint.includes(query)
+      );
+      if (query.length === 44 && !filtered.find(t => t.mint === query)) {
+        filtered.unshift({ name: "Custom", mint: query });
       }
+      for (const token of filtered) {
+        const div = document.createElement("div");
+        div.className = "token-item";
+        div.textContent = token.name;
+        div.onclick = () => {
+          if (selectTarget === "input") {
+            inputMint = token.mint;
+            document.getElementById("input-token-name").innerText = token.name;
+          } else {
+            outputMint = token.mint;
+            document.getElementById("output-token-name").innerText = token.name;
+          }
+          modal.style.display = "none";
+        };
+        tokenList.appendChild(div);
+      }
+    }
+
+    searchInput.addEventListener("input", () => {
+      renderTokenList(searchInput.value);
     });
+
+    document.getElementById("input-token").addEventListener("click", () => openModal("input"));
+    document.getElementById("output-token").addEventListener("click", () => openModal("output"));
+
+    window.onclick = (e) => {
+      if (e.target === modal) modal.style.display = "none";
+    };
   </script>
 </body>
 </html>
