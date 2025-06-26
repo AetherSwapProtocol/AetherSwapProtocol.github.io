@@ -1,388 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AetherSwap-Dex</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>AetherSwap</title>
+  <script src="https://terminal.jup.ag/main-v4.js" defer></script>
   <style>
-    :root {
-      --primary: #8a2be2;
-      --secondary: #9932cc;
-      --dark: #0a0a0a;
-      --light: #ffffff;
-      --gray: #1e1e1e;
-      --success: #14f195;
-      --error: #ff3333;
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
     body {
-      background-color: var(--dark);
-      color: var(--light);
-      padding-bottom: 100px;
+      margin:0;
+      font-family: Arial, sans-serif;
+      background: #0f0f2d;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      color:#fff;
     }
-    header {
-      padding: 20px;
-      text-align: center;
-      border-bottom: 1px solid #333;
+    #swap-btn {
+      padding:1rem 2rem;
+      font-size:1.3rem;
+      background: linear-gradient(90deg,#00c3ff,#5e00ff);
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      box-shadow: 0 0 15px rgba(0,195,255,0.5);
+      transition: transform .2s;
     }
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 600;
-    }
-    header p {
-      margin: 0;
-      font-size: 14px;
-      color: #aaa;
-    }
-    .swap-container {
-      max-width: 500px;
-      margin: 20px auto;
-      background: var(--gray);
-      border-radius: 16px;
-      padding: 20px;
-    }
-    .section-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: var(--primary);
-    }
-    .token-selector {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 15px;
-      position: relative;
-    }
-    .token-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .token-label {
-      font-size: 14px;
-      color: #aaaaaa;
-    }
-    .token-value {
-      font-size: 20px;
-      font-weight: 600;
-    }
-    .token-amount {
-      width: 100%;
-      background: transparent;
-      border: none;
-      color: var(--light);
-      font-size: 24px;
-      padding: 5px 0;
-    }
-    .token-select-btn {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: var(--primary);
-      border: none;
-      padding: 5px 10px;
-      border-radius: 8px;
-      font-size: 12px;
-      color: white;
-      cursor: pointer;
-    }
-    .btn {
-      width: 100%;
-      padding: 16px;
-      border-radius: 12px;
-      border: none;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid var(--primary);
-      color: var(--primary);
-    }
-    .bottom-nav {
-      display: flex;
-      justify-content: space-around;
-      padding: 12px 0;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #111;
-      border-top: 1px solid #333;
-    }
-    .nav-item {
-      color: #aaa;
-      font-size: 12px;
-      text-align: center;
-    }
-    .nav-item.active {
-      color: var(--primary);
-    }
-    .nav-item svg {
-      display: block;
-      margin: 0 auto 4px;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: #1a1a1a;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 90%;
-      width: 400px;
-    }
-    .modal h3 {
-      margin-bottom: 10px;
-    }
-    .modal input {
-      width: 100%;
-      padding: 10px;
-      background: #333;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-    .modal-token {
-      padding: 10px;
-      background: #222;
-      margin-bottom: 5px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .price-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-      margin: 15px 0;
-    }
-    .price-change {
-      color: var(--error);
-      font-weight: 600;
+    #swap-btn:hover {
+      transform: scale(1.05);
     }
   </style>
-  </head>
+</head>
 <body>
-
-<header>
-  <h1>AetherSwap</h1>
-  <p>Solana</p>
-</header>
-
-<div class="swap-container">
-  <div class="section-title">Swap</div>
-
-  <div class="token-selector" id="from-token">
-    <div class="token-row">
-      <div class="token-label">De</div>
-      <button class="token-select-btn" onclick="openTokenModal('from')">Choisir</button>
-    </div>
-    <input type="number" id="from-amount" class="token-amount" placeholder="0.0" />
-    <div class="token-value" id="from-symbol">SOL</div>
-  </div>
-
-  <div class="token-selector" id="to-token">
-    <div class="token-row">
-      <div class="token-label">Vers</div>
-      <button class="token-select-btn" onclick="openTokenModal('to')">Choisir</button>
-    </div>
-    <input type="number" id="to-amount" class="token-amount" placeholder="0.0" disabled />
-    <div class="token-value" id="to-symbol">USDC</div>
-  </div>
-
-  <div class="price-info">
-    <div id="rate-info">1 SOL = ...</div>
-    <div class="price-change" id="price-impact">Slippage : 0.5%</div>
-  </div>
-
-  <button class="btn btn-primary" id="connect-wallet" onclick="openWalletModal()">Connecter le Wallet</button>
-  <button class="btn btn-secondary" id="swap-button" disabled onclick="handleSwap()">Swap</button>
-
-</div>
-
-<!-- Modals -->
-<div class="modal" id="token-modal">
-  <div class="modal-content">
-    <h3>Choisir un token</h3>
-    <input type="text" id="token-search" placeholder="Rechercher un token..." onkeyup="filterTokenList()" />
-    <div id="token-list"></div>
-    <button class="btn btn-secondary" onclick="closeTokenModal()">Fermer</button>
-  </div>
-</div>
-
-<div class="modal" id="wallet-modal">
-  <div class="modal-content">
-    <h3>Connexion Wallet</h3>
-    <button class="btn btn-primary" onclick="connectPhantom()">Phantom</button>
-    <button class="btn btn-primary" onclick="connectSolflare()">Solflare</button>
-    <button class="btn btn-primary" onclick="connectWalletConnect()">WalletConnect</button>
-    <button class="btn btn-primary" onclick="connectTorus()">Torus</button>
-    <button class="btn btn-secondary" onclick="closeWalletModal()">Annuler</button>
-  </div>
-</div>
-
-<!-- Navigation -->
-<div class="bottom-nav">
-  <div class="nav-item active">
-    <div>💱</div>
-    <div>Swap</div>
-  </div>
-  <div class="nav-item">
-    <div>📊</div>
-    <div>Dashboard</div>
-  </div>
-  <div class="nav-item">
-    <div>⚙️</div>
-    <div>Paramètres</div>
-  </div>
-  <div class="nav-item">
-    <div>📚</div>
-    <div>Mentions</div>
-  </div>
-</div>
-<script>
-let fromToken = { symbol: "SOL", mint: "So11111111111111111111111111111111111111112" };
-let toToken = { symbol: "USDC", mint: "Es9vMFrzaCERoCuJ1KpLd1D5nfdRPyYAswG3ZbjDt8zY" };
-let selectedDirection = 'from';
-let tokens = [];
-
-async function loadTokens() {
-  const res = await fetch("https://quote-api.jup.ag/v6/tokens");
-  tokens = await res.json();
-  displayTokenList();
-}
-
-function openTokenModal(direction) {
-  selectedDirection = direction;
-  document.getElementById("token-modal").style.display = "flex";
-  filterTokenList();
-}
-
-function closeTokenModal() {
-  document.getElementById("token-modal").style.display = "none";
-}
-
-function filterTokenList() {
-  const input = document.getElementById("token-search").value.toLowerCase();
-  const filtered = tokens.filter(t => t.symbol.toLowerCase().includes(input));
-  const list = filtered.map(t => `
-    <div class="modal-token" onclick="selectToken('${t.address}', '${t.symbol}')">${t.symbol} - ${t.name}</div>
-  `).join('');
-  document.getElementById("token-list").innerHTML = list;
-}
-
-function selectToken(address, symbol) {
-  const token = tokens.find(t => t.address === address);
-  if (selectedDirection === 'from') {
-    fromToken = token;
-    document.getElementById("from-symbol").innerText = token.symbol;
-  } else {
-    toToken = token;
-    document.getElementById("to-symbol").innerText = token.symbol;
-  }
-  closeTokenModal();
-  fetchSwapQuote();
-}
-let walletPublicKey = null;
-
-async function connectPhantom() {
-  if (window.solana && window.solana.isPhantom) {
-    const resp = await window.solana.connect();
-    walletPublicKey = resp.publicKey.toString();
-    onWalletConnected();
-  }
-}
-
-async function connectSolflare() {
-  alert("Connexion Solflare non encore intégrée ici.");
-}
-
-async function connectWalletConnect() {
-  alert("WalletConnect Solana pas encore activé.");
-}
-
-async function connectTorus() {
-  alert("Torus non activé ici. Phantom est recommandé.");
-}
-
-function onWalletConnected() {
-  document.getElementById("connect-wallet").innerText = "Connecté : " + walletPublicKey.slice(0, 4) + "..." + walletPublicKey.slice(-4);
-  document.getElementById("swap-button").disabled = false;
-  closeWalletModal();
-}
-async function fetchSwapQuote() {
-  const amount = document.getElementById("from-amount").value;
-  if (!amount || isNaN(amount)) return;
-
-  const inputAmount = Math.floor(parseFloat(amount) * Math.pow(10, fromToken.decimals || 9));
-
-  const url = `https://quote-api.jup.ag/v6/quote?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${inputAmount}&slippageBps=50&feeBps=15&feeAccount=H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw`;
-  const res = await fetch(url);
-  const data = await res.json();
-
-  if (data && data.data && data.data.length > 0) {
-    const best = data.data[0];
-    document.getElementById("to-amount").value = best.outAmount / Math.pow(10, toToken.decimals || 6);
-    document.getElementById("rate-info").innerText = `1 ${fromToken.symbol} ≈ ${(
-      best.outAmount /
-      best.inAmount
-    ).toFixed(4)} ${toToken.symbol}`;
-  }
-}
-
-async function handleSwap() {
-  if (!walletPublicKey) return alert("Connecte ton wallet.");
-  const amount = parseFloat(document.getElementById("from-amount").value);
-  if (isNaN(amount) || amount <= 0) return alert("Montant invalide");
-
-  const inputAmount = Math.floor(amount * Math.pow(10, fromToken.decimals || 9));
-
-  const quoteUrl = `https://quote-api.jup.ag/v6/swap?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${inputAmount}&slippageBps=50&userPublicKey=${walletPublicKey}&feeBps=15&feeAccount=H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw`;
-
-  const swapRes = await fetch(quoteUrl);
-  const swapData = await swapRes.json();
-
-  if (!swapData.swapTransaction) return alert("Erreur de swap");
-
-  const tx = swapData.swapTransaction;
-  const recovered = Uint8Array.from(atob(tx), c => c.charCodeAt(0));
-  const signed = await window.solana.signAndSendTransaction({
-    recentBlockhash: swapData.recentBlockhash,
-    feePayer: walletPublicKey,
-    data: recovered,
-  });
-
-  alert("Swap envoyé ! Tx: " + signed.signature);
-}
-</script>
-<footer style="padding: 40px 20px; text-align: center; font-size: 12px; color: #aaa;">
-  <p><strong>AetherSwap</strong> respecte la réglementation MiCA. Ce DEX décentralisé n’héberge aucun fonds. Vous restez maître de votre portefeuille.</p>
-  <p>Aucun conseil financier n’est fourni. Faites vos propres recherches (DYOR).</p>
-</footer>
-
+  <button id="swap-btn">Open AetherSwap</button>
+  <script>
+    document.getElementById('swap-btn').onclick = async () => {
+      if (!window.Jupiter) return alert('SDK Jupiter non chargé.');
+      window.Jupiter.init({
+        displayMode: 'modal',
+        containerClassName: 'aether-terminal',
+        endpoint: 'https://api.mainnet-beta.solana.com',
+        platformFeeAndAccounts: {
+          feeBps: 10,
+          // Option recommandée : pass referralAccount pour token-mapping automatique
+          referralAccount: 'H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw'
+        },
+        theme: {
+          modal: { background: '#121229' },
+          container: { color: '#fff' }
+        },
+        onSuccess: ({ txid }) => {
+          alert('✅ Swap réussi ! TxID: ' + txid);
+        },
+        onSwapError: ({ error }) => {
+          alert('❌ Erreur swap : ' + (error?.message || error));
+        }
+      });
+    };
+  </script>
 </body>
 </html>
