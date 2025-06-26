@@ -1,10 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AetherSwap PRO</title>
   <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+  <script src="https://terminal.jup.ag/main-v4.js"></script>
   <style>
     :root {
       --primary: #6e45e2;
@@ -12,7 +14,7 @@
       --light: #ffffff;
     }
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       background: var(--dark);
       color: var(--light);
       display: flex;
@@ -51,10 +53,10 @@
 <body>
   <div class="swap-card">
     <h2 style="text-align: center;">AetherSwap PRO</h2>
-    
+
     <div class="token-selector" id="input-token">
       <div>From</div>
-      <div style="font-size: 24px; margin-top: 8px;">SOL</div>
+      <div id="input-token-name" style="font-size: 24px; margin-top: 8px;">SOL</div>
     </div>
 
     <div style="text-align: center; margin: -8px 0;">
@@ -65,33 +67,36 @@
 
     <div class="token-selector" id="output-token">
       <div>To</div>
-      <div style="font-size: 24px; margin-top: 8px;">Select token</div>
+      <div id="output-token-name" style="font-size: 24px; margin-top: 8px;">Select token</div>
     </div>
 
     <div style="margin: 16px 0; font-size: 14px;">
-      <div>Rate: 1 SOL ≈ 15,733.414 TRUMP</div>
-      <div style="margin-top: 4px;">Network fee: 0.0005 SOL</div>
+      <div>Network fee: ~0.0005 SOL</div>
       <div style="margin-top: 4px;">Protocol fee: 0.1%</div>
     </div>
 
     <button class="swap-button" id="connect-button">Connect Wallet</button>
   </div>
 
-  <script src="https://terminal.jup.ag/main-v4.js"></script>
   <script>
-    // Configuration
-    const REFERRAL_ACCOUNT = 'H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw'; // VOTRE WALLET POUR LES COMMISSIONS
-    const FEE_BPS = 10; // 0.1%
+    const REFERRAL_ACCOUNT = 'H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw';
+    const FEE_BPS = 10;
 
-    // Éléments DOM
-    const connectButton = document.getElementById('connect-button');
+    const TOKENS = {
+      SOL: "So11111111111111111111111111111111111111112",
+      USDC: "Es9vMFrzaCERZ3ZB2zE3AdU4uPaFCQz7f7GNwMreXGfH",
+      USDT: "BQVrxtzQ9bGExx3Rp8yfBD3YxumcYjDvUXeBB9xhpbdR",
+      BONK: "DezX7FCsHKjZZz5Y4KaJq7P5cHka84gHe1TdMZ2xNoHG"
+    };
+
+    let inputMint = TOKENS.SOL;
+    let outputMint = null;
     let walletConnected = false;
     let userWallet;
 
-    // Initialisation Jupiter
+    const connectButton = document.getElementById("connect-button");
+
     async function initJupiter() {
-      if (!window.Jupiter) throw new Error("Jupiter SDK not loaded");
-      
       await window.Jupiter.init({
         displayMode: 'hidden',
         endpoint: 'https://api.mainnet-beta.solana.com',
@@ -102,56 +107,69 @@
       });
     }
 
-    // Connexion Wallet
     async function connectWallet() {
       if (window.solana && window.solana.isPhantom) {
         try {
-          userWallet = await window.solana.connect();
-          connectButton.textContent = `Connected: ${userWallet.publicKey.toString().slice(0, 4)}...${userWallet.publicKey.toString().slice(-4)}`;
+          const resp = await window.solana.connect();
+          userWallet = resp;
           walletConnected = true;
-          initJupiter();
-        } catch (error) {
-          console.error("Connection error:", error);
+          connectButton.textContent = "Swap Now";
+          await initJupiter();
+        } catch (err) {
+          alert("Wallet connection failed.");
         }
       } else {
-        alert("Phantom Wallet not detected!");
+        alert("Phantom Wallet not installed.");
       }
     }
 
-    // Exécution du Swap
+    async function getBestRoute() {
+      const quoteResponse = await window.Jupiter.quote({
+        inputMint,
+        outputMint,
+        amount: 1000000000,
+        slippageBps: 50
+      });
+      return quoteResponse.routes[0];
+    }
+
     async function executeSwap() {
       if (!walletConnected) return connectWallet();
-      
+      if (!outputMint) return alert("Select output token.");
+
       try {
         connectButton.disabled = true;
         connectButton.textContent = "Processing...";
-
-        const swapResult = await window.Jupiter.swap({
-          inputMint: 'So11111111111111111111111111111111111111112', // SOL
-          outputMint: 'TRUMPxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // À remplacer
-          amount: 1000000000, // 1 SOL en lamports
-          slippageBps: 50,
+        const routeInfo = await getBestRoute();
+        const { execute } = await window.Jupiter.exchange({
+          routeInfo,
           userPublicKey: userWallet.publicKey
         });
-
-        console.log("Swap successful:", swapResult.txid);
-        alert(`Swap completed! TX: ${swapResult.txid}`);
-      } catch (error) {
-        console.error("Swap error:", error);
-        alert("Swap failed: " + error.message);
+        const txid = await execute();
+        alert("Swap complete: " + txid);
+      } catch (e) {
+        alert("Swap failed: " + e.message);
       } finally {
         connectButton.disabled = false;
         connectButton.textContent = "Swap Now";
       }
     }
 
-    // Événements
-    connectButton.addEventListener('click', walletConnected ? executeSwap : connectWallet);
+    connectButton.addEventListener("click", () => {
+      if (!walletConnected) connectWallet();
+      else executeSwap();
+    });
 
-    // Chargement initial
-    setTimeout(() => {
-      if (window.Jupiter) initJupiter();
-    }, 1000);
+    document.getElementById("output-token").addEventListener("click", () => {
+      const choice = prompt("Enter token: SOL / USDC / USDT / BONK");
+      const token = choice?.toUpperCase();
+      if (TOKENS[token]) {
+        outputMint = TOKENS[token];
+        document.getElementById("output-token-name").innerText = token;
+      } else {
+        alert("Invalid token selected.");
+      }
+    });
   </script>
 </body>
 </html>
