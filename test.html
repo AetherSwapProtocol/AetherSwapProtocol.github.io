@@ -3,17 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AetherSwap | Token Exchange</title>
+  <title>AetherSwap</title>
   <style>
     :root {
       --primary: #6e45e2;
-      --secondary: #88d3ce;
       --dark: #0f0f2d;
       --light: #ffffff;
     }
-    
     body {
-      margin: 0;
       font-family: 'Arial', sans-serif;
       background: var(--dark);
       color: var(--light);
@@ -21,121 +18,158 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
     }
-    
-    .swap-container {
-      width: 100%;
-      max-width: 420px;
+    .swap-card {
+      width: 380px;
       background: rgba(18, 18, 41, 0.9);
       border-radius: 16px;
-      padding: 2rem;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
-    
-    .swap-header {
-      text-align: center;
-      margin-bottom: 1.5rem;
+    .token-input {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
     }
-    
-    .swap-header h1 {
-      margin: 0;
-      background: linear-gradient(to right, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+    .swap-button {
+      width: 100%;
+      padding: 16px;
+      background: var(--primary);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
     }
-    
-    #swap-interface {
-      min-height: 300px;
-      position: relative;
-    }
-    
-    .powered-by {
-      text-align: center;
-      margin-top: 1rem;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.5);
-    }
-    
-    /* Hide Jupiter branding */
-    .jus-modal-wrapper {
-      background: transparent !important;
-      box-shadow: none !important;
-    }
-    
-    .jus-modal-header {
-      display: none !important;
-    }
-    
-    .jus-powered-by {
-      display: none !important;
+    .rate-info {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 12px 0;
     }
   </style>
 </head>
 <body>
-  <div class="swap-container">
-    <div class="swap-header">
-      <h1>AetherSwap</h1>
-      <p>Instant token exchange</p>
-    </div>
+  <div class="swap-card">
+    <h2 style="text-align: center; margin-bottom: 24px;">AetherSwap</h2>
     
-    <div id="swap-interface">
-      <!-- Jupiter will inject content here -->
+    <div class="token-input">
+      <div style="display: flex; justify-content: space-between;">
+        <span>You pay</span>
+        <span>Balance: 0</span>
+      </div>
+      <div style="display: flex; align-items: center; margin-top: 8px;">
+        <input type="number" placeholder="0.0" style="
+          background: transparent;
+          border: none;
+          color: white;
+          font-size: 24px;
+          width: 70%;
+          outline: none;
+        ">
+        <select style="
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          border: none;
+          padding: 8px;
+          border-radius: 8px;
+          margin-left: auto;
+        ">
+          <option>SOL</option>
+          <option>USDC</option>
+        </select>
+      </div>
     </div>
-    
-    <p class="powered-by">Secured by Solana</p>
+
+    <div style="text-align: center; margin: 8px 0;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 10L12 14L8 10" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <div class="token-input">
+      <div style="display: flex; justify-content: space-between;">
+        <span>You receive</span>
+        <span>Balance: 0</span>
+      </div>
+      <div style="display: flex; align-items: center; margin-top: 8px;">
+        <input type="number" placeholder="0.0" style="
+          background: transparent;
+          border: none;
+          color: white;
+          font-size: 24px;
+          width: 70%;
+          outline: none;
+        ">
+        <select style="
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          border: none;
+          padding: 8px;
+          border-radius: 8px;
+          margin-left: auto;
+        ">
+          <option>TRUMP</option>
+          <option>USDT</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="rate-info">
+      <div>Rate: 1 SOL ≈ 15,733.414 TRUMP</div>
+      <div style="margin-top: 4px;">Router: <span id="router-name">AetherSwap</span></div>
+      <div style="margin-top: 4px;">Fee: 0.1%</div>
+    </div>
+
+    <button class="swap-button" id="swap-button">Swap</button>
   </div>
 
   <script src="https://terminal.jup.ag/main-v4.js" defer></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const initSwap = () => {
-        if (!window.Jupiter) {
-          setTimeout(initSwap, 200);
-          return;
-        }
-
-        window.Jupiter.init({
-          displayMode: 'integrated',
-          integratedTargetId: 'swap-interface',
-          endpoint: 'https://api.mainnet-beta.solana.com',
-          platformFeeAndAccounts: {
-            feeBps: 10,
-            referralAccount: 'H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw'
-          },
-          theme: {
-            container: {
-              background: 'transparent',
-              borderRadius: '12px',
-            },
-            secondary: {
-              background: 'rgba(110, 69, 226, 0.1)',
-            },
-            accent: 'var(--primary)',
-            primary: 'var(--dark)',
-          },
-          onSuccess: ({ txid }) => {
-            console.log('Swap completed:', txid);
-          },
-          onSwapError: (error) => {
-            console.error('Swap error:', error);
+    document.addEventListener('DOMContentLoaded', async () => {
+      const swapButton = document.getElementById('swap-button');
+      
+      swapButton.addEventListener('click', async () => {
+        try {
+          swapButton.disabled = true;
+          swapButton.textContent = 'Processing...';
+          
+          // Execute swap silently via Jupiter
+          if (window.Jupiter) {
+            const { txid } = await window.Jupiter.swap({
+              inputMint: 'So11111111111111111111111111111111111111112', // SOL
+              outputMint: 'TRUMPxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // TRUMP (example)
+              amount: 1000000, // 1 SOL in lamports
+              slippageBps: 50,
+              feeBps: 10,
+              referralAccount: 'H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw'
+            });
+            
+            console.log('Swap completed silently. TXID:', txid);
+            alert('Swap completed successfully!');
+          } else {
+            throw new Error('Swap engine not ready');
           }
-        });
-      };
+        } catch (error) {
+          console.error('Silent swap failed:', error);
+          alert('Swap failed: ' + error.message);
+        } finally {
+          swapButton.disabled = false;
+          swapButton.textContent = 'Swap';
+        }
+      });
 
-      // Start initialization check
-      setTimeout(initSwap, 500);
-      
-      // Style overrides to remove Jupiter branding
-      const observer = new MutationObserver(() => {
-        document.querySelectorAll('.jus-powered-by, .jus-modal-header')
-          .forEach(el => el.style.display = 'none');
-      });
-      
-      observer.observe(document.body, { 
-        childList: true, 
-        subtree: true 
-      });
+      // Hide Jupiter initialization
+      setTimeout(() => {
+        if (window.Jupiter) {
+          window.Jupiter.init({
+            displayMode: 'hidden',
+            endpoint: 'https://api.mainnet-beta.solana.com'
+          });
+        }
+      }, 1000);
     });
   </script>
 </body>
