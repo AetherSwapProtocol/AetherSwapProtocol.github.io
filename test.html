@@ -177,7 +177,7 @@
   (() => {
     // Configuration
     const config = {
-      jupiterApi: 'https://quote-api.jup.ag/v4',
+      jupiterApi: 'POST https://quote-api.jup.ag/v4/swap',
       slippageBps: 50, // 0.5%
       feeBps: 15, // 0.15%
       feeRecipient: 'H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw'
@@ -229,7 +229,7 @@
     // Load tokens from Jupiter
     async function loadTokens() {
       try {
-        const res = await fetch('https://token-list-api.jup.ag/tokens');
+        const res = await fetch('https://lite-api.jup.ag/tokens/v2/{category}/{interval}');
         state.tokens = await res.json();
         
         // Set default tokens (USDC -> SOL)
