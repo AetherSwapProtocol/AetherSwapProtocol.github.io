@@ -1,464 +1,301 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AetherSwap PRO</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                500: '#7e22ce',
-                600: '#6b21a8'
-              },
-              secondary: {
-                500: '#3b82f6',
-                600: '#2563eb'
-              }
-            },
-            borderRadius: {
-              lg: '16px',
-              md: '12px',
-              sm: '8px'
-            },
-            boxShadow: {
-              swap: '0 8px 24px rgba(0, 0, 0, 0.6)'
-            }
-          }
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AetherSwap PRO</title>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          primary: {500:'#7e22ce',600:'#6b21a8'},
+          secondary:{500:'#3b82f6',600:'#2563eb'}
         }
       }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
-  </head>
-  <body class="bg-[#0f0f0f] text-white min-h-screen flex items-center justify-center px-4">
-    <div class="w-full max-w-md bg-[#1a1a2f] rounded-lg p-6 shadow-swap">
-      <div class="flex justify-between items-center mb-4 text-sm text-gray-400">
-        <span class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-400"></div> Solana Mainnet</span>
-        <span>• Fast • ~0.0005 SOL</span>
-      </div>
+    }
+  }
+</script>
+<style>
+  /* Custom styles & animations */
+  .modal-enter { opacity:0; transform:translateY(20px); }
+  .modal-enter-active { opacity:1; transform:translateY(0); transition:all .2s ease;}
+  .modal-exit { opacity:1; transform:translateY(0); }
+  .modal-exit-active { opacity:0; transform:translateY(20px); transition:all .2s ease;}
+  .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1a1a2f; color:#eee;
+           padding:12px 20px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.5); opacity:0;
+           transition:opacity .3s ease;}
+  .toast-show { opacity:1; }
+</style>
+</head>
+<body class="dark bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen p-4">
 
-      <!-- Token A input -->
-      <div class="bg-white/5 rounded-md p-4 mb-3 relative group">
-        <div id="fromTokenSelector" class="flex items-center gap-3 cursor-pointer hover:opacity-90">
-          <img id="fromTokenLogo" src="" alt="Token" class="w-8 h-8 rounded-full hidden" />
+<div class="swap-container bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md">
+  <div class="network-status text-gray-400 text-sm mb-4 flex items-center gap-2">
+    <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+    <span>Solana Mainnet</span>
+    <span>&bull;</span>
+    <span>Fast: ~0.0005 SOL</span>
+  </div>
+
+  <!-- From token -->
+  <div class="token-input mb-4 border-2 border-primary-600 rounded-lg p-4 flex flex-col"
+       id="fromInput">
+    <div class="flex items-center justify-between cursor-pointer" id="fromSelector">
+      <div class="flex items-center space-x-3">
+        <img src="" alt="" id="fromLogo" class="w-8 h-8 rounded-full bg-white"/>
+        <div>
+          <div id="fromSymbol" class="font-bold text-lg">Select</div>
+          <div class="text-xs text-gray-400">Balance: <span id="fromBalance">0.0</span></div>
+        </div>
+      </div>
+    </div>
+    <input type="text" id="fromAmount" placeholder="0.0"
+           class="mt-3 w-full bg-transparent border-none text-right text-2xl font-semibold focus:outline-none"/>
+    <div class="text-xs text-gray-400 text-right">≈ $<span id="fromUSD">0.00</span></div>
+  </div>
+
+  <!-- Switch → animated -->
+  <button id="switchBtn"
+          class="swap-arrow bg-gray-800 border-2 border-gray-700 rounded-full w-10 h-10 flex items-center justify-center mx-auto mb-4 transform transition-transform duration-300">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-primary-500"
+         fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M7 7l10 10M17 7l-10 10"/>
+    </svg>
+  </button>
+
+  <!-- To token -->
+  <div class="token-input mb-2 p-4 rounded-lg border-2 border-gray-700" id="toInput">
+    <div class="flex items-center justify-between cursor-pointer" id="toSelector">
+      <div class="flex items-center space-x-3">
+        <img src="" alt="" id="toLogo" class="w-8 h-8 rounded-full bg-white"/>
+        <div>
+          <div id="toSymbol" class="font-bold text-lg">Select</div>
+          <div class="text-xs text-gray-400">Balance: <span id="toBalance">0.0</span></div>
+        </div>
+      </div>
+    </div>
+    <input type="text" id="toAmount" placeholder="0.0" readonly
+           class="mt-3 w-full bg-transparent border-none text-right text-2xl font-semibold focus:outline-none"/>
+    <div class="text-xs text-gray-400 text-right">≈ $<span id="toUSD">0.00</span></div>
+  </div>
+
+  <!-- Details -->
+  <div class="swap-details border-t border-gray-700 pt-4 space-y-2 text-sm">
+    <div class="flex justify-between"><span>Exchange Rate</span><span id="exchangeRate">‑</span></div>
+    <div class="flex justify-between"><span>Price Impact</span><span id="priceImpact" class="text-green-400">‑</span></div>
+    <div class="flex justify-between"><span>Network Fee</span><span id="networkFee">‑</span></div>
+  </div>
+
+  <!-- Swap button -->
+  <button id="swapBtn"
+          class="swap-button bg-primary-500 hover:bg-primary-600 disabled:bg-gray-700 disabled:cursor-not-allowed mt-6 py-3 text-lg font-bold rounded-lg w-full"
+          disabled>Connect Wallet</button>
+</div>
+
+<!-- Token modal -->
+<div id="tokenModal"
+     class="token-modal fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center p-4">
+  <div class="token-modal-content bg-gray-800 rounded-xl overflow-hidden w-full max-w-md">
+    <div class="token-search p-4 border-b border-gray-700">
+      <input type="text" id="tokenSearch" placeholder="Search token or paste address"
+             class="w-full p-2 bg-gray-700 text-gray-200 rounded-lg focus:outline-primary-500"/>
+    </div>
+    <div class="token-list max-h-80 overflow-y-auto"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast">Placeholder</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+<script>
+(() => {
+  const config = {
+    slippageBps: 50,
+    apiBase: 'https://lite-api.jup.ag',
+    priceAPI: 'https://lite-api.jup.ag/price/v3'
+  };
+  const state = {
+    tokens: [], wallet:null, from:null, to:null, balances:{}, quote:null
+  };
+  const el = id => document.getElementById(id);
+
+  const fromSelector = el('fromSelector'), toSelector = el('toSelector'),
+        switchBtn = el('switchBtn'), swapBtn = el('swapBtn'),
+        tokenModal = el('tokenModal'), tokenList = document.querySelector('.token-list'),
+        tokenSearch = el('tokenSearch'), toast = el('toast');
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('toast-show');
+    setTimeout(()=>toast.classList.remove('toast-show'),3500);
+  }
+
+  async function loadTokens(){
+    const res = await fetch(`${config.apiBase}/tokens/v2/search`);
+    state.tokens = (await res.json()).tokens;
+  }
+
+  async function loadBalances(){
+    if(!state.wallet) return;
+    const conn = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+    const lam = await conn.getBalance(state.wallet.publicKey);
+    state.balances['So11111111111111111111111111111111111111112'] = (lam/solanaWeb3.LAMPORTS_PER_SOL).toFixed(6);
+    const res = await conn.getParsedTokenAccountsByOwner(state.wallet.publicKey,{programId:new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")});
+    res.value.forEach(a => {
+      const info = a.account.data.parsed.info;
+      state.balances[info.mint] = info.tokenAmount.uiAmountString;
+    });
+  }
+
+  function openModal(role){
+    state.selecting = role;
+    tokenSearch.value=''; renderTokenList(state.tokens);
+    tokenModal.classList.remove('hidden');
+  }
+  function closeModal(){
+    tokenModal.classList.add('hidden');
+  }
+
+  function renderTokenList(list){
+    tokenList.innerHTML='';
+    list.forEach(t=>{
+      const row = document.createElement('div');
+      row.className='token-item p-3 flex items-center justify-between hover:bg-gray-700 cursor-pointer';
+      row.innerHTML = `
+        <div class="flex items-center gap-3">
+          <img src="${t.logoURI||''}" class="w-8 h-8 rounded-full"/>
           <div>
-            <div id="fromTokenSymbol" class="font-bold text-lg">Select</div>
-            <div class="text-sm text-gray-400">Balance: <span id="fromTokenBalance">0.0</span></div>
+            <div class="font-semibold">${t.symbol}</div>
+            <div class="text-xs text-gray-400">${t.name}</div>
           </div>
         </div>
-        <input type="text" id="fromAmount" placeholder="0.0"
-          class="w-full text-right text-2xl bg-transparent border-none outline-none mt-2 text-white placeholder-gray-500" />
-        <div class="text-right text-sm text-gray-400">≈ $<span id="fromAmountUSD">0.00</span></div>
-      </div>
+        <div class="text-xs">${state.balances[t.address]||'0.0'}</div>`;
+      row.onclick = ()=>selectToken(t);
+      tokenList.appendChild(row);
+    });
+  }
 
-      <!-- Swap icon -->
-      <div class="flex justify-center my-2">
-        <button id="switchTokens" class="bg-[#1a1a2f] border-2 border-[#0f0f0f] w-10 h-10 rounded-full flex items-center justify-center transition hover:bg-primary-600 transform hover:rotate-180 duration-300">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 text-white">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-      </div>
+  function selectToken(t){
+    state[state.selecting] = t;
+    closeModal(); updateSelectors(); clearQuote(); updateQuote();
+  }
 
-      <!-- Token B input -->
-      <div class="bg-white/5 rounded-md p-4 relative group">
-        <div id="toTokenSelector" class="flex items-center gap-3 cursor-pointer hover:opacity-90">
-          <img id="toTokenLogo" src="" alt="Token" class="w-8 h-8 rounded-full hidden" />
-          <div>
-            <div id="toTokenSymbol" class="font-bold text-lg">Select</div>
-            <div class="text-sm text-gray-400">Balance: <span id="toTokenBalance">0.0</span></div>
-          </div>
-        </div>
-        <input type="text" id="toAmount" placeholder="0.0"
-          class="w-full text-right text-2xl bg-transparent border-none outline-none mt-2 text-white placeholder-gray-500" readonly />
-        <div class="text-right text-sm text-gray-400">≈ $<span id="toAmountUSD">0.00</span></div>
-      </div>
+  function updateSelectors(){
+    ['from','to'].forEach(key=>{
+      const t = state[key];
+      el(`${key}Logo`).src = t.logoURI || '';
+      el(`${key}Symbol`).textContent = t.symbol;
+      el(`${key}Balance`).textContent = state.balances[t.address]||'0.0';
+    });
+  }
 
-      <!-- Swap details -->
-      <div class="mt-4 border-t border-white/10 pt-4 space-y-2 text-sm">
-        <div class="flex justify-between">
-          <span>Exchange Rate</span>
-          <span id="exchangeRate">1 A = 0.0 B</span>
-        </div>
-        <div class="flex justify-between">
-          <span>Price Impact</span>
-          <span id="priceImpact" class="text-green-400">&lt; 0.01%</span>
-        </div>
-        <div class="flex justify-between">
-          <span>Network Fee</span>
-          <span id="networkFee">~$0.00</span>
-        </div>
-      </div>
+  async function updateUSD(){
+    const coins = [state.from,state.to];
+    for(const key of ['from','to']){
+      const t = state[key];
+      const amt = parseFloat(el(`${key}Amount`).value);
+      if(t && amt>0){
+        const res = await fetch(`${config.priceAPI}?mint=${t.address}`);
+        const price = (await res.json()).prices[t.address];
+        el(`${key}USD`).textContent = (amt * price).toFixed(2);
+      } else el(`${key}USD`).textContent='0.00';
+    }
+  }
 
-      <!-- Swap button -->
-      <button id="swapButton" disabled
-        class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 rounded-md mt-4 transition disabled:bg-gray-700 disabled:cursor-not-allowed">
-        Connect Wallet
-      </button>
-            <!-- Token Modal -->
-      <div id="tokenModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
-        <div class="bg-[#1a1a2f] rounded-lg w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
-          <div class="p-4 border-b border-white/10">
-            <input type="text" id="tokenSearch"
-              class="w-full bg-white/5 text-white placeholder-gray-400 px-4 py-2 rounded-md outline-none"
-              placeholder="Search token name, symbol or address..." />
-          </div>
-          <div id="tokenList" class="flex-1 overflow-y-auto">
-            <!-- Token rows injected here -->
-          </div>
-        </div>
-      </div>
+  function clearQuote(){
+    state.quote=null;
+    ['toAmount','exchangeRate','priceImpact','networkFee'].forEach(id=>el(id).textContent='‑');
+    swapBtn.disabled = !state.wallet;
+  }
 
-      <!-- JavaScript Core Logic -->
-      <script>
-        const config = {
-          tokenAPI: 'https://lite-api.jup.ag/tokens/v2',
-          quoteAPI: 'https://quote-api.jup.ag/v6',
-          slippageBps: 50, // 0.5%
-        };
+  async function updateQuote(){
+    if(!state.from||!state.to||!el('fromAmount').value) return clearQuote();
+    clearQuote(); updateUSD();
+    const amt = BigInt(Math.floor(parseFloat(el('fromAmount').value) * 10**state.from.decimals));
+    const res = await fetch(`${config.apiBase}/swap/v2/quote`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        inputMint: state.from.address, outputMint:state.to.address,
+        amount:amt.toString(), slippageBps: config.slippageBps,
+        userPublicKey:state.wallet?.publicKey.toString()
+      })
+    });
+    const json = await res.json();
+    if(!json.data?.length) return;
+    state.quote = json.data[0];
+    const out = Number(BigInt(state.quote.outAmount))/10**state.to.decimals;
+    el('toAmount').value = out.toFixed(6);
+    el('exchangeRate').textContent = `1 ${state.from.symbol} = ${(out/parseFloat(el('fromAmount').value)).toFixed(6)} ${state.to.symbol}`;
+    const pi = parseFloat(state.quote.priceImpactPct)*100;
+    el('priceImpact').textContent = `${pi.toFixed(2)}%`;
+    el('priceImpact').className = pi>1?'text-red-400':'text-green-400';
+    el('networkFee').textContent = '~0.0005 SOL';
+    swapBtn.disabled = !state.wallet;
+  }
 
-        const state = {
-          tokens: [],
-          balances: {},
-          wallet: null,
-          fromToken: null,
-          toToken: null,
-          selecting: null,
-          quote: null
-        };
+  async function executeSwap(){
+    if(!state.wallet) return connectWallet();
+    if(!state.quote) return showToast('Invalid swap');
+    swapBtn.textContent='Processing...'; swapBtn.disabled=true;
+    try{
+      const res = await fetch(`${config.apiBase}/swap/v2/swap-instructions`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({route:state.quote, userPublicKey:state.wallet.publicKey.toString(), wrapUnwrapSOL:true})
+      });
+      const j = await res.json();
+      const tx = solanaWeb3.Transaction.from(Uint8Array.from(atob(j.unsignedTransaction),c=>c.charCodeAt(0)));
+      const signed = await state.wallet.signTransaction(tx);
+      const conn = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+      const txid = await conn.sendRawTransaction(signed.serialize());
+      await conn.confirmTransaction(txid,'confirmed');
+      showToast(`Swap successful: ${txid.slice(0,6)}...`);
+      await loadBalances(); updateSelectors();
+      el('fromAmount').value=''; clearQuote();
+    }catch(e){ console.error(e); showToast('Swap failed'); }
+    finally{ swapBtn.textContent = state.wallet?'Swap Now':'Connect Wallet'; swapBtn.disabled = !state.wallet;}
+  }
 
-        const elements = {
-          fromTokenSelector: document.getElementById('fromTokenSelector'),
-          toTokenSelector: document.getElementById('toTokenSelector'),
-          switchTokens: document.getElementById('switchTokens'),
-          fromTokenLogo: document.getElementById('fromTokenLogo'),
-          toTokenLogo: document.getElementById('toTokenLogo'),
-          fromTokenSymbol: document.getElementById('fromTokenSymbol'),
-          toTokenSymbol: document.getElementById('toTokenSymbol'),
-          fromTokenBalance: document.getElementById('fromTokenBalance'),
-          toTokenBalance: document.getElementById('toTokenBalance'),
-          fromAmount: document.getElementById('fromAmount'),
-          toAmount: document.getElementById('toAmount'),
-          fromAmountUSD: document.getElementById('fromAmountUSD'),
-          toAmountUSD: document.getElementById('toAmountUSD'),
-          tokenModal: document.getElementById('tokenModal'),
-          tokenSearch: document.getElementById('tokenSearch'),
-          tokenList: document.getElementById('tokenList'),
-          swapButton: document.getElementById('swapButton'),
-          exchangeRate: document.getElementById('exchangeRate'),
-          priceImpact: document.getElementById('priceImpact'),
-          networkFee: document.getElementById('networkFee')
-        };
+  async function connectWallet(){
+    if(!window.solana) return showToast('Phantom not installed');
+    try{
+      await window.solana.connect();
+      state.wallet = window.solana; el('swapBtn').textContent='Swap Now'; swapBtn.disabled = !state.quote;
+      await loadBalances(); updateSelectors();
+    }catch(e){ showToast('Connection failed'); console.error(e);}
+  }
 
-        async function initApp() {
-          await loadTokens();
-          setupListeners();
+  fromSelector.addEventListener('click',()=>openModal('from'));
+  toSelector.addEventListener('click',()=>openModal('to'));
+  tokenSearch.addEventListener('input',e=>{
+    const q=e.target.value.toLowerCase();
+    renderTokenList(state.tokens.filter(t=>t.symbol.toLowerCase().includes(q)||t.name.toLowerCase().includes(q)||t.address.toLowerCase().startsWith(q)));
+  });
+  switchBtn.addEventListener('click',()=>{
+    swapBtn.classList.add('transform','rotate-180'); setTimeout(()=>swapBtn.classList.remove('rotate-180'),300);
+    [state.from,state.to] = [state.to,state.from];
+    updateSelectors(); el('fromAmount').value=''; el('toAmount').value=''; clearQuote();
+  });
+  el('fromAmount').addEventListener('input',debounce(updateQuote,300));
+  swapBtn.addEventListener('click',executeSwap);
+  tokenModal.addEventListener('click',e=>{ if(e.target===tokenModal) closeModal(); });
 
-          if (window.solana?.isConnected) {
-            await connectWallet();
-          }
-        }
+  async function init(){
+    await loadTokens();
+    if(window.solana?.isConnected){ state.wallet=window.solana; await connectWallet();}
+  }
+  // Debounce util
+  function debounce(fn,ms){ let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
 
-        async function loadTokens() {
-          try {
-            const res = await fetch(`${config.tokenAPI}/list`);
-            const data = await res.json();
-            state.tokens = data;
-          } catch (err) {
-            console.error("Failed to load tokens:", err);
-          }
-        }
+  init();
+})();
+</script>
 
-        function setupListeners() {
-          elements.fromTokenSelector.addEventListener('click', () => openTokenModal('from'));
-          elements.toTokenSelector.addEventListener('click', () => openTokenModal('to'));
-          elements.switchTokens.addEventListener('click', switchTokens);
-
-          elements.tokenSearch.addEventListener('input', () => {
-            renderTokenList(filterTokens(elements.tokenSearch.value));
-          });
-
-          window.addEventListener('click', (e) => {
-            if (e.target === elements.tokenModal) {
-              closeTokenModal();
-            }
-          });
-
-          elements.fromAmount.addEventListener('input', debounce(updateQuote, 300));
-          elements.swapButton.addEventListener('click', handleSwap);
-        }
-
-        function openTokenModal(type) {
-          state.selecting = type;
-          elements.tokenSearch.value = '';
-          renderTokenList(state.tokens);
-          elements.tokenModal.classList.remove('hidden');
-        }
-
-        function closeTokenModal() {
-          elements.tokenModal.classList.add('hidden');
-        }
-
-        function renderTokenList(tokens) {
-          elements.tokenList.innerHTML = '';
-          if (!tokens.length) {
-            elements.tokenList.innerHTML = '<div class="p-4 text-gray-400">No tokens found.</div>';
-            return;
-          }
-
-          for (const token of tokens) {
-            const row = document.createElement('div');
-            row.className = 'flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-primary-600/20';
-            row.innerHTML = `
-              <div class="flex items-center gap-3">
-                <img src="${token.logoURI}" class="w-6 h-6 rounded-full" onerror="this.style.display='none'">
-                <div>
-                  <div class="font-semibold">${token.symbol}</div>
-                  <div class="text-xs text-gray-400">${token.name}</div>
-                </div>
-              </div>
-              <div class="text-sm text-gray-400 text-right">${state.balances[token.address] || '0.0'}</div>
-            `;
-
-            row.addEventListener('click', () => selectToken(token));
-            elements.tokenList.appendChild(row);
-          }
-        }
-
-        function filterTokens(query) {
-          const q = query.toLowerCase();
-          return state.tokens.filter(t =>
-            t.symbol.toLowerCase().includes(q) ||
-            t.name.toLowerCase().includes(q) ||
-            t.address.toLowerCase().includes(q)
-          );
-        }
-
-        function selectToken(token) {
-          if (state.selecting === 'from') {
-            state.fromToken = token;
-            elements.fromTokenSymbol.textContent = token.symbol;
-            elements.fromTokenLogo.src = token.logoURI || '';
-            elements.fromTokenLogo.classList.remove('hidden');
-          } else {
-            state.toToken = token;
-            elements.toTokenSymbol.textContent = token.symbol;
-            elements.toTokenLogo.src = token.logoURI || '';
-            elements.toTokenLogo.classList.remove('hidden');
-          }
-          closeTokenModal();
-          updateQuote();
-        }
-
-        function switchTokens() {
-          if (!state.fromToken || !state.toToken) return;
-
-          [state.fromToken, state.toToken] = [state.toToken, state.fromToken];
-
-          elements.fromTokenSymbol.textContent = state.fromToken.symbol;
-          elements.fromTokenLogo.src = state.fromToken.logoURI;
-          elements.toTokenSymbol.textContent = state.toToken.symbol;
-          elements.toTokenLogo.src = state.toToken.logoURI;
-
-          const tmp = elements.fromAmount.value;
-          elements.fromAmount.value = elements.toAmount.value;
-          elements.toAmount.value = tmp;
-
-          updateQuote();
-        }
-
-        function debounce(func, delay) {
-          let timeout;
-          return function () {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, arguments), delay);
-          };
-        }
-
-        async function connectWallet() {
-          try {
-            const resp = await window.solana.connect();
-            state.wallet = window.solana;
-            elements.swapButton.textContent = 'Swap Now';
-            await loadBalances();
-            updateQuote();
-          } catch (e) {
-            console.error("Wallet connection error", e);
-          }
-        }
-
-        async function loadBalances() {
-          if (!state.wallet) return;
-          const conn = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-                    const publicKey = state.wallet.publicKey;
-
-          // Load native SOL balance
-          const lamports = await conn.getBalance(publicKey);
-          state.balances["So11111111111111111111111111111111111111112"] = (lamports / solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
-
-          // Load SPL Token balances
-          const splAccounts = await conn.getParsedTokenAccountsByOwner(
-            publicKey,
-            { programId: new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA") }
-          );
-
-          for (const acct of splAccounts.value) {
-            const info = acct.account.data.parsed.info;
-            const mint = info.mint;
-            const amount = info.tokenAmount.uiAmountString;
-            state.balances[mint] = amount;
-          }
-
-          if (state.fromToken) {
-            elements.fromTokenBalance.textContent = state.balances[state.fromToken.address] || "0.0";
-          }
-          if (state.toToken) {
-            elements.toTokenBalance.textContent = state.balances[state.toToken.address] || "0.0";
-          }
-        }
-
-        async function updateQuote() {
-          const from = state.fromToken;
-          const to = state.toToken;
-          const amount = parseFloat(elements.fromAmount.value);
-
-          if (!from || !to || isNaN(amount) || amount <= 0) {
-            elements.toAmount.value = '';
-            return;
-          }
-
-          const amountInBaseUnits = BigInt(Math.floor(amount * 10 ** from.decimals)).toString();
-
-          const url = new URL(`${config.quoteAPI}`);
-          url.searchParams.set("inputMint", from.address);
-          url.searchParams.set("outputMint", to.address);
-          url.searchParams.set("amount", amountInBaseUnits);
-          url.searchParams.set("slippageBps", config.slippageBps.toString());
-
-          try {
-            const res = await fetch(url);
-            const data = await res.json();
-
-            if (!data.routes || data.routes.length === 0) {
-              elements.toAmount.value = '';
-              return;
-            }
-
-            const route = data.routes[0];
-            state.quote = route;
-
-            const outAmount = Number(route.outAmount) / (10 ** to.decimals);
-            elements.toAmount.value = outAmount.toFixed(6);
-
-            // Display exchange rate
-            const rate = outAmount / amount;
-            elements.exchangeRate.textContent = `1 ${from.symbol} = ${rate.toFixed(6)} ${to.symbol}`;
-
-            // Price Impact
-            const impact = parseFloat(route.priceImpactPct) * 100;
-            elements.priceImpact.textContent = `${impact.toFixed(2)}%`;
-            elements.priceImpact.className = impact > 1 ? "text-red-500" : "text-green-400";
-
-            // Network Fee (mock)
-            elements.networkFee.textContent = "~$0.0005";
-
-            // USD approx
-            elements.fromAmountUSD.textContent = (amount * 1.2).toFixed(2); // optional: price API
-            elements.toAmountUSD.textContent = (outAmount * 1.2).toFixed(2); // optional: price API
-
-            if (state.wallet) {
-              elements.swapButton.disabled = false;
-            }
-          } catch (err) {
-            console.error("Failed to quote:", err);
-          }
-        }
-
-        async function handleSwap() {
-          if (!state.wallet || !state.quote) return;
-
-          const body = {
-            userPublicKey: state.wallet.publicKey.toBase58(),
-            wrapUnwrapSOL: true,
-            quoteResponse: state.quote,
-            platformFeeAndAccounts: [
-              {
-                feeBps: 25, // 0.25%
-                feeAccount: "YOUR_FEE_WALLET_PUBLICKEY"
-              }
-            ]
-          };
-
-          try {
-            elements.swapButton.textContent = "Building Tx...";
-
-            const swapRes = await fetch('https://quote-api.jup.ag/v6/swap', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(body)
-            });
-
-            const swapData = await swapRes.json();
-
-            if (!swapData.swapTransaction) {
-              throw new Error("No swapTransaction returned");
-            }
-
-            const tx = solanaWeb3.Transaction.from(Buffer.from(swapData.swapTransaction, 'base64'));
-
-            const signed = await state.wallet.signTransaction(tx);
-            const conn = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-
-            const sig = await conn.sendRawTransaction(signed.serialize());
-            await conn.confirmTransaction(sig, 'confirmed');
-
-            alert(`Swap Success! TxID: ${sig}`);
-
-            elements.swapButton.textContent = "Swap Now";
-            elements.fromAmount.value = "";
-            elements.toAmount.value = "";
-            state.quote = null;
-            await loadBalances();
-          } catch (e) {
-            console.error("Swap failed:", e);
-            alert(`Swap Failed: ${e.message}`);
-            elements.swapButton.textContent = "Swap Now";
-          }
-        }
-
-        document.addEventListener("DOMContentLoaded", initApp);
-      </script>
-          </script>
-
-    <!-- Solana Web3 -->
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/lib/index.iife.min.js"></script>
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                500: '#7e22ce',
-                600: '#6b21a8'
-              },
-              secondary: {
-                500: '#3b82f6',
-                600: '#2563eb'
-              }
-            }
-          }
-        }
-      };
-    </script>
-  </body>
+</body>
 </html>
