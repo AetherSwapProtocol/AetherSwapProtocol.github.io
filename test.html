@@ -5,835 +5,817 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>AetherSwap PRO</title>
 <style>
-  /* Reset & base */
-  * {
-    box-sizing: border-box;
+  :root {
+    --primary: #6e45e2;
+    --primary-hover: #5934ba;
+    --bg: #0f0f2d;
+    --surface: #18182f;
+    --text: #eee;
+    --text-muted: #bbb;
+    --radius: 16px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.6);
+    --focus: 3px solid var(--primary);
+    --transition: 0.3s ease;
   }
+  *, *::before, *::after { box-sizing: border-box; }
   body {
     margin: 0;
-    background: #0f0f2d;
-    color: #eee;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     padding: 24px;
     min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
-  .swap-container {
-    background: rgba(18,18,41,0.9);
-    border-radius: 20px;
-    padding: 28px 32px;
-    width: 400px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  .container {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: min(420px, 100%);
+    padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 16px;
   }
-  h1.title {
-    margin: 0 0 16px 0;
+  h1 {
+    margin: 0;
     text-align: center;
-    color: #6e45e2;
-    font-weight: 700;
-    font-size: 26px;
+    color: var(--primary);
+    font-size: 1.6rem;
   }
-  button.btn {
-    cursor: pointer;
-    border: none;
-    border-radius: 12px;
-    background: #6e45e2;
-    color: white;
-    font-weight: 700;
-    font-size: 16px;
-    padding: 14px 0;
-    width: 100%;
-    transition: background-color 0.3s ease;
-  }
-  button.btn:hover:not(:disabled) {
-    background: #5b39b0;
-  }
-  button.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .wallet-section {
-    text-align: center;
-  }
-
-  .swap-box {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .token-selector {
-    background: rgba(255 255 255 / 0.1);
-    border-radius: 14px;
-    padding: 12px 16px;
+  .token, .slippage, .btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+    padding: 12px;
     display: flex;
     align-items: center;
     gap: 12px;
+    transition: background var(--transition);
+  }
+  .token:hover, .token:focus {
+    background: rgba(110, 69, 226, 0.3);
+    outline: var(--focus);
     cursor: pointer;
-    user-select: none;
   }
-  .token-selector:hover {
-    background: rgba(255 255 255 / 0.15);
-  }
-  .token-icon img {
+  .token img {
     width: 32px;
     height: 32px;
     border-radius: 50%;
+    background: #fff;
+    object-fit: contain;
   }
-  .token-info {
+  input[type=number] {
     flex: 1;
-  }
-  .token-label {
-    font-size: 12px;
-    color: #aaa;
-    margin-bottom: 4px;
-  }
-  .token-symbol {
-    font-weight: 700;
-    font-size: 18px;
-  }
-  .token-amount {
-    padding: 14px 16px;
-    font-size: 20px;
-    border-radius: 14px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.05);
     border: none;
-    outline: none;
-    background: rgba(255 255 255 / 0.05);
-    color: white;
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 1rem;
+    text-align: right;
   }
-  .token-amount::placeholder {
-    color: #888;
-  }
-  .token-amount[readonly] {
+  input[readonly] {
     user-select: none;
+    cursor: default;
   }
-
-  .switch-btn {
+  .switch {
+    align-self: center;
     background: none;
     border: none;
-    align-self: center;
-    color: #6e45e2;
     cursor: pointer;
-    border-radius: 50%;
+    color: var(--primary);
     padding: 6px;
-    transition: background 0.3s ease;
-  }
-  .switch-btn:hover {
-    background: rgba(110,69,226,0.15);
-  }
-  .switch-btn svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .slippage-container {
-    margin-top: 8px;
+    width: 36px;
+    height: 36px;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 12px;
-    color: #ccc;
-    font-size: 14px;
+    transition: color var(--transition);
   }
-  .slippage-container label {
-    min-width: 130px;
+  .switch:hover {
+    color: var(--primary-hover);
   }
-  .slippage-container select,
-  .slippage-container input {
-    background: rgba(255 255 255 / 0.1);
+  .btn {
+    cursor: pointer;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
     border: none;
-    border-radius: 8px;
-    padding: 6px 10px;
-    color: white;
+    padding: 16px;
+    border-radius: var(--radius);
+    transition: background var(--transition);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .slippage label {
+    color: var(--text-muted);
     font-weight: 600;
-    font-size: 14px;
+    min-width: 60px;
   }
-  .slippage-container input[type=number]::-webkit-inner-spin-button,
-  .slippage-container input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  .slippage select, .slippage input {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 1rem;
+    padding: 6px 10px;
+    width: 100px;
+    text-align: right;
   }
-
+  .slippage input {
+    display: none;
+  }
+  .chart-container {
+    margin-top: 12px;
+  }
+  canvas {
+    width: 100% !important;
+    height: 160px !important;
+  }
+  .history {
+    font-size: 0.9rem;
+    max-height: 140px;
+    overflow-y: auto;
+    color: var(--text-muted);
+  }
+  .history div {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+  }
+  .history a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+  .history a:hover {
+    text-decoration: underline;
+  }
   /* Modal */
   .modal {
     position: fixed;
     inset: 0;
-    background: rgba(15,15,45,0.95);
-    display: flex;
+    background: rgba(15, 15, 45, 0.9);
+    display: none;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 60px;
-    z-index: 10000;
+    padding: 40px 12px;
+    z-index: 1000;
   }
-  .modal.hidden {
-    display: none;
+  .modal.active {
+    display: flex;
   }
   .modal-content {
-    background: #1b1b3a;
-    border-radius: 16px;
-    width: 360px;
-    max-height: 70vh;
-    overflow-y: auto;
-    box-shadow: 0 0 30px rgba(110,69,226,0.5);
-    padding: 16px 24px 24px;
-    color: #eee;
-  }
-  .modal-content header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .modal-content header h2 {
-    margin: 0;
-    font-weight: 700;
-    font-size: 18px;
-  }
-  #modalClose {
-    background: none;
-    border: none;
-    font-size: 28px;
-    color: #6e45e2;
-    cursor: pointer;
-    line-height: 1;
-    font-weight: 700;
-  }
-  #modalClose:hover {
-    color: #956ffb;
-  }
-  #tokenSearch {
+    background: var(--surface);
+    border-radius: var(--radius);
     width: 100%;
-    padding: 10px 14px;
-    margin: 12px 0;
-    border-radius: 12px;
-    border: none;
-    font-size: 16px;
-    background: rgba(255 255 255 / 0.1);
-    color: #eee;
+    max-width: 400px;
+    box-shadow: var(--shadow);
+    padding: 16px;
+    color: var(--text);
+    position: relative;
   }
-  .token-list > div {
-    cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 12px;
+  .modal-content h2 {
+    margin: 0 0 12px 0;
+    color: var(--primary);
+  }
+  .modal input[type=search] {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    font-size: 1rem;
+  }
+  .token-list {
+    max-height: 320px;
+    overflow-y: auto;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .token-list div {
     display: flex;
     align-items: center;
-    gap: 10px;
-    transition: background 0.15s ease;
+    gap: 12px;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: background var(--transition);
   }
-  .token-list > div:hover {
-    background: rgba(110,69,226,0.4);
+  .token-list div:hover {
+    background: rgba(110, 69, 226, 0.3);
   }
   .token-list img {
-    border-radius: 50%;
     width: 24px;
     height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    object-fit: contain;
   }
-  .token-list small {
-    color: #ccc;
-    font-size: 12px;
+  .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 1.5rem;
+    cursor: pointer;
   }
-
-  /* Chart + History */
-  #chartContainer {
-    margin-top: 16px;
-    background: rgba(255 255 255 / 0.05);
-    border-radius: 12px;
-    padding: 12px;
-  }
-  #historyContainer {
-    margin-top: 16px;
-    max-height: 180px;
-    overflow-y: auto;
-    background: rgba(255 255 255 / 0.05);
-    border-radius: 12px;
-    padding: 12px;
-  }
-  #historyContainer h3 {
-    margin: 0 0 8px 0;
-    color: #bbb;
-  }
-  #swapHistoryList {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-    font-size: 13px;
-    color: #ccc;
-  }
-  #swapHistoryList li a {
-    color: #6e45e2;
-    text-decoration: none;
-  }
-  #swapHistoryList li a:hover {
-    text-decoration: underline;
-  }
-  #toastContainer {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.8);
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 20px;
-    display: none;
-    z-index: 9999;
-    font-weight: 600;
-    pointer-events: none;
-  }
-
-  /* Responsive */
-  @media (max-width: 450px) {
-    body {
-      padding: 12px;
+  @media (max-width: 460px) {
+    .container {
+      padding: 16px;
     }
-    .swap-container {
-      width: 100%;
-      padding: 20px;
-    }
-    .modal-content {
-      width: 95vw;
-      max-height: 80vh;
+    canvas {
+      height: 120px !important;
     }
   }
 </style>
 </head>
 <body>
 
-<div class="swap-container">
-  <h1 class="title">AetherSwap PRO</h1>
-  <div class="wallet-section">
-    <button id="walletButton" class="btn">Connect Wallet</button>
+<div class="container" role="main" aria-label="AetherSwap PRO">
+  <h1>AetherSwap PRO</h1>
+
+  <div class="token" id="fromToken" tabindex="0" aria-label="Select input token">
+    <img id="fromIcon" alt="From Token icon" src="" />
+    <div id="fromSymbol">Select Token</div>
+    <input type="number" id="fromAmt" placeholder="0.0" min="0" step="any" aria-label="Input amount" />
   </div>
-  <div class="swap-box">
-    <div id="tokenFrom" class="token-selector" tabindex="0" role="button" aria-label="Select token from">
-      <div id="tokenFromIcon" class="token-icon"><img src="" alt="" /></div>
-      <div class="token-info">
-        <div class="token-label">From</div>
-        <div id="tokenFromSymbol" class="token-symbol">Select Token</div>
-      </div>
-    </div>
-    <input
-      type="number"
-      id="fromAmount"
-      class="token-amount"
-      placeholder="0.0"
-      min="0"
-      aria-label="Amount to swap"
-      autocomplete="off"
-      inputmode="decimal"
-      step="any"
-    />
 
-    <button id="switchBtn" class="switch-btn" aria-label="Switch tokens">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linejoin="round" stroke-linecap="round" d="M16 17l5-5m0 0l-5-5m5 5H9m7 5v1a3 3 0 01-3 3H7a3 3 0 01-3-3V7a3 3 0 013-3h6a3 3 0 013 3v1" />
-      </svg>
-    </button>
+  <button class="switch" id="switchBtn" aria-label="Switch tokens" title="Switch tokens">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" viewBox="0 0 24 24">
+      <polyline points="17 1 21 5 17 9"/>
+      <polyline points="7 15 3 19 7 23"/>
+      <line x1="21" y1="5" x2="3" y2="19"/>
+    </svg>
+  </button>
 
-    <div id="tokenTo" class="token-selector" tabindex="0" role="button" aria-label="Select token to">
-      <div id="tokenToIcon" class="token-icon"><img src="" alt="" /></div>
-      <div class="token-info">
-        <div class="token-label">To</div>
-        <div id="tokenToSymbol" class="token-symbol">Select Token</div>
-      </div>
-    </div>
-    <input
-      type="number"
-      id="toAmount"
-      class="token-amount"
-      placeholder="0.0"
-      min="0"
-      aria-label="Expected amount"
-      autocomplete="off"
-      inputmode="decimal"
-      step="any"
-      readonly
-    />
+  <div class="token" id="toToken" tabindex="0" aria-label="Select output token">
+    <img id="toIcon" alt="To Token icon" src="" />
+    <div id="toSymbol">Select Token</div>
+    <input type="number" id="toAmt" placeholder="0.0" readonly aria-label="Output amount" />
+  </div>
 
-    <div class="slippage-container">
-      <label for="slippageSelect">Slippage tolerance</label>
-      <select id="slippageSelect" aria-label="Select slippage tolerance">
-        <option value="10">0.10%</option>
-        <option value="50" selected>0.50%</option>
-        <option value="100">1.00%</option>
-        <option value="custom">Custom</option>
-      </select>
-      <input
-        id="customSlippage"
-        type="number"
-        min="0.01"
-        max="5"
-        step="0.01"
-        style="display:none; width: 80px;"
-        placeholder="Custom %"
-        aria-label="Custom slippage tolerance"
-      />
-    </div>
+  <div class="slippage" aria-label="Slippage tolerance settings">
+    <label for="slipSelect">Slippage:</label>
+    <select id="slipSelect" aria-label="Slippage tolerance">
+      <option value="10">0.1%</option>
+      <option value="50" selected>0.5%</option>
+      <option value="100">1%</option>
+      <option value="custom">Custom</option>
+    </select>
+    <input type="number" id="slipCustom" min="0" max="100" step="0.01" placeholder="%" aria-label="Custom slippage percentage" />
+  </div>
 
-    <button id="swapBtn" class="btn" disabled>Swap Now</button>
+  <button class="btn" id="connectBtn">Connect Wallet</button>
+  <button class="btn" id="swapBtn" disabled>Swap Now</button>
 
-    <div style="font-size: 13px; margin-top: 10px; color: #aaa; user-select:none;">
-      <div>Network Fee: ~0.0005 SOL</div>
-      <div>Protocol Fee: 0.10%</div>
-      <div>Referral Fee (to your wallet): 0.10%</div>
-    </div>
+  <div class="chart-container" aria-label="Price chart">
+    <canvas id="priceChart"></canvas>
+  </div>
+
+  <div class="history" aria-live="polite" aria-atomic="true" aria-relevant="additions">
+    <strong>Swap History</strong>
+    <div id="historyList"></div>
   </div>
 </div>
 
-<!-- Modal Token Selection -->
-<div id="tokenModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+<!-- Modal for token selection -->
+<div class="modal" id="tokenModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
   <div class="modal-content">
-    <header>
-      <h2 id="modalTitle">Select a Token</h2>
-      <button id="modalClose" aria-label="Close token selection">&times;</button>
-    </header>
-    <input type="text" id="tokenSearch" placeholder="Search or paste address..." autocomplete="off" />
-    <div id="tokenList" class="token-list" tabindex="0" role="listbox" aria-label="List of tokens"></div>
+    <button class="close-btn" id="closeModal" aria-label="Close token selection modal">&times;</button>
+    <h2 id="modalTitle">Select a Token</h2>
+    <input type="search" id="tokenSearch" placeholder="Search or paste token address..." aria-label="Search or paste token address" autocomplete="off" />
+    <div class="token-list" id="tokenList"></div>
   </div>
 </div>
 
-<!-- Chart + History -->
-<div id="chartContainer" style="width: 100%; max-width: 400px; margin-top: 24px; display:none;">
-  <canvas id="priceChart" width="400" height="200"></canvas>
-</div>
-<div id="historyContainer" style="width: 100%; max-width: 400px; display:none;">
-  <h3>Swap History</h3>
-  <ul id="swapHistoryList"></ul>
-</div>
-
-<!-- Toast Notification -->
-<div id="toastContainer" role="alert" aria-live="assertive" aria-atomic="true"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  (function(){
-    const REFERRAL_WALLET = "H3z4XmmpLwjm2MhfRuEFhK4DjGHhkbQvmgSUUCTrm6hw"; // Commission wallet
-    const PROTOCOL_FEE_BPS = 10; // 0.1%
-    let slippageBps = 50; // Default 0.5%
-    let tokensList = [];
-    let tokenMap = {};
-    let tokenFrom = null;
-    let tokenTo = null;
-    let walletConnected = false;
-    let walletPublicKey = null;
-    let jupiterApiEndpoint = "https://quote-api.jup.ag/v1/quote";
-    let jupiterTokensEndpoint = "https://cache.jup.ag/tokens";
+<script>
+(() => {
+  const tokenModal = document.getElementById('tokenModal');
+  const tokenListEl = document.getElementById('tokenList');
+  const tokenSearch = document.getElementById('tokenSearch');
+  const closeModalBtn = document.getElementById('closeModal');
 
-    // DOM Elements
-    const walletButton = document.getElementById('walletButton');
-    const tokenFromDiv = document.getElementById('tokenFrom');
-    const tokenToDiv = document.getElementById('tokenTo');
-    const tokenFromIcon = document.getElementById('tokenFromIcon').querySelector('img');
-    const tokenToIcon = document.getElementById('tokenToIcon').querySelector('img');
-    const tokenFromSymbol = document.getElementById('tokenFromSymbol');
-    const tokenToSymbol = document.getElementById('tokenToSymbol');
-    const fromAmountInput = document.getElementById('fromAmount');
-    const toAmountInput = document.getElementById('toAmount');
-    const swapBtn = document.getElementById('swapBtn');
-    const switchBtn = document.getElementById('switchBtn');
-    const slippageSelect = document.getElementById('slippageSelect');
-    const customSlippageInput = document.getElementById('customSlippage');
-    const tokenModal = document.getElementById('tokenModal');
-    const modalClose = document.getElementById('modalClose');
-    const tokenSearch = document.getElementById('tokenSearch');
-    const tokenListDiv = document.getElementById('tokenList');
-    const toastContainer = document.getElementById('toastContainer');
-    const chartContainer = document.getElementById('chartContainer');
-    const historyContainer = document.getElementById('historyContainer');
-    const swapHistoryList = document.getElementById('swapHistoryList');
-    const priceChartCtx = document.getElementById('priceChart').getContext('2d');
+  let tokens = [];
+  let filteredTokens = [];
+  let currentSelect = null; // 'from' or 'to'
 
-    let currentSelection = null; // 'from' or 'to'
-    let priceChart = null;
-    let swapHistory = JSON.parse(localStorage.getItem('aetherswap_history') || '[]');
-
-    // Utility: Show toast
-    function showToast(msg, duration=4000){
-      toastContainer.textContent = msg;
-      toastContainer.style.display = 'block';
-      setTimeout(() => {
-        toastContainer.style.display = 'none';
-      }, duration);
+  // Load token list from Jupiter API
+  async function loadTokens() {
+    try {
+      const res = await fetch('https://cache.jup.ag/tokens');
+      tokens = await res.json();
+      filteredTokens = tokens;
+      renderTokenList(filteredTokens);
+    } catch (e) {
+      console.error('Error loading tokens:', e);
+      tokens = [];
+      filteredTokens = [];
+      tokenListEl.innerHTML = '<p>Failed to load tokens list</p>';
     }
+  }
 
-    // Fetch tokens list from Jupiter cache
-    async function fetchTokens() {
-      try {
-        const res = await fetch(jupiterTokensEndpoint);
-        const data = await res.json();
-        tokensList = data.tokens;
-        tokenMap = {};
-        tokensList.forEach(t=>{
-          tokenMap[t.address] = t;
-        });
-      } catch(e){
-        console.error("Failed to fetch tokens list", e);
-        showToast("Failed to load tokens list");
-      }
+  // Render token list filtered or full
+  function renderTokenList(list) {
+    tokenListEl.innerHTML = '';
+    if (!list.length) {
+      tokenListEl.innerHTML = '<p>No tokens found</p>';
+      return;
     }
+    list.forEach(t => {
+      const div = document.createElement('div');
+      div.tabIndex = 0;
+      div.setAttribute('role', 'button');
+      div.setAttribute('aria-label', `Select ${t.symbol} token`);
+      div.className = 'token-item';
 
-    // Update token selector UI
-    function updateTokenUI(which) {
-      if(which === 'from' && tokenFrom){
-        tokenFromIcon.src = tokenFrom.logoURI || '';
-        tokenFromIcon.alt = tokenFrom.symbol || 'Token From';
-        tokenFromSymbol.textContent = tokenFrom.symbol || 'Select Token';
-      }
-      if(which === 'to' && tokenTo){
-        tokenToIcon.src = tokenTo.logoURI || '';
-        tokenToIcon.alt = tokenTo.symbol || 'Token To';
-        tokenToSymbol.textContent = tokenTo.symbol || 'Select Token';
-      }
-      updateSwapButtonState();
-    }
+      const img = document.createElement('img');
+      img.src = t.logoURI || '';
+      img.alt = t.symbol;
+      div.appendChild(img);
 
-    // Enable/disable swap button
-    function updateSwapButtonState(){
-      if(walletConnected && tokenFrom && tokenTo && Number(fromAmountInput.value) > 0){
-        swapBtn.disabled = false;
-      } else {
-        swapBtn.disabled = true;
-      }
-    }
+      const span = document.createElement('span');
+      span.textContent = `${t.symbol} - ${t.name}`;
+      div.appendChild(span);
 
-    // Open modal to select token
-    function openTokenModal(which){
-      currentSelection = which;
-      tokenSearch.value = '';
-      renderTokenList(tokensList);
-      tokenModal.classList.remove('hidden');
-      tokenSearch.focus();
-    }
-    // Close modal
-    function closeTokenModal(){
-      tokenModal.classList.add('hidden');
-      currentSelection = null;
-    }
-
-    // Render token list filtered by search
-    function renderTokenList(tokens){
-      const searchTerm = tokenSearch.value.trim().toLowerCase();
-      let filtered = tokens;
-      if(searchTerm.length > 0){
-        if(searchTerm.startsWith('So') && searchTerm.length > 30){
-          // Assume pasted mint address
-          filtered = tokens.filter(t => t.address.toLowerCase() === searchTerm);
-          if(filtered.length === 0){
-            // If unknown, add manually (minimal)
-            filtered = [{
-              address: searchTerm,
-              symbol: searchTerm.slice(0,6) + '...',
-              name: 'Unknown Token',
-              decimals: 9,
-              logoURI: ''
-            }];
-          }
-        } else {
-          filtered = tokens.filter(t=>
-            t.symbol.toLowerCase().includes(searchTerm) ||
-            t.name.toLowerCase().includes(searchTerm)
-          );
-        }
-      }
-      tokenListDiv.innerHTML = '';
-      filtered.forEach(t=>{
-        const div = document.createElement('div');
-        div.setAttribute('role','option');
-        div.tabIndex = 0;
-        div.innerHTML = `
-          <img src="${t.logoURI||''}" alt="${t.symbol}" />
-          <div>
-            <strong>${t.symbol}</strong><br/>
-            <small>${t.name}</small>
-          </div>
-        `;
-        div.onclick = () => {
-          selectToken(t);
-          closeTokenModal();
-        };
-        div.onkeydown = (e) => {
-          if(e.key === 'Enter' || e.key === ' '){
-            selectToken(t);
-            closeTokenModal();
-          }
-        }
-        tokenListDiv.appendChild(div);
+      div.addEventListener('click', () => {
+        selectToken(t);
+        closeModal();
       });
-    }
-
-    // Select token (from modal)
-    function selectToken(token){
-      if(currentSelection === 'from'){
-        if(tokenTo && token.address === tokenTo.address){
-          showToast("From and To tokens cannot be the same");
-          return;
+      div.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectToken(t);
+          closeModal();
         }
-        tokenFrom = token;
-        updateTokenUI('from');
-      } else if(currentSelection === 'to'){
-        if(tokenFrom && token.address === tokenFrom.address){
-          showToast("From and To tokens cannot be the same");
-          return;
-        }
-        tokenTo = token;
-        updateTokenUI('to');
-      }
-      fetchQuote();
-    }
+      });
 
-    // Switch tokens
-    function switchTokens(){
-      [tokenFrom, tokenTo] = [tokenTo, tokenFrom];
-      updateTokenUI('from');
-      updateTokenUI('to');
-      fetchQuote();
-    }
+      tokenListEl.appendChild(div);
+    });
+  }
 
-    // Connect Phantom wallet
-    async function connectWallet(){
-      if(!window.solana || !window.solana.isPhantom){
-        alert("Phantom wallet not found! Please install it.");
-        return;
-      }
+  // Open modal for a given selection
+  function openModal(selection) {
+    currentSelect = selection; // 'from' or 'to'
+    tokenSearch.value = '';
+    filteredTokens = tokens;
+    renderTokenList(filteredTokens);
+    tokenModal.classList.add('active');
+    tokenModal.focus();
+  }
+
+  // Close modal
+  function closeModal() {
+    tokenModal.classList.remove('active');
+  }
+
+  // Filter tokens by search or address
+  function filterTokens(query) {
+    query = query.trim().toLowerCase();
+    if (!query) {
+      filteredTokens = tokens;
+    } else if (query.length === 44 && query.startsWith('So') || query.length === 44) {
+      // Possibly paste mint address
+      filteredTokens = tokens.filter(t => t.address.toLowerCase() === query);
+    } else {
+      filteredTokens = tokens.filter(t => 
+        t.symbol.toLowerCase().includes(query) ||
+        t.name.toLowerCase().includes(query) ||
+        t.address.toLowerCase().includes(query)
+      );
+    }
+    renderTokenList(filteredTokens);
+  }
+
+  // Select token & update UI
+  function selectToken(token) {
+    if (!token) return;
+    if (currentSelect === 'from') {
+      setToken('from', token);
+    } else if (currentSelect === 'to') {
+      setToken('to', token);
+    }
+    // Reset amounts on token change
+    document.getElementById('fromAmt').value = '';
+    document.getElementById('toAmt').value = '';
+    swapBtn.disabled = true;
+  }
+
+  // Set token UI parts
+  function setToken(type, token) {
+    const icon = document.getElementById(type + 'Icon');
+    const symbol = document.getElementById(type + 'Symbol');
+    icon.src = token.logoURI || '';
+    icon.alt = token.symbol;
+    symbol.textContent = token.symbol;
+    tokenState[type] = token;
+  }
+
+  // Event listeners
+  tokenSearch.addEventListener('input', e => filterTokens(e.target.value));
+  closeModalBtn.addEventListener('click', closeModal);
+  tokenModal.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // Open modals for selects
+  document.getElementById('fromToken').addEventListener('click', () => openModal('from'));
+  document.getElementById('toToken').addEventListener('click', () => openModal('to'));
+  document.getElementById('fromToken').addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openModal('from');
+    }
+  });
+  document.getElementById('toToken').addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openModal('to');
+    }
+  });
+
+  // Expose tokens state
+  window.tokenState = {
+    from: null,
+    to: null,
+  };
+
+  // Load tokens on start
+  loadTokens();
+
+})();
+</script>
+<script>
+(() => {
+  const connectBtn = document.getElementById('connectBtn');
+  const swapBtn = document.getElementById('swapBtn');
+  let wallet = null;
+  let provider = null;
+
+  // Phantom detection & connect
+  async function connectPhantom() {
+    if (window.solana && window.solana.isPhantom) {
       try {
         const resp = await window.solana.connect();
-        walletPublicKey = resp.publicKey.toString();
-        walletConnected = true;
-        walletButton.textContent = walletPublicKey.slice(0,4) + '...' + walletPublicKey.slice(-4);
-        showToast("Wallet connected");
-        updateSwapButtonState();
-      } catch(e){
-        console.error("Wallet connection failed", e);
-        showToast("Wallet connection failed");
+        wallet = window.solana;
+        updateUIConnected(wallet.publicKey.toString());
+        return wallet.publicKey.toString();
+      } catch (e) {
+        console.error('Phantom connection error', e);
+        alert('Phantom wallet connection rejected or failed.');
       }
+    } else {
+      alert('Phantom Wallet not detected. Please install Phantom.');
+    }
+  }
+
+  function updateUIConnected(pubkey) {
+    connectBtn.textContent = `Connected: ${pubkey.slice(0,4)}...${pubkey.slice(-4)}`;
+    connectBtn.disabled = true;
+    swapBtn.disabled = false;
+  }
+
+  connectBtn.addEventListener('click', async () => {
+    if (!wallet) {
+      await connectPhantom();
+    }
+  });
+
+  window.getWalletPubkey = () => wallet?.publicKey?.toString();
+
+  // Switch tokens button
+  const switchBtn = document.getElementById('switchBtn');
+  switchBtn.addEventListener('click', () => {
+    const temp = window.tokenState.from;
+    window.tokenState.from = window.tokenState.to;
+    window.tokenState.to = temp;
+
+    // Swap UI
+    if (window.tokenState.from) {
+      document.getElementById('fromIcon').src = window.tokenState.from.logoURI || '';
+      document.getElementById('fromSymbol').textContent = window.tokenState.from.symbol;
+    } else {
+      document.getElementById('fromIcon').src = '';
+      document.getElementById('fromSymbol').textContent = 'Select Token';
     }
 
-    // Convert amount from UI input to lamports/amount for Jupiter API
-    function toLamports(amount, decimals){
-      return Math.floor(amount * Math.pow(10, decimals));
+    if (window.tokenState.to) {
+      document.getElementById('toIcon').src = window.tokenState.to.logoURI || '';
+      document.getElementById('toSymbol').textContent = window.tokenState.to.symbol;
+    } else {
+      document.getElementById('toIcon').src = '';
+      document.getElementById('toSymbol').textContent = 'Select Token';
     }
 
-    // Convert lamports from Jupiter quote to UI amount
-    function fromLamports(amount, decimals){
-      return amount / Math.pow(10, decimals);
-    }
+    // Clear amounts
+    document.getElementById('fromAmt').value = '';
+    document.getElementById('toAmt').value = '';
+    swapBtn.disabled = true;
+  });
 
-    // Fetch swap quote from Jupiter API
-    async function fetchQuote(){
-      if(!tokenFrom || !tokenTo) {
-        toAmountInput.value = '';
-        return;
-      }
-      const amountNum = parseFloat(fromAmountInput.value);
-      if(isNaN(amountNum) || amountNum <= 0){
-        toAmountInput.value = '';
-        return;
-      }
-      const inputAmount = toLamports(amountNum, tokenFrom.decimals);
-      const url = new URL(jupiterApiEndpoint);
-      url.searchParams.append('inputMint', tokenFrom.address);
-      url.searchParams.append('outputMint', tokenTo.address);
-      url.searchParams.append('amount', inputAmount);
-      url.searchParams.append('slippageBps', slippageBps);
-      url.searchParams.append('userPublicKey', walletPublicKey || '');
-      url.searchParams.append('feeBps', PROTOCOL_FEE_BPS);
-      url.searchParams.append('onlyDirectRoutes', 'true');
-
-      try {
-        const res = await fetch(url.toString());
-        const data = await res.json();
-        if(data.data && data.data.length){
-          const bestQuote = data.data[0];
-          const outAmount = bestQuote.outAmount;
-          toAmountInput.value = fromLamports(outAmount, tokenTo.decimals).toFixed(6);
-          updateSwapButtonState();
-          updatePriceChart(tokenFrom.symbol, tokenTo.symbol, bestQuote);
-        } else {
-          toAmountInput.value = '';
-          showToast("No route found for this swap");
-        }
-      } catch(e){
-        console.error("Quote fetch error", e);
-        showToast("Failed to fetch quote");
-      }
-    }
-
-    // Perform the swap transaction via Jupiter's execute endpoint (simplified simulation)
-    async function performSwap(){
-      if(!walletConnected){
-        await connectWallet();
-        return;
-      }
-      if(!tokenFrom || !tokenTo){
-        showToast("Select tokens before swapping");
-        return;
-      }
-      const amountNum = parseFloat(fromAmountInput.value);
-      if(isNaN(amountNum) || amountNum <= 0){
-        showToast("Enter a valid amount");
-        return;
-      }
+  // Enable swap button when all conditions met
+  const fromAmtInput = document.getElementById('fromAmt');
+  fromAmtInput.addEventListener('input', () => {
+    const fromAmt = parseFloat(fromAmtInput.value);
+    if (
+      window.tokenState.from &&
+      window.tokenState.to &&
+      !isNaN(fromAmt) &&
+      fromAmt > 0
+    ) {
+      swapBtn.disabled = false;
+    } else {
       swapBtn.disabled = true;
-      swapBtn.textContent = "Processing...";
-
-      try {
-        // This is a placeholder: real Jupiter swap requires signed transaction via wallet, 
-        // here we'll simulate success and add to history
-
-        // TODO: Integrate Jupiter execute endpoint with wallet signature
-
-        // Simulate swap TX ID
-        const fakeTxId = 'SimulatedTx' + Math.floor(Math.random()*1e6);
-
-        // Save to history
-        const now = new Date().toLocaleString();
-        swapHistory.unshift({
-          date: now,
-          from: tokenFrom.symbol,
-          to: tokenTo.symbol,
-          amount: amountNum.toFixed(6),
-          txid: fakeTxId,
-        });
-        if(swapHistory.length > 30) swapHistory.pop();
-        localStorage.setItem('aetherswap_history', JSON.stringify(swapHistory));
-        renderSwapHistory();
-
-        showToast(`Swap succeeded. TX: ${fakeTxId}`);
-      } catch(e){
-        console.error("Swap failed", e);
-        showToast("Swap failed");
-      } finally {
-        swapBtn.disabled = false;
-        swapBtn.textContent = "Swap Now";
-      }
     }
-
-    // Render swap history
-    function renderSwapHistory(){
-      if(swapHistory.length === 0){
-        historyContainer.style.display = 'none';
-        return;
-      }
-      historyContainer.style.display = 'block';
-      swapHistoryList.innerHTML = '';
-      swapHistory.forEach(item=>{
-        const li = document.createElement('li');
-        const txLink = `https://solscan.io/tx/${item.txid}`;
-        li.innerHTML = `<strong>${item.amount} ${item.from} → ${item.to}</strong><br/><a href="${txLink}" target="_blank" rel="noopener noreferrer">${item.txid}</a> <br/><small>${item.date}</small>`;
-        swapHistoryList.appendChild(li);
-      });
-    }
-
-    // Chart update with Chart.js
-    function updatePriceChart(tokenFromSymbol, tokenToSymbol, quote){
-      chartContainer.style.display = 'block';
-      // Fake price history simulation for demo
-      // A real integration requires external API or websocket for live price data
-
-      const labels = [];
-      const prices = [];
-      const now = Date.now();
-      for(let i=9; i>=0; i--){
-        labels.push(new Date(now - i*60000).toLocaleTimeString().slice(0,5));
-        // generate fluctuating price for demo
-        let basePrice = fromLamports(quote.outAmount, tokenTo.decimals) / parseFloat(fromAmountInput.value);
-        let fluctuation = 1 + 0.02 * (Math.sin(i/3));
-        prices.push((basePrice * fluctuation).toFixed(6));
-      }
-
-      if(priceChart){
-        priceChart.data.labels = labels;
-        priceChart.data.datasets[0].data = prices;
-        priceChart.update();
-      } else {
-        priceChart = new Chart(priceChartCtx, {
-          type: 'line',
-          data: {
-            labels,
-            datasets: [{
-              label: `${tokenFromSymbol}/${tokenToSymbol} price`,
-              data: prices,
-              borderColor: '#6e45e2',
-              backgroundColor: 'rgba(110,69,226,0.3)',
-              tension: 0.3,
-              fill: true,
-              pointRadius: 0,
-            }]
-          },
-          options: {
-            responsive: true,
-            animation: false,
-            scales: {
-              y: {
-                beginAtZero: false,
-                ticks: { color: '#ccc' }
-              },
-              x: {
-                ticks: { color: '#ccc' }
-              }
-            },
-            plugins: {
-              legend: { labels: { color: '#bbb' } }
-            }
-          }
-        });
-      }
-    }
-
-    // Event listeners
-    walletButton.addEventListener('click', connectWallet);
-    tokenFromDiv.addEventListener('click', () => openTokenModal('from'));
-    tokenToDiv.addEventListener('click', () => openTokenModal('to'));
-    modalClose.addEventListener('click', closeTokenModal);
-    tokenSearch.addEventListener('input', () => renderTokenList(tokensList));
-    fromAmountInput.addEventListener('input', fetchQuote);
-    slippageSelect.addEventListener('change', () => {
-      if(slippageSelect.value === 'custom'){
-        customSlippageInput.style.display = 'inline-block';
-        customSlippageInput.focus();
-      } else {
-        customSlippageInput.style.display = 'none';
-        slippageBps = parseInt(slippageSelect.value);
-        fetchQuote();
-      }
-    });
-    customSlippageInput.addEventListener('input', () => {
-      let val = parseFloat(customSlippageInput.value);
-      if(!isNaN(val) && val >= 0.01 && val <= 5){
-        slippageBps = Math.floor(val * 100);
-        fetchQuote();
-      }
-    });
-    switchBtn.addEventListener('click', () => {
-      switchTokens();
-    });
-    swapBtn.addEventListener('click', performSwap);
-
-    // Keyboard accessibility for modal token selection
-    tokenModal.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape') closeTokenModal();
-    });
-
-    // Init all
-    (async function init(){
-      await fetchTokens();
-      // Pre-select SOL on From and USDC on To for demo
-      tokenFrom = tokensList.find(t => t.symbol === 'SOL') || tokensList[0];
-      tokenTo = tokensList.find(t => t.symbol === 'USDC') || tokensList[1];
-      updateTokenUI('from');
-      updateTokenUI('to');
-      renderSwapHistory();
-    })();
-
-  })();
+  });
+})();
 </script>
+<script>
+(() => {
+  const fromAmtInput = document.getElementById('fromAmt');
+  const toAmtInput = document.getElementById('toAmt');
+  const slipSelect = document.getElementById('slipSelect');
+  const slipCustom = document.getElementById('slipCustom');
+  const swapBtn = document.getElementById('swapBtn');
 
-<!-- Phantom Wallet Inject Script -->
-<script src="https://unpkg.com/@solana/wallet-adapter-phantom@latest/dist/index.iife.min.js"></script>
+  let currentQuote = null;
+
+  // Slippage input toggle
+  slipSelect.addEventListener('change', () => {
+    if (slipSelect.value === 'custom') {
+      slipCustom.style.display = 'inline-block';
+      slipCustom.focus();
+    } else {
+      slipCustom.style.display = 'none';
+      slipCustom.value = '';
+    }
+    triggerQuote();
+  });
+  slipCustom.addEventListener('input', () => {
+    triggerQuote();
+  });
+
+  // Debounce helper
+  function debounce(func, timeout = 400){
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  }
+
+  // Trigger quote request
+  const triggerQuote = debounce(async () => {
+    if (
+      !window.tokenState.from ||
+      !window.tokenState.to
+    ) {
+      toAmtInput.value = '';
+      currentQuote = null;
+      return;
+    }
+    let amount = fromAmtInput.value;
+    if (!amount || isNaN(amount) || amount <= 0) {
+      toAmtInput.value = '';
+      currentQuote = null;
+      return;
+    }
+
+    const fromMint = window.tokenState.from.address;
+    const toMint = window.tokenState.to.address;
+    const slippageBps = slipSelect.value === 'custom' && slipCustom.value
+      ? Math.floor(parseFloat(slipCustom.value) * 100)
+      : parseInt(slipSelect.value);
+
+    try {
+      const lamportsAmount = BigInt(Math.floor(parseFloat(amount) * (10 ** window.tokenState.from.decimals)));
+
+      const res = await fetch(`https://lite-api.jup.ag/ultra/v1/quote`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          inputMint: fromMint,
+          outputMint: toMint,
+          amount: lamportsAmount.toString(),
+          slippageBps: slippageBps,
+          userPublicKey: window.getWalletPubkey() || null,
+          // Default swapMode ExactIn
+          swapMode: "ExactIn"
+        })
+      });
+      if(!res.ok) throw new Error('Quote API error');
+
+      const json = await res.json();
+      if(json.error) throw new Error(json.error);
+
+      currentQuote = json;
+      if (json.outAmount) {
+        const outAmountNum = Number(json.outAmount) / 10 ** window.tokenState.to.decimals;
+        toAmtInput.value = outAmountNum.toFixed(6);
+      } else {
+        toAmtInput.value = '';
+      }
+    } catch (e) {
+      console.error('Quote fetch error', e);
+      currentQuote = null;
+      toAmtInput.value = '';
+    }
+  }, 600);
+
+  // Trigger quote on input or token change
+  fromAmtInput.addEventListener('input', triggerQuote);
+  slipSelect.addEventListener('change', triggerQuote);
+  slipCustom.addEventListener('input', triggerQuote);
+
+  // Also trigger quote when tokens change (using MutationObserver on symbols)
+  const observer = new MutationObserver(triggerQuote);
+  observer.observe(document.getElementById('fromSymbol'), {childList: true});
+  observer.observe(document.getElementById('toSymbol'), {childList: true});
+})();
+</script>
+<script>
+(() => {
+  const swapBtn = document.getElementById('swapBtn');
+  const connectBtn = document.getElementById('connectBtn');
+  const historyList = document.getElementById('historyList');
+
+  // Save swap history in localStorage
+  function saveHistory(entry) {
+    let history = JSON.parse(localStorage.getItem('swapHistory') || '[]');
+    history.unshift(entry);
+    if(history.length > 20) history.pop();
+    localStorage.setItem('swapHistory', JSON.stringify(history));
+  }
+  // Load swap history from localStorage
+  function loadHistory() {
+    let history = JSON.parse(localStorage.getItem('swapHistory') || '[]');
+    historyList.innerHTML = '';
+    history.forEach(item => {
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <div>
+          <span>${item.fromSymbol} → ${item.toSymbol}</span>
+          <a href="https://solscan.io/tx/${item.txid}" target="_blank" rel="noopener noreferrer" aria-label="View transaction on Solscan">${item.txid.slice(0, 6)}...${item.txid.slice(-6)}</a>
+        </div>
+      `;
+      historyList.appendChild(div);
+    });
+  }
+  loadHistory();
+
+  swapBtn.addEventListener('click', async () => {
+    if (!window.tokenState.from || !window.tokenState.to) {
+      alert('Please select tokens.');
+      return;
+    }
+    if (!window.getWalletPubkey()) {
+      alert('Please connect your wallet.');
+      return;
+    }
+    if (!currentQuote || !currentQuote.swapTransaction) {
+      alert('No valid quote available.');
+      return;
+    }
+
+    swapBtn.disabled = true;
+    swapBtn.textContent = 'Processing...';
+
+    try {
+      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'), 'confirmed');
+      const txBuffer = Buffer.from(currentQuote.swapTransaction, 'base64');
+      const transaction = solanaWeb3.Transaction.from(txBuffer);
+
+      transaction.feePayer = new solanaWeb3.PublicKey(window.getWalletPubkey());
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+
+      // Sign transaction with Phantom
+      const signedTx = await window.solana.signTransaction(transaction);
+      const txid = await connection.sendRawTransaction(signedTx.serialize());
+      await connection.confirmTransaction(txid);
+
+      saveHistory({
+        txid,
+        fromSymbol: window.tokenState.from.symbol,
+        toSymbol: window.tokenState.to.symbol,
+        timestamp: Date.now(),
+      });
+
+      loadHistory();
+      alert(`Swap successful! Transaction ID: ${txid}`);
+
+    } catch (e) {
+      console.error('Swap error:', e);
+      alert('Swap failed: ' + (e.message || e));
+    } finally {
+      swapBtn.textContent = 'Swap Now';
+      swapBtn.disabled = false;
+    }
+  });
+})();
+</script>
+<script>
+(() => {
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  let chart = null;
+
+  async function fetchPriceHistory(inputMint, outputMint) {
+    try {
+      // Placeholder API call, adapt if Jupiter API offers price history
+      // Using Coingecko or any public API would be ideal, here dummy data
+      // For demo, generate random data for 24 points (hours)
+      let labels = [];
+      let data = [];
+      for(let i=23; i>=0; i--) {
+        labels.push(`${i}h`);
+        data.push((Math.random() * 10 + 1).toFixed(4));
+      }
+      return { labels, data };
+    } catch(e) {
+      console.error('Price history error', e);
+      return null;
+    }
+  }
+
+  async function updateChart() {
+    if (!window.tokenState.from || !window.tokenState.to) {
+      if(chart) {
+        chart.destroy();
+        chart = null;
+      }
+      return;
+    }
+    const history = await fetchPriceHistory(window.tokenState.from.address, window.tokenState.to.address);
+    if(!history) return;
+
+    if(chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: history.labels,
+        datasets: [{
+          label: `${window.tokenState.from.symbol}/${window.tokenState.to.symbol}`,
+          data: history.data,
+          borderColor: 'rgba(110,69,226,0.8)',
+          backgroundColor: 'rgba(110,69,226,0.3)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 0,
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: { duration: 500 },
+        scales: {
+          y: {
+            beginAtZero: false,
+            ticks: { color: '#ccc' }
+          },
+          x: {
+            ticks: { color: '#ccc' }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: '#ddd' }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          }
+        }
+      }
+    });
+  }
+
+  // Update chart on token changes
+  const fromSymbolEl = document.getElementById('fromSymbol');
+  const toSymbolEl = document.getElementById('toSymbol');
+  const observer = new MutationObserver(() => {
+    updateChart();
+  });
+  observer.observe(fromSymbolEl, { childList: true });
+  observer.observe(toSymbolEl, { childList: true });
+
+  // Also update chart on page load and after token load
+  window.addEventListener('load', () => {
+    updateChart();
+  });
+})();
+</script>
+  // Bloc 1 terminé — attente Bloc 2-6
+</script>
 
 </body>
 </html>
