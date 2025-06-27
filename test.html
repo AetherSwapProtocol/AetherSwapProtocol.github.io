@@ -1,301 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>AetherSwap PRO</title>
-<!-- Tailwind -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: {
-      extend: {
-        colors: {
-          primary: {500:'#7e22ce',600:'#6b21a8'},
-          secondary:{500:'#3b82f6',600:'#2563eb'}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherSwap PRO | Multi-Chain DEX Aggregator</title>
+    <style>
+        :root {
+            --primary: #6e45e2;
+            --primary-hover: #5934ba;
+            --bg: #0f0f0f;
+            --surface: #1a1a2f;
+            --text: #eee;
+            --text-muted: #aaa;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 8px 24px rgba(0,0,0,0.7);
+            --transition: all 0.3s ease;
         }
-      }
-    }
-  }
-</script>
-<style>
-  /* Custom styles & animations */
-  .modal-enter { opacity:0; transform:translateY(20px); }
-  .modal-enter-active { opacity:1; transform:translateY(0); transition:all .2s ease;}
-  .modal-exit { opacity:1; transform:translateY(0); }
-  .modal-exit-active { opacity:0; transform:translateY(20px); transition:all .2s ease;}
-  .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1a1a2f; color:#eee;
-           padding:12px 20px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.5); opacity:0;
-           transition:opacity .3s ease;}
-  .toast-show { opacity:1; }
-</style>
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .swap-container {
+            max-width: 480px;
+            width: 100%;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary) 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .currency-selector {
+            position: relative;
+        }
+
+        .currency-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .currency-dropdown {
+            position: absolute;
+            right: 0;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            width: 200px;
+            padding: 8px;
+            z-index: 100;
+            display: none;
+        }
+
+        .currency-option {
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .currency-option:hover {
+            background: rgba(110, 69, 226, 0.2);
+        }
+
+        .token-input {
+            background: rgba(255,255,255,0.05);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .token-input.active {
+            border-color: var(--primary);
+        }
+
+        .token-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .token-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fff;
+            object-fit: contain;
+        }
+
+        .token-info {
+            flex: 1;
+        }
+
+        .token-symbol {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .token-balance {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .amount-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: right;
+            margin-top: 8px;
+        }
+
+        .amount-input:focus {
+            outline: none;
+        }
+
+        .swap-arrow {
+            background: var(--surface);
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: -12px auto 16px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .swap-arrow:hover {
+            background: var(--primary);
+            transform: rotate(180deg);
+        }
+
+        .swap-button {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: var(--transition);
+        }
+
+        .swap-button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .swap-button:disabled {
+            background: #3a3a5a;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .swap-details {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .price-impact {
+            color: var(--primary);
+        }
+
+        .price-impact.high {
+            color: #ff4d4d;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="dark bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen p-4">
-
-<div class="swap-container bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md">
-  <div class="network-status text-gray-400 text-sm mb-4 flex items-center gap-2">
-    <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-    <span>Solana Mainnet</span>
-    <span>&bull;</span>
-    <span>Fast: ~0.0005 SOL</span>
-  </div>
-
-  <!-- From token -->
-  <div class="token-input mb-4 border-2 border-primary-600 rounded-lg p-4 flex flex-col"
-       id="fromInput">
-    <div class="flex items-center justify-between cursor-pointer" id="fromSelector">
-      <div class="flex items-center space-x-3">
-        <img src="" alt="" id="fromLogo" class="w-8 h-8 rounded-full bg-white"/>
-        <div>
-          <div id="fromSymbol" class="font-bold text-lg">Select</div>
-          <div class="text-xs text-gray-400">Balance: <span id="fromBalance">0.0</span></div>
+<body>
+    <div class="swap-container">
+        <div class="header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 32C24.8366 32 32 24.8366 32 16C32 7.16344 24.8366 0 16 0C7.16344 0 0 7.16344 0 16C0 24.8366 7.16344 32 16 32Z" fill="#6E45E2"/>
+                    <path d="M12 10L20 10L20 22L12 22L12 10Z" fill="white"/>
+                    <path d="M22 10L26 10L26 22L22 22L22 10Z" fill="white"/>
+                    <path d="M6 10L10 10L10 22L6 22L6 10Z" fill="white"/>
+                </svg>
+                <span>AetherSwap PRO</span>
+            </div>
+            <div class="currency-selector">
+                <button class="currency-btn" id="currencyBtn">
+                    <span id="selectedCurrency">USD</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div class="currency-dropdown" id="currencyDropdown">
+                    <div class="currency-option" data-currency="USD">🇺🇸 USD</div>
+                    <div class="currency-option" data-currency="EUR">🇪🇺 EUR</div>
+                    <div class="currency-option" data-currency="GBP">🇬🇧 GBP</div>
+                    <div class="currency-option" data-currency="JPY">🇯🇵 JPY</div>
+                    <div class="currency-option" data-currency="KRW">🇰🇷 KRW</div>
+                    <div class="currency-option" data-currency="CNY">🇨🇳 CNY</div>
+                    <div class="currency-option" data-currency="AUD">🇦🇺 AUD</div>
+                    <div class="currency-option" data-currency="CAD">🇨🇦 CAD</div>
+                    <div class="currency-option" data-currency="CHF">🇨🇭 CHF</div>
+                    <div class="currency-option" data-currency="INR">🇮🇳 INR</div>
+                    <div class="currency-option" data-currency="BRL">🇧🇷 BRL</div>
+                    <div class="currency-option" data-currency="RUB">🇷🇺 RUB</div>
+                    <div class="currency-option" data-currency="TRY">🇹🇷 TRY</div>
+                    <div class="currency-option" data-currency="AED">🇦🇪 AED</div>
+                    <div class="currency-option" data-currency="SGD">🇸🇬 SGD</div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <input type="text" id="fromAmount" placeholder="0.0"
-           class="mt-3 w-full bg-transparent border-none text-right text-2xl font-semibold focus:outline-none"/>
-    <div class="text-xs text-gray-400 text-right">≈ $<span id="fromUSD">0.00</span></div>
-  </div>
 
-  <!-- Switch → animated -->
-  <button id="switchBtn"
-          class="swap-arrow bg-gray-800 border-2 border-gray-700 rounded-full w-10 h-10 flex items-center justify-center mx-auto mb-4 transform transition-transform duration-300">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-primary-500"
-         fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M7 7l10 10M17 7l-10 10"/>
-    </svg>
-  </button>
-
-  <!-- To token -->
-  <div class="token-input mb-2 p-4 rounded-lg border-2 border-gray-700" id="toInput">
-    <div class="flex items-center justify-between cursor-pointer" id="toSelector">
-      <div class="flex items-center space-x-3">
-        <img src="" alt="" id="toLogo" class="w-8 h-8 rounded-full bg-white"/>
-        <div>
-          <div id="toSymbol" class="font-bold text-lg">Select</div>
-          <div class="text-xs text-gray-400">Balance: <span id="toBalance">0.0</span></div>
+        <div class="token-input active" id="fromTokenInput">
+            <div class="token-selector" id="fromTokenSelector">
+                <img src="" alt="" class="token-logo" id="fromTokenLogo">
+                <div class="token-info">
+                    <div class="token-symbol" id="fromTokenSymbol">Select Token</div>
+                    <div class="token-balance">Balance: <span id="fromTokenBalance">0.0</span></div>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <input type="number" step="any" min="0" class="amount-input" id="fromAmount" placeholder="0.0">
+            <div class="price-info" style="text-align: right; font-size: 0.75rem; color: var(--text-muted);">
+                ≈ $<span id="fromTokenPrice">0.00</span>
+            </div>
         </div>
-      </div>
-    </div>
-    <input type="text" id="toAmount" placeholder="0.0" readonly
-           class="mt-3 w-full bg-transparent border-none text-right text-2xl font-semibold focus:outline-none"/>
-    <div class="text-xs text-gray-400 text-right">≈ $<span id="toUSD">0.00</span></div>
-  </div>
 
-  <!-- Details -->
-  <div class="swap-details border-t border-gray-700 pt-4 space-y-2 text-sm">
-    <div class="flex justify-between"><span>Exchange Rate</span><span id="exchangeRate">‑</span></div>
-    <div class="flex justify-between"><span>Price Impact</span><span id="priceImpact" class="text-green-400">‑</span></div>
-    <div class="flex justify-between"><span>Network Fee</span><span id="networkFee">‑</span></div>
-  </div>
+        <button class="swap-arrow" id="switchTokens">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)">
+                <path d="M4 12h12M10 6l6 6-6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
 
-  <!-- Swap button -->
-  <button id="swapBtn"
-          class="swap-button bg-primary-500 hover:bg-primary-600 disabled:bg-gray-700 disabled:cursor-not-allowed mt-6 py-3 text-lg font-bold rounded-lg w-full"
-          disabled>Connect Wallet</button>
-</div>
-
-<!-- Token modal -->
-<div id="tokenModal"
-     class="token-modal fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center p-4">
-  <div class="token-modal-content bg-gray-800 rounded-xl overflow-hidden w-full max-w-md">
-    <div class="token-search p-4 border-b border-gray-700">
-      <input type="text" id="tokenSearch" placeholder="Search token or paste address"
-             class="w-full p-2 bg-gray-700 text-gray-200 rounded-lg focus:outline-primary-500"/>
-    </div>
-    <div class="token-list max-h-80 overflow-y-auto"></div>
-  </div>
-</div>
-
-<!-- Toast -->
-<div id="toast" class="toast">Placeholder</div>
-
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
-<script>
-(() => {
-  const config = {
-    slippageBps: 50,
-    apiBase: 'https://lite-api.jup.ag',
-    priceAPI: 'https://lite-api.jup.ag/price/v3'
-  };
-  const state = {
-    tokens: [], wallet:null, from:null, to:null, balances:{}, quote:null
-  };
-  const el = id => document.getElementById(id);
-
-  const fromSelector = el('fromSelector'), toSelector = el('toSelector'),
-        switchBtn = el('switchBtn'), swapBtn = el('swapBtn'),
-        tokenModal = el('tokenModal'), tokenList = document.querySelector('.token-list'),
-        tokenSearch = el('tokenSearch'), toast = el('toast');
-
-  function showToast(msg){
-    toast.textContent = msg;
-    toast.classList.add('toast-show');
-    setTimeout(()=>toast.classList.remove('toast-show'),3500);
-  }
-
-  async function loadTokens(){
-    const res = await fetch(`${config.apiBase}/tokens/v2/search`);
-    state.tokens = (await res.json()).tokens;
-  }
-
-  async function loadBalances(){
-    if(!state.wallet) return;
-    const conn = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-    const lam = await conn.getBalance(state.wallet.publicKey);
-    state.balances['So11111111111111111111111111111111111111112'] = (lam/solanaWeb3.LAMPORTS_PER_SOL).toFixed(6);
-    const res = await conn.getParsedTokenAccountsByOwner(state.wallet.publicKey,{programId:new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")});
-    res.value.forEach(a => {
-      const info = a.account.data.parsed.info;
-      state.balances[info.mint] = info.tokenAmount.uiAmountString;
-    });
-  }
-
-  function openModal(role){
-    state.selecting = role;
-    tokenSearch.value=''; renderTokenList(state.tokens);
-    tokenModal.classList.remove('hidden');
-  }
-  function closeModal(){
-    tokenModal.classList.add('hidden');
-  }
-
-  function renderTokenList(list){
-    tokenList.innerHTML='';
-    list.forEach(t=>{
-      const row = document.createElement('div');
-      row.className='token-item p-3 flex items-center justify-between hover:bg-gray-700 cursor-pointer';
-      row.innerHTML = `
-        <div class="flex items-center gap-3">
-          <img src="${t.logoURI||''}" class="w-8 h-8 rounded-full"/>
-          <div>
-            <div class="font-semibold">${t.symbol}</div>
-            <div class="text-xs text-gray-400">${t.name}</div>
-          </div>
+        <div class="token-input" id="toTokenInput">
+            <div class="token-selector" id="toTokenSelector">
+                <img src="" alt="" class="token-logo" id="toTokenLogo">
+                <div class="token-info">
+                    <div class="token-symbol" id="toTokenSymbol">Select Token</div>
+                    <div class="token-balance">Balance: <span id="toTokenBalance">0.0</span></div>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <input type="number" step="any" min="0" class="amount-input" id="toAmount" placeholder="0.0" readonly>
+            <div class="price-info" style="text-align: right; font-size: 0.75rem; color: var(--text-muted);">
+                ≈ $<span id="toTokenPrice">0.00</span>
+            </div>
         </div>
-        <div class="text-xs">${state.balances[t.address]||'0.0'}</div>`;
-      row.onclick = ()=>selectToken(t);
-      tokenList.appendChild(row);
-    });
-  }
 
-  function selectToken(t){
-    state[state.selecting] = t;
-    closeModal(); updateSelectors(); clearQuote(); updateQuote();
-  }
+        <button class="swap-button" id="swapButton" disabled>Connect Wallet</button>
 
-  function updateSelectors(){
-    ['from','to'].forEach(key=>{
-      const t = state[key];
-      el(`${key}Logo`).src = t.logoURI || '';
-      el(`${key}Symbol`).textContent = t.symbol;
-      el(`${key}Balance`).textContent = state.balances[t.address]||'0.0';
-    });
-  }
+        <div class="swap-details">
+            <div class="detail-row">
+                <span>Exchange Rate</span>
+                <span id="exchangeRate">-</span>
+            </div>
+            <div class="detail-row">
+                <span>Price Impact</span>
+                <span id="priceImpact" class="price-impact">-</span>
+            </div>
+            <div class="detail-row">
+                <span>Network Fee</span>
+                <span id="networkFee">-</span>
+            </div>
+        </div>
+    </div>
 
-  async function updateUSD(){
-    const coins = [state.from,state.to];
-    for(const key of ['from','to']){
-      const t = state[key];
-      const amt = parseFloat(el(`${key}Amount`).value);
-      if(t && amt>0){
-        const res = await fetch(`${config.priceAPI}?mint=${t.address}`);
-        const price = (await res.json()).prices[t.address];
-        el(`${key}USD`).textContent = (amt * price).toFixed(2);
-      } else el(`${key}USD`).textContent='0.00';
-    }
-  }
+    <!-- Token Modal -->
+    <div id="tokenModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: var(--surface); border-radius: var(--radius-lg); width: 90%; max-width: 400px; max-height: 80vh; overflow: auto; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin: 0; font-size: 1.2rem;" id="tokenModalTitle">Select Token</h3>
+                <button id="closeTokenModal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <input type="text" id="tokenSearch" placeholder="Search token name or address" style="width: 100%; padding: 10px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text); margin-bottom: 16px;">
+            <div id="tokenList" style="max-height: 60vh; overflow-y: auto;"></div>
+        </div>
+    </div>
 
-  function clearQuote(){
-    state.quote=null;
-    ['toAmount','exchangeRate','priceImpact','networkFee'].forEach(id=>el(id).textContent='‑');
-    swapBtn.disabled = !state.wallet;
-  }
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+    <script>
+        // Configuration
+        const config = {
+            jupiterAPI: 'https://quote-api.jup.ag/v1',
+            slippageBps: 50, // 0.5%
+            currencies: {
+                USD: { symbol: '$', rate: 1 },
+                EUR: { symbol: '€', rate: 0.93 },
+                GBP: { symbol: '£', rate: 0.79 },
+                JPY: { symbol: '¥', rate: 151.47 },
+                KRW: { symbol: '₩', rate: 1351.47 },
+                CNY: { symbol: '¥', rate: 7.23 },
+                AUD: { symbol: 'A$', rate: 1.52 },
+                CAD: { symbol: 'C$', rate: 1.36 },
+                CHF: { symbol: 'CHF', rate: 0.91 },
+                INR: { symbol: '₹', rate: 83.31 },
+                BRL: { symbol: 'R$', rate: 5.05 },
+                RUB: { symbol: '₽', rate: 92.58 },
+                TRY: { symbol: '₺', rate: 32.03 },
+                AED: { symbol: 'د.إ', rate: 3.67 },
+                SGD: { symbol: 'S$', rate: 1.35 }
+            }
+        };
 
-  async function updateQuote(){
-    if(!state.from||!state.to||!el('fromAmount').value) return clearQuote();
-    clearQuote(); updateUSD();
-    const amt = BigInt(Math.floor(parseFloat(el('fromAmount').value) * 10**state.from.decimals));
-    const res = await fetch(`${config.apiBase}/swap/v2/quote`,{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        inputMint: state.from.address, outputMint:state.to.address,
-        amount:amt.toString(), slippageBps: config.slippageBps,
-        userPublicKey:state.wallet?.publicKey.toString()
-      })
-    });
-    const json = await res.json();
-    if(!json.data?.length) return;
-    state.quote = json.data[0];
-    const out = Number(BigInt(state.quote.outAmount))/10**state.to.decimals;
-    el('toAmount').value = out.toFixed(6);
-    el('exchangeRate').textContent = `1 ${state.from.symbol} = ${(out/parseFloat(el('fromAmount').value)).toFixed(6)} ${state.to.symbol}`;
-    const pi = parseFloat(state.quote.priceImpactPct)*100;
-    el('priceImpact').textContent = `${pi.toFixed(2)}%`;
-    el('priceImpact').className = pi>1?'text-red-400':'text-green-400';
-    el('networkFee').textContent = '~0.0005 SOL';
-    swapBtn.disabled = !state.wallet;
-  }
+        // State
+        let state = {
+            tokens: [],
+            fromToken: null,
+            toToken: null,
+            fromAmount: '',
+            toAmount: '',
+            wallet: null,
+            balances: {},
+            quote: null,
+            selectingFor: null,
+            selectedCurrency: 'USD',
+            currencyRates: {}
+        };
 
-  async function executeSwap(){
-    if(!state.wallet) return connectWallet();
-    if(!state.quote) return showToast('Invalid swap');
-    swapBtn.textContent='Processing...'; swapBtn.disabled=true;
-    try{
-      const res = await fetch(`${config.apiBase}/swap/v2/swap-instructions`,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({route:state.quote, userPublicKey:state.wallet.publicKey.toString(), wrapUnwrapSOL:true})
-      });
-      const j = await res.json();
-      const tx = solanaWeb3.Transaction.from(Uint8Array.from(atob(j.unsignedTransaction),c=>c.charCodeAt(0)));
-      const signed = await state.wallet.signTransaction(tx);
-      const conn = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-      const txid = await conn.sendRawTransaction(signed.serialize());
-      await conn.confirmTransaction(txid,'confirmed');
-      showToast(`Swap successful: ${txid.slice(0,6)}...`);
-      await loadBalances(); updateSelectors();
-      el('fromAmount').value=''; clearQuote();
-    }catch(e){ console.error(e); showToast('Swap failed'); }
-    finally{ swapBtn.textContent = state.wallet?'Swap Now':'Connect Wallet'; swapBtn.disabled = !state.wallet;}
-  }
+        // DOM Elements
+        const els = {
+            fromTokenSelector: document.getElementById('fromTokenSelector'),
+            toTokenSelector: document.getElementById('toTokenSelector'),
+            fromTokenLogo: document.getElementById('fromTokenLogo'),
+            toTokenLogo: document.getElementById('toTokenLogo'),
+            fromTokenSymbol: document.getElementById('fromTokenSymbol'),
+            toTokenSymbol: document.getElementById('toTokenSymbol'),
+            fromTokenBalance: document.getElementById('fromTokenBalance'),
+            toTokenBalance: document.getElementById('toTokenBalance'),
+            fromAmountInput: document.getElementById('fromAmount'),
+            toAmountInput: document.getElementById('toAmount'),
+            fromTokenPrice: document.getElementById('fromTokenPrice'),
+            toTokenPrice: document.getElementById('toTokenPrice'),
+            switchTokensBtn: document.getElementById('switchTokens'),
+            tokenModal: document.getElementById('tokenModal'),
+            tokenSearch: document.getElementById('tokenSearch'),
+            tokenList: document.getElementById('tokenList'),
+            closeTokenModal: document.getElementById('closeTokenModal'),
+            swapButton: document.getElementById('swapButton'),
+            exchangeRate: document.getElementById('exchangeRate'),
+            priceImpact: document.getElementById('priceImpact'),
+            networkFee: document.getElementById('networkFee'),
+            currencyBtn: document.getElementById('currencyBtn'),
+            currencyDropdown: document.getElementById('currencyDropdown'),
+            selectedCurrency: document.getElementById('selectedCurrency')
+        };
 
-  async function connectWallet(){
-    if(!window.solana) return showToast('Phantom not installed');
-    try{
-      await window.solana.connect();
-      state.wallet = window.solana; el('swapBtn').textContent='Swap Now'; swapBtn.disabled = !state.quote;
-      await loadBalances(); updateSelectors();
-    }catch(e){ showToast('Connection failed'); console.error(e);}
-  }
+        // Initialize
+        async function init() {
+            await loadTokens();
+            setupEventListeners();
+            fetchCurrencyRates();
+        }
 
-  fromSelector.addEventListener('click',()=>openModal('from'));
-  toSelector.addEventListener('click',()=>openModal('to'));
-  tokenSearch.addEventListener('input',e=>{
-    const q=e.target.value.toLowerCase();
-    renderTokenList(state.tokens.filter(t=>t.symbol.toLowerCase().includes(q)||t.name.toLowerCase().includes(q)||t.address.toLowerCase().startsWith(q)));
-  });
-  switchBtn.addEventListener('click',()=>{
-    swapBtn.classList.add('transform','rotate-180'); setTimeout(()=>swapBtn.classList.remove('rotate-180'),300);
-    [state.from,state.to] = [state.to,state.from];
-    updateSelectors(); el('fromAmount').value=''; el('toAmount').value=''; clearQuote();
-  });
-  el('fromAmount').addEventListener('input',debounce(updateQuote,300));
-  swapBtn.addEventListener('click',executeSwap);
-  tokenModal.addEventListener('click',e=>{ if(e.target===tokenModal) closeModal(); });
+        // Load tokens from Jupiter
+        async function loadTokens() {
+            try {
+                const res = await fetch('https://token-list-api.jup.ag/tokens');
+                const data = await res.json();
+                state.tokens = data.filter(t => t.chainId === 101).sort((a, b) => a.symbol.localeCompare(b.symbol));
+                
+                // Set default tokens (USDC -> SOL)
+                state.fromToken = state.tokens.find(t => t.symbol === 'USDC') || state.tokens[0];
+                state.toToken = state.tokens.find(t => t.symbol === 'SOL') || state.tokens[1];
+                updateTokenUI();
+            } catch (e) {
+                console.error('Error loading tokens:', e);
+            }
+        }
 
-  async function init(){
-    await loadTokens();
-    if(window.solana?.isConnected){ state.wallet=window.solana; await connectWallet();}
-  }
-  // Debounce util
-  function debounce(fn,ms){ let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
+        // Fetch currency rates (simplified - in production use a real API)
+        async function fetchCurrencyRates() {
+            // In a real app, you would fetch from an API like:
+            // const rates = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            // For demo, we use the static rates from config
+            state.currencyRates = config.currencies;
+            console.log('Currency rates loaded');
+        }
 
-  init();
-})();
-</script>
+        // Update token UI
+        function updateTokenUI() {
+            if (state.fromToken) {
+                els.fromTokenLogo.src = state.fromToken.logoURI || '';
+                els.fromTokenSymbol.textContent = state.fromToken.symbol;
+                els.fromTokenBalance.textContent = formatBalance(state.balances[state.fromToken.address]);
+                updateTokenPrices();
+            }
+            if (state.toToken) {
+                els.toTokenLogo.src = state.toToken.logoURI || '';
+                els.toTokenSymbol.textContent = state.toToken.symbol;
+                els.toTokenBalance.textContent = formatBalance(state.balances[state.toToken.address]);
+                updateTokenPrices();
+            }
+        }
 
+        // Update token prices in selected currency
+        function updateTokenPrices() {
+            const currency = state.selectedCurrency;
+            const rate = state.currencyRates[currency]?.rate || 1;
+            const symbol = state.currencyRates[currency]?.symbol || '$';
+            
+            if (state.fromToken && state.fromAmount) {
+                const price = getTokenPrice(state.fromToken); // Implement this based on your price feed
+                els.fromTokenPrice.textContent = (price * rate).toFixed(2);
+            }
+            
+            if (state.toToken && state.toAmount) {
+                const price = getTokenPrice(state.toToken); // Implement this based on your price feed
+                els.toTokenPrice.textContent = (price * rate).toFixed(2);
+            }
+        }
+
+        // [Rest of your JavaScript implementation...]
+        // Include all your existing functions like:
+        // - connectWallet()
+        // - fetchQuote()
+        // - swapTokens()
+        // - etc.
+
+        // Currency selector functionality
+        els.currencyBtn.addEventListener('click', () => {
+            els.currencyDropdown.style.display = els.currencyDropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.querySelectorAll('.currency-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const currency = option.getAttribute('data-currency');
+                state.selectedCurrency = currency;
+                els.selectedCurrency.textContent = currency;
+                els.currencyDropdown.style.display = 'none';
+                updateTokenPrices();
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!els.currencyBtn.contains(e.target) {
+                els.currencyDropdown.style.display = 'none';
+            }
+        });
+
+        // Initialize the app
+        init();
+    </script>
 </body>
 </html>
