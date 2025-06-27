@@ -288,22 +288,24 @@
   }
 
   // Load tokens from Ultra API Jupiter
-  async function loadTokenList() {
-    try {
-      const res = await fetch("https://lite-api.jup.ag/tokens/v2/recent");
-      if (!res.ok) throw new Error("Failed to load token list");
-      const json = await res.json();
-      state.tokens = json.data;
+  async function loadTokens() {
+  try {
+    const response = await fetch('https://ultra-api.jup.ag/v4/tokens');
+    if (!response.ok) throw new Error('Failed to fetch tokens');
+    const data = await response.json();
+    
+    // Si la réponse contient un tableau sous data.tokens ou data
+    const tokens = data.tokens || data; // dépend de l’API, à vérifier dans la console
+    
+    state.tokens = tokens;
 
-      // Set defaults if possible USDC -> SOL
-      state.fromToken = state.tokens.find(t => t.symbol === "USDC") || state.tokens[0];
-      state.toToken = state.tokens.find(t => t.symbol === "SOL") || state.tokens[1];
-      updateTokenUI();
-    } catch (e) {
-      console.error("Error loading tokens:", e);
-      alert("Failed to load token list");
-    }
+    // Affiche les tokens (exemple minimal)
+    renderTokenList(tokens);
+  } catch (error) {
+    console.error('Failed to load token list', error);
+    alert('Failed to load token list: ' + error.message);
   }
+}
 
   // Update token selector UI
   function updateTokenUI() {
