@@ -290,7 +290,7 @@
   // Load tokens from Ultra API Jupiter
   async function loadTokenList() {
     try {
-      const res = await fetch("https://token-api.jup.ag/v4/tokens");
+      const res = await fetch("https://lite-api.jup.ag/tokens/v2/recent");
       if (!res.ok) throw new Error("Failed to load token list");
       const json = await res.json();
       state.tokens = json.data;
