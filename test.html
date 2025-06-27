@@ -1,550 +1,139 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AetherSwap PRO</title>
-  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    body {
-      margin: 0;
-      background: linear-gradient(135deg, #0b0b0f, #1d1e25);
-      min-height: 100vh;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 2rem;
-    }
-
-    .app {
-      background: rgba(255,255,255,0.05);
-      border-radius: 24px;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 32px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.45);
-      position: relative;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-
-    .header h2 {
-      font-size: 20px;
-    }
-
-    .btn {
-      background: rgba(255,255,255,0.15);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 12px;
-      cursor: pointer;
-    }
-
-    .token-box {
-      margin-bottom: 16px;
-    }
-
-    .token-box label {
-      font-size: 14px;
-      opacity: 0.8;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .token-select {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255,255,255,0.07);
-      padding: 12px 16px;
-      border-radius: 16px;
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .token-select img {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      margin-right: 8px;
-    }
-
-    .swap-arrow {
-      text-align: center;
-      margin: 12px 0;
-      font-size: 24px;
-      opacity: 0.8;
-    }
-
-    input[type="number"] {
-      width: 100%;
-      font-size: 18px;
-      background: transparent;
-      border: none;
-      color: white;
-      margin-top: 8px;
-    }
-
-    #swapBtn {
-      margin-top: 16px;
-      width: 100%;
-      padding: 14px;
-      font-size: 16px;
-      background: rgba(255,255,255,0.15);
-      border: none;
-      border-radius: 16px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    #swapBtn:hover {
-      background: rgba(255,255,255,0.3);
-    }
-
-    .status {
-      margin-top: 10px;
-      font-size: 13px;
-      opacity: 0.75;
-      text-align: center;
-    }
-
-    /* TOKEN MODAL */
-    .modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-    }
-
-    .modal-content {
-      background: rgba(255,255,255,0.06);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 20px;
-      max-height: 80vh;
-      overflow: auto;
-      padding: 20px;
-      width: 90%;
-      max-width: 400px;
-    }
-
-    .modal input {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 12px;
-      border: none;
-      font-size: 16px;
-      background: rgba(255,255,255,0.1);
-      color: white;
-    }
-
-    .token-item {
-      display: flex;
-      align-items: center;
-      padding: 8px;
-      cursor: pointer;
-      border-radius: 10px;
-      transition: 0.2s;
-    }
-
-    .token-item:hover {
-      background: rgba(255,255,255,0.1);
-    }
-
-    .token-item img {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      margin-right: 12px;
-    }
-
-    .token-symbol {
-      font-weight: 500;
-    }
-
-    @media(max-width: 480px) {
-      .app {
-        padding: 24px;
-      }
-
-      .header h2 {
-        font-size: 18px;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Swap Solana fonctionnel</title>
+<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+<style>
+  body { background:#121212; color:#eee; font-family:sans-serif; padding:20px; }
+  button { padding:10px 20px; margin:10px 0; }
+  select, input { width: 100%; padding: 10px; margin:5px 0 15px; border-radius:6px; border:none; }
+</style>
 </head>
 <body>
-<!-- PARTIE 2/3 : contenu HTML + modal + inputs + boutons -->
 
-  <div class="app">
-    <div class="header">
-      <h2>AetherSwap PRO</h2>
-      <button id="connectWallet" class="btn">Connect Wallet</button>
-    </div>
+<h1>Swap Solana simple</h1>
 
-    <div class="token-box">
-      <label>From</label>
-      <div id="tokenASelect" class="token-select">
-        <img src="" alt="" id="tokenAImg" />
-        <span id="tokenASymbol">Select Token</span>
-        <span>▼</span>
-      </div>
-      <input type="number" id="amountA" placeholder="0.0" min="0" step="any" />
-    </div>
+<button id="connectWalletBtn">Connect Wallet</button>
+<p id="walletAddress">Wallet non connecté</p>
 
-    <div class="swap-arrow">↓</div>
+<label>Token A</label>
+<select id="tokenASelect"></select>
+<label>Montant Token A</label>
+<input type="number" id="amountInput" placeholder="Montant à swap" min="0" step="any" />
 
-    <div class="token-box">
-      <label>To</label>
-      <div id="tokenBSelect" class="token-select">
-        <img src="" alt="" id="tokenBImg" />
-        <span id="tokenBSymbol">Select Token</span>
-        <span>▼</span>
-      </div>
-      <input type="number" id="amountB" placeholder="Estimation" disabled />
-    </div>
+<label>Token B</label>
+<select id="tokenBSelect"></select>
 
-    <button id="swapBtn" disabled>Swap</button>
+<button id="swapBtn" disabled>Swap</button>
 
-    <div class="status" id="status">Connect your wallet to start</div>
-  </div>
+<p id="status"></p>
 
-  <!-- Modal pour sélection tokens -->
-  <div id="tokenModal" class="modal">
-    <div class="modal-content">
-      <input type="text" id="tokenSearch" placeholder="Search by name or mint address..." autocomplete="off" />
-      <div id="tokenList"></div>
-    </div>
-  </div>
+<script>
+  const connectBtn = document.getElementById('connectWalletBtn');
+  const walletAddressP = document.getElementById('walletAddress');
+  const tokenASelect = document.getElementById('tokenASelect');
+  const tokenBSelect = document.getElementById('tokenBSelect');
+  const amountInput = document.getElementById('amountInput');
+  const swapBtn = document.getElementById('swapBtn');
+  const statusP = document.getElementById('status');
 
-  <script>
-    // Variables globales
-    let walletAddress = null;
-    let tokens = [];
-    let balances = {};
-    let selectingToken = null; // 'A' or 'B'
+  let walletPublicKey = null;
+  let tokens = [];
 
-    // Elements DOM
-    const connectBtn = document.getElementById('connectWallet');
-    const tokenAModalBtn = document.getElementById('tokenASelect');
-    const tokenBModalBtn = document.getElementById('tokenBSelect');
-    const tokenModal = document.getElementById('tokenModal');
-    const tokenListDiv = document.getElementById('tokenList');
-    const tokenSearchInput = document.getElementById('tokenSearch');
-    const tokenAImg = document.getElementById('tokenAImg');
-    const tokenBImg = document.getElementById('tokenBImg');
-    const tokenASymbol = document.getElementById('tokenASymbol');
-    const tokenBSymbol = document.getElementById('tokenBSymbol');
-    const amountAInput = document.getElementById('amountA');
-    const amountBInput = document.getElementById('amountB');
-    const swapBtn = document.getElementById('swapBtn');
-    const statusDiv = document.getElementById('status');
+  async function loadTokens() {
+    try {
+      const res = await fetch('https://quote-api.jup.ag/v6/tokens');
+      const data = await res.json();
+      tokens = data.tokens || data;
+      for (const token of tokens) {
+        const optionA = document.createElement('option');
+        optionA.value = token.address;
+        optionA.textContent = token.symbol;
+        tokenASelect.appendChild(optionA);
 
-    // Initialize
-    (async () => {
-      await loadTokens();
-      resetTokenSelection();
-    })();
+        const optionB = document.createElement('option');
+        optionB.value = token.address;
+        optionB.textContent = token.symbol;
+        tokenBSelect.appendChild(optionB);
+      }
+    } catch (e) {
+      statusP.textContent = 'Erreur chargement tokens';
+    }
+  }
 
-    // Charger tokens depuis Jupiter
-    async function loadTokens() {
+  connectBtn.onclick = async () => {
+    if (window.solana && window.solana.isPhantom) {
       try {
-        const res = await fetch('https://quote-api.jup.ag/v6/tokens');
-        const json = await res.json();
-        tokens = json.tokens || json; // selon structure API
-      } catch(e) {
-        console.error('Erreur chargement tokens:', e);
-        statusDiv.textContent = 'Erreur chargement tokens';
+        const resp = await window.solana.connect();
+        walletPublicKey = resp.publicKey;
+        walletAddressP.textContent = 'Connecté : ' + walletPublicKey.toString();
+        swapBtn.disabled = false;
+        statusP.textContent = '';
+      } catch {
+        statusP.textContent = 'Connexion annulée';
       }
+    } else {
+      alert('Phantom Wallet non détecté');
+    }
+  };
+
+  swapBtn.onclick = async () => {
+    if (!walletPublicKey) {
+      alert('Connecte ton wallet');
+      return;
+    }
+    const inputMint = tokenASelect.value;
+    const outputMint = tokenBSelect.value;
+    const amount = parseFloat(amountInput.value);
+
+    if (!inputMint || !outputMint || isNaN(amount) || amount <= 0) {
+      alert('Token ou montant invalide');
+      return;
     }
 
-    // Reset tokens affichés au départ
-    function resetTokenSelection() {
-      tokenAImg.src = '';
-      tokenBImg.src = '';
-      tokenASymbol.textContent = 'Select Token';
-      tokenBSymbol.textContent = 'Select Token';
-      amountAInput.value = '';
-      amountBInput.value = '';
-      swapBtn.disabled = true;
-    }
+    statusP.textContent = 'Obtention de la transaction...';
 
-    // Affiche modal sélection token
-    function openTokenModal(which) {
-      selectingToken = which;
-      tokenSearchInput.value = '';
-      filterAndRenderTokens('');
-      tokenModal.style.display = 'flex';
-      tokenSearchInput.focus();
-    }
+    // Trouver le decimals du token A
+    const tokenA = tokens.find(t => t.address === inputMint);
+    const decimals = tokenA ? tokenA.decimals : 6;
 
-    // Fermer modal
-    function closeTokenModal() {
-      tokenModal.style.display = 'none';
-      selectingToken = null;
-    }
-
-    // Filtrer tokens selon recherche
-    function filterAndRenderTokens(search) {
-      const term = search.toLowerCase();
-      const filtered = tokens.filter(t => {
-        return (
-          t.symbol.toLowerCase().includes(term) ||
-          (t.name && t.name.toLowerCase().includes(term)) ||
-          t.address.toLowerCase().startsWith(term)
-        );
-      }).slice(0, 100);
-
-      tokenListDiv.innerHTML = '';
-      if (filtered.length === 0) {
-        tokenListDiv.innerHTML = '<p style="opacity:0.6; text-align:center;">Aucun token trouvé</p>';
-        return;
-      }
-
-      filtered.forEach(token => {
-        const div = document.createElement('div');
-        div.className = 'token-item';
-        div.innerHTML = `
-          <img src="${token.logoURI}" alt="${token.symbol}" />
-          <div>
-            <div class="token-symbol">${token.symbol}</div>
-            <div style="font-size:12px;opacity:0.6;">${token.name}</div>
-          </div>
-        `;
-        div.onclick = () => {
-          selectToken(token);
-          closeTokenModal();
-        };
-        tokenListDiv.appendChild(div);
+    try {
+      const swapResponse = await fetch('https://quote-api.jup.ag/v6/swap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userPublicKey: walletPublicKey.toString(),
+          inputMint,
+          outputMint,
+          amount: Math.floor(amount * Math.pow(10, decimals)),
+          slippageBps: 100,
+          swapMode: 'ExactIn',
+        }),
       });
-    }
 
-    // Sélection d'un token dans modal
-    function selectToken(token) {
-      if (selectingToken === 'A') {
-        tokenA = token;
-        tokenAImg.src = token.logoURI;
-        tokenASymbol.textContent = token.symbol;
-      } else if (selectingToken === 'B') {
-        tokenB = token;
-        tokenBImg.src = token.logoURI;
-        tokenBSymbol.textContent = token.symbol;
-      }
-      checkSwapReady();
-      estimateSwap();
-    }
+      const swapJson = await swapResponse.json();
 
-    // Connexion Phantom
-    connectBtn.onclick = async () => {
-      if (window.solana && window.solana.isPhantom) {
-        try {
-          const res = await window.solana.connect();
-          walletAddress = res.publicKey.toString();
-          connectBtn.textContent = walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4);
-          statusDiv.textContent = 'Wallet connecté';
-          await fetchBalances();
-          checkSwapReady();
-          estimateSwap();
-        } catch(e) {
-          alert('Connexion annulée');
-        }
-      } else {
-        alert('Phantom Wallet non trouvé. Installez-le !');
-      }
-    };
-
-    // Afficher modal au clic sur Token Select
-    tokenAModalBtn.onclick = () => openTokenModal('A');
-    tokenBModalBtn.onclick = () => openTokenModal('B');
-
-    // Fermer modal si clic hors modal-content
-    tokenModal.onclick = e => {
-      if (e.target === tokenModal) closeTokenModal();
-    };
-
-    // Recherche tokens en live
-    tokenSearchInput.oninput = e => {
-      filterAndRenderTokens(e.target.value);
-    };
-
-    // Saisie montant => update estimation
-    amountAInput.oninput = () => {
-      estimateSwap();
-    };
-
-    // Vérifie si swap prêt à être activé
-    function checkSwapReady() {
-      if (walletAddress && tokenA && tokenB && amountAInput.value > 0 && tokenA.address !== tokenB.address) {
-        swapBtn.disabled = false;
-      } else {
-        swapBtn.disabled = true;
-      }
-    }
-
-    // Fetch balances du wallet pour tous tokens sélectionnés (pour demo juste token A)
-    async function fetchBalances() {
-      if (!walletAddress || !tokenA) return;
-
-      try {
-        const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-        const publicKey = new solanaWeb3.PublicKey(walletAddress);
-
-        // Si tokenA est SOL
-        if (tokenA.address === 'So11111111111111111111111111111111111111112') {
-          const lamports = await connection.getBalance(publicKey);
-          balances[tokenA.address] = lamports / 1e9;
-        } else {
-          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(publicKey, {
-            mint: new solanaWeb3.PublicKey(tokenA.address)
-          });
-          if (tokenAccounts.value.length > 0) {
-            balances[tokenA.address] = tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
-          } else {
-            balances[tokenA.address] = 0;
-          }
-        }
-
-        // Affiche balance dans placeholder ou label (optionnel)
-        amountAInput.placeholder = `Balance: ${balances[tokenA.address] ?? '0'}`;
-      } catch(e) {
-        console.error('Erreur fetch balance', e);
-      }
-    }
-
-    // Estimer swap via Jupiter Ultra API v6
-    async function estimateSwap() {
-      if (!tokenA || !tokenB) {
-        amountBInput.value = '';
-        checkSwapReady();
-        return;
-      }
-      const amountIn = parseFloat(amountAInput.value);
-      if (isNaN(amountIn) || amountIn <= 0) {
-        amountBInput.value = '';
-        checkSwapReady();
+      if (!swapJson.swapTransaction) {
+        statusP.textContent = 'Erreur: transaction swap introuvable';
         return;
       }
 
-      statusDiv.textContent = 'Calcul en cours...';
+      const transaction = solanaWeb3.Transaction.from(
+        Uint8Array.from(atob(swapJson.swapTransaction), c => c.charCodeAt(0))
+      );
 
-      try {
-        // Jupiter API attend amount en lamports ou decimals, dépend du token (ici simplifié *1e6)
-        // IMPORTANT: Chaque token peut avoir un decimals différent, il faut l'utiliser
-        const decimals = tokenA.decimals || 6;
-        const inputAmount = Math.floor(amountIn * Math.pow(10, decimals));
+      const signedTx = await window.solana.signAndSendTransaction(transaction);
 
-        const url = `https://quote-api.jup.ag/v6/quote?inputMint=${tokenA.address}&outputMint=${tokenB.address}&amount=${inputAmount}&slippage=1&onlyDirectRoutes=false`;
-        const res = await fetch(url);
-        const json = await res.json();
-
-        if (!json || !json.data || json.data.length === 0) {
-          amountBInput.value = '';
-          statusDiv.textContent = 'Aucune route trouvée pour ce swap.';
-          checkSwapReady();
-          return;
-        }
-
-        // On prend la meilleure route
-        const bestRoute = json.data[0];
-
-        // outputAmount est en base decimals de token B
-        const outputAmountRaw = bestRoute.outAmount;
-        const decimalsOut = tokenB.decimals || 6;
-        const outputAmount = outputAmountRaw / Math.pow(10, decimalsOut);
-
-        amountBInput.value = outputAmount.toFixed(6);
-        statusDiv.textContent = 'Estimation prête';
-      } catch(e) {
-        console.error('Erreur estimation:', e);
-        amountBInput.value = '';
-        statusDiv.textContent = 'Erreur lors de l\'estimation.';
-      }
-      checkSwapReady();
+      statusP.innerHTML = `Swap envoyé! <a href="https://solscan.io/tx/${signedTx}" target="_blank" style="color:#4caf50;">Voir sur Solscan</a>`;
+    } catch (e) {
+      statusP.textContent = 'Erreur lors du swap: ' + (e.message || e);
+      console.error(e);
     }
+  };
 
-    // Gestion du swap réel via Jupiter Ultra
-    swapBtn.onclick = async () => {
-      if (!walletAddress) {
-        alert('Connecte ton wallet d\'abord');
-        return;
-      }
-
-      if (!tokenA || !tokenB) {
-        alert('Choisis les tokens');
-        return;
-      }
-
-      const amountIn = parseFloat(amountAInput.value);
-      if (isNaN(amountIn) || amountIn <= 0) {
-        alert('Montant invalide');
-        return;
-      }
-
-      swapBtn.disabled = true;
-      statusDiv.textContent = 'Préparation du swap...';
-
-      try {
-        const decimals = tokenA.decimals || 6;
-        const amountLamports = Math.floor(amountIn * Math.pow(10, decimals));
-
-        // Obtenir la route swap + transaction base64
-        const swapResponse = await fetch('https://quote-api.jup.ag/v6/swap', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userPublicKey: walletAddress,
-            inputMint: tokenA.address,
-            outputMint: tokenB.address,
-            amount: amountLamports,
-            slippageBps: 100, // 1%
-            swapMode: 'ExactIn'
-          })
-        });
-
-        const swapJson = await swapResponse.json();
-
-        if (!swapJson.swapTransaction) {
-          statusDiv.textContent = 'Erreur : impossible de récupérer la transaction.';
-          swapBtn.disabled = false;
-          return;
-        }
-
-        // Convertir transaction base64 en objet Transaction Solana
-        const transaction = solanaWeb3.Transaction.from(
-          Uint8Array.from(atob(swapJson.swapTransaction), c => c.charCodeAt(0))
-        );
-
-        // Signer et envoyer transaction via Phantom
-        const signedTx = await window.solana.signAndSendTransaction(transaction);
-
-        statusDiv.innerHTML = `✅ Swap envoyé avec succès ! <br> Signature : <a href="https://solscan.io/tx/${signedTx}" target="_blank" style="color:#4caf50;">${signedTx}</a>`;
-        swapBtn.disabled = false;
-      } catch (err) {
-        console.error(err);
-        statusDiv.textContent = `❌ Erreur swap : ${err.message || err}`;
-        swapBtn.disabled = false;
-      }
-    };
-  </script>
+  loadTokens();
+</script>
 </body>
 </html>
