@@ -1,529 +1,228 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AetherSwap PRO | Raydium-like Swap</title>
-
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              500: '#7e22ce',
-              600: '#6b21a8',
-            },
-          },
-        },
-      },
-    };
-  </script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Raydium Liquid Glass Swap</title>
   <style>
     body {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(120deg, #0c0c0c, #1a1a1a);
+      font-family: -apple-system, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
     }
-    .glass {
-      background: rgba(255 255 255 / 0.07);
-      border-radius: 1rem;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255 255 255 / 0.15);
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 28px;
+      padding: 32px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
     }
-    ::-webkit-scrollbar {
-      width: 8px;
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
     }
-    ::-webkit-scrollbar-thumb {
-      background: #7e22ce;
-      border-radius: 4px;
-    }
-    .token-item:hover {
-      background-color: rgba(126, 34, 206, 0.15);
+
+    #connectWallet {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 12px;
       cursor: pointer;
-      transform: scale(1.02);
-      transition: 0.15s ease;
+    }
+
+    .token-box {
+      margin-bottom: 20px;
+    }
+
+    .token-box label {
+      font-size: 14px;
+      opacity: 0.7;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .token-input {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .token-input select,
+    .token-input input {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 16px;
+      width: 48%;
+    }
+
+    .swap-arrow {
+      text-align: center;
+      font-size: 24px;
+      margin: 12px 0;
+      opacity: 0.8;
+    }
+
+    #swapBtn {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #swapBtn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .status {
+      margin-top: 16px;
+      font-size: 14px;
+      opacity: 0.8;
+      text-align: center;
     }
   </style>
 </head>
-<body class="text-white min-h-screen flex flex-col items-center justify-center p-6">
+<body>
 
-  <div class="max-w-md w-full glass p-6 space-y-6">
-
-    <header class="flex items-center justify-between">
-      <h1 class="text-3xl font-extrabold tracking-wide select-none">AetherSwap PRO</h1>
-      <button id="connectBtn" class="bg-primary-500 hover:bg-primary-600 rounded px-4 py-2 font-semibold transition">
-        Connect Wallet
-      </button>
-    </header>
-
-    <div id="walletAddress" class="font-mono text-sm truncate"></div>
-
-    <section class="space-y-5">
-
-      <!-- From Token -->
-      <div>
-        <label class="block mb-1 font-semibold">From</label>
-        <div class="flex items-center space-x-3 bg-gray-800 rounded-xl p-3">
-          <button id="fromTokenBtn" class="flex items-center space-x-2">
-            <img id="fromTokenLogo" src="" alt="" class="w-7 h-7 rounded-full hidden" />
-            <span id="fromTokenSymbol" class="font-semibold">Select Token</span>
-            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          <input
-            id="fromAmount"
-            type="number"
-            min="0"
-            step="any"
-            placeholder="0.0"
-            class="bg-transparent text-right flex-grow text-lg font-bold focus:outline-none"
-          />
-        </div>
-        <div class="text-xs text-gray-400 mt-1">Balance: <span id="fromBalance">0.00</span></div>
-      </div>
-
-      <!-- Switch Button -->
-      <div class="flex justify-center">
-        <button id="switchBtn" class="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition" title="Switch From/To">
-          <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- To Token -->
-      <div>
-        <label class="block mb-1 font-semibold">To</label>
-        <div class="flex items-center space-x-3 bg-gray-800 rounded-xl p-3">
-          <button id="toTokenBtn" class="flex items-center space-x-2">
-            <img id="toTokenLogo" src="" alt="" class="w-7 h-7 rounded-full hidden" />
-            <span id="toTokenSymbol" class="font-semibold">Select Token</span>
-            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          <input
-            id="toAmount"
-            type="text"
-            readonly
-            placeholder="0.0"
-            class="bg-transparent text-right flex-grow text-lg font-bold focus:outline-none"
-          />
-        </div>
-        <div class="text-xs text-gray-400 mt-1">Balance: <span id="toBalance">0.00</span></div>
-      </div>
-    </section>
-
-    <button id="swapBtn" disabled
-      class="w-full bg-primary-500 hover:bg-primary-600 rounded-lg py-3 font-bold transition disabled:opacity-50 disabled:cursor-not-allowed">
-      Connect Wallet to Swap
-    </button>
-  </div>
-
-  <!-- Token Selection Modal -->
-  <div
-    id="tokenModal"
-    class="fixed inset-0 bg-black bg-opacity-80 flex flex-col max-w-md w-full p-4 top-16 rounded-lg hidden z-50 mx-auto glass"
-    style="max-height: 75vh; overflow-y: auto;"
-  >
-    <div class="flex justify-between items-center mb-3">
-      <input
-        id="tokenSearch"
-        type="text"
-        placeholder="Search tokens..."
-        class="flex-grow rounded-lg p-2 text-black focus:outline-none"
-      />
-      <button id="closeModal" class="ml-2 px-3 py-1 rounded bg-red-600 hover:bg-red-700 font-semibold text-white">
-        Close
-      </button>
+  <div class="glass-card">
+    <div class="header">
+      <h2>Raydium Swap</h2>
+      <button id="connectWallet">Connect</button>
     </div>
-    <div id="tokenList" class="space-y-2 overflow-auto"></div>
-  </div>
 
-  <!-- Solana Web3 and SPL Token libs -->
-  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.69.0/lib/index.iife.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.6/lib/index.iife.min.js"></script>
+    <div class="token-box">
+      <label>From</label>
+      <div class="token-input">
+        <select id="tokenA"></select>
+        <input type="number" id="amountA" placeholder="0.0" />
+      </div>
+    </div>
+
+    <div class="swap-arrow">↓</div>
+
+    <div class="token-box">
+      <label>To</label>
+      <div class="token-input">
+        <select id="tokenB"></select>
+        <input type="number" id="amountB" placeholder="Estimation" disabled />
+      </div>
+    </div>
+
+    <button id="swapBtn">Swap</button>
+    <div class="status" id="status">Jupiter Ultra v1 Simulation Ready</div>
+  </div>
 
   <script>
-    const API_BASE = "https://api.jup.ag";
-    const PLATFORM_FEE_BPS = 25; // 0.25%
-    const PLATFORM_FEE_ACCOUNT = null; // mettre ton adresse fee si besoin
+    let walletAddress = null;
 
-    const { Connection, PublicKey, Transaction, SystemProgram } = solanaWeb3;
-    const { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, createAssociatedTokenAccountInstruction } = splToken;
-
-    let connection = new Connection("https://api.mainnet-beta.solana.com");
-
-    // State
-    let publicKey = null;
-    let tokens = [];
-    let balances = {};
-    let fromToken = null;
-    let toToken = null;
-    let quote = null;
-    let selectingFor = null; // "from" or "to"
-
-    // DOM
-    const connectBtn = document.getElementById("connectBtn");
-    const walletAddressEl = document.getElementById("walletAddress");
-    const fromTokenBtn = document.getElementById("fromTokenBtn");
-    const toTokenBtn = document.getElementById("toTokenBtn");
-    const fromTokenSymbol = document.getElementById("fromTokenSymbol");
-    const toTokenSymbol = document.getElementById("toTokenSymbol");
-    const fromTokenLogo = document.getElementById("fromTokenLogo");
-    const toTokenLogo = document.getElementById("toTokenLogo");
-    const fromAmountInput = document.getElementById("fromAmount");
-    const toAmountInput = document.getElementById("toAmount");
-    const fromBalanceEl = document.getElementById("fromBalance");
-    const toBalanceEl = document.getElementById("toBalance");
-    const swapBtn = document.getElementById("swapBtn");
-    const tokenModal = document.getElementById("tokenModal");
-    const tokenListEl = document.getElementById("tokenList");
-    const tokenSearch = document.getElementById("tokenSearch");
-    const closeModalBtn = document.getElementById("closeModal");
-    const switchBtn = document.getElementById("switchBtn");
-
-    // Helpers
-    function shortenAddress(addr) {
-      if (!addr) return "";
-      return addr.slice(0, 4) + "…" + addr.slice(-4);
-    }
-
-    function setTokenUI(token, symbolEl, logoEl) {
-      if (!token) {
-        symbolEl.textContent = "Select Token";
-        logoEl.src = "";
-        logoEl.classList.add("hidden");
+    document.getElementById("connectWallet").onclick = async () => {
+      if (window.solana && window.solana.isPhantom) {
+        try {
+          const res = await window.solana.connect();
+          walletAddress = res.publicKey.toString();
+          document.getElementById("connectWallet").innerText = walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
+        } catch (e) {
+          alert("Wallet connection cancelled.");
+        }
       } else {
-        symbolEl.textContent = token.symbol;
-        logoEl.src = token.logoURI || "";
-        logoEl.classList.remove("hidden");
+        alert("Phantom Wallet not found. Install it.");
       }
-    }
-
-    // Wallet connection
-    async function connectWallet() {
-      if (!window.solana || !window.solana.isPhantom) {
-        alert("Please install Phantom Wallet!");
-        return;
-      }
-      try {
-        const resp = await window.solana.connect();
-        publicKey = resp.publicKey.toString();
-        walletAddressEl.textContent = "Wallet: " + shortenAddress(publicKey);
-        connectBtn.textContent = "Disconnect Wallet";
-        await loadBalances();
-        enableSwapIfReady();
-      } catch (e) {
-        console.error("Wallet connection error", e);
-      }
-    }
-
-    async function disconnectWallet() {
-      if (window.solana && window.solana.isConnected) {
-        await window.solana.disconnect();
-      }
-      publicKey = null;
-      walletAddressEl.textContent = "";
-      connectBtn.textContent = "Connect Wallet";
-      swapBtn.disabled = true;
-    }
-
-    connectBtn.onclick = async () => {
-      if (publicKey) await disconnectWallet();
-      else await connectWallet();
     };
 
-    // Load token list
+    // Load token list from Jupiter
     async function loadTokens() {
-      try {
-        const res = await fetch(`${API_BASE}/v1/tokens`);
-        const json = await res.json();
-        tokens = json.data || [];
-        // Pré-sélection SOL / USDC
-        fromToken = tokens.find(t => t.symbol === "SOL") || tokens[0];
-        toToken = tokens.find(t => t.symbol === "USDC") || tokens[1];
-        setTokenUI(fromToken, fromTokenSymbol, fromTokenLogo);
-        setTokenUI(toToken, toTokenSymbol, toTokenLogo);
-      } catch (e) {
-        console.error("Failed to load tokens", e);
-      }
-    }
-
-    // Load balances from Solana RPC (getTokenAccountsByOwner)
-    async function loadBalances() {
-      if (!publicKey) return;
-      balances = {};
-      try {
-        // SOL balance
-        const solBalanceLamports = await connection.getBalance(new PublicKey(publicKey));
-        balances["SOL"] = solBalanceLamports / 1e9;
-
-        // Token accounts
-        const tokenAccounts = await connection.getParsedTokenAccountsByOwner(new PublicKey(publicKey), {
-          programId: TOKEN_PROGRAM_ID,
+      const res = await fetch("https://quote-api.jup.ag/v6/tokens");
+      const data = await res.json();
+      const tokenSelects = [document.getElementById("tokenA"), document.getElementById("tokenB")];
+      tokenSelects.forEach(select => {
+        data.forEach(token => {
+          const opt = document.createElement("option");
+          opt.value = token.address;
+          opt.innerText = token.symbol;
+          select.appendChild(opt);
         });
-
-        for (const { account } of tokenAccounts.value) {
-          const info = account.data.parsed.info;
-          const mint = info.mint;
-          const amount = parseFloat(info.tokenAmount.uiAmount);
-          balances[mint] = amount;
-        }
-        updateBalancesUI();
-      } catch (e) {
-        console.error("Failed to load balances", e);
-      }
-    }
-
-    function updateBalancesUI() {
-      fromBalanceEl.textContent = (fromToken && balances[fromToken.address || fromToken.symbol]) ? balances[fromToken.address || fromToken.symbol].toFixed(4) : "0.00";
-      toBalanceEl.textContent = (toToken && balances[toToken.address || toToken.symbol]) ? balances[toToken.address || toToken.symbol].toFixed(4) : "0.00";
-    }
-
-    // Modal open/close and token selection
-    fromTokenBtn.onclick = () => openTokenModal("from");
-    toTokenBtn.onclick = () => openTokenModal("to");
-    closeModalBtn.onclick = closeTokenModal;
-    tokenSearch.oninput = () => renderTokenList(tokenSearch.value.toLowerCase());
-
-    function openTokenModal(side) {
-      selectingFor = side;
-      tokenModal.classList.remove("hidden");
-      tokenSearch.value = "";
-      renderTokenList("");
-      tokenSearch.focus();
-    }
-
-    function closeTokenModal() {
-      tokenModal.classList.add("hidden");
-      selectingFor = null;
-    }
-
-    function renderTokenList(filter) {
-      tokenListEl.innerHTML = "";
-      const filtered = tokens.filter(t =>
-        !filter ||
-        t.symbol.toLowerCase().includes(filter) ||
-        t.name.toLowerCase().includes(filter) ||
-        (t.address && t.address.toLowerCase().includes(filter))
-      );
-      if (filtered.length === 0) {
-        tokenListEl.innerHTML = "<div class='text-gray-400 text-center py-4'>No tokens found</div>";
-        return;
-      }
-      filtered.forEach(token => {
-        const div = document.createElement("div");
-        div.className = "flex items-center space-x-3 p-3 rounded-xl token-item hover:bg-purple-600 cursor-pointer";
-        div.innerHTML = `
-          <img src="${token.logoURI || ''}" alt="${token.symbol}" class="w-7 h-7 rounded-full" />
-          <div class="flex flex-col flex-grow">
-            <span class="font-semibold">${token.symbol}</span>
-            <span class="text-xs text-gray-300 truncate">${token.name}</span>
-          </div>
-        `;
-        div.onclick = () => {
-          if (selectingFor === "from") {
-            fromToken = token;
-            setTokenUI(fromToken, fromTokenSymbol, fromTokenLogo);
-            fromAmountInput.value = "";
-          } else if (selectingFor === "to") {
-            toToken = token;
-            setTokenUI(toToken, toTokenSymbol, toTokenLogo);
-            toAmountInput.value = "";
-          }
-          closeTokenModal();
-          updateBalancesUI();
-          enableSwapIfReady();
-          getQuote();
-        };
-        tokenListEl.appendChild(div);
       });
     }
 
-    // Switch tokens
-    switchBtn.onclick = () => {
-      [fromToken, toToken] = [toToken, fromToken];
-      setTokenUI(fromToken, fromTokenSymbol, fromTokenLogo);
-      setTokenUI(toToken, toTokenSymbol, toTokenLogo);
-      fromAmountInput.value = "";
-      toAmountInput.value = "";
-      updateBalancesUI();
-      enableSwapIfReady();
-      getQuote();
-    };
+    loadTokens();
 
-    // Enable swap button
-    function enableSwapIfReady() {
-      if (
-        publicKey &&
-        fromToken &&
-        toToken &&
-        fromToken.address !== toToken.address &&
-        fromAmountInput.value &&
-        parseFloat(fromAmountInput.value) > 0
-      ) {
-        swapBtn.disabled = false;
-        swapBtn.textContent = "Swap Now";
-      } else {
-        swapBtn.disabled = true;
-        swapBtn.textContent = publicKey ? "Enter Amount & Tokens" : "Connect Wallet to Swap";
-      }
-    }
-
-    fromAmountInput.oninput = () => {
-      enableSwapIfReady();
-      getQuote();
-    };
-
-    // Get swap quote from Jupiter
-    async function getQuote() {
-      if (!fromToken || !toToken || !fromAmountInput.value) {
-        toAmountInput.value = "";
-        quote = null;
-        return;
-      }
-
-      const amountRaw = parseFloat(fromAmountInput.value);
-      if (isNaN(amountRaw) || amountRaw <= 0) {
-        toAmountInput.value = "";
-        quote = null;
-        return;
-      }
+    // Simulate swap on amount change
+    document.getElementById("amountA").addEventListener("input", async () => {
+      const amount = parseFloat(document.getElementById("amountA").value);
+      const tokenA = document.getElementById("tokenA").value;
+      const tokenB = document.getElementById("tokenB").value;
+      if (!tokenA || !tokenB || isNaN(amount)) return;
 
       try {
-        const amount = (amountRaw * Math.pow(10, fromToken.decimals)).toFixed(0);
-        const url = `${API_BASE}/v6/quote?inputMint=${fromToken.address}&outputMint=${toToken.address}&amount=${amount}&slippageBps=50&swapMode=ExactIn`;
-        const res = await fetch(url);
-        const json = await res.json();
-
-        if (json.data && json.data.length > 0) {
-          quote = json.data[0];
-          const toAmountNum = quote.outAmount / Math.pow(10, toToken.decimals);
-          toAmountInput.value = toAmountNum.toFixed(6);
-        } else {
-          toAmountInput.value = "";
-          quote = null;
-        }
+        const quote = await fetch(`https://quote-api.jup.ag/v6/quote?inputMint=${tokenA}&outputMint=${tokenB}&amount=${Math.floor(amount * 1e6)}&slippage=1`);
+        const json = await quote.json();
+        const outAmount = json.outAmount / 1e6;
+        document.getElementById("amountB").value = outAmount.toFixed(6);
       } catch (e) {
-        console.error("Failed to get quote", e);
-        toAmountInput.value = "";
-        quote = null;
+        document.getElementById("amountB").value = "";
       }
-    }
+    });
 
-    // Swap execution with ATA creation if needed
-    swapBtn.onclick = async () => {
-      if (!quote || !publicKey) {
-        alert("Connect wallet and select tokens/amount first.");
-        return;
-      }
+    // Swap handler
+    document.getElementById("swapBtn").addEventListener("click", async () => {
+      if (!walletAddress) return alert("Connect wallet first.");
 
-      swapBtn.disabled = true;
-      swapBtn.textContent = "Swapping...";
+      const tokenA = document.getElementById("tokenA").value;
+      const tokenB = document.getElementById("tokenB").value;
+      const amount = parseFloat(document.getElementById("amountA").value);
+      if (!tokenA || !tokenB || isNaN(amount)) return;
 
       try {
-        // Préparation transaction
-        const userPubKey = new PublicKey(publicKey);
-
-        // Demander swap transaction à Jupiter
-        const res = await fetch(`${API_BASE}/v6/swap`, {
+        const quote = await fetch(`https://quote-api.jup.ag/v6/swap`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            route: quote,
-            userPublicKey: publicKey,
-            wrapUnwrapSOL: true,
-          }),
+            userPublicKey: walletAddress,
+            inputMint: tokenA,
+            outputMint: tokenB,
+            amount: Math.floor(amount * 1e6),
+            slippageBps: 100,
+            swapMode: "ExactIn"
+          })
         });
 
-        const json = await res.json();
-        if (!json.swapTransaction) {
-          alert("Failed to prepare swap transaction");
-          swapBtn.disabled = false;
-          swapBtn.textContent = "Swap Now";
-          return;
-        }
+        const { swapTransaction } = await quote.json();
+        const txnBuf = Uint8Array.from(atob(swapTransaction), c => c.charCodeAt(0));
 
-        // Décode transaction base64
-        const swapTx = solanaWeb3.Transaction.from(Buffer.from(json.swapTransaction, "base64"));
+        const signed = await window.solana.signAndSendTransaction({
+          message: txnBuf,
+        });
 
-        // Vérifier création ATA pour toToken si besoin
-        const toTokenMint = new PublicKey(toToken.address);
-        const associatedTokenAddress = await splToken.getAssociatedTokenAddress(
-          toTokenMint,
-          userPubKey,
-          false,
-          TOKEN_PROGRAM_ID,
-          ASSOCIATED_TOKEN_PROGRAM_ID
-        );
-
-        // Check si ATA existe
-        const ataInfo = await connection.getAccountInfo(associatedTokenAddress);
-        if (!ataInfo) {
-          // Créer ATA avant swap
-          const ataIx = createAssociatedTokenAccountInstruction(
-            userPubKey,
-            associatedTokenAddress,
-            userPubKey,
-            toTokenMint,
-            TOKEN_PROGRAM_ID,
-            ASSOCIATED_TOKEN_PROGRAM_ID
-          );
-          swapTx.instructions.unshift(ataIx);
-        }
-
-        // Sign and send transaction
-        const signedTx = await window.solana.signTransaction(swapTx);
-        const txid = await connection.sendRawTransaction(signedTx.serialize());
-
-        swapBtn.textContent = "Confirming...";
-        await connection.confirmTransaction(txid, "confirmed");
-
-        alert(`Swap succeeded!\nTransaction: https://solscan.io/tx/${txid}`);
-
-        // Reset
-        fromAmountInput.value = "";
-        toAmountInput.value = "";
-        quote = null;
-        await loadBalances();
-        enableSwapIfReady();
+        document.getElementById("status").innerText = "✅ Swap Sent! TX ID: " + signed.signature;
       } catch (e) {
-        console.error("Swap failed", e);
-        alert("Swap failed: " + e.message);
-      } finally {
-        swapBtn.disabled = false;
-        swapBtn.textContent = "Swap Now";
+        document.getElementById("status").innerText = "❌ Erreur : " + e.message;
       }
-    };
-
-    // Auto init
-    (async () => {
-      await loadTokens();
-
-      // Detect Phantom wallet changes
-      if (window.solana && window.solana.isPhantom) {
-        window.solana.on("connect", () => {
-          publicKey = window.solana.publicKey.toString();
-          walletAddressEl.textContent = "Wallet: " + shortenAddress(publicKey);
-          loadBalances();
-          enableSwapIfReady();
-        });
-        window.solana.on("disconnect", () => {
-          publicKey = null;
-          walletAddressEl.textContent = "";
-          swapBtn.disabled = true;
-          connectBtn.textContent = "Connect Wallet";
-        });
-      }
-    })();
+    });
   </script>
+
 </body>
 </html>
