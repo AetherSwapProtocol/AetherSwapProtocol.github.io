@@ -330,49 +330,49 @@ function selectChain(chain) {
   fetchTokens();
 }
 
-const JUPITER_TOKEN_LIST_URL = "https://cache.jup.ag/tokens";
-
 async function fetchTokens() {
-  tokenList.innerHTML = "<p class='text-center text-gray-400'>Loading tokens...</p>";
-
+  tokenList.innerHTML = "<p class='text-center text-gray-400'>Loading...</p>";
   try {
-    // Récupérer la liste officielle Jupiter tokens (SPL Solana)
-    const res = await fetch(JUPITER_TOKEN_LIST_URL);
-    if (!res.ok) throw new Error("Failed to fetch Jupiter tokens");
-    const tokens = await res.json();
+    const url = const url = `https://cache.jup.ag/tokens`;
+    const res = await fetch(url);
+    let tokens = await res.json();
 
-    // Recherche par symbole ou adresse mint
-    const search = tokenInput.value.trim().toLowerCase();
-
-    let filteredTokens = tokens;
-
-    if (search.length > 0) {
-      filteredTokens = tokens.filter(t => 
-        t.symbol.toLowerCase().includes(search) || 
-        t.address.toLowerCase() === search
-      );
+    // Si filtre actif, filtrer localement
+    if (selectedChains.length === 1) {
+      const chain = selectedChains[0];
+      tokens = tokens.filter(t => t.platforms && t.platforms[chain]);
     }
 
-    if (!filteredTokens.length) {
+    // Si adresse saisie manuellement
+    const manualAddr = tokenInput.value.trim().toLowerCase();
+    if (manualAddr.length >= 30) {
+      tokens = tokens.filter(t => t.contract_address?.toLowerCase() === manualAddr);
+    }
+
+    if (!tokens.length) {
       tokenList.innerHTML = "<p class='text-center text-red-500'>No tokens found.</p>";
       return;
     }
 
     tokenList.innerHTML = '';
-    filteredTokens.forEach(t => {
+    tokens.forEach(t => {
       const div = document.createElement("div");
       div.className = "glass flex justify-between items-center p-4 cursor-pointer";
       div.innerHTML = `
         <div class="flex items-center gap-3">
-          <img src="${t.logoURI}" class="w-6 h-6 rounded-full" alt="${t.symbol} logo" />
+          <img src="${t.image}" class="w-6 h-6 rounded-full" />
           <span class="font-semibold">${t.symbol.toUpperCase()}</span>
         </div>
-        <div class="text-xs text-gray-500 truncate max-w-[150px]">${t.name}</div>
+        <div class="text-right">
+          <div class="text-sm">$${t.current_price.toFixed(4)}</div>
+          <div class="${t.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'} text-xs">
+            ${t.price_change_percentage_24h?.toFixed(2)}%
+          </div>
+        </div>
       `;
       div.onclick = () => showTokenModal(t);
       tokenList.appendChild(div);
     });
-
   } catch (err) {
     console.error(err);
     tokenList.innerHTML = "<p class='text-red-500 text-center'>Error loading tokens</p>";
