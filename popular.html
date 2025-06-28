@@ -333,7 +333,7 @@ function selectChain(chain) {
 async function fetchTokens() {
   tokenList.innerHTML = "<p class='text-center text-gray-400'>Loading...</p>";
   try {
-    const url = const url = `https://cache.jup.ag/tokens`;
+    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=50&page=1&sparkline=false`;
     const res = await fetch(url);
     let tokens = await res.json();
 
