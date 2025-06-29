@@ -1,1097 +1,942 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AetherSwap - Solana DEX</title>
-  <style>
-    /* Global Styles */
-    :root {
-      --bg-primary: #0f1115;
-      --bg-secondary: #1a1c22;
-      --bg-tertiary: #1f2128;
-      --bg-quaternary: #2c2f36;
-      --accent-color: #4f46e5;
-      --success-color: #10b981;
-      --text-primary: white;
-      --text-secondary: #aaa;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background-color: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.6;
-    }
-
-    /* Header */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 25px;
-      background-color: var(--bg-secondary);
-      border-bottom: 1px solid var(--bg-quaternary);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .logo {
-      font-size: 24px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo-icon {
-      width: 24px;
-      height: 24px;
-    }
-
-    /* Navigation */
-    nav {
-      display: flex;
-      gap: 20px;
-    }
-
-    .nav-btn {
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      font-size: 16px;
-      cursor: pointer;
-      padding: 8px 12px;
-      border-radius: 6px;
-      transition: all 0.2s;
-    }
-
-    .nav-btn:hover, .nav-btn.active {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .connect-btn {
-      background-color: var(--accent-color);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .connect-btn:hover {
-      background-color: #4338ca;
-    }
-
-    .wallet-icon {
-      width: 16px;
-      height: 16px;
-    }
-
-    /* Main Content */
-    .main-container {
-      padding: 40px 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .swap-container {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      flex-wrap: wrap;
-    }
-
-    /* Swap Box */
-    .swap-box {
-      background-color: var(--bg-tertiary);
-      border-radius: 16px;
-      padding: 25px;
-      width: 100%;
-      max-width: 450px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .swap-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .swap-title {
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .settings-btn {
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      cursor: pointer;
-      padding: 5px;
-    }
-
-    /* Token Input */
-    .token-input-group {
-      margin-bottom: 20px;
-    }
-
-    .token-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .token-label {
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    .token-balance {
-      font-size: 14px;
-      color: var(--text-secondary);
-      cursor: pointer;
-    }
-
-    .token-input-container {
-      display: flex;
-      align-items: center;
-      background-color: var(--bg-quaternary);
-      border-radius: 12px;
-      padding: 15px;
-    }
-
-    .token-amount {
-      flex: 1;
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      font-size: 24px;
-      outline: none;
-      width: 100%;
-    }
-
-    .token-select-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background-color: var(--bg-secondary);
-      border: none;
-      border-radius: 8px;
-      padding: 10px 15px;
-      color: var(--text-primary);
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .token-select-btn:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .token-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-    }
-
-    .token-symbol {
-      margin-right: 5px;
-    }
-
-    /* Swap Button */
-    .swap-btn {
-      width: 100%;
-      background-color: var(--success-color);
-      color: white;
-      border: none;
-      padding: 16px;
-      font-size: 18px;
-      font-weight: 600;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      margin-top: 10px;
-    }
-
-    .swap-btn:hover {
-      background-color: #059669;
-    }
-
-    .swap-btn:disabled {
-      background-color: #64748b;
-      cursor: not-allowed;
-    }
-
-    /* Slippage Settings */
-    .slippage-settings {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid var(--bg-quaternary);
-    }
-
-    .slippage-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .slippage-options {
-      display: flex;
-      gap: 10px;
-    }
-
-    .slippage-option {
-      background-color: var(--bg-quaternary);
-      border-radius: 8px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    .slippage-option:hover, .slippage-option.active {
-      background-color: var(--accent-color);
-      color: white;
-    }
-
-    .custom-slippage {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .custom-slippage input {
-      width: 60px;
-      background-color: var(--bg-quaternary);
-      border: none;
-      border-radius: 6px;
-      padding: 8px;
-      color: var(--text-primary);
-      text-align: center;
-    }
-
-    /* Modals */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .modal {
-      background-color: var(--bg-tertiary);
-      border-radius: 16px;
-      width: 90%;
-      max-width: 400px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 25px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-      transform: translateY(20px);
-      transition: transform 0.3s;
-    }
-
-    .modal-overlay.active .modal {
-      transform: translateY(0);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .close-btn {
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      font-size: 24px;
-      cursor: pointer;
-      padding: 5px;
-    }
-
-    /* Token List Modal */
-    .token-search {
-      width: 100%;
-      padding: 12px 15px;
-      background-color: var(--bg-quaternary);
-      border: none;
-      border-radius: 10px;
-      color: var(--text-primary);
-      margin-bottom: 15px;
-      font-size: 16px;
-    }
-
-    .token-list {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .token-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 15px;
-      cursor: pointer;
-      border-radius: 10px;
-      transition: background-color 0.2s;
-    }
-
-    .token-item:hover {
-      background-color: var(--bg-quaternary);
-    }
-
-    .token-item-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      margin-right: 12px;
-    }
-
-    .token-item-info {
-      flex: 1;
-    }
-
-    .token-item-name {
-      font-weight: 500;
-    }
-
-    .token-item-symbol {
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-
-    /* Wallet Modal */
-    .wallet-option {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 15px;
-      background-color: var(--bg-quaternary);
-      border-radius: 10px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .wallet-option:hover {
-      background-color: rgba(79, 70, 229, 0.2);
-    }
-
-    .wallet-icon-lg {
-      width: 32px;
-      height: 32px;
-    }
-
-    /* Toast Notification */
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: var(--success-color);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      z-index: 1001;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .toast.show {
-      opacity: 1;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      header {
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px;
-      }
-
-      nav {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .nav-btn {
-        padding: 8px;
-        font-size: 14px;
-      }
-
-      .connect-btn {
-        width: 100%;
-        justify-content: center;
-      }
-
-      .main-container {
-        padding: 20px 15px;
-      }
-
-      .swap-box {
-        padding: 20px;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AetherSwap - DEX</title>
+<!-- Tailwind with custom config -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          cosmic: {
+            50: '#f0f5ff',
+            100: '#e5edff',
+            200: '#cddbfe',
+            300: '#b4c6fc',
+            400: '#8da2fb',
+            500: '#6875f5',
+            600: '#5850ec',
+            700: '#5145cd',
+            800: '#42389d',
+            900: '#362f78',
+          },
+          nebula: {
+            900: '#0f0e17',
+            800: '#1b1a2e',
+            700: '#2a2945',
+            600: '#3d3b5f',
+          }
+        },
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+          mono: ['Roboto Mono', 'monospace']
+        },
+        animation: {
+          'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          'float': 'float 6s ease-in-out infinite',
+        },
+        keyframes: {
+          float: {
+            '0%, 100%': { transform: 'translateY(0)' },
+            '50%': { transform: 'translateY(-10px)' },
+          }
+        }
       }
     }
-
-    @media (max-width: 480px) {
-      .token-input-container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-
-      .token-amount {
-        font-size: 20px;
-        width: 100%;
-      }
-
-      .token-select-btn {
-        width: 100%;
-        justify-content: space-between;
-      }
-    }
-  </style>
+  }
+</script>
+<!-- Inter & Roboto Mono fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+<!-- Include Solana Web3.js -->
+<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+<style>
+  :root {
+    --primary-gradient: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
+    --glass-effect: rgba(255, 255, 255, 0.05);
+  }
+  
+  body {
+    background-color: #0f0e17;
+    background-image: 
+      radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.15) 0px, transparent 50%);
+    font-family: 'Inter', sans-serif;
+    color: white;
+    min-height: 100vh;
+  }
+  
+  .glass-panel {
+    background: rgba(15, 14, 23, 0.7);
+    backdrop-filter: blur(16px) saturate(180%);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  }
+  
+  .token-input {
+    background: rgba(27, 26, 46, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+  }
+  
+  .token-input:focus {
+    border-color: rgba(104, 117, 245, 0.6);
+    box-shadow: 0 0 0 2px rgba(104, 117, 245, 0.2);
+  }
+  
+  .swap-button {
+    background: var(--primary-gradient);
+    box-shadow: 0 4px 15px rgba(110, 69, 226, 0.4);
+    transition: all 0.3s ease;
+  }
+  
+  .swap-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(110, 69, 226, 0.6);
+  }
+  
+  .swap-button:active {
+    transform: translateY(0);
+  }
+  
+  .token-selector {
+    background: rgba(42, 41, 69, 0.7);
+    transition: all 0.2s ease;
+  }
+  
+  .token-selector:hover {
+    background: rgba(61, 59, 95, 0.7);
+  }
+  
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+  }
+  
+  .token-list-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(104, 117, 245, 0.5) transparent;
+  }
+  
+  .token-list-container::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .token-list-container::-webkit-scrollbar-thumb {
+    background-color: rgba(104, 117, 245, 0.5);
+    border-radius: 3px;
+  }
+  
+  .slippage-option {
+    transition: all 0.2s ease;
+  }
+  
+  .slippage-option:hover {
+    background: rgba(104, 117, 245, 0.2);
+  }
+  
+  .slippage-option.active {
+    background: rgba(104, 117, 245, 0.4);
+    border-color: rgba(104, 117, 245, 0.8);
+  }
+  
+  .swap-direction-button {
+    background: var(--primary-gradient);
+    box-shadow: 0 4px 12px rgba(110, 69, 226, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  .swap-direction-button:hover {
+    transform: rotate(180deg) scale(1.1);
+  }
+  
+  .pulsing-dot {
+    animation: pulse-slow 2s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  
+  .shimmer {
+    background: linear-gradient(90deg, rgba(27, 26, 46, 0) 0%, rgba(104, 117, 245, 0.1) 50%, rgba(27, 26, 46, 0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+</style>
 </head>
-<body>
-  <!-- Header -->
-  <header>
-    <div class="logo">
-      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
+
+<!-- Main Container -->
+<div class="w-full max-w-md glass-panel overflow-hidden">
+  <!-- Header with wallet connection -->
+  <div class="flex items-center justify-between p-5 border-b border-nebula-700">
+    <div class="flex items-center space-x-2">
+      <svg class="w-8 h-8 text-cosmic-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
       </svg>
-      <span>AetherSwap</span>
+      <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cosmic-400 to-cyan-400">
+        AetherSwap
+      </h1>
     </div>
-    <nav>
-      <button class="nav-btn active" id="tab-swap">Swap</button>
-      <button class="nav-btn" id="tab-pool">Pool</button>
-      <button class="nav-btn" id="tab-portfolio">Portfolio</button>
-    </nav>
-    <button class="connect-btn" id="connectWalletBtn">
-      <svg class="wallet-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M21 12V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V8M16 12H16.01M3 10H15C16.1046 10 17 10.8954 17 12V12C17 13.1046 16.1046 14 15 14H3V10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <button id="connectWalletBtn" class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-nebula-700 hover:bg-nebula-600 transition-colors" aria-label="Connect Wallet">
+      <span class="hidden sm:inline">Connect</span>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
       </svg>
-      <span id="connectWalletText">Connect Wallet</span>
     </button>
-  </header>
-
-  <!-- Main Content -->
-  <main class="main-container">
-    <div class="swap-container">
-      <!-- Swap Box -->
-      <div class="swap-box">
-        <div class="swap-header">
-          <h2 class="swap-title">Swap</h2>
-          <button class="settings-btn" aria-label="Settings">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M19.4 15C19.2669 15.3016 19.227 15.6362 19.2851 15.9606C19.3432 16.285 19.4968 16.5834 19.725 16.8167L19.725 16.8167C19.9519 17.0486 20.1043 17.3453 20.1623 17.6676C20.2203 17.9899 20.1814 18.3227 20.05 18.625C19.9175 18.9286 19.6981 19.1885 19.4184 19.3729C19.1387 19.5573 18.8108 19.6582 18.475 19.6638H18.375C17.9283 19.6638 17.5 19.4869 17.1818 19.1725C16.8636 18.8581 16.6826 18.4325 16.675 17.9875C16.6674 17.5425 16.834 17.1113 17.1413 16.7863C17.4485 16.4612 17.8726 16.2688 18.325 16.25H18.425" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M4.6 15C4.73312 15.3016 4.77298 15.6362 4.71491 15.9606C4.65683 16.285 4.50316 16.5834 4.275 16.8167L4.275 16.8167C4.04812 17.0486 3.89568 17.3453 3.83771 17.6676C3.77974 17.9899 3.81859 18.3227 3.95 18.625C4.08254 18.9286 4.30189 19.1885 4.5816 19.3729C4.86131 19.5573 5.18925 19.6582 5.525 19.6638H5.625C6.07174 19.6638 6.5 19.4869 6.81818 19.1725C7.13636 18.8581 7.31743 18.4325 7.325 17.9875C7.33257 17.5425 7.16604 17.1113 6.85875 16.7863C6.55146 16.4612 6.12744 16.2688 5.675 16.25H5.575" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M17.7 8.99999C17.8331 8.6974 17.873 8.36282 17.8149 8.03841C17.7568 7.71401 17.6032 7.41561 17.375 7.18232L17.375 7.18232C17.1481 6.95042 16.9957 6.65372 16.9377 6.33142C16.8797 6.00912 16.9186 5.67633 17.05 5.37399C17.1825 5.07042 17.4019 4.8105 17.6816 4.62609C17.9613 4.44168 18.2892 4.34083 18.625 4.33521H18.725C19.1717 4.33521 19.6 4.51208 19.9182 4.82649C20.2364 5.1409 20.4174 5.56653 20.425 6.01153C20.4326 6.45653 20.266 6.88771 19.9587 7.21276C19.6515 7.53781 19.2274 7.73021 18.775 7.74899H18.675" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M6.3 8.99999C6.16688 8.6974 6.12702 8.36282 6.18509 8.03841C6.24317 7.71401 6.39684 7.41561 6.625 7.18232L6.625 7.18232C6.85188 6.95042 7.00432 6.65372 7.06229 6.33142C7.12026 6.00912 7.08141 5.67633 6.95 5.37399C6.81746 5.07042 6.59811 4.8105 6.3184 4.62609C6.03869 4.44168 5.71075 4.34083 5.375 4.33521H5.275C4.82826 4.33521 4.4 4.51208 4.08182 4.82649C3.76364 5.1409 3.58257 5.56653 3.575 6.01153C3.56743 6.45653 3.73396 6.88771 4.04125 7.21276C4.34854 7.53781 4.77256 7.73021 5.225 7.74899H5.325" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-
-        <!-- From Token -->
-        <div class="token-input-group">
-          <div class="token-row">
-            <span class="token-label">From</span>
-            <span class="token-balance">Balance: 0.0</span>
-          </div>
-          <div class="token-input-container">
-            <input type="number" class="token-amount" id="fromAmount" placeholder="0.0" inputmode="decimal">
-            <button class="token-select-btn" id="fromTokenBtn">
-              <img src="https://cryptologos.cc/logos/solana-sol-logo.png" alt="SOL" class="token-icon" id="fromTokenIcon">
-              <span class="token-symbol" id="fromTokenSymbol">SOL</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Swap Arrow -->
-        <div style="text-align: center; margin: 10px 0;">
-          <button class="settings-btn" id="switchTokensBtn" aria-label="Switch tokens">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16 3V5M16 5V3ZM16 5H8M16 5H8ZM8 5V3M8 5V3ZM16 21V19M16 19V21ZM16 19H8M16 19H8ZM8 19V21M8 19V21ZM8 12H21M21 12L18 9M21 12L18 15M3 12H16M16 12L13 9M16 12L13 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-
-        <!-- To Token -->
-        <div class="token-input-group">
-          <div class="token-row">
-            <span class="token-label">To</span>
-            <span class="token-balance">Balance: 0.0</span>
-          </div>
-          <div class="token-input-container">
-            <input type="number" class="token-amount" id="toAmount" placeholder="0.0" inputmode="decimal" readonly>
-            <button class="token-select-btn" id="toTokenBtn">
-              <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" class="token-icon" id="toTokenIcon">
-              <span class="token-symbol" id="toTokenSymbol">USDC</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Price Info -->
-        <div style="margin: 20px 0; padding: 12px; background-color: var(--bg-quaternary); border-radius: 10px; font-size: 14px;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-            <span style="color: var(--text-secondary);">Price</span>
-            <span id="priceInfo">1 SOL = 0.0 USDC</span>
-          </div>
-          <div style="display: flex; justify-content: space-between;">
-            <span style="color: var(--text-secondary);">Minimum received</span>
-            <span id="minReceived">0.0 USDC</span>
-          </div>
-        </div>
-
-        <!-- Swap Button -->
-        <button class="swap-btn" id="swapButton">Swap</button>
-
-        <!-- Slippage Settings -->
-        <div class="slippage-settings">
-          <div class="slippage-row">
-            <span>Slippage tolerance</span>
-            <span id="slippageValue">0.5%</span>
-          </div>
-          <div class="slippage-options">
-            <div class="slippage-option" data-value="0.1">0.1%</div>
-            <div class="slippage-option active" data-value="0.5">0.5%</div>
-            <div class="slippage-option" data-value="1.0">1.0%</div>
-            <div class="slippage-option" data-value="custom">
-              <div class="custom-slippage">
-                <input type="number" id="customSlippageInput" min="0" max="50" step="0.1" style="display: none;">
-                <span>Custom</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Additional Info Box (Placeholder) -->
-      <div class="swap-box" style="max-width: 300px;">
-        <h3 style="margin-bottom: 15px;">Transaction Details</h3>
-        <div style="margin-bottom: 10px;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-            <span style="color: var(--text-secondary);">Network fee</span>
-            <span>0.0005 SOL</span>
-          </div>
-          <div style="display: flex; justify-content: space-between;">
-            <span style="color: var(--text-secondary);">Route</span>
-            <span>SOL → USDC</span>
-          </div>
-        </div>
-        <div style="padding: 12px; background-color: var(--bg-quaternary); border-radius: 8px; font-size: 13px;">
-          <p style="margin-bottom: 8px;">Powered by Jupiter Aggregator</p>
-          <p style="color: var(--text-secondary);">Best price with minimal slippage</p>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- Token Selection Modal -->
-  <div class="modal-overlay" id="tokenModal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Select a token</h3>
-        <button class="close-btn" id="closeTokenModal">&times;</button>
-      </div>
-      <input type="text" class="token-search" placeholder="Search name or paste address">
-      <div class="token-list">
-        <!-- Popular Tokens -->
-        <div class="token-item" data-token="SOL">
-          <img src="https://cryptologos.cc/logos/solana-sol-logo.png" alt="SOL" class="token-item-icon">
-          <div class="token-item-info">
-            <div class="token-item-name">Solana</div>
-            <div class="token-item-symbol">SOL</div>
-          </div>
-        </div>
-        <div class="token-item" data-token="USDC">
-          <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" class="token-item-icon">
-          <div class="token-item-info">
-            <div class="token-item-name">USD Coin</div>
-            <div class="token-item-symbol">USDC</div>
-          </div>
-        </div>
-        <div class="token-item" data-token="USDT">
-          <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" class="token-item-icon">
-          <div class="token-item-info">
-            <div class="token-item-name">Tether</div>
-            <div class="token-item-symbol">USDT</div>
-          </div>
-        </div>
-        <div class="token-item" data-token="BTC">
-          <img src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png" alt="BTC" class="token-item-icon">
-          <div class="token-item-info">
-            <div class="token-item-name">Wrapped Bitcoin</div>
-            <div class="token-item-symbol">BTC</div>
-          </div>
-        </div>
-        <div class="token-item" data-token="ETH">
-          <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="ETH" class="token-item-icon">
-          <div class="token-item-info">
-            <div class="token-item-name">Ethereum</div>
-            <div class="token-item-symbol">ETH</div>
-          </div>
-        </div>
-        <!-- More tokens would be loaded dynamically -->
-      </div>
-    </div>
   </div>
 
-  <!-- Wallet Connection Modal -->
-  <div class="modal-overlay" id="walletModal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Connect Wallet</h3>
-        <button class="close-btn" id="closeWalletModal">&times;</button>
+  <!-- Swap Interface -->
+  <div class="p-5 space-y-4" role="main">
+    <!-- From Token -->
+    <section aria-labelledby="from-token-label" class="space-y-2">
+      <div class="flex justify-between items-center">
+        <span id="from-token-label" class="text-sm font-medium text-gray-400">From</span>
+        <span id="balanceA" class="text-sm text-gray-400">Balance: 0.0</span>
       </div>
-      <div class="wallet-option" data-wallet="phantom">
-        <img src="https://phantom.app/favicon.ico" alt="Phantom" class="wallet-icon-lg">
-        <span>Phantom</span>
+      <div class="flex items-center space-x-3">
+        <button id="selectTokenA" class="flex items-center space-x-2 token-selector px-3 py-3 rounded-xl min-w-[120px]" aria-haspopup="dialog" aria-expanded="false" aria-controls="tokenModal">
+          <img id="tokenALogo" src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" alt="Token A" class="w-7 h-7 rounded-full" />
+          <span id="tokenASymbol" class="text-lg font-semibold">SOL</span>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <input 
+          type="number" 
+          id="inputAmountA" 
+          placeholder="0.0" 
+          min="0" 
+          step="any" 
+          inputmode="decimal"
+          aria-label="Amount to swap from"
+          class="flex-1 token-input text-right text-2xl font-medium py-3 px-4 rounded-xl focus:outline-none"
+        />
       </div>
-      <div class="wallet-option" data-wallet="solflare">
-        <img src="https://solflare.com/favicon.ico" alt="Solflare" class="wallet-icon-lg">
-        <span>Solflare</span>
-      </div>
-      <div class="wallet-option" data-wallet="walletconnect">
-        <img src="https://walletconnect.com/walletconnect-logo.png" alt="WalletConnect" class="wallet-icon-lg">
-        <span>WalletConnect</span>
-      </div>
-      <div class="wallet-option" data-wallet="torus">
-        <img src="https://toruswallet.io/images/favicon.png" alt="Torus" class="wallet-icon-lg">
-        <span>Torus</span>
-      </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Transaction Confirmation Modal -->
-  <div class="modal-overlay" id="confirmModal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Confirm Swap</h3>
-        <button class="close-btn" id="closeConfirmModal">&times;</button>
-      </div>
-      <div style="text-align: center; margin: 20px 0;">
-        <div style="font-size: 24px; font-weight: 600; margin-bottom: 10px;" id="confirmAmount">1 SOL</div>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin: 10px 0;">
-          <path d="M12 5V19M12 19L19 12M12 19L5 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Swap Direction Button -->
+    <div class="flex justify-center -my-2 z-10 relative">
+      <button id="swapDirectionBtn" class="swap-direction-button p-3 rounded-full transform rotate-0" aria-label="Swap tokens direction">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
         </svg>
-        <div style="font-size: 24px; font-weight: 600;" id="confirmReceive">0.0 USDC</div>
+      </button>
+    </div>
+
+    <!-- To Token -->
+    <section aria-labelledby="to-token-label" class="space-y-2">
+      <div class="flex justify-between items-center">
+        <span id="to-token-label" class="text-sm font-medium text-gray-400">To</span>
+        <span id="balanceB" class="text-sm text-gray-400">Balance: 0.0</span>
       </div>
-      <div style="margin: 20px 0; padding: 15px; background-color: var(--bg-quaternary); border-radius: 10px;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-          <span style="color: var(--text-secondary);">Exchange rate</span>
-          <span id="confirmRate">1 SOL = 0.0 USDC</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-          <span style="color: var(--text-secondary);">Price impact</span>
-          <span id="confirmImpact"><0.01%</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-          <span style="color: var(--text-secondary);">Minimum received</span>
-          <span id="confirmMinReceived">0.0 USDC</span>
-        </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span style="color: var(--text-secondary);">Network fee</span>
-          <span id="confirmFee">0.0005 SOL</span>
+      <div class="flex items-center space-x-3">
+        <button id="selectTokenB" class="flex items-center space-x-2 token-selector px-3 py-3 rounded-xl min-w-[120px]" aria-haspopup="dialog" aria-expanded="false" aria-controls="tokenModal">
+          <img id="tokenBLogo" src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERdFFL4q8d2h5nUWTiG9hqYCP5PeCM4VzB/logo.png" alt="Token B" class="w-7 h-7 rounded-full" />
+          <span id="tokenBSymbol" class="text-lg font-semibold">USDC</span>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <input 
+          type="text" 
+          id="inputAmountB" 
+          readonly 
+          placeholder="0.0" 
+          aria-label="Estimated amount to receive"
+          class="flex-1 token-input text-right text-2xl font-medium py-3 px-4 rounded-xl bg-nebula-800/50"
+        />
+      </div>
+    </section>
+
+    <!-- Slippage Settings -->
+    <section aria-label="Slippage Tolerance" class="pt-2">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-sm font-medium text-gray-400">Slippage Tolerance</span>
+        <div class="flex space-x-2">
+          <button data-slippage="0.1" class="slippage-option text-xs px-3 py-1 rounded-lg border border-nebula-700" type="button">0.1%</button>
+          <button data-slippage="0.5" class="slippage-option active text-xs px-3 py-1 rounded-lg border border-nebula-700" type="button">0.5%</button>
+          <button data-slippage="1.0" class="slippage-option text-xs px-3 py-1 rounded-lg border border-nebula-700" type="button">1%</button>
+          <button data-slippage="2.0" class="slippage-option text-xs px-3 py-1 rounded-lg border border-nebula-700" type="button">2%</button>
         </div>
       </div>
-      <button class="swap-btn" id="confirmSwapButton">Confirm Swap</button>
+    </section>
+
+    <!-- Swap Button -->
+    <button id="swapBtn" disabled class="swap-button w-full py-4 rounded-xl text-lg font-bold mt-4 flex items-center justify-center space-x-2" aria-live="polite" aria-busy="false">
+      <span>Swap</span>
+      <svg id="swapLoadingIcon" class="hidden w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Status Message -->
+  <div id="statusMsg" class="px-5 pb-4 text-center text-sm text-gray-400 min-h-[20px]" aria-live="polite"></div>
+
+  <!-- Token Modal -->
+  <div id="tokenModal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="tokenModalTitle" aria-describedby="tokenModalDesc">
+    <div class="w-full max-w-md glass-panel overflow-hidden transform transition-all" tabindex="-1">
+      <div class="flex justify-between items-center p-5 border-b border-nebula-700">
+        <h2 id="tokenModalTitle" class="text-xl font-bold">Select Token</h2>
+        <button id="closeTokenModal" class="text-gray-400 hover:text-white" aria-label="Close token selection modal">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="tokenSearchInput" 
+            placeholder="Search token name, symbol or address" 
+            aria-label="Search tokens"
+            class="w-full token-input px-4 py-3 rounded-xl pl-10 focus:outline-none"
+            autocomplete="off"
+          />
+          <svg class="absolute left-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <div id="tokenListContainer" class="mt-4 max-h-72 overflow-y-auto token-list-container">
+          <!-- Tokens loaded dynamically here -->
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Toast Notification -->
-  <div class="toast" id="toastNotification"></div>
+  <!-- Moonpay Compact Widget -->
+  <div class="w-full max-w-md mt-6 glass-panel p-5 flex items-center justify-between space-x-4 mx-auto">
+    <div class="flex items-center space-x-3">
+      <img src="https://cdn.moonpay.com/assets/moonpay_logo.svg" alt="Moonpay" class="w-10 h-10" />
+      <div>
+        <h3 class="text-lg font-bold text-cosmic-400">Buy Crypto</h3>
+        <p class="text-sm text-gray-400">Securely purchase SOL or other tokens</p>
+      </div>
+    </div>
+    <button 
+      id="moonpayBuyBtn" 
+      class="px-5 py-3 bg-gradient-to-r from-cosmic-500 to-cyan-400 rounded-xl font-semibold hover:brightness-110 transition"
+      type="button"
+      aria-label="Buy crypto with Moonpay"
+    >
+      Buy with Moonpay
+    </button>
+  </div>
+</div>
 
-  <script>
-    // DOM Elements
-    const connectWalletBtn = document.getElementById('connectWalletBtn');
-    const connectWalletText = document.getElementById('connectWalletText');
-    const fromTokenBtn = document.getElementById('fromTokenBtn');
-    const toTokenBtn = document.getElementById('toTokenBtn');
-    const fromTokenIcon = document.getElementById('fromTokenIcon');
-    const fromTokenSymbol = document.getElementById('fromTokenSymbol');
-    const toTokenIcon = document.getElementById('toTokenIcon');
-    const toTokenSymbol = document.getElementById('toTokenSymbol');
-    const fromAmount = document.getElementById('fromAmount');
-    const toAmount = document.getElementById('toAmount');
-    const switchTokensBtn = document.getElementById('switchTokensBtn');
-    const swapButton = document.getElementById('swapButton');
-    const priceInfo = document.getElementById('priceInfo');
-    const minReceived = document.getElementById('minReceived');
-    const slippageOptions = document.querySelectorAll('.slippage-option');
-    const customSlippageInput = document.getElementById('customSlippageInput');
-    const slippageValue = document.getElementById('slippageValue');
+<script>
+(() => {
+  "use strict";
 
-    // Modal Elements
-    const tokenModal = document.getElementById('tokenModal');
-    const walletModal = document.getElementById('walletModal');
-    const confirmModal = document.getElementById('confirmModal');
-    const closeTokenModal = document.getElementById('closeTokenModal');
-    const closeWalletModal = document.getElementById('closeWalletModal');
-    const closeConfirmModal = document.getElementById('closeConfirmModal');
-    const tokenSearch = document.querySelector('.token-search');
-    const tokenItems = document.querySelectorAll('.token-item');
-    const walletOptions = document.querySelectorAll('.wallet-option');
-    const toastNotification = document.getElementById('toastNotification');
+  // ----- Globals -----
+  const connectWalletBtn = document.getElementById('connectWalletBtn');
+  const swapBtn = document.getElementById('swapBtn');
+  const swapLoadingIcon = document.getElementById('swapLoadingIcon');
+  const selectTokenA = document.getElementById('selectTokenA');
+  const selectTokenB = document.getElementById('selectTokenB');
+  const tokenModal = document.getElementById('tokenModal');
+  const closeTokenModal = document.getElementById('closeTokenModal');
+  const tokenSearchInput = document.getElementById('tokenSearchInput');
+  const tokenListContainer = document.getElementById('tokenListContainer');
+  const inputAmountA = document.getElementById('inputAmountA');
+  const inputAmountB = document.getElementById('inputAmountB');
+  const tokenALogo = document.getElementById('tokenALogo');
+  const tokenBLogo = document.getElementById('tokenBLogo');
+  const tokenASymbol = document.getElementById('tokenASymbol');
+  const tokenBSymbol = document.getElementById('tokenBSymbol');
+  const swapDirectionBtn = document.getElementById('swapDirectionBtn');
+  const balanceAEl = document.getElementById('balanceA');
+  const balanceBEl = document.getElementById('balanceB');
+  const statusMsg = document.getElementById('statusMsg');
+  const moonpayBuyBtn = document.getElementById('moonpayBuyBtn');
 
-    // Confirmation Modal Elements
-    const confirmAmount = document.getElementById('confirmAmount');
-    const confirmReceive = document.getElementById('confirmReceive');
-    const confirmRate = document.getElementById('confirmRate');
-    const confirmImpact = document.getElementById('confirmImpact');
-    const confirmMinReceived = document.getElementById('confirmMinReceived');
-    const confirmFee = document.getElementById('confirmFee');
-    const confirmSwapButton = document.getElementById('confirmSwapButton');
+  // Phantom wallet
+  let provider = null;
+  let walletPublicKey = null;
 
-    // App State
-    let currentWallet = null;
-    let currentSlippage = 0.5;
-    let isSelectingFromToken = true;
-    let fromToken = {
-      symbol: 'SOL',
-      icon: 'https://cryptologos.cc/logos/solana-sol-logo.png',
-      balance: 0
-    };
-    let toToken = {
-      symbol: 'USDC',
-      icon: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
-      balance: 0
-    };
-    let exchangeRate = 0;
+  // Tokens list + map by mint for quick lookup
+  let tokens = [];
+  const tokensMap = new Map();
 
-    // Initialize the app
-    function init() {
-      // Set up event listeners
-      setupEventListeners();
-      
-      // Update UI
-      updateTokenDisplay();
-      updatePriceInfo();
-    }
+  // Selected tokens
+  let tokenA = null;
+  let tokenB = null;
 
-    // Set up all event listeners
-    function setupEventListeners() {
-      // Wallet connection
-      connectWalletBtn.addEventListener('click', () => {
-        walletModal.classList.add('active');
-      });
+  // Balances cache
+  let balances = {};
 
-      closeWalletModal.addEventListener('click', () => {
-        walletModal.classList.remove('active');
-      });
+  // Slippage default 0.5%
+  let slippageTolerance = 0.5;
 
-      walletOptions.forEach(option => {
-        option.addEventListener('click', () => {
-          const wallet = option.dataset.wallet;
-          connectWallet(wallet);
-        });
-      });
+  // Swap state
+  let quoteResult = null;
+  let isSwapping = false;
 
-      // Token selection
-      fromTokenBtn.addEventListener('click', () => {
-        isSelectingFromToken = true;
-        tokenModal.classList.add('active');
-      });
+  // Debounce timers
+  let quoteDebounceTimer = null;
 
-      toTokenBtn.addEventListener('click', () => {
-        isSelectingFromToken = false;
-        tokenModal.classList.add('active');
-      });
+  // ------------------------
 
-      closeTokenModal.addEventListener('click', () => {
-        tokenModal.classList.remove('active');
-      });
+  function setStatus(msg, isError = false) {
+    statusMsg.textContent = msg || '';
+    statusMsg.classList.toggle('text-red-500', isError);
+    statusMsg.classList.toggle('text-gray-400', !isError);
+  }
 
-      tokenItems.forEach(item => {
-        item.addEventListener('click', () => {
-          const tokenSymbol = item.dataset.token;
-          const tokenIcon = item.querySelector('.token-item-icon').src;
-          selectToken(tokenSymbol, tokenIcon);
-        });
-      });
+  function shortenAddress(addr) {
+    if (!addr) return '';
+    return addr.slice(0, 4) + '...' + addr.slice(-4);
+  }
 
-      // Token search
-      tokenSearch.addEventListener('input', () => {
-        const searchTerm = tokenSearch.value.toLowerCase();
-        tokenItems.forEach(item => {
-          const name = item.querySelector('.token-item-name').textContent.toLowerCase();
-          const symbol = item.querySelector('.token-item-symbol').textContent.toLowerCase();
-          if (name.includes(searchTerm) || symbol.includes(searchTerm)) {
-            item.style.display = 'flex';
-          } else {
-            item.style.display = 'none';
-          }
-        });
-      });
-
-      // Amount input
-      fromAmount.addEventListener('input', () => {
-        calculateToAmount();
-        updatePriceInfo();
-      });
-
-      // Switch tokens
-      switchTokensBtn.addEventListener('click', switchTokens);
-
-      // Slippage settings
-      slippageOptions.forEach(option => {
-        option.addEventListener('click', () => {
-          if (option.dataset.value === 'custom') {
-            customSlippageInput.style.display = 'block';
-            customSlippageInput.focus();
-          } else {
-            customSlippageInput.style.display = 'none';
-            currentSlippage = parseFloat(option.dataset.value);
-            updateSlippageDisplay();
-          }
-          updateActiveSlippageOption();
-        });
-      });
-
-      customSlippageInput.addEventListener('change', () => {
-        const value = parseFloat(customSlippageInput.value);
-        if (!isNaN(value) {
-          currentSlippage = Math.min(Math.max(value, 0), 50);
-          customSlippageInput.value = currentSlippage;
-          updateSlippageDisplay();
-        }
-      });
-
-      // Swap button
-      swapButton.addEventListener('click', () => {
-        if (!currentWallet) {
-          showToast('Please connect your wallet first');
-          return;
-        }
-        if (!fromAmount.value || parseFloat(fromAmount.value) <= 0) {
-          showToast('Please enter a valid amount');
-          return;
-        }
-        openConfirmModal();
-      });
-
-      // Confirmation modal
-      closeConfirmModal.addEventListener('click', () => {
-        confirmModal.classList.remove('active');
-      });
-
-      confirmSwapButton.addEventListener('click', executeSwap);
-    }
-
-    // Connect wallet
-    function connectWallet(walletType) {
-      // Simulate wallet connection
-      currentWallet = {
-        type: walletType,
-        address: 'Demo' + walletType.charAt(0).toUpperCase() + walletType.slice(1) + 'Address'
-      };
-      
-      // Update UI
-      connectWalletText.textContent = currentWallet.address.slice(0, 4) + '...' + currentWallet.address.slice(-4);
-      walletModal.classList.remove('active');
-      showToast(`${walletType} connected successfully`);
-
-      // Simulate fetching balances
-      setTimeout(() => {
-        fromToken.balance = 10.5; // Demo SOL balance
-        toToken.balance = 250; // Demo USDC balance
-        updateTokenDisplay();
-      }, 500);
-    }
-
-    // Select token
-    function selectToken(symbol, icon) {
-      if (isSelectingFromToken) {
-        // Don't allow same token on both sides
-        if (toToken.symbol === symbol) {
-          showToast('Please select a different token');
-          return;
-        }
-        fromToken.symbol = symbol;
-        fromToken.icon = icon;
-      } else {
-        // Don't allow same token on both sides
-        if (fromToken.symbol === symbol) {
-          showToast('Please select a different token');
-          return;
-        }
-        toToken.symbol = symbol;
-        toToken.icon = icon;
+  // Detect Phantom Wallet Provider
+  function getProvider() {
+    if ("solana" in window) {
+      const anyWindow = window;
+      if (anyWindow.solana.isPhantom) {
+        return anyWindow.solana;
       }
-      
-      updateTokenDisplay();
-      tokenModal.classList.remove('active');
-      calculateToAmount();
-      updatePriceInfo();
+    }
+    return null;
+  }
+
+  async function connectWallet() {
+    if (!provider) {
+      setStatus('Phantom wallet not found. Please install Phantom.', true);
+      return;
+    }
+    try {
+      const resp = await provider.connect();
+      walletPublicKey = resp.publicKey.toString();
+      connectWalletBtn.innerHTML = `
+        <span>${shortenAddress(walletPublicKey)}</span>
+        <svg class="w-5 h-5 ml-1 text-cosmic-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      `;
+      connectWalletBtn.disabled = true;
+      setStatus('Wallet connected: ' + shortenAddress(walletPublicKey));
+      await refreshBalances();
+      refreshSwapButton();
+    } catch (e) {
+      setStatus('Wallet connection rejected or failed.', true);
+    }
+  }
+
+  // Disconnect wallet (simple reload)
+  function disconnectWallet() {
+    location.reload();
+  }
+
+  // Fetch tokens from Jupiter & Dexscreener (merge + deduplicate)
+  async function fetchTokens() {
+    setStatus('Loading tokens...');
+    try {
+      // Jupiter token list v4
+      const jupiterRes = await fetch('https://cache.jup.ag/tokens');
+      const jupiterTokens = await jupiterRes.json();
+
+      // Dexscreener tokens (subset)
+      const dexscreenerRes = await fetch('https://tokens.dexscreener.com/solana/tokens.json');
+      const dexscreenerTokens = await dexscreenerRes.json();
+
+      const combinedTokens = [];
+
+      // Map to check duplicates by mint address
+      const seenMints = new Set();
+
+      // Add Jupiter tokens
+      for (const t of jupiterTokens) {
+        if (t.address && !seenMints.has(t.address)) {
+          combinedTokens.push({
+            name: t.name,
+            symbol: t.symbol,
+            address: t.address,
+            logoURI: t.logoURI || '',
+            decimals: t.decimals || 9,
+          });
+          seenMints.add(t.address);
+        }
+      }
+      // Add Dexscreener tokens only if mint not seen
+      for (const t of dexscreenerTokens) {
+        if (t.address && !seenMints.has(t.address)) {
+          combinedTokens.push({
+            name: t.name,
+            symbol: t.symbol,
+            address: t.address,
+            logoURI: t.logoURI || '',
+            decimals: t.decimals || 9,
+          });
+          seenMints.add(t.address);
+        }
+      }
+
+      // Sort by symbol alphabetically
+      combinedTokens.sort((a,b) => a.symbol.localeCompare(b.symbol));
+
+      tokens = combinedTokens;
+
+      // Build tokensMap for fast lookup
+      tokensMap.clear();
+      tokens.forEach(t => tokensMap.set(t.address, t));
+
+      setStatus('');
+    } catch (e) {
+      setStatus('Failed to load tokens list.', true);
+      console.error(e);
+    }
+  }
+
+  // Render tokens list in modal filtered by search term
+  function renderTokenList(filter = '') {
+    const filterLower = filter.toLowerCase();
+    const fragment = document.createDocumentFragment();
+
+    const filtered = tokens.filter(t => {
+      return (
+        t.name.toLowerCase().includes(filterLower) ||
+        t.symbol.toLowerCase().includes(filterLower) ||
+        t.address.toLowerCase().startsWith(filterLower)
+      );
+    });
+
+    if (filtered.length === 0) {
+      const noRes = document.createElement('p');
+      noRes.className = 'text-center text-gray-400 py-6';
+      noRes.textContent = 'No tokens found';
+      fragment.appendChild(noRes);
+    } else {
+      filtered.forEach(token => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'w-full flex items-center space-x-3 p-3 hover:bg-nebula-700 rounded-lg token-selector focus:outline-none focus:ring-2 focus:ring-cosmic-400';
+        btn.dataset.address = token.address;
+        btn.setAttribute('aria-label', `Select ${token.symbol} token`);
+
+        const img = document.createElement('img');
+        img.src = token.logoURI || 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png';
+        img.alt = `${token.symbol} logo`;
+        img.className = 'w-7 h-7 rounded-full flex-shrink-0';
+
+        const textDiv = document.createElement('div');
+        textDiv.className = 'flex flex-col text-left flex-grow';
+
+        const symbolSpan = document.createElement('span');
+        symbolSpan.className = 'font-semibold text-cosmic-400';
+        symbolSpan.textContent = token.symbol;
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'text-xs text-gray-400 truncate';
+        nameSpan.textContent = token.name;
+
+        textDiv.appendChild(symbolSpan);
+        textDiv.appendChild(nameSpan);
+
+        btn.appendChild(img);
+        btn.appendChild(textDiv);
+
+        fragment.appendChild(btn);
+      });
+    }
+    tokenListContainer.innerHTML = '';
+    tokenListContainer.appendChild(fragment);
+  }
+
+  // Open token selection modal
+  let selectingFor = null; // "A" or "B"
+  function openTokenModal(forToken) {
+    selectingFor = forToken;
+    tokenModal.classList.remove('hidden');
+    tokenSearchInput.value = '';
+    tokenSearchInput.focus();
+    renderTokenList();
+    tokenModal.setAttribute('aria-hidden', 'false');
+  }
+
+  // Close token modal
+  function closeTokenModalFunc() {
+    tokenModal.classList.add('hidden');
+    tokenModal.setAttribute('aria-hidden', 'true');
+    selectingFor = null;
+  }
+
+  // Update selected token UI
+  function updateSelectedTokenUI() {
+    if (tokenA) {
+      tokenALogo.src = tokenA.logoURI || 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png';
+      tokenALogo.alt = tokenA.symbol + ' logo';
+      tokenASymbol.textContent = tokenA.symbol;
+    }
+    if (tokenB) {
+      tokenBLogo.src = tokenB.logoURI || 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERdFFL4q8d2h5nUWTiG9hqYCP5PeCM4VzB/logo.png';
+      tokenBLogo.alt = tokenB.symbol + ' logo';
+      tokenBSymbol.textContent = tokenB.symbol;
+    }
+  }
+
+  // Update balances display
+  async function refreshBalances() {
+    if (!walletPublicKey) {
+      balanceAEl.textContent = 'Balance: -';
+      balanceBEl.textContent = 'Balance: -';
+      return;
     }
 
-    // Update token display
-    function updateTokenDisplay() {
-      fromTokenIcon.src = fromToken.icon;
-      fromTokenSymbol.textContent = fromToken.symbol;
-      fromTokenBtn.querySelector('.token-balance').textContent = `Balance: ${fromToken.balance.toFixed(4)}`;
-      
-      toTokenIcon.src = toToken.icon;
-      toTokenSymbol.textContent = toToken.symbol;
-      toTokenBtn.querySelector('.token-balance').textContent = `Balance: ${toToken.balance.toFixed(4)}`;
+    try {
+      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'), 'confirmed');
+
+      // SOL balance for tokenA if SOL
+      if (tokenA && tokenA.address === 'So11111111111111111111111111111111111111112') {
+        const lamports = await connection.getBalance(new solanaWeb3.PublicKey(walletPublicKey));
+        balances[tokenA.address] = lamports / 1e9;
+      } else if (tokenA) {
+        // SPL Token balance
+        balances[tokenA.address] = await getSplTokenBalance(walletPublicKey, tokenA.address, connection);
+      } else {
+        balances[tokenA.address] = 0;
+      }
+
+      if (tokenB && tokenB.address === 'So11111111111111111111111111111111111111112') {
+        const lamports = await connection.getBalance(new solanaWeb3.PublicKey(walletPublicKey));
+        balances[tokenB.address] = lamports / 1e9;
+      } else if (tokenB) {
+        balances[tokenB.address] = await getSplTokenBalance(walletPublicKey, tokenB.address, connection);
+      } else {
+        balances[tokenB.address] = 0;
+      }
+
+      balanceAEl.textContent = `Balance: ${balances[tokenA?.address] ? balances[tokenA.address].toFixed(6) : '0.0'}`;
+      balanceBEl.textContent = `Balance: ${balances[tokenB?.address] ? balances[tokenB.address].toFixed(6) : '0.0'}`;
+
+      refreshSwapButton();
+
+    } catch (e) {
+      console.error('Error fetching balances', e);
+      setStatus('Error fetching balances.', true);
+    }
+  }
+
+  // Get SPL Token balance helper
+  async function getSplTokenBalance(walletAddr, mintAddr, connection) {
+    try {
+      const accounts = await connection.getParsedTokenAccountsByOwner(
+        new solanaWeb3.PublicKey(walletAddr),
+        { mint: new solanaWeb3.PublicKey(mintAddr) }
+      );
+      let amount = 0;
+      if (accounts.value.length > 0) {
+        const parsedInfo = accounts.value[0].account.data.parsed.info;
+        amount = Number(parsedInfo.tokenAmount.uiAmount) || 0;
+      }
+      return amount;
+    } catch (e) {
+      console.error('getSplTokenBalance error', e);
+      return 0;
+    }
+  }
+
+  // Swap input handler with debounce for quote
+  function onInputAmountChange() {
+    refreshSwapButton();
+    if (quoteDebounceTimer) clearTimeout(quoteDebounceTimer);
+    quoteDebounceTimer = setTimeout(fetchQuote, 600);
+  }
+
+  // Fetch quote from Jupiter Ultra API
+  async function fetchQuote() {
+    if (!tokenA || !tokenB) {
+      setStatus('');
+      inputAmountB.value = '';
+      swapBtn.disabled = true;
+      return;
+    }
+    const amountIn = Number(inputAmountA.value);
+    if (isNaN(amountIn) || amountIn <= 0) {
+      inputAmountB.value = '';
+      swapBtn.disabled = true;
+      setStatus('');
+      return;
+    }
+    if (!walletPublicKey) {
+      setStatus('Connect your wallet first', true);
+      swapBtn.disabled = true;
+      return;
     }
 
-    // Switch tokens
-    function switchTokens() {
-      [fromToken, toToken] = [toToken, fromToken];
-      [fromAmount.value, toAmount.value] = [toAmount.value, fromAmount.value];
-      updateTokenDisplay();
-      calculateToAmount();
-      updatePriceInfo();
-    }
+    setStatus('Fetching best route...');
+    swapBtn.disabled = true;
+    swapLoadingIcon.classList.remove('hidden');
+    isSwapping = false;
 
-    // Calculate to amount based on from amount
-    function calculateToAmount() {
-      if (!fromAmount.value) {
-        toAmount.value = '';
+    try {
+      // Prepare params for Jupiter v1 Ultra API
+      const params = new URLSearchParams({
+        inputMint: tokenA.address,
+        outputMint: tokenB.address,
+        amount: (amountIn * Math.pow(10, tokenA.decimals)).toFixed(0),
+        slippageBps: Math.round(slippageTolerance * 100), // slippage in basis points
+        userPublicKey: walletPublicKey,
+      });
+      const url = `https://quote-api.jup.ag/v1/quote?${params.toString()}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!data || !data.data || data.data.length === 0) {
+        inputAmountB.value = '';
+        setStatus('No swap route found.', true);
+        swapBtn.disabled = true;
+        swapLoadingIcon.classList.add('hidden');
         return;
       }
 
-      // Simulate exchange rate (in a real app, this would come from an API)
-      const amount = parseFloat(fromAmount.value);
-      if (isNaN(amount)) return;
+      // Take first route for quote
+      const route = data.data[0];
+      const amountOutRaw = Number(route.outAmount);
+      const decimalsOut = tokenB.decimals || 9;
+      const amountOut = amountOutRaw / Math.pow(10, decimalsOut);
 
-      // Simple mock exchange rates
-      const rates = {
-        'SOL-USDC': 150,
-        'USDC-SOL': 1/150,
-        'SOL-USDT': 148,
-        'USDT-SOL': 1/148,
-        'USDC-USDT': 0.99,
-        'USDT-USDC': 1/0.99
+      inputAmountB.value = amountOut.toFixed(6);
+      quoteResult = route;
+      swapBtn.disabled = false;
+      setStatus('');
+    } catch (e) {
+      console.error(e);
+      inputAmountB.value = '';
+      setStatus('Failed to fetch quote.', true);
+      swapBtn.disabled = true;
+    } finally {
+      swapLoadingIcon.classList.add('hidden');
+    }
+  }
+
+  // Execute swap transaction via Jupiter Ultra API
+  async function executeSwap() {
+    if (!quoteResult || !walletPublicKey) return;
+    if (isSwapping) return;
+
+    isSwapping = true;
+    swapBtn.disabled = true;
+    swapLoadingIcon.classList.remove('hidden');
+    setStatus('Preparing transaction...');
+
+    try {
+      // POST to Jupiter API to get swap transactions
+      const params = {
+        route: quoteResult,
+        userPublicKey: walletPublicKey,
+        wrapUnwrapSOL: true,
       };
 
-      const pair = `${fromToken.symbol}-${toToken.symbol}`;
-      exchangeRate = rates[pair] || 1;
-      toAmount.value = (amount * exchangeRate).toFixed(6);
-    }
-
-    // Update price info display
-    function updatePriceInfo() {
-      if (fromAmount.value && toAmount.value) {
-        priceInfo.textContent = `1 ${fromToken.symbol} = ${exchangeRate.toFixed(6)} ${toToken.symbol}`;
-        const minAmount = parseFloat(toAmount.value) * (1 - currentSlippage / 100);
-        minReceived.textContent = `${minAmount.toFixed(6)} ${toToken.symbol}`;
-      } else {
-        priceInfo.textContent = `1 ${fromToken.symbol} = 0.0 ${toToken.symbol}`;
-        minReceived.textContent = `0.0 ${toToken.symbol}`;
-      }
-    }
-
-    // Update slippage display
-    function updateSlippageDisplay() {
-      slippageValue.textContent = `${currentSlippage}%`;
-      updatePriceInfo();
-    }
-
-    // Update active slippage option
-    function updateActiveSlippageOption() {
-      slippageOptions.forEach(option => {
-        option.classList.remove('active');
-        if (option.dataset.value === 'custom' && customSlippageInput.style.display === 'block') {
-          option.classList.add('active');
-        } else if (parseFloat(option.dataset.value) === currentSlippage) {
-          option.classList.add('active');
-        }
+      const resp = await fetch('https://quote-api.jup.ag/v1/swap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
       });
+
+      if (!resp.ok) {
+        throw new Error('Failed to get swap transactions');
+      }
+
+      const swapData = await resp.json();
+
+      if (!swapData || !swapData.swapTransactions || swapData.swapTransactions.length === 0) {
+        throw new Error('No swap transactions available');
+      }
+
+      // Deserialize transactions and send with Phantom wallet
+      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'), 'confirmed');
+      for (const encodedTx of swapData.swapTransactions) {
+        const tx = solanaWeb3.Transaction.from(Buffer.from(encodedTx, 'base64'));
+        tx.feePayer = new solanaWeb3.PublicKey(walletPublicKey);
+        tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+        // Sign and send transaction via Phantom wallet
+        const signedTx = await provider.signTransaction(tx);
+        const txId = await connection.sendRawTransaction(signedTx.serialize());
+        setStatus(`Transaction sent: ${txId}`);
+        await connection.confirmTransaction(txId, 'confirmed');
+      }
+      setStatus('Swap completed successfully!');
+      await refreshBalances();
+      inputAmountA.value = '';
+      inputAmountB.value = '';
+      swapBtn.disabled = true;
+
+    } catch (e) {
+      console.error(e);
+      setStatus('Swap failed or rejected.', true);
+    } finally {
+      isSwapping = false;
+      swapLoadingIcon.classList.add('hidden');
+    }
+  }
+
+  // Refresh swap button state
+  function refreshSwapButton() {
+    const amountIn = Number(inputAmountA.value);
+    const hasTokens = tokenA && tokenB && tokenA.address !== tokenB.address;
+    const sufficientBalance = balances[tokenA?.address] !== undefined && amountIn <= balances[tokenA.address];
+    swapBtn.disabled = !hasTokens || !amountIn || amountIn <= 0 || !sufficientBalance;
+  }
+
+  // Swap token A and B selection
+  function swapTokens() {
+    const temp = tokenA;
+    tokenA = tokenB;
+    tokenB = temp;
+
+    // Reset amounts
+    inputAmountA.value = '';
+    inputAmountB.value = '';
+    quoteResult = null;
+    updateSelectedTokenUI();
+    refreshBalances();
+    setStatus('');
+    refreshSwapButton();
+  }
+
+  // Set selected token from modal
+  function selectToken(address) {
+    const token = tokensMap.get(address);
+    if (!token) return;
+
+    if (selectingFor === 'A') {
+      if (tokenB && token.address === tokenB.address) {
+        setStatus('Token A and B cannot be the same.', true);
+        return;
+      }
+      tokenA = token;
+    } else if (selectingFor === 'B') {
+      if (tokenA && token.address === tokenA.address) {
+        setStatus('Token B and A cannot be the same.', true);
+        return;
+      }
+      tokenB = token;
+    }
+    updateSelectedTokenUI();
+    refreshBalances();
+    inputAmountA.value = '';
+    inputAmountB.value = '';
+    quoteResult = null;
+    setStatus('');
+    refreshSwapButton();
+    closeTokenModalFunc();
+  }
+
+  // Setup event listeners
+  function setupEventListeners() {
+    connectWalletBtn.addEventListener('click', () => {
+      if (!walletPublicKey) connectWallet();
+    });
+
+    selectTokenA.addEventListener('click', () => openTokenModal('A'));
+    selectTokenB.addEventListener('click', () => openTokenModal('B'));
+
+    closeTokenModal.addEventListener('click', closeTokenModalFunc);
+
+    tokenSearchInput.addEventListener('input', (e) => {
+      renderTokenList(e.target.value);
+    });
+
+    tokenListContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-address]');
+      if (btn) {
+        selectToken(btn.dataset.address);
+      }
+    });
+
+    inputAmountA.addEventListener('input', onInputAmountChange);
+
+    swapDirectionBtn.addEventListener('click', () => {
+      swapTokens();
+    });
+
+    swapBtn.addEventListener('click', () => {
+      executeSwap();
+    });
+
+    // Slippage buttons
+    document.querySelectorAll('.slippage-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.slippage-option').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        slippageTolerance = parseFloat(btn.dataset.slippage);
+        fetchQuote();
+      });
+    });
+
+    moonpayBuyBtn.addEventListener('click', () => {
+      if (!walletPublicKey) {
+        setStatus('Connect wallet before buying crypto', true);
+        return;
+      }
+      // Moonpay link with address
+      const url = `https://buy.moonpay.io/?walletAddress=${walletPublicKey}&currencyCode=sol&apiKey=YOUR_MOONPAY_API_KEY`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !tokenModal.classList.contains('hidden')) {
+        closeTokenModalFunc();
+      }
+    });
+
+    // Close modal clicking outside content
+    tokenModal.addEventListener('click', e => {
+      if (e.target === tokenModal) {
+        closeTokenModalFunc();
+      }
+    });
+  }
+
+  // Initialization
+  async function init() {
+    provider = getProvider();
+
+    if (!provider) {
+      setStatus('Phantom wallet not detected. Install it from https://phantom.app', true);
+      connectWalletBtn.disabled = true;
     }
 
-    // Open confirmation modal
-    function openConfirmModal() {
-      confirmAmount.textContent = `${fromAmount.value} ${fromToken.symbol}`;
-      confirmReceive.textContent = `${toAmount.value} ${toToken.symbol}`;
-      confirmRate.textContent = `1 ${fromToken.symbol} = ${exchangeRate.toFixed(6)} ${toToken.symbol}`;
-      confirmImpact.textContent = '<0.01%';
-      const minAmount = parseFloat(toAmount.value) * (1 - currentSlippage / 100);
-      confirmMinReceived.textContent = `${minAmount.toFixed(6)} ${toToken.symbol}`;
-      confirmFee.textContent = '0.0005 SOL';
-      confirmModal.classList.add('active');
-    }
+    // Default tokens: SOL and USDC
+    tokenA = {
+      address: 'So11111111111111111111111111111111111111112',
+      symbol: 'SOL',
+      name: 'Solana',
+      decimals: 9,
+      logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+    };
+    tokenB = {
+      address: 'Es9vMFrzaCERdFFL4q8d2h5nUWTiG9hqYCP5PeCM4VzB',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      decimals: 6,
+      logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERdFFL4q8d2h5nUWTiG9hqYCP5PeCM4VzB/logo.png',
+    };
 
-    // Execute swap
-    function executeSwap() {
-      confirmModal.classList.remove('active');
-      
-      // Simulate swap processing
-      showToast('Processing swap...');
-      
-      setTimeout(() => {
-        // Update balances (simplified for demo)
-        const amountFrom = parseFloat(fromAmount.value);
-        const amountTo = parseFloat(toAmount.value);
-        
-        fromToken.balance -= amountFrom;
-        toToken.balance += amountTo;
-        
-        updateTokenDisplay();
-        fromAmount.value = '';
-        toAmount.value = '';
-        
-        showToast('Swap executed successfully!');
-      }, 2000);
-    }
+    updateSelectedTokenUI();
 
-    // Show toast notification
-    function showToast(message) {
-      toastNotification.textContent = message;
-      toastNotification.classList.add('show');
-      setTimeout(() => {
-        toastNotification.classList.remove('show');
-      }, 3000);
-    }
+    await fetchTokens();
 
-    // Initialize the app
-    init();
-  </script>
+    setupEventListeners();
+
+    setStatus('');
+  }
+
+  // Run init on load
+  window.addEventListener('load', init);
+})();
+</script>
+
 </body>
 </html>
