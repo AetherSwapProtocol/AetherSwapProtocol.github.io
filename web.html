@@ -185,5 +185,49 @@
     }
   }
 </script>
+
+<script>
+  const OPENROUTER_KEY = "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";
+
+  function speak(text) {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'fr-FR';
+    u.pitch = 1.3;
+    u.rate = 1;
+    speechSynthesis.speak(u);
+  }
+
+  async function callOpenRouter(prompt) {
+    const payload = {
+      model: 'openai/gpt-3.5-turbo',
+      messages: [{ role: 'user', content: prompt }]
+    };
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + OPENROUTER_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    return data.choices[0].message.content.trim();
+  }
+
+  async function botReply(prompt) {
+    audioTyping.play();
+    const botMsgDiv = appendMessage("", 'bot');
+    try {
+      const reply = await callOpenRouter(prompt);
+      await typeWriterEffect(reply, botMsgDiv);
+      speak(reply);
+    } catch (e) {
+      await typeWriterEffect("Désolé, Noûra ne peut pas répondre pour l'instant.", botMsgDiv);
+    }
+    audioTyping.pause();
+    audioTyping.currentTime = 0;
+  }
+</script>
+
 </body>
 </html>
