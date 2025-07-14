@@ -1,432 +1,534 @@
 <!DOCTYPE html>
 <html lang="en" >
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AetherSwap Multi-Chain Avancé</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AetherSwap Pro — Multi-Chain Advanced</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+  :root {
+    --glass-bg: rgba(255 255 255 / 0.07);
+    --glass-border: rgba(255 255 255 / 0.15);
+    --accent: #7f5af0;
+    --accent-light: #a78bfa;
+    --error: #ef4444;
+    --success: #4ade80;
+    --dark-bg: #0a0a23;
+  }
+  body {
+    margin:0; min-height:100vh; font-family:'Inter',sans-serif; background:#0a0a23;
+    color:#ddd; display:flex; justify-content:center; align-items:center; padding:1rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .glass {
+    background: var(--glass-bg);
+    border-radius: 1rem;
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    width: 100%; max-width: 420px;
+    padding: 2rem;
+    box-sizing: border-box;
+    display: flex; flex-direction: column;
+    gap: 1rem;
+  }
+  .token-option {
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .token-logo {
+    width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; background: #222;
+    object-fit: contain;
+  }
+  button {
+    background: var(--accent);
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+    border-radius: 0.6rem;
+    transition: background-color 0.3s ease;
+    user-select:none;
+  }
+  button:disabled {
+    background: #555;
+    cursor: not-allowed;
+  }
+  button:hover:not(:disabled) {
+    background: var(--accent-light);
+  }
+  input, select {
+    background: rgba(255 255 255 / 0.1);
+    border: none;
+    border-radius: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    color: white;
+    font-size: 1rem;
+    flex-grow: 1;
+    transition: box-shadow 0.3s ease;
+  }
+  input:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 10px var(--accent-light);
+    background: rgba(255 255 255 / 0.15);
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    display: block;
+  }
+  #tokenSearch {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+  .swap-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .token-select-container {
+    flex-grow: 1;
+  }
+  .balance-text {
+    flex-shrink: 0;
+    font-size: 0.875rem;
+    color: #aaa;
+    cursor: pointer;
+    user-select: none;
+  }
+  .switch-button {
+    background: transparent;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--accent);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .switch-button:hover {
+    background: var(--accent);
+    color: white;
+  }
+  #status {
+    font-weight: 600;
+    min-height: 1.5rem;
+    text-align: center;
+    user-select: none;
+  }
+  #status.error {
+    color: var(--error);
+  }
+  #status.success {
+    color: var(--success);
+  }
+  #history {
+    max-height: 160px;
+    overflow-y: auto;
+    background: rgba(255 255 255 / 0.05);
+    border-radius: 0.6rem;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    color: #ccc;
+    user-select:none;
+  }
+  #historyTitle {
+    margin-top: 1rem;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--accent-light);
+    user-select:none;
+  }
+  #exportHistory {
+    margin-top: 0.5rem;
+    background: transparent;
+    border: 1px solid var(--accent);
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.4rem;
+    color: var(--accent-light);
+    cursor: pointer;
+    user-select:none;
+  }
+  #exportHistory:hover {
+    background: var(--accent);
+    color: white;
+  }
+  #confirmationOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,35,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  #confirmationOverlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+  #confirmationBox {
+    background: var(--glass-bg);
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 360px;
+    width: 90%;
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  #confirmationBox h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    text-align: center;
+  }
+  #confirmationDetails {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #ccc;
+  }
+  #confirmBtn {
+    background: var(--success);
+    color: black;
+    font-weight: 700;
+    padding: 0.75rem;
+    border-radius: 0.6rem;
+    cursor: pointer;
+  }
+  #cancelBtn {
+    background: transparent;
+    border: 1px solid var(--error);
+    color: var(--error);
+    padding: 0.5rem;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  #modeToggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: var(--accent);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    user-select:none;
+    z-index: 101;
+  }
+  @media (prefers-color-scheme: light) {
     body {
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      padding: 1rem;
+      background: #fafafa; color: #222;
     }
     .glass {
-      background: rgba(255 255 255 / 0.05);
-      border-radius: 1rem;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255 255 255 / 0.1);
-      width: 100%;
-      max-width: 400px;
-      padding: 1.5rem;
-      box-sizing: border-box;
+      background: rgba(255 255 255 / 0.85);
+      color: #222;
+      border: 1px solid rgba(0,0,0,0.1);
     }
-    select, input {
-      background: rgba(255 255 255 / 0.1);
-      border: none;
-      border-radius: 0.5rem;
-      color: white;
-      padding: 0.5rem 0.75rem;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    select option img {
-      vertical-align: middle;
-      margin-right: 0.5rem;
-      width: 20px;
-      height: 20px;
-    }
-    .token-option {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-    }
-    .token-logo {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background: #222;
+    input, select {
+      background: #fff;
+      color: #222;
     }
     button {
-      cursor: pointer;
-      font-weight: 600;
-      border-radius: 0.5rem;
-    }
-    #buyCrypto {
-      background: #12b886;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      width: 100%;
       color: white;
-      transition: background 0.2s ease;
     }
-    #buyCrypto:hover {
-      background: #0d8c67;
+    #status.error { color: #b91c1c;}
+    #status.success { color: #16a34a;}
+    #confirmationBox {
+      background: #fff;
+      color: #222;
     }
-    .flex-row {
-      display: flex;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-    .flex-grow {
-      flex-grow: 1;
-    }
-    #status {
-      min-height: 1.5rem;
-      font-weight: 600;
-      text-align: center;
-      margin-top: 1rem;
-      color: #a5d6a7;
-    }
-    #status.error {
-      color: #ef9a9a;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="glass">
-    <h1 class="text-center text-xl font-bold mb-4">AetherSwap Avancé 🔱</h1>
-    <select id="chainSelect" class="mb-4" aria-label="Select blockchain">
-      <option value="evm">Ethereum (EVM)</option>
-      <option value="solana">Solana</option>
-    </select>
+<div id="modeToggle" aria-label="Toggle dark/light mode" role="button" tabindex="0">🌙</div>
+<div class="glass" role="main" aria-labelledby="mainTitle" aria-live="polite" aria-atomic="true">
+  <h1 id="mainTitle" class="text-2xl font-bold text-center select-none mb-6">AetherSwap Pro 🔱</h1>
 
-    <button id="connect" class="mb-4 bg-purple-700 hover:bg-purple-600 text-white py-2 w-full" aria-label="Connect wallet">Connect Wallet</button>
+  <label for="chainSelect">Select Blockchain</label>
+  <select id="chainSelect" aria-describedby="chainDesc" aria-label="Select blockchain network" class="mb-4">
+    <option value="evm">Ethereum / EVM</option>
+    <option value="solana">Solana</option>
+  </select>
 
-    <div class="mb-3">
-      <label for="fromToken" class="block mb-1">From Token</label>
-      <div class="flex-row">
-        <select id="fromToken" class="flex-grow" aria-label="Select token to swap from"></select>
-        <input id="fromBalance" type="text" readonly class="w-24 ml-2 bg-gray-800 text-center rounded" value="0" aria-label="Token balance" />
-      </div>
+  <button id="connectBtn" aria-label="Connect wallet">Connect Wallet</button>
+
+  <div class="swap-row mt-4" style="gap:0.5rem;">
+    <div class="token-select-container" aria-label="Select token to swap from">
+      <label for="fromToken">From Token</label>
+      <input type="text" id="tokenSearch" placeholder="Search token..." autocomplete="off" aria-label="Search tokens" />
+      <select id="fromToken" size="6" aria-multiselectable="false" aria-live="polite" aria-label="From token list" style="width: 100%;"></select>
     </div>
-
-    <div class="mb-3">
-      <label for="toToken" class="block mb-1">To Token</label>
-      <select id="toToken" aria-label="Select token to swap to"></select>
-    </div>
-
-    <div class="flex-row mb-3">
-      <input id="amount" type="number" min="0" step="any" placeholder="Amount" class="flex-grow" aria-label="Amount to swap"/>
-      <input id="slippage" type="number" min="0" max="5" step="0.1" value="0.5" placeholder="Slippage %" style="width:72px" aria-label="Slippage tolerance" />
-    </div>
-
-    <button id="swap" class="bg-blue-600 hover:bg-blue-500 text-white py-2 w-full" aria-label="Execute swap">Swap</button>
-    <button id="buyCrypto" title="Buy Crypto with your card" aria-label="Buy crypto with card">Buy Crypto 💳</button>
-
-    <p id="status" role="alert" aria-live="polite"></p>
+    <div class="balance-text" id="fromBalance" aria-live="polite" aria-atomic="true" title="Click to max amount" tabindex="0" role="button">0.00</div>
   </div>
 
+  <button aria-label="Switch tokens" id="switchTokens" class="switch-button mx-auto mt-2" title="Switch tokens">⇅</button>
+
+  <div class="token-select-container mt-2" aria-label="Select token to swap to">
+    <label for="toToken">To Token</label>
+    <select id="toToken" size="6" aria-live="polite" aria-label="To token list" style="width: 100%;"></select>
+  </div>
+
+  <div class="swap-row mt-4" style="gap:0.5rem;">
+    <input type="number" id="amount" aria-label="Amount to swap" placeholder="Amount" min="0" step="any" autocomplete="off" />
+    <input type="number" id="slippage" aria-label="Slippage tolerance %" placeholder="Slippage %" value="0.5" min="0" max="5" step="0.1" style="width:80px" />
+  </div>
+
+  <button id="swapBtn" aria-label="Execute swap" class="mt-4">Swap</button>
+  <button id="buyCryptoBtn" aria-label="Buy crypto with card" class="mt-2 bg-green-600 hover:bg-green-700">Buy Crypto 💳</button>
+
+  <p id="status" role="alert" aria-live="polite" aria-atomic="true"></p>
+
+  <h2 id="historyTitle">Swap History</h2>
+  <div id="history" aria-live="polite" aria-atomic="true" tabindex="0" role="region" aria-label="Swap history"></div>
+  <button id="exportHistory" aria-label="Export swap history">Export History CSV</button>
+</div>
+
+<div id="confirmationOverlay" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmDesc" tabindex="-1">
+  <div id="confirmationBox">
+    <h2 id="confirmTitle">Confirm Swap</h2>
+    <div id="confirmationDetails"></div>
+    <button id="confirmBtn">Confirm</button>
+    <button id="cancelBtn">Cancel</button>
+  </div>
+</div>
+
+<script>
+  "use strict";
+  const ETH_CHAIN_ID = 1;
+  const SOLANA_RPC = "https://api.mainnet-beta.solana.com";
+  const SOLANA_DECIMALS_DEFAULT = 9;
+  const providerEVM = null;
+  let signerEVM = null;
+  let addressEVM = null;
+  let addressSolana = null;
+  let connectionSolana = new solanaWeb3.Connection(SOLANA_RPC);
+
+  const evmTokens = [
+    {address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", symbol: "WETH", decimals: 18, logoURI: "https://assets.coingecko.com/coins/images/2518/small/weth.png"},
+    {address: "0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", symbol: "USDC", decimals: 6, logoURI: "https://assets.coingecko.com/coins/images/6319/small/usdc.png"},
+    {address: "0xdAC17F958D2ee523a2206206994597C13D831ec7", symbol: "USDT", decimals: 6, logoURI: "https://assets.coingecko.com/coins/images/325/small/Tether-logo.png"},
+    {address: "0x6B175474E89094C44Da98b954EedeAC495271d0F", symbol: "DAI", decimals: 18, logoURI: "https://assets.coingecko.com/coins/images/9956/small/4943.png"},
+    {address: "0x0000000000000000000000000000000000000000", symbol: "ETH", decimals: 18, logoURI: "https://assets.coingecko.com/coins/images/279/small/ethereum.png"},
+  ];
+  const solanaTokens = [
+    {address: "So11111111111111111111111111111111111111112", symbol: "SOL", decimals: 9, logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"},
+    {address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", symbol: "USDC", decimals: 6, logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTD1v/logo.png"},
+    {address: "Es9vMFrzaCERrE7Xv12A3NAdyKnxxr3VxN1jhwf3LQFu", symbol: "USDT", decimals: 6, logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERrE7Xv12A3NAdyKnxxr3VxN1jhwf3LQFu/logo.png"},
+    {address: "4k3Dyjzvzp8eYK1zZpvgYf5L8xHLr6xwoE7a1fAQEGF1", symbol: "RAY", decimals: 6, logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eYK1zZpvgYf5L8xHLr6xwoE7a1fAQEGF1/logo.png"},
+  ];
+
+  const $ = (id) => document.getElementById(id);
+
+  const chainSelect = $("chainSelect");
+  const connectBtn = $("connectBtn");
+  const fromTokenSelect = $("fromToken");
+  const toTokenSelect = $("toToken");
+  const amountInput = $("amount");
+  const slippageInput = $("slippage");
+  const swapBtn = $("swapBtn");
+  const buyCryptoBtn = $("buyCryptoBtn");
+  const statusP = $("status");
+  const fromBalanceText = $("fromBalance");
+  const tokenSearchInput = $("tokenSearch");
+  const switchTokensBtn = $("switchTokens");
+  const historyDiv = $("history");
+  const exportHistoryBtn = $("exportHistory");
+  const confirmationOverlay = $("confirmationOverlay");
+  const confirmationDetails = $("confirmationDetails");
+  const confirmBtn = $("confirmBtn");
+  const cancelBtn = $("cancelBtn");
+  const modeToggleBtn = $("modeToggle");
+
+  let provider = null;
+  let signer = null;
+  let currentAddress = null;
+  let currentChain = "evm";
+  let tokenList = [];
+  let filteredTokens = [];
+  let history = [];
+
+  // -- LocalStorage Keys --
+  const LS_FAVORITES = "aetherswap_favorites";
+  const LS_HISTORY = "aetherswap_history";
+  const LS_DARKMODE = "aetherswap_darkmode";
+
+  // Helpers
+  const saveHistory = () => localStorage.setItem(LS_HISTORY, JSON.stringify(history));
+  const loadHistory = () => JSON.parse(localStorage.getItem(LS_HISTORY) || "[]");
+
+  const setStatus = (msg, isError=false) => {
+    statusP.textContent = msg;
+    statusP.className = isError ? "error" : "success";
+  };
+  const clearStatus = () => {
+    statusP.textContent = "";
+    statusP.className = "";
+  };
+
+  const shortenAddress = (addr) => `${addr.slice(0,6)}...${addr.slice(-4)}`;
+
+  const displayTokenOptions = () => {
+    const tokenHtml = (t) => `<option value="${t.address}">${t.symbol}</option>`;
+    const html = filteredTokens.map(tokenHtml).join("");
+    fromTokenSelect.innerHTML = html;
+    toTokenSelect.innerHTML = html;
+  };
+
+  const updateFilteredTokens = () => {
+    const query = tokenSearchInput.value.trim().toLowerCase();
+    if (!query) {
+      filteredTokens = tokenList;
+    } else {
+      filteredTokens = tokenList.filter(t =>
+        t.symbol.toLowerCase().includes(query) ||
+        t.address.toLowerCase().includes(query)
+      );
+    }
+    displayTokenOptions();
+  };
+
+  tokenSearchInput.addEventListener("input", updateFilteredTokens);
+
+  const switchTokens = () => {
+    const from = fromTokenSelect.value;
+    const to = toTokenSelect.value;
+    fromTokenSelect.value = to;
+    toTokenSelect.value = from;
+  };
+
+  switchTokensBtn.onclick = switchTokens;
+
+  modeToggleBtn.onclick = () => {
+    const dark = document.documentElement.classList.toggle("dark");
+    localStorage.setItem(LS_DARKMODE, dark ? "1" : "0");
+  };
+
   <script>
-    const ETH_CHAIN_ID = 1;
-    const SOLANA_RPC = "https://api.mainnet-beta.solana.com";
-    const SOLANA_DECIMALS_DEFAULT = 9;
+// Reprise logique du script précédent…
 
-    let providerEVM = null, signerEVM = null, addressEVM = null;
-    let providerSolana = window.solana, addressSolana = null;
-    let connectionSolana = new solanaWeb3.Connection(SOLANA_RPC);
+const init = () => {
+  currentChain = chainSelect.value;
+  tokenList = currentChain === "evm" ? evmTokens : solanaTokens;
+  filteredTokens = [...tokenList];
+  updateFilteredTokens();
+  history = loadHistory();
+  renderHistory();
+};
 
-    // Token lists sources (reduced demo tokens)
-    const evmTokens = [
-      {address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", symbol: "WETH", decimals: 18, logoURI: "https://assets.coingecko.com/coins/images/2518/small/weth.png"},
-      {address: "0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", symbol: "USDC", decimals: 6, logoURI: "https://assets.coingecko.com/coins/images/6319/small/usdc.png"},
-      {address: "0xdAC17F958D2ee523a2206206994597C13D831ec7", symbol: "USDT", decimals: 6, logoURI: "https://assets.coingecko.com/coins/images/325/small/Tether-logo.png"},
-      {address: "0x6B175474E89094C44Da98b954EedeAC495271d0F", symbol: "DAI", decimals: 18, logoURI: "https://assets.coingecko.com/coins/images/9956/small/4943.png"},
-      {address: "0x0000000000000000000000000000000000000000", symbol: "ETH", decimals: 18, logoURI: "https://assets.coingecko.com/coins/images/279/small/ethereum.png"},
-    ];
-    const solanaTokens = [
-      {address: "So11111111111111111111111111111111111111112", symbol: "SOL", decimals: 9, logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"},
-      {address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", symbol: "USDC", decimals: 6, logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"},
-      {address: "Es9vMFrzaCERrE7Xv12A3NAdyKnxxr3VxN1jhwf3LQFu", symbol: "USDT", decimals: 6, logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERrE7Xv12A3NAdyKnxxr3VxN1jhwf3LQFu/logo.png"},
-      {address: "4k3Dyjzvzp8eYK1zZpvgYf5L8xHLr6xwoE7a1fAQEGF1", symbol: "RAY", decimals: 6, logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eYK1zZpvgYf5L8xHLr6xwoE7a1fAQEGF1/logo.png"},
-    ];
-
-    // UI Elements
-    const chainSelect = document.getElementById("chainSelect");
-    const connectBtn = document.getElementById("connect");
-    const fromTokenSelect = document.getElementById("fromToken");
-    const toTokenSelect = document.getElementById("toToken");
-    const fromBalanceInput = document.getElementById("fromBalance");
-    const amountInput = document.getElementById("amount");
-    const slippageInput = document.getElementById("slippage");
-    const swapBtn = document.getElementById("swap");
-    const statusP = document.getElementById("status");
-    const buyCryptoBtn = document.getElementById("buyCrypto");
-
-    // Helpers
-    function clearStatus() {
-      statusP.textContent = "";
-      statusP.classList.remove("error");
+const connectWallet = async () => {
+  clearStatus();
+  if (currentChain === "evm") {
+    if (window.ethereum) {
+      const providerEVM = new ethers.providers.Web3Provider(window.ethereum);
+      await providerEVM.send("eth_requestAccounts", []);
+      signerEVM = providerEVM.getSigner();
+      addressEVM = await signerEVM.getAddress();
+      setStatus(`Connected: ${shortenAddress(addressEVM)}`);
+    } else {
+      setStatus("MetaMask not found", true);
     }
-    function setStatus(text, isError = false) {
-      statusP.textContent = text;
-      if (isError) statusP.classList.add("error");
-      else statusP.classList.remove("error");
+  } else {
+    if (window.solana && window.solana.isPhantom) {
+      const response = await window.solana.connect();
+      addressSolana = response.publicKey;
+      setStatus(`Connected: ${shortenAddress(addressSolana.toBase58())}`);
+    } else {
+      setStatus("Phantom not found", true);
     }
+  }
+};
 
-    // Populate tokens dropdown with logos + symbol
-    function createTokenOption(token) {
-      const opt = document.createElement("option");
-      opt.value = token.address;
-      opt.textContent = token.symbol;
-      opt.dataset.logo = token.logoURI;
-      opt.dataset.decimals = token.decimals;
-      return opt;
-    }
-    function populateTokens(chain) {
-      const tokens = chain === "evm" ? evmTokens : solanaTokens;
-      fromTokenSelect.innerHTML = "";
-      toTokenSelect.innerHTML = "";
-      for (const token of tokens) {
-        fromTokenSelect.appendChild(createTokenOption(token));
-        toTokenSelect.appendChild(createTokenOption(token));
-      }
-    }
+const confirmSwap = () => {
+  const fromSymbol = tokenList.find(t => t.address === fromTokenSelect.value)?.symbol;
+  const toSymbol = tokenList.find(t => t.address === toTokenSelect.value)?.symbol;
+  const amount = amountInput.value;
+  confirmationDetails.innerHTML = `
+    Swapping <b>${amount} ${fromSymbol}</b><br/>
+    For <b>${toSymbol}</b> on <b>${currentChain.toUpperCase()}</b><br/>
+    Slippage tolerance: ${slippageInput.value}%
+  `;
+  confirmationOverlay.classList.add("show");
+};
 
-    // Update "from" token balance live
-    async function updateBalance() {
-      clearStatus();
-      const chain = chainSelect.value;
-      const tokenAddr = fromTokenSelect.value;
-      if (!tokenAddr) {
-        fromBalanceInput.value = "0";
-        return;
-      }
-      if (chain === "evm") {
-        if (!signerEVM) {
-          fromBalanceInput.value = "Connect wallet";
-          return;
-        }
-        const erc20Abi = ["function balanceOf(address) view returns (uint256)", "function decimals() view returns (uint8)"];
-        try {
-          if (tokenAddr === "0x0000000000000000000000000000000000000000") { // ETH native
-            const balance = await providerEVM.getBalance(addressEVM);
-            fromBalanceInput.value = ethers.utils.formatEther(balance);
-          } else {
-            const tokenContract = new ethers.Contract(tokenAddr, erc20Abi, providerEVM);
-            const balanceRaw = await tokenContract.balanceOf(addressEVM);
-            const decimals = await tokenContract.decimals();
-            fromBalanceInput.value = ethers.utils.formatUnits(balanceRaw, decimals);
-          }
-        } catch {
-          fromBalanceInput.value = "Err";
-        }
-      } else {
-        if (!addressSolana) {
-          fromBalanceInput.value = "Connect wallet";
-          return;
-        }
-        try {
-          const accounts = await connectionSolana.getTokenAccountsByOwner(addressSolana, {mint: tokenAddr});
-          if (accounts.value.length === 0) {
-            fromBalanceInput.value = "0";
-            return;
-          }
-          const balance = await connectionSolana.getTokenAccountBalance(accounts.value[0].pubkey);
-          fromBalanceInput.value = balance.value.uiAmountString || "0";
-        } catch {
-          fromBalanceInput.value = "Err";
-        }
-      }
-    }
+confirmBtn.onclick = () => {
+  confirmationOverlay.classList.remove("show");
+  executeSwap();
+};
 
-    // Connect Wallet handlers
-    connectBtn.onclick = async () => {
-      clearStatus();
-      const chain = chainSelect.value;
-      if (chain === "evm") {
-        if (window.ethereum) {
-          try {
-            providerEVM = new ethers.providers.Web3Provider(window.ethereum);
-            await providerEVM.send("eth_requestAccounts", []);
-            signerEVM = providerEVM.getSigner();
-            addressEVM = await signerEVM.getAddress();
-            setStatus(`Connected: ${addressEVM.substring(0,6)}...${addressEVM.slice(-4)}`);
-            await updateBalance();
-          } catch (e) {
-            setStatus("Connection refused", true);
-          }
-        } else {
-          setStatus("Install MetaMask wallet", true);
-        }
-      } else {
-        if (window.solana && window.solana.isPhantom) {
-          try {
-            const resp = await window.solana.connect();
-            addressSolana = resp.publicKey;
-            setStatus(`Connected: ${addressSolana.toBase58().slice(0,6)}...${addressSolana.toBase58().slice(-4)}`);
-            await updateBalance();
-          } catch {
-            setStatus("Connection refused", true);
-          }
-        } else {
-          setStatus("Install Phantom wallet", true);
-        }
-      }
-    };
+cancelBtn.onclick = () => confirmationOverlay.classList.remove("show");
 
-    // Swap logic with 1inch (EVM) and Jupiter (Solana)
-    swapBtn.onclick = async () => {
-      clearStatus();
-      const chain = chainSelect.value;
-      const amountStr = amountInput.value;
-      if (!amountStr || Number(amountStr) <= 0) {
-        setStatus("Enter valid amount", true);
-        return;
-      }
-      if (chain === "evm") {
-        if (!signerEVM) {
-          setStatus("Connect your wallet first", true);
-          return;
-        }
-        const fromToken = fromTokenSelect.value;
-        const toToken = toTokenSelect.value;
-        if (fromToken === toToken) {
-          setStatus("Choose different tokens", true);
-          return;
-        }
-        try {
-          setStatus("Approving token...");
-          const amountDecimals = evmTokens.find(t => t.address.toLowerCase() === fromToken.toLowerCase())?.decimals ?? 18;
-          const amountParsed = ethers.utils.parseUnits(amountStr, amountDecimals);
-          const oneInchApproveUrl = `https://api.1inch.io/v5.0/${ETH_CHAIN_ID}/approve/allowance?tokenAddress=${fromToken}&walletAddress=${addressEVM}`;
-          const allowanceRes = await fetch(oneInchApproveUrl);
-          const allowanceData = await allowanceRes.json();
-          if (allowanceData.allowance && ethers.BigNumber.from(allowanceData.allowance).lt(amountParsed)) {
-            // Approve max allowance
-            const approveDataUrl = `https://api.1inch.io/v5.0/${ETH_CHAIN_ID}/approve/transaction?tokenAddress=${fromToken}&amount=${amountParsed.toString()}`;
-            const approveTxRes = await fetch(approveDataUrl);
-            const approveTxData = await approveTxRes.json();
-            if (!approveTxData.tx) throw new Error("Failed to get approval tx");
-            const approveTx = await signerEVM.sendTransaction(approveTxData.tx);
-            await approveTx.wait();
-          }
-          setStatus("Fetching swap data...");
-          const slippage = parseFloat(slippageInput.value) || 0.5;
-          const amountOutMinPercent = (100 - slippage) / 100;
-          const swapUrl = `https://api.1inch.io/v5.0/${ETH_CHAIN_ID}/swap?fromTokenAddress=${fromToken}&toTokenAddress=${toToken}&amount=${amountParsed.toString()}&fromAddress=${addressEVM}&slippage=${slippage}&disableEstimate=true`;
-          const swapRes = await fetch(swapUrl);
-          const swapData = await swapRes.json();
-          if (!swapData.tx) throw new Error("Failed to fetch swap tx");
-          const txResponse = await signerEVM.sendTransaction(swapData.tx);
-          setStatus("Swap sent, awaiting confirmation...");
-          await txResponse.wait();
-          setStatus(`Swap successful: ${txResponse.hash}`);
-          await updateBalance();
-        } catch (e) {
-          setStatus("Error: " + (e.message || e), true);
-        }
-      } else {
-        if (!addressSolana) {
-          setStatus("Connect your wallet first", true);
-          return;
-        }
-        const fromToken = fromTokenSelect.value;
-        const toToken = toTokenSelect.value;
-        if (fromToken === toToken) {
-          setStatus("Choose different tokens", true);
-          return;
-        }
-        try {
-          setStatus("Preparing swap...");
-          // Get quote from Jupiter
-          const amountParsed = Math.floor(Number(amountInput.value) * 10 ** (solanaTokens.find(t => t.address === fromToken)?.decimals || SOLANA_DECIMALS_DEFAULT));
-          const jupiterQuoteUrl = `https://quote-api.jup.ag/v4/quote?inputMint=${fromToken}&outputMint=${toToken}&amount=${amountParsed}&slippageBps=${Math.floor((parseFloat(slippageInput.value) || 0.5) * 100)}&onlyDirectRoutes=true`;
-          const quoteRes = await fetch(jupiterQuoteUrl);
-          const quoteData = await quoteRes.json();
-          if (!quoteData.data || quoteData.data.length === 0) throw new Error("No routes found");
-          const bestRoute = quoteData.data[0];
-          // Get swap transaction from Jupiter
-          const swapUrl = "https://quote-api.jup.ag/v4/swap";
-          const swapRes = await fetch(swapUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              route: bestRoute,
-              userPublicKey: addressSolana.toBase58(),
-              wrapUnwrapSOL: true,
-            }),
-          });
-          const swapData = await swapRes.json();
-          if (!swapData.swapTransaction) throw new Error("Failed to get swap transaction");
-          const rawTx = swapData.swapTransaction;
-          // Decode base64 transaction
-          const txBuffer = Uint8Array.from(atob(rawTx), c => c.charCodeAt(0));
-          const tx = solanaWeb3.Transaction.from(txBuffer);
-          const signedTx = await window.solana.signTransaction(tx);
-          const connection = new solanaWeb3.Connection(SOLANA_RPC);
-          const txId = await connection.sendRawTransaction(signedTx.serialize());
-          setStatus(`Transaction sent: ${txId}`);
-          await connection.confirmTransaction(txId);
-          setStatus(`Swap confirmed: ${txId}`);
-          await updateBalance();
-        } catch (e) {
-          setStatus("Error: " + (e.message || e), true);
-        }
-      }
-    };
+swapBtn.onclick = () => {
+  if (!fromTokenSelect.value || !toTokenSelect.value || !amountInput.value) {
+    setStatus("Fill all fields", true);
+    return;
+  }
+  confirmSwap();
+};
 
-    // Buy Crypto On-Ramp (Transak)
-    buyCryptoBtn.onclick = () => {
-      clearStatus();
-      const chain = chainSelect.value;
-      const fiatCurrency = "USD";
-      const cryptoCurrency = chain === "evm" ? "ETH" : "SOL";
-      const walletAddress = chain === "evm" ? addressEVM : (addressSolana?.toBase58() || "");
-      if (!walletAddress) {
-        setStatus("Connect your wallet first", true);
-        return;
-      }
-      const transakUrl = `https://global.transak.com?apiKey=YOUR_TRANSAK_API_KEY&cryptoCurrency=${cryptoCurrency}&fiatCurrency=${fiatCurrency}&walletAddress=${walletAddress}`;
-      window.open(transakUrl, "_blank", "width=450,height=650");
-    };
+const executeSwap = async () => {
+  try {
+    setStatus("Executing swap...");
+    const from = fromTokenSelect.value;
+    const to = toTokenSelect.value;
+    const amount = parseFloat(amountInput.value);
+    const slippage = parseFloat(slippageInput.value);
+    const time = new Date().toISOString();
 
-    // On chain change reset state
-    chainSelect.onchange = () => {
-      clearStatus();
-      providerEVM = null;
-      signerEVM = null;
-      addressEVM = null;
-      addressSolana = null;
-      connectionSolana = new solanaWeb3.Connection(SOLANA_RPC);
-      populateTokens(chainSelect.value);
-      fromBalanceInput.value = "0";
-      amountInput.value = "";
-      slippageInput.value = "0.5";
-      setStatus("Select your wallet and connect");
-    };
+    // Simulated swap (replace with real logic: 1inch / Jupiter)
+    setTimeout(() => {
+      const entry = { from, to, amount, slippage, time, chain: currentChain };
+      history.unshift(entry);
+      saveHistory();
+      renderHistory();
+      setStatus("Swap simulated ✅");
+    }, 1000);
+  } catch (e) {
+    setStatus("Swap failed: " + e.message, true);
+  }
+};
 
-    // Update balance when fromToken changes
-    fromTokenSelect.onchange = updateBalance;
+const renderHistory = () => {
+  if (history.length === 0) {
+    historyDiv.innerHTML = "<i>No swaps yet</i>";
+    return;
+  }
+  historyDiv.innerHTML = history.map(h =>
+    `• ${h.chain.toUpperCase()}: ${h.amount} ${h.from} → ${h.to} (${h.slippage}% slippage)`
+  ).join("<br/>");
+};
 
-    // Mobile deep-link fallback on connect button
-    function isMobile() {
-      return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
-    }
+exportHistoryBtn.onclick = () => {
+  const csv = ["Chain,From,To,Amount,Slippage,Time"];
+  history.forEach(h => {
+    csv.push(`${h.chain},${h.from},${h.to},${h.amount},${h.slippage},${h.time}`);
+  });
+  const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "swap-history.csv";
+  link.click();
+};
 
-    if(isMobile()) {
-      connectBtn.onclick = () => {
-        clearStatus();
-        const chain = chainSelect.value;
-        if(chain === "evm") {
-          // MetaMask mobile deep link fallback
-          window.location.href = "https://metamask.app.link/dapp/" + window.location.host;
-        } else {
-          // Phantom mobile deep link fallback
-          window.location.href = "https://phantom.app/ul/browse/" + encodeURIComponent(window.location.href);
-        }
-      };
-    }
+connectBtn.onclick = connectWallet;
+chainSelect.onchange = init;
 
-    // Initialize default chain tokens
-    chainSelect.dispatchEvent(new Event("change"));
-  </script>
+window.onload = () => {
+  if (localStorage.getItem(LS_DARKMODE) === "1") {
+    document.documentElement.classList.add("dark");
+  }
+  init();
+};
+</script>
 </body>
 </html>
