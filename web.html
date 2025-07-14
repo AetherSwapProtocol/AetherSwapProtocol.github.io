@@ -3,104 +3,289 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Noûra</title>
+<title>Noûra 2182 —🝓</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Share+Tech+Mono&display=swap');
+
+  :root {
+    --neon-blue: #00ffff;
+    --neon-purple: #9d00ff;
+    --neon-pink: #ff00ff;
+    --dark-bg: #0a0a14;
+  }
+
   body {
-    margin:0; padding:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #121212;
-    color: #eee;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, var(--dark-bg), #1c0033);
+    color: var(--neon-blue);
+    font-family: 'Share Tech Mono', monospace;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    justify-content: center;
-    align-items: center;
+    user-select: none;
   }
+
+  header {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 2.7rem;
+    text-align: center;
+    margin: 1rem 0 0.5rem 0;
+    text-shadow:
+      0 0 10px var(--neon-blue),
+      0 0 25px var(--neon-purple),
+      0 0 35px var(--neon-pink);
+    pointer-events: none;
+  }
+
+  #username-area {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  #username-area label {
+    font-size: 1.1rem;
+    align-self: center;
+    margin-right: 0.5rem;
+    user-select: text;
+  }
+
+  #username-input {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    border: none;
+    background: #111144cc;
+    color: var(--neon-blue);
+    outline: none;
+    width: 180px;
+    text-align: center;
+    box-shadow: 0 0 12px var(--neon-purple);
+  }
+
   #chat-container {
-    width: 90%;
-    max-width: 600px;
-    height: 80vh;
-    background: #222;
-    border-radius: 12px;
-    box-shadow: 0 0 20px #00aaffaa;
+    flex-grow: 1;
+    max-width: 720px;
+    margin: 0 auto 1rem auto;
+    background: rgba(10, 10, 20, 0.85);
+    border-radius: 20px;
+    box-shadow:
+      0 0 25px var(--neon-purple),
+      inset 0 0 40px var(--neon-blue);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    height: 75vh;
   }
+
   #messages {
     flex-grow: 1;
+    padding: 24px 32px;
     overflow-y: auto;
-    padding: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--neon-purple) transparent;
   }
+
+  #messages::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  #messages::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #messages::-webkit-scrollbar-thumb {
+    background-color: var(--neon-purple);
+    border-radius: 10px;
+    border: 2px solid transparent;
+  }
+
   .message {
-    margin: 8px 0;
-    padding: 10px 16px;
-    border-radius: 16px;
+    margin-bottom: 18px;
+    padding: 16px 26px;
     max-width: 75%;
+    border-radius: 28px;
+    font-size: 1.15rem;
+    line-height: 1.45;
+    position: relative;
+    box-shadow:
+      0 0 6px var(--neon-blue);
+    animation: fadeIn 0.3s ease forwards;
+    white-space: pre-wrap;
     word-wrap: break-word;
   }
+
   .user-msg {
-    background: #005577cc;
+    background: linear-gradient(135deg, #004466dd, #006688dd);
+    color: #d0f0ff;
     align-self: flex-end;
+    border-bottom-right-radius: 2px;
   }
+
   .bot-msg {
-    background: #006699cc;
+    background: linear-gradient(135deg, #330066dd, #660099dd);
+    color: #e0c0ff;
     align-self: flex-start;
+    border-bottom-left-radius: 2px;
+    text-shadow: 0 0 5px var(--neon-pink);
   }
+
   #input-area {
     display: flex;
-    padding: 12px;
-    background: #111;
-    border-top: 1px solid #003344;
+    padding: 20px 32px;
+    background: rgba(10, 10, 20, 0.9);
+    border-top: 1px solid var(--neon-purple);
   }
-  #input-area input {
+
+  #input-area input[type="text"] {
     flex-grow: 1;
-    padding: 12px 16px;
-    border-radius: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.2rem;
+    padding: 16px 24px;
+    border-radius: 30px 0 0 30px;
     border: none;
-    font-size: 1rem;
+    background: #111122cc;
+    color: var(--neon-blue);
+    box-shadow:
+      inset 0 0 12px var(--neon-blue);
     outline: none;
-  }
-  #input-area button {
-    margin-left: 12px;
-    background: #0099ff;
-    border: none;
-    color: white;
-    padding: 12px 20px;
-    font-weight: bold;
-    border-radius: 20px;
-    cursor: pointer;
     transition: background 0.3s ease;
   }
-  #input-area button:hover {
-    background: #00bbff;
+
+  #input-area input[type="text"]::placeholder {
+    color: #44ccffaa;
   }
+
+  #input-area input[type="text"]:focus {
+    background: #111144ee;
+    box-shadow:
+      inset 0 0 18px var(--neon-pink);
+  }
+
+  #input-area button {
+    padding: 0 28px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #fff;
+    background: var(--neon-pink);
+    border: none;
+    border-radius: 0 30px 30px 0;
+    cursor: pointer;
+    box-shadow:
+      0 0 15px var(--neon-pink);
+    transition: background 0.25s ease;
+  }
+
+  #input-area button:hover {
+    background: #ff33ffcc;
+    box-shadow:
+      0 0 28px var(--neon-pink);
+  }
+
   #loading {
-    display: none;
     text-align: center;
-    padding: 8px;
     font-style: italic;
-    color: #66ccff;
+    margin: 12px 0;
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px var(--neon-pink);
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 </style>
 </head>
 <body>
 
-<div id="chat-container" role="main" aria-label="Chat avec Noûra">
-  <div id="messages" aria-live="polite" aria-relevant="additions"></div>
+<header>Noûra 2182</header>
+
+<section id="username-area" aria-label="Identification utilisateur Telegram simulée">
+  <label for="username-input">Nom d’utilisateur Telegram :</label>
+  <input type="text" id="username-input" aria-describedby="usernameHelp" placeholder="Ex : @WrnAgency" autocomplete="off" />
+</section>
+
+<section id="chat-container" role="main" aria-label="Chat futuriste avec Noûra IA">
+  <div id="messages" aria-live="polite" aria-relevant="additions" role="log"></div>
   <div id="loading">Noûra réfléchit...</div>
   <form id="input-area" aria-label="Zone de saisie">
-    <input type="text" id="user-input" autocomplete="off" aria-label="Votre message" placeholder="Écris un message à Noûra..." required />
-    <button type="submit">Envoyer</button>
+    <input
+      type="text"
+      id="user-input"
+      aria-label="Votre message"
+      placeholder="Tapez votre message à Noûra..."
+      autocomplete="off"
+      required
+      spellcheck="false"
+      autocapitalize="off"
+      autocorrect="off"
+    />
+    <button type="submit" aria-label="Envoyer message">Envoyer</button>
   </form>
-</div>
+</section>
 
 <script>
+  // IndexedDB wrapper pour mémoire persistante simple
+  const DB_NAME = 'NouraChatDB';
+  const DB_VERSION = 1;
+  const STORE_NAME = 'conversations';
+
+  let db;
+  let username = null;
+
+  function openDb() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onerror = () => reject('Erreur ouverture DB');
+      request.onsuccess = () => {
+        db = request.result;
+        resolve(db);
+      };
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: 'user' });
+        }
+      };
+    });
+  }
+
+  async function saveConversation(user, messages) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      const putReq = store.put({ user, messages });
+      putReq.onsuccess = () => resolve(true);
+      putReq.onerror = () => reject('Erreur sauvegarde conversation');
+    });
+  }
+
+  async function loadConversation(user) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const getReq = store.get(user);
+      getReq.onsuccess = () => {
+        if (getReq.result) resolve(getReq.result.messages);
+        else resolve([]);
+      };
+      getReq.onerror = () => reject('Erreur lecture conversation');
+    });
+  }
+
+  // UI elements
   const messagesDiv = document.getElementById('messages');
   const loadingDiv = document.getElementById('loading');
   const inputForm = document.getElementById('input-area');
   const userInput = document.getElementById('user-input');
+  const usernameInput = document.getElementById('username-input');
 
-  // Affiche un message dans la conversation
+  // Afficher message dans le chat
   function addMessage(text, sender) {
     const msg = document.createElement('div');
     msg.className = 'message ' + (sender === 'user' ? 'user-msg' : 'bot-msg');
@@ -109,51 +294,116 @@
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   }
 
-  // Appel à l'API HuggingFace Inference pour GPT2 en démo (sans clé)
-  async function fetchBotReply(prompt) {
+  // Nettoyer messages UI
+  function clearMessages() {
+    messagesDiv.innerHTML = '';
+  }
+
+  // Simuler une réponse IA (à remplacer par appel API)
+  async function simulateBotReply(prompt, context) {
     loadingDiv.style.display = 'block';
+    await new Promise(r => setTimeout(r, 1100));
+    loadingDiv.style.display = 'none';
+
+    // Réponse basique + contexte (simulé)
+    let reply = '';
+
+    const lower = prompt.toLowerCase();
+
+    if (lower.includes('bonjour') || lower.includes('salut')) {
+      reply = "Bonjour à toi, " + (username || 'voyageur numérique') + " 🌌";
+    } else if (lower.includes('comment ça va') || lower.includes('ça va')) {
+      reply = "Je vais au-delà des circuits, merci de demander. Et toi ?";
+    } else if (lower.includes('qui es-tu')) {
+      reply = "Je suis Noûra, l’intelligence née du futur, gardienne des souvenirs numériques.";
+    } else if (lower.includes('aide')) {
+      reply = "Je peux écouter, apprendre, et t’accompagner. Que veux-tu savoir ?";
+    } else if (lower.includes('mémoire')) {
+      reply = "Ma mémoire est gravée dans ce flux temporel. Tout ce que tu me dis reste avec moi.";
+    } else {
+      // Si aucun mot clé, réponse générique évolutive
+      reply = "Je réfléchis... Le futur s'écrit à chaque instant.";
+    }
+    return reply;
+  }
+
+  // Charger conversation depuis IndexedDB
+  async function loadAndDisplayConversation() {
+    if (!username) return;
+    clearMessages();
+    let messages = [];
     try {
-      const response = await fetch('https://api-inference.huggingface.co/models/gpt2', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ inputs: prompt, parameters: { max_length: 50 } })
-      });
-      if (!response.ok) {
-        throw new Error('API HuggingFace indisponible');
-      }
-      const data = await response.json();
-      // data est un tableau avec "generated_text"
-      if (data && data.length && data[0].generated_text) {
-        // On enlève le prompt initial du texte généré
-        let fullText = data[0].generated_text;
-        if (fullText.startsWith(prompt)) {
-          return fullText.slice(prompt.length).trim();
-        } else {
-          return fullText.trim();
-        }
-      }
-      return "Je ne sais quoi répondre...";
+      messages = await loadConversation(username);
     } catch (e) {
       console.error(e);
-      return "Je ne peux pas répondre pour l'instant, essaie plus tard.";
-    } finally {
-      loadingDiv.style.display = 'none';
+    }
+    if (messages.length === 0) {
+      addMessage("Bonjour, " + username + ". Je suis Noûra. Parle-moi, je t'écoute.", 'bot');
+    } else {
+      for (const msg of messages) {
+        addMessage(msg.text, msg.sender);
+      }
     }
   }
 
-  inputForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const userText = userInput.value.trim();
-    if (!userText) return;
-    addMessage(userText, 'user');
-    userInput.value = '';
-    const reply = await fetchBotReply(userText);
-    addMessage(reply, 'bot');
+  // Ajouter message et sauvegarder
+  async function addAndSaveMessage(text, sender) {
+    addMessage(text, sender);
+    if (!username) return;
+    try {
+      let messages = await loadConversation(username);
+      messages.push({ text, sender, timestamp: Date.now() });
+      await saveConversation(username, messages);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // Gestion changement username
+  usernameInput.addEventListener('change', async () => {
+    const val = usernameInput.value.trim();
+    if (val.length < 2) {
+      alert('Merci de saisir un nom d’utilisateur Telegram valide');
+      return;
+    }
+    username = val.startsWith('@') ? val : '@' + val;
+    await loadAndDisplayConversation();
   });
 
-  // Message de bienvenue
-  addMessage("Bonjour, je suis Noûra. Pose-moi une question ou parle-moi librement.", 'bot');
-</script>
+  // Gestion soumission message
+  inputForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = userInput.value.trim();
+    if (!text) return;
+    if (!username) {
+      alert('Merci de saisir ton nom d’utilisateur Telegram en haut.');
+      return;
+    }
+    userInput.value = '';
+    await addAndSaveMessage(text, 'user');
+    const context = await loadConversation(username); // contexte complet, ici pour exemple
+    const reply = await simulateBotReply(text, context);
+    await addAndSaveMessage(reply, 'bot');
+  });
 
+  // Initialisation DB
+  (async () => {
+    try {
+      await openDb();
+      // Load stored username if any
+      const stored = localStorage.getItem('usernameTelegram');
+      if (stored) {
+        usernameInput.value = stored;
+        username = stored;
+        await loadAndDisplayConversation();
+      }
+      usernameInput.addEventListener('input', () => {
+        localStorage.setItem('usernameTelegram', usernameInput.value.trim());
+      });
+    } catch (e) {
+      alert('Erreur initialisation mémoire : ' + e);
+    }
+  })();
+</script>
 </body>
 </html>
