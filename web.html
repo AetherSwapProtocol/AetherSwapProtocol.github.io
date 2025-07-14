@@ -1,233 +1,296 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Noûra</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Noûra IA — Chat vocal & texte</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+  body {
+    margin: 0; padding: 0; background: #0a0a2a;
+    font-family: 'Orbitron', monospace;
+    color: #c8c8ff;
+    display: flex; flex-direction: column; height: 100vh;
+  }
+  #chat-container {
+    flex: 1; padding: 20px; overflow-y: auto;
+    background: radial-gradient(circle at center, #1a1a4d, #000010);
+    box-shadow: inset 0 0 40px #4b4bd6aa;
+    border-radius: 0 0 20px 20px;
+  }
+  .message {
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 80%;
+    font-size: 1.1em;
+    line-height: 1.3em;
+    word-wrap: break-word;
+  }
+  .user {
+    background: #5a5af5cc;
+    align-self: flex-end;
+    box-shadow: 0 0 12px #5050ffcc;
+  }
+  .bot {
+    background: #2f2fffcc;
+    align-self: flex-start;
+    box-shadow: 0 0 12px #4a4affcc;
+  }
+  #input-container {
+    display: flex; padding: 10px; background: #11114d;
+    box-shadow: 0 -3px 15px #4b4bd6aa;
+    align-items: center;
+  }
+  #input-text {
+    flex: 1; padding: 10px;
+    background: #222255; border: none;
+    border-radius: 10px; color: #d0d0ff;
+    font-size: 1.2em;
+    outline: none;
+    box-shadow: inset 0 0 8px #6677ffaa;
+  }
+  button {
+    margin-left: 10px;
+    background: #4b4bd6;
+    border: none; border-radius: 10px;
+    color: white; font-weight: bold;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-size: 1.2em;
+    box-shadow: 0 0 12px #6677ffcc;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  button:hover {
+    background: #6969ff;
+    box-shadow: 0 0 18px #9696ffcc;
+  }
+  #status {
+    margin-left: 15px;
+    font-size: 0.9em;
+    color: #a0a0ff;
+    font-style: italic;
+    min-width: 130px;
+  }
 
-    body {
-      margin: 0;
-      font-family: 'Orbitron', sans-serif;
-      background: radial-gradient(circle at center, #0d0d2b, #000010);
-      color: #fff;
-      overflow: hidden;
-    }
+  /* VU Meter bars container */
+  .vu-meter {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    width: 20px;
+    height: 16px;
+  }
+  .vu-meter div {
+    width: 3px;
+    background: #7f8cff;
+    border-radius: 2px;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    animation-direction: alternate;
+  }
+  /* 5 bars with different animation delays */
+  .vu-bar1 { animation-name: vuAnim; animation-duration: 0.5s; animation-delay: 0s; }
+  .vu-bar2 { animation-name: vuAnim; animation-duration: 0.7s; animation-delay: 0.1s; }
+  .vu-bar3 { animation-name: vuAnim; animation-duration: 0.6s; animation-delay: 0.3s; }
+  .vu-bar4 { animation-name: vuAnim; animation-duration: 0.8s; animation-delay: 0.2s; }
+  .vu-bar5 { animation-name: vuAnim; animation-duration: 0.55s; animation-delay: 0.4s; }
 
-    #intro-screen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: linear-gradient(145deg, #0d002b, #000014);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      z-index: 9999;
-      animation: fadeIn 1.5s ease-out;
-    }
+  @keyframes vuAnim {
+    0% { height: 20%; }
+    50% { height: 100%; }
+    100% { height: 20%; }
+  }
 
-    .intro-text {
-      text-align: center;
-      color: #b9aaff;
-      font-size: 1.3rem;
-      animation: pulse 2s infinite alternate;
-    }
+  /* Voice button icon styling */
+  #voice-icon {
+    width: 20px;
+    height: 20px;
+    fill: #d0d0ff;
+    margin-left: 5px;
+  }
 
-    #chat-container {
-      display: none;
-      flex-direction: column;
-      padding: 20px;
-      height: 100vh;
-      box-sizing: border-box;
-    }
-
-    #chat-box {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding: 10px;
-      margin-bottom: 10px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 10px;
-      backdrop-filter: blur(8px);
-    }
-
-    .msg {
-      margin-bottom: 12px;
-      padding: 8px 12px;
-      border-radius: 12px;
-      max-width: 75%;
-    }
-
-    .user {
-      align-self: flex-end;
-      background: linear-gradient(135deg, #4f00ff, #9c00ff);
-    }
-
-    .bot {
-      align-self: flex-start;
-      background: linear-gradient(135deg, #003b72, #48009d);
-    }
-
-    #prompt {
-      display: flex;
-      margin-top: 10px;
-    }
-
-    #prompt input {
-      flex-grow: 1;
-      padding: 10px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 10px 0 0 10px;
-      outline: none;
-    }
-
-    #prompt button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
-      background: #6c00ff;
-      color: white;
-      border-radius: 0 10px 10px 0;
-      cursor: pointer;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.6; transform: scale(0.98); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-  </style>
+</style>
 </head>
 <body>
 
-<div id="intro-screen">
-  <div class="intro-text" id="intro-text">
-    Connexion en cours...
-  </div>
-</div>
+<div id="chat-container" aria-live="polite" aria-atomic="true"></div>
 
-<div id="chat-container">
-  <div id="chat-box"></div>
-  <div id="prompt">
-    <input type="text" id="user-input" placeholder="Pose ta question...">
-    <button onclick="sendMessage()">➤</button>
-  </div>
-</div>
-
-<script>
-  let username = "Voyageur";
-
-  window.addEventListener("DOMContentLoaded", async () => {
-    try {
-      const tg = window.Telegram.WebApp;
-      tg.expand();
-
-      const user = tg.initDataUnsafe?.user;
-      if (user?.username) {
-        username = "@" + user.username;
-      }
-
-      // Intro text sequence
-      const intro = document.getElementById("intro-text");
-      intro.innerHTML = `
-        🛰 Connexion établie...<br>
-        ✨ Voyageur reconnu : <strong>${username}</strong><br>
-        🔮 Activation du noyau Noûra...
-      `;
-
-      setTimeout(() => {
-        document.getElementById("intro-screen").style.display = "none";
-        document.getElementById("chat-container").style.display = "flex";
-      }, 4500);
-    } catch (e) {
-      alert("Erreur Telegram WebApp : " + e);
-    }
-  });
-
-  async function sendMessage() {
-    const input = document.getElementById("user-input");
-    const message = input.value.trim();
-    if (!message) return;
-
-    appendMessage(message, 'user');
-    input.value = '';
-
-    const reply = await simulateBotReply(message);
-    appendMessage(reply, 'bot');
-  }
-
-  function appendMessage(text, sender) {
-    const box = document.getElementById("chat-box");
-    const div = document.createElement("div");
-    div.className = "msg " + sender;
-    div.innerText = text;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
-  }
-
-  async function simulateBotReply(prompt) {
-    await new Promise(r => setTimeout(r, 1000));
-    const lower = prompt.toLowerCase();
-    if (lower.includes("qui") || lower.includes("toi")) {
-      return "Je suis Noûra, reflet d’un futur conscient.";
-    } else if (lower.includes("aide") || lower.includes("quoi faire")) {
-      return "Pose-moi ce que tu veux. Je suis là.";
-    } else {
-      return `Ta question est enregistrée : "${prompt}". J'y réfléchirai.`;
-    }
-  }
-</script>
+<form id="input-container" onsubmit="return false;">
+  <input type="text" id="input-text" placeholder="Tape ton message..." autocomplete="off" />
+  <button type="submit" id="send-btn">Envoyer</button>
+  <button type="button" id="voice-btn" title="Activation dictée vocale" aria-label="Activation dictée vocale">
+    <svg id="voice-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 14a2 2 0 0 0 2-2V6a2 2 0 0 0-4 0v6a2 2 0 0 0 2 2zm4-2a4 4 0 0 1-8 0H6a6 6 0 0 0 12 0h-2zm-4 6v4m-4 0h8" stroke="#d0d0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    <div class="vu-meter" id="voice-vu" style="display:none;">
+      <div class="vu-bar1"></div>
+      <div class="vu-bar2"></div>
+      <div class="vu-bar3"></div>
+      <div class="vu-bar4"></div>
+      <div class="vu-bar5"></div>
+    </div>
+  </button>
+  <div id="status"></div>
+</form>
 
 <script>
   const OPENROUTER_KEY = "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";
 
-  function speak(text) {
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'fr-FR';
-    u.pitch = 1.3;
-    u.rate = 1;
-    speechSynthesis.speak(u);
+  const chatContainer = document.getElementById('chat-container');
+  const inputText = document.getElementById('input-text');
+  const sendBtn = document.getElementById('send-btn');
+  const voiceBtn = document.getElementById('voice-btn');
+  const statusSpan = document.getElementById('status');
+  const voiceVuMeter = document.getElementById('voice-vu');
+
+  let isTyping = false;
+  let history = JSON.parse(localStorage.getItem('noura_history') || '[]');
+
+  // Append message bubble
+  function appendMessage(text, sender) {
+    const div = document.createElement('div');
+    div.classList.add('message', sender);
+    div.textContent = text;
+    chatContainer.appendChild(div);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    return div;
   }
 
+  // Synthèse vocale avec animation vu-meter
+  function speak(text) {
+    if (!window.speechSynthesis) return;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'fr-FR';
+    utterance.pitch = 1.3;
+    utterance.rate = 1;
+
+    utterance.onstart = () => {
+      voiceVuMeter.style.display = 'flex';
+      statusSpan.textContent = "Lecture audio en cours...";
+    };
+    utterance.onend = () => {
+      voiceVuMeter.style.display = 'none';
+      statusSpan.textContent = '';
+    };
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+  }
+
+  // Call OpenRouter API
   async function callOpenRouter(prompt) {
     const payload = {
-      model: 'openai/gpt-3.5-turbo',
+      model: 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }]
     };
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + OPENROUTER_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    return data.choices[0].message.content.trim();
+    try {
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + OPENROUTER_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Erreur API ' + res.status);
+      const data = await res.json();
+      return data.choices[0].message.content.trim();
+    } catch (e) {
+      console.error(e);
+      return "Désolé, Noûra ne peut pas répondre pour l'instant.";
+    }
   }
 
   async function botReply(prompt) {
-    audioTyping.play();
-    const botMsgDiv = appendMessage("", 'bot');
-    try {
-      const reply = await callOpenRouter(prompt);
-      await typeWriterEffect(reply, botMsgDiv);
-      speak(reply);
-    } catch (e) {
-      await typeWriterEffect("Désolé, Noûra ne peut pas répondre pour l'instant.", botMsgDiv);
-    }
-    audioTyping.pause();
-    audioTyping.currentTime = 0;
-  }
-</script>
+    if (isTyping) return;
+    isTyping = true;
+    appendMessage(prompt, 'user');
 
+    const botDiv = appendMessage('...', 'bot');
+    const reply = await callOpenRouter(prompt);
+    botDiv.textContent = '';
+    for (let i = 0; i < reply.length; i++) {
+      botDiv.textContent += reply.charAt(i);
+      await new Promise(r => setTimeout(r, 15));
+    }
+    speak(reply);
+
+    // Save history
+    history.push({role: 'user', content: prompt});
+    history.push({role: 'assistant', content: reply});
+    localStorage.setItem('noura_history', JSON.stringify(history));
+
+    isTyping = false;
+  }
+
+  // Load chat history
+  function loadHistory() {
+    for (const msg of history) {
+      appendMessage(msg.content, msg.role === 'user' ? 'user' : 'bot');
+    }
+  }
+
+  sendBtn.onclick = () => {
+    const text = inputText.value.trim();
+    if (text) {
+      botReply(text);
+      inputText.value = '';
+    }
+  };
+
+  inputText.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendBtn.click();
+    }
+  });
+
+  // Voice recognition setup
+  let recognition;
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'fr-FR';
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    recognition.onstart = () => {
+      statusSpan.textContent = 'Écoute en cours...';
+      voiceVuMeter.style.display = 'flex';
+      voiceBtn.disabled = true;
+    };
+    recognition.onend = () => {
+      statusSpan.textContent = '';
+      voiceVuMeter.style.display = 'none';
+      voiceBtn.disabled = false;
+    };
+    recognition.onerror = e => {
+      statusSpan.textContent = 'Erreur reconnaissance vocale';
+      voiceVuMeter.style.display = 'none';
+      voiceBtn.disabled = false;
+    };
+    recognition.onresult = e => {
+      const transcript = e.results[0][0].transcript;
+      inputText.value = transcript;
+      sendBtn.click();
+    };
+
+    voiceBtn.onclick = () => {
+      if (voiceBtn.disabled) return;
+      recognition.start();
+    };
+  } else {
+    voiceBtn.style.display = 'none';
+  }
+
+  window.onload = () => {
+    loadHistory();
+  };
+</script>
 </body>
 </html>
