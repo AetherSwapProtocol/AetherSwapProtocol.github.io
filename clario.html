@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clario MVP — Smart Contracts Clearly</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet" />
+<style>
+  body {
+    background: radial-gradient(circle at top left, #0a0a0a, #111827);
+    color: #f3f4f6;
+    font-family: 'Inter', sans-serif;
+  }
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  textarea {
+    resize: vertical;
+  }
+  button:disabled {
+    background-color: #374151;
+    cursor: not-allowed;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="px-6 py-4 flex items-center justify-between">
+    <h1 class="text-2xl font-bold tracking-wide text-white">Clario MVP</h1>
+    <nav class="space-x-6 text-gray-300 text-sm">
+      <a href="#try" class="hover:text-white">Try</a>
+      <a href="#about" class="hover:text-white">Why Clario</a>
+      <a href="#docs" class="hover:text-white">Docs</a>
+      <a href="#join" class="hover:text-white">Discord</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="flex-grow flex flex-col items-center justify-center text-center px-4">
+    <h2 class="text-5xl font-extrabold text-white mb-6">Smart Contracts.<br />Without Complexity.</h2>
+    <p class="text-gray-400 max-w-xl text-lg mb-8">
+      Clario MVP is a minimalist smart contract language runtime.<br />
+      Built to demonstrate clear and safe contracts execution.
+    </p>
+    <a href="#try" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition">
+      Try Clario Live →
+    </a>
+  </section>
+
+  <!-- Try Clario -->
+  <section id="try" class="py-16 px-6 bg-gray-900 max-w-5xl mx-auto w-full">
+    <h3 class="text-3xl font-bold text-white mb-4">Try Clario MVP</h3>
+    <p class="text-gray-400 mb-6">Write a contract in the editor and simulate its execution here.</p>
+
+    <div class="glass p-6 rounded-lg flex flex-col gap-4">
+      <textarea
+        id="clario-editor"
+        class="w-full h-64 p-3 bg-black text-green-300 font-mono text-sm rounded"
+        spellcheck="false"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+      ></textarea>
+
+      <div class="flex gap-2">
+        <button
+          id="run-btn"
+          class="bg-green-600 hover:bg-green-700 px-5 py-2 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled
+        >
+          Run Simulation
+        </button>
+        <button
+          id="copy-btn"
+          class="bg-blue-600 hover:bg-blue-700 px-5 py-2 text-white rounded"
+        >
+          Copy Code
+        </button>
+        <button
+          id="reset-btn"
+          class="bg-gray-600 hover:bg-gray-700 px-5 py-2 text-white rounded"
+        >
+          Reset Editor
+        </button>
+      </div>
+
+      <div class="mt-4 text-sm text-gray-300">
+        <strong>Output:</strong>
+        <pre
+          id="clario-output"
+          class="bg-gray-800 p-4 rounded mt-2 text-green-200 min-h-[120px]"
+          aria-live="polite"
+        >// Simulation output will appear here</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Clario -->
+  <section id="about" class="py-20 px-6 text-center max-w-5xl mx-auto">
+    <h3 class="text-3xl font-bold mb-6 text-white">Why Clario?</h3>
+    <div class="grid md:grid-cols-3 gap-6 text-left">
+      <div class="glass p-6 rounded">
+        <h4 class="font-semibold text-lg mb-2 text-blue-400">Clear & Simple</h4>
+        <p class="text-gray-400">Minimal syntax for maximal clarity and safety.</p>
+      </div>
+      <div class="glass p-6 rounded">
+        <h4 class="font-semibold text-lg mb-2 text-blue-400">Secure by Design</h4>
+        <p class="text-gray-400">No unsafe operations, no raw memory, no hidden gas fees.</p>
+      </div>
+      <div class="glass p-6 rounded">
+        <h4 class="font-semibold text-lg mb-2 text-blue-400">Open & Extensible</h4>
+        <p class="text-gray-400">Designed for easy extensions and integration in blockchain stacks.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-black text-gray-500 text-sm py-6 px-6 text-center">
+    © 2025 Clario — Smart Contracts Clearly. | <a href="#join" class="text-blue-500 hover:underline">Join the Discord</a>
+  </footer>
+
+<script>
+  // === EXAMPLE CONTRACT CODE ===
+  const exampleCode = `contract Token {
+  state balance: Map<Address, UInt>
+
+  function mint(to: Address, amount: UInt) {
+    balance[to] = (balance[to] || 0) + amount
+  }
+
+  function transfer(from: Address, to: Address, amount: UInt) {
+    if ((balance[from] || 0) < amount) {
+      throw "Insufficient balance"
+    }
+    balance[from] -= amount
+    balance[to] = (balance[to] || 0) + amount
+  }
+}`;
+
+  // DOM elements
+  const editor = document.getElementById("clario-editor");
+  const output = document.getElementById("clario-output");
+  const runBtn = document.getElementById("run-btn");
+  const copyBtn = document.getElementById("copy-btn");
+  const resetBtn = document.getElementById("reset-btn");
+
+  // Initialize editor with example + enable run button
+  function initEditor() {
+    editor.value = exampleCode;
+    runBtn.disabled = false;
+    output.textContent = "// Ready to run simulation.";
+  }
+
+  // Copy editor content to clipboard
+  copyBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(editor.value).then(() => {
+      showStatus("Code copied!");
+    });
+  });
+
+  // Reset editor to example code
+  resetBtn.addEventListener("click", () => {
+    initEditor();
+  });
+
+  // Enable run button if editor not empty
+  editor.addEventListener("input", () => {
+    runBtn.disabled = editor.value.trim().length === 0;
+  });
+
+  // Show temporary status message
+  function showStatus(msg) {
+    const prev = output.textContent;
+    output.textContent = msg;
+    setTimeout(() => {
+      output.textContent = prev;
+    }, 2000);
+  }
+
+  // Basic interpreter for Clario MVP — very simplified
+  function simulateClarioContract(code) {
+    // Parsing simulation: find state & functions (very simple regex)
+    let state = {};
+    let logs = [];
+    let balances = {};
+
+    // Check for contract declaration
+    if (!code.includes("contract")) {
+      throw new Error("No 'contract' keyword found.");
+    }
+
+    logs.push("=== Clario MVP Simulation Start ===");
+
+    // Simulate mint and transfer calls (hardcoded demo)
+    logs.push("Created contract 'Token'");
+
+    // Simulated scenario
+    logs.push("Simulating mint: Minting 100 tokens to Alice");
+    balances["Alice"] = (balances["Alice"] || 0) + 100;
+
+    logs.push("Simulating transfer: Transferring 30 tokens from Alice to Bob");
+    if ((balances["Alice"] || 0) < 30) {
+      logs.push("Error: Insufficient balance for transfer");
+    } else {
+      balances["Alice"] -= 30;
+      balances["Bob"] = (balances["Bob"] || 0) + 30;
+      logs.push("Transfer successful");
+    }
+
+    logs.push("\nFinal balances:");
+    for (const [acc, bal] of Object.entries(balances)) {
+      logs.push(` - ${acc}: ${bal} tokens`);
+    }
+
+    logs.push("=== Clario MVP Simulation End ===");
+
+    return logs.join("\n");
+  }
+
+  // Run simulation on button click
+  runBtn.addEventListener("click", () => {
+    output.textContent = "";
+    try {
+      output.textContent = "Running simulation...";
+      setTimeout(() => {
+        const result = simulateClarioContract(editor.value);
+        output.textContent = result;
+      }, 600);
+    } catch (err) {
+      output.textContent = "Error: " + err.message;
+    }
+  });
+
+  // Init on load
+  window.addEventListener("load", () => {
+    initEditor();
+  });
+</script>
+
+</body>
+</html>
