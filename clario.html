@@ -1,175 +1,460 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Clario MVP — Smart Contracts Clearly</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet" />
-  <!-- CodeMirror 6 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@codemirror/view@6.15.1/style.min.css" />
   <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+    }
     body {
       background: radial-gradient(circle at top left, #0a0a0a, #111827);
       color: #f3f4f6;
       font-family: 'Inter', sans-serif;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
     .glass {
       background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
     }
-    button:disabled {
-      background-color: #374151 !important;
-      cursor: not-allowed !important;
-    }
-    #editor {
+    #editor { 
       height: 320px;
-      border-radius: 0.5rem;
-      font-family: 'Fira Mono', monospace, monospace;
+      font-family: 'Fira Code', monospace;
       font-size: 14px;
-      outline: none;
     }
-    pre {
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: 'Fira Mono', monospace;
-      font-size: 14px;
-      min-height: 140px;
-    }
+    .cm-editor { height: 100%; border-radius: 0.5rem; }
+    .cm-scroller { overflow: auto; }
+    .cm-gutters { background: rgba(15, 23, 42, 0.7) !important; }
+    .error-marker { background: rgba(220, 38, 38, 0.2); }
+    .clario-token { color: #818cf8; }
+    .clario-keyword { color: #f472b6; font-weight: bold; }
+    .clario-type { color: #60a5fa; }
+    .clario-string { color: #34d399; }
+    .clario-number { color: #fbbf24; }
+    .clario-comment { color: #64748b; font-style: italic; }
   </style>
 </head>
-<body class="flex flex-col flex-grow">
+<body class="flex flex-col">
 
   <!-- Header -->
-  <header class="px-6 py-4 flex items-center justify-between">
-    <h1 class="text-2xl font-bold tracking-wide text-white">Clario MVP</h1>
-    <nav class="space-x-6 text-gray-300 text-sm">
-      <a href="#try" class="hover:text-white">Try</a>
-      <a href="#about" class="hover:text-white">Why Clario</a>
-      <a href="#docs" class="hover:text-white">Docs</a>
-      <a href="#join" class="hover:text-white">Discord</a>
+  <header class="px-6 py-4 flex items-center justify-between glass mb-8 mx-4 mt-4">
+    <div class="flex items-center space-x-3">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-indigo-400">
+        <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clip-rule="evenodd" />
+      </svg>
+      <h1 class="text-2xl font-bold tracking-wide bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">Clario</h1>
+    </div>
+    <nav class="hidden md:flex space-x-6 text-gray-300 text-sm items-center">
+      <a href="#try" class="hover:text-white transition">Try it</a>
+      <a href="#features" class="hover:text-white transition">Features</a>
+      <a href="#examples" class="hover:text-white transition">Examples</a>
+      <a href="https://discord.gg" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-full text-white text-xs font-semibold transition flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+        </svg>
+        Join Discord
+      </a>
     </nav>
   </header>
 
   <!-- Hero Section -->
-  <section class="flex-grow flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto">
-    <h2 class="text-5xl font-extrabold text-white mb-6">Smart Contracts.<br />Without Complexity.</h2>
-    <p class="text-gray-400 max-w-xl text-lg mb-8">
-      Clario MVP is a minimalist smart contract language runtime.<br />
-      Built to demonstrate clear and safe contracts execution.
-    </p>
-    <a href="#try" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition">
-      Try Clario Live →
-    </a>
-  </section>
-
-  <!-- Try Clario -->
-  <section id="try" class="py-16 px-6 bg-gray-900 max-w-5xl mx-auto w-full">
-    <h3 class="text-3xl font-bold text-white mb-4">Try Clario MVP</h3>
-    <p class="text-gray-400 mb-6">Write a contract in the editor and simulate its execution here.</p>
-
-    <div class="glass p-6 rounded-lg flex flex-col gap-4">
-      <div id="editor"></div>
-
-      <div class="flex gap-2">
-        <button
-          id="run-btn"
-          class="bg-green-600 hover:bg-green-700 px-5 py-2 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled
-        >
-          Run Simulation
-        </button>
-        <button
-          id="copy-btn"
-          class="bg-blue-600 hover:bg-blue-700 px-5 py-2 text-white rounded"
-        >
-          Copy Code
-        </button>
-        <button
-          id="reset-btn"
-          class="bg-gray-600 hover:bg-gray-700 px-5 py-2 text-white rounded"
-        >
-          Reset Editor
-        </button>
-      </div>
-
-      <div class="mt-4 text-sm text-gray-300">
-        <strong>Output:</strong>
-        <pre
-          id="clario-output"
-          class="bg-gray-800 p-4 rounded mt-2 text-green-200"
-          aria-live="polite"
-        >// Simulation output will appear here</pre>
+  <section class="flex-grow flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto py-12">
+    <div class="relative">
+      <div class="absolute -inset-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg blur opacity-20"></div>
+      <div class="relative glass px-8 py-6 rounded-lg">
+        <h2 class="text-5xl font-extrabold text-white mb-6 leading-tight">Smart Contracts<br/><span class="bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">Made Obvious</span></h2>
+        <p class="text-gray-300 max-w-xl text-lg mb-8">
+          Clario is an experimental smart contract language focused on <span class="text-indigo-300">readability</span>, 
+          <span class="text-purple-300">security</span> and <span class="text-green-300">developer experience</span>.
+        </p>
+        <div class="flex gap-3 justify-center">
+          <a href="#try" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-full transition flex items-center">
+            Try Clario Live
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-2">
+              <path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd" />
+            </svg>
+          </a>
+          <a href="#examples" class="border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white font-medium py-3 px-6 rounded-full transition">
+            View Examples
+          </a>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Why Clario -->
-  <section id="about" class="py-20 px-6 text-center max-w-5xl mx-auto">
-    <h3 class="text-3xl font-bold mb-6 text-white">Why Clario?</h3>
-    <div class="grid md:grid-cols-3 gap-6 text-left">
-      <div class="glass p-6 rounded">
-        <h4 class="font-semibold text-lg mb-2 text-blue-400">Clear & Simple</h4>
-        <p class="text-gray-400">Minimal syntax for maximal clarity and safety.</p>
+  <!-- Try Clario -->
+  <section id="try" class="py-16 px-4 max-w-6xl mx-auto w-full">
+    <div class="glass p-1 rounded-xl bg-gradient-to-tr from-indigo-500/20 to-purple-500/20">
+      <div class="glass p-6 rounded-lg backdrop-blur-md">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-2xl font-bold text-white">Clario Playground</h3>
+          <div class="flex gap-2">
+            <button id="examples-btn" class="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full text-gray-300 transition">
+              Examples ▼
+            </button>
+            <div id="examples-dropdown" class="hidden absolute mt-8 bg-gray-800 rounded-md shadow-lg z-10 border border-gray-700">
+              <div class="py-1 text-sm">
+                <button data-example="token" class="block w-full text-left px-4 py-2 hover:bg-gray-700 text-gray-300">Token Contract</button>
+                <button data-example="auction" class="block w-full text-left px-4 py-2 hover:bg-gray-700 text-gray-300">Auction Contract</button>
+                <button data-example="vault" class="block w-full text-left px-4 py-2 hover:bg-gray-700 text-gray-300">Vault Contract</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="editor"></div>
+
+        <div class="flex flex-wrap gap-2 mt-4">
+          <button id="run-btn" class="bg-green-600 hover:bg-green-700 px-5 py-2 text-white rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-2">
+              <path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+            </svg>
+            Run Contract
+          </button>
+          <button id="copy-btn" class="bg-indigo-600 hover:bg-indigo-700 px-5 py-2 text-white rounded-md transition flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-2">
+              <path fill-rule="evenodd" d="M13.887 3.182c.396.037.79.08 1.183.128C16.194 3.45 17 4.414 17 5.517V16.75A2.25 2.25 0 0114.75 19h-9.5A2.25 2.25 0 013 16.75V5.517c0-1.103.806-2.068 1.93-2.207.393-.048.787-.09 1.183-.128A3.001 3.001 0 019 1h2c1.373 0 2.531.923 2.887 2.182zM7.5 4A1.5 1.5 0 019 2.5h2A1.5 1.5 0 0112.5 4v.5h-5V4z" clip-rule="evenodd" />
+            </svg>
+            Copy Code
+          </button>
+          <button id="reset-btn" class="bg-gray-600 hover:bg-gray-700 px-5 py-2 text-white rounded-md transition flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-2">
+              <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z" clip-rule="evenodd" />
+            </svg>
+            Reset
+          </button>
+        </div>
+
+        <div class="mt-6">
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="font-medium text-gray-300">Execution Output</h4>
+            <button id="clear-output" class="text-xs text-gray-400 hover:text-white transition">Clear</button>
+          </div>
+          <div id="output-container" class="bg-gray-800/80 rounded-md p-4 min-h-32 max-h-96 overflow-y-auto font-mono text-sm">
+            <pre id="clario-output" class="text-green-200 whitespace-pre-wrap">// The execution output will appear here...</pre>
+          </div>
+        </div>
       </div>
-      <div class="glass p-6 rounded">
-        <h4 class="font-semibold text-lg mb-2 text-blue-400">Secure by Design</h4>
-        <p class="text-gray-400">No unsafe operations, no raw memory, no hidden gas fees.</p>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-20 px-4 max-w-6xl mx-auto">
+    <h3 class="text-3xl font-bold text-center mb-16 text-white">
+      <span class="bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">Why</span> Choose Clario?
+    </h3>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="glass p-6 rounded-xl hover:border-indigo-400/30 transition border border-transparent">
+        <div class="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-indigo-400">
+            <path fill-rule="evenodd" d="M9.661 2.237a.531.531 0 01.678 0 11.947 11.947 0 007.078 2.749.5.5 0 01.479.425c.069.52.104 1.05.104 1.59 0 5.162-3.26 9.563-7.834 11.256a.48.48 0 01-.332 0C5.26 16.564 2 12.163 2 7c0-.538.035-1.069.104-1.589a.5.5 0 01.48-.425 11.947 11.947 0 007.077-2.75zm4.196 5.954a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <h4 class="font-semibold text-lg mb-2 text-white">Security First</h4>
+        <p class="text-gray-400">No undefined behavior, no hidden gotchas. Every operation is bounded and predictable with built-in safeguards.</p>
       </div>
-      <div class="glass p-6 rounded">
-        <h4 class="font-semibold text-lg mb-2 text-blue-400">Open & Extensible</h4>
-        <p class="text-gray-400">Designed for easy extensions and integration in blockchain stacks.</p>
+      <div class="glass p-6 rounded-xl hover:border-purple-400/30 transition border border-transparent">
+        <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-purple-400">
+            <path d="M10.75 16.82A7.462 7.462 0 0115 15.5c.71 0 1.396.098 2.046.282A.75.75 0 0018 15.06v-11a.75.75 0 00-.546-.721A9.006 9.006 0 0015 3a8.963 8.963 0 00-4.25 1.065V16.82zM9.25 4.065A8.963 8.963 0 005 3c-.85 0-1.673.118-2.454.339A.75.75 0 002 4.06v11a.75.75 0 00.954.721A7.506 7.506 0 015 15.5c1.579 0 3.042.487 4.25 1.32V4.065z" />
+          </svg>
+        </div>
+        <h4 class="font-semibold text-lg mb-2 text-white">Readable Syntax</h4>
+        <p class="text-gray-400">Designed to be understood at a glance. No cryptic symbols or excessive boilerplate. Code that documents itself.</p>
+      </div>
+      <div class="glass p-6 rounded-xl hover:border-green-400/30 transition border border-transparent">
+        <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-green-400">
+            <path fill-rule="evenodd" d="M4.606 12.97a.75.75 0 01-.134 1.051 2.494 2.494 0 00-.93 2.437 2.494 2.494 0 002.437-.93.75.75 0 111.186.918 3.995 3.995 0 01-4.482 1.332.75.75 0 01-.461-.461 3.994 3.994 0 011.332-4.482.75.75 0 011.052.134z" clip-rule="evenodd" />
+            <path fill-rule="evenodd" d="M5.752 12A13.07 13.07 0 008 14.248v4.002c0 .414.336.75.75.75a5 5 0 004.797-6.414 12.984 12.984 0 005.45-10.848.75.75 0 00-.735-.735 12.984 12.984 0 00-10.849 5.45A5 5 0 001 11.25c.001.414.337.75.751.75h4.002zM13 9a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <h4 class="font-semibold text-lg mb-2 text-white">Built-in Analysis</h4>
+        <p class="text-gray-400">Real-time feedback about gas costs, storage usage, and potential vulnerabilities as you code.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Examples -->
+  <section id="examples" class="py-20 px-4 max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <h3 class="text-3xl font-bold text-white mb-4">Clario <span class="bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">Examples</span></h3>
+      <p class="text-gray-400 max-w-2xl mx-auto">Explore what you can build with Clario. These are real contracts that work in the playground.</p>
+    </div>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="glass p-6 rounded-xl border border-gray-700/50 hover:border-indigo-500/30 transition group">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="font-semibold text-white">Token Contract</h4>
+          <button class="text-xs bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded-full text-white transition opacity-0 group-hover:opacity-100" data-example="token">
+            Try it
+          </button>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">A basic ERC20-like token with minting and transfers.</p>
+        <pre class="bg-gray-800/50 p-3 rounded text-xs text-gray-300 overflow-x-auto">contract Token {
+  state balances: Map&lt;Address, UInt&gt;
+
+  function mint(to: Address, amount: UInt) {
+    require(amount > 0, "Amount must be positive")
+    balances[to] = (balances[to] || 0) + amount
+  }
+
+  function transfer(from: Address, to: Address, amount: UInt) {
+    require(balances[from] >= amount, "Insufficient balance")
+    balances[from] -= amount
+    balances[to] = (balances[to] || 0) + amount
+  }
+}</pre>
+      </div>
+      
+      <div class="glass p-6 rounded-xl border border-gray-700/50 hover:border-purple-500/30 transition group">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="font-semibold text-white">Auction Contract</h4>
+          <button class="text-xs bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded-full text-white transition opacity-0 group-hover:opacity-100" data-example="auction">
+            Try it
+          </button>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">A simple timed auction with bidding functionality.</p>
+        <pre class="bg-gray-800/50 p-3 rounded text-xs text-gray-300 overflow-x-auto">contract Auction {
+  state highestBid: UInt
+  state highestBidder: Address
+  state endTime: UInt
+  state ended: Bool
+
+  constructor(duration: UInt) {
+    endTime = now() + duration
+  }
+
+  function bid() payable {
+    require(now() < endTime, "Auction ended")
+    require(msg.value > highestBid, "Bid too low")
+    highestBid = msg.value
+    highestBidder = msg.sender
+  }
+
+  function withdraw() {
+    require(ended, "Auction not ended")
+    send(highestBidder, highestBid)
+  }
+}</pre>
+      </div>
+      
+      <div class="glass p-6 rounded-xl border border-gray-700/50 hover:border-green-500/30 transition group">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="font-semibold text-white">Vault Contract</h4>
+          <button class="text-xs bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded-full text-white transition opacity-0 group-hover:opacity-100" data-example="vault">
+            Try it
+          </button>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">A multi-signature wallet requiring 2/3 approvals.</p>
+        <pre class="bg-gray-800/50 p-3 rounded text-xs text-gray-300 overflow-x-auto">contract Vault {
+  state owners: [Address; 3]
+  state approvals: Map&lt;UInt, Map&lt;Address, Bool&gt;&gt;
+  state nextTxId: UInt
+
+  constructor(owner1: Address, owner2: Address, owner3: Address) {
+    owners = [owner1, owner2, owner3]
+  }
+
+  function approve(txId: UInt) {
+    require(contains(owners, msg.sender), "Not owner")
+    approvals[txId][msg.sender] = true
+  }
+
+  function execute(to: Address, amount: UInt) {
+    let txId = nextTxId++
+    require(countApprovals(txId) >= 2, "Need 2 approvals")
+    send(to, amount)
+  }
+}</pre>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="bg-black text-gray-500 text-sm py-6 px-6 text-center">
-    © 2025 Clario — Smart Contracts Clearly. | <a href="#join" class="text-blue-500 hover:underline">Join the Discord</a>
+  <footer class="bg-gray-900/50 text-gray-500 text-sm py-8 px-6 mt-12">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
+      <div class="flex items-center space-x-3 mb-4 md:mb-0">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-indigo-400">
+          <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clip-rule="evenodd" />
+        </svg>
+        <span>Clario - Smart Contracts Clearly</span>
+      </div>
+      <div class="flex space-x-6">
+        <a href="#" class="hover:text-white transition">GitHub</a>
+        <a href="#" class="hover:text-white transition">Docs</a>
+        <a href="#" class="hover:text-white transition">Discord</a>
+        <a href="#" class="hover:text-white transition">Twitter</a>
+      </div>
+    </div>
   </footer>
 
-  <!-- CodeMirror 6 Scripts -->
+  <!-- CodeMirror and Clario Interpreter -->
   <script type="module">
-    import {EditorState} from "https://cdn.jsdelivr.net/npm/@codemirror/state@6.2.0/dist/index.min.js";
-    import {EditorView, keymap, highlightActiveLine} from "https://cdn.jsdelivr.net/npm/@codemirror/view@6.15.1/dist/index.min.js";
-    import {defaultHighlightStyle, syntaxHighlighting} from "https://cdn.jsdelivr.net/npm/@codemirror/language@6.10.1/dist/index.min.js";
-    import {javascript} from "https://cdn.jsdelivr.net/npm/@codemirror/lang-javascript@6.1.5/dist/index.min.js";
+    import {EditorState, StateField} from "https://cdn.jsdelivr.net/npm/@codemirror/state@6.2.0/dist/index.min.js";
+    import {EditorView, keymap, highlightActiveLine, Decoration, WidgetType} from "https://cdn.jsdelivr.net/npm/@codemirror/view@6.15.1/dist/index.min.js";
+    import {syntaxHighlighting, defaultHighlightStyle, HighlightStyle, tags} from "https://cdn.jsdelivr.net/npm/@codemirror/language@6.10.1/dist/index.min.js";
     import {history, historyKeymap} from "https://cdn.jsdelivr.net/npm/@codemirror/commands@6.3.1/dist/index.min.js";
+    import {indentUnit} from "https://cdn.jsdelivr.net/npm/@codemirror/language@6.10.1/dist/index.min.js";
 
-    const exampleCode = `contract Token {
-  state balance: Map<Address, UInt>
+    // Custom Clario syntax highlighting
+    const clarioHighlightStyle = HighlightStyle.define([
+      {tag: tags.keyword, class: "clario-keyword"},
+      {tag: tags.typeName, class: "clario-type"},
+      {tag: tags.string, class: "clario-string"},
+      {tag: tags.number, class: "clario-number"},
+      {tag: tags.comment, class: "clario-comment"},
+      {tag: tags.variableName, class: "clario-token"}
+    ]);
 
-  function mint(to: Address, amount: UInt) {
-    balance[to] = (balance[to] || 0) + amount
-  }
-
-  function transfer(from: Address, to: Address, amount: UInt) {
-    if ((balance[from] || 0) < amount) {
-      throw "Insufficient balance"
+    // Clario language definition
+    function clarioLanguage() {
+      return [
+        syntaxHighlighting(clarioHighlightStyle),
+        indentUnit.of("  "),
+      ];
     }
-    balance[from] -= amount
-    balance[to] = (balance[to] || 0) + amount
-  }
-}`;
 
+    // Example contracts
+    const examples = {
+      token: `contract Token {
+  state balances: Map<Address, UInt>
+
+  // Mint new tokens
+  function mint(to: Address, amount: UInt) {
+    require(amount > 0, "Amount must be positive")
+    balances[to] = (balances[to] || 0) + amount
+    emit Minted(to, amount)
+  }
+
+  // Transfer tokens between accounts
+  function transfer(from: Address, to: Address, amount: UInt) {
+    require(balances[from] >= amount, "Insufficient balance")
+    balances[from] -= amount
+    balances[to] = (balances[to] || 0) + amount
+    emit Transferred(from, to, amount)
+  }
+
+  // Get balance of an account
+  function balanceOf(owner: Address) -> UInt {
+    return balances[owner] || 0
+  }
+}`,
+      auction: `contract Auction {
+  state highestBid: UInt
+  state highestBidder: Address
+  state endTime: UInt
+  state ended: Bool
+
+  // Initialize auction with duration (in seconds)
+  constructor(duration: UInt) {
+    endTime = now() + duration
+    emit AuctionStarted(endTime)
+  }
+
+  // Place a bid (must be higher than current bid)
+  function bid() payable {
+    require(now() < endTime, "Auction ended")
+    require(msg.value > highestBid, "Bid too low")
+    
+    // Refund previous bidder
+    if (highestBid > 0) {
+      send(highestBidder, highestBid)
+    }
+    
+    highestBid = msg.value
+    highestBidder = msg.sender
+    emit NewBid(highestBidder, highestBid)
+  }
+
+  // Withdraw funds after auction ends
+  function withdraw() {
+    require(now() >= endTime, "Auction not ended")
+    require(!ended, "Already withdrawn")
+    
+    ended = true
+    if (highestBid > 0) {
+      send(highestBidder, highestBid)
+    }
+    emit AuctionEnded(highestBidder, highestBid)
+  }
+}`,
+      vault: `contract Vault {
+  state owners: [Address; 3]
+  state approvals: Map<UInt, Map<Address, Bool>>
+  state nextTxId: UInt
+  state transactions: Map<UInt, {to: Address, amount: UInt}>
+
+  // Initialize with 3 owners
+  constructor(owner1: Address, owner2: Address, owner3: Address) {
+    owners = [owner1, owner2, owner3]
+  }
+
+  // Owner approves a transaction
+  function approve(txId: UInt) {
+    require(contains(owners, msg.sender), "Not owner")
+    approvals[txId][msg.sender] = true
+    emit Approved(txId, msg.sender)
+  }
+
+  // Create a new transaction
+  function createTransaction(to: Address, amount: UInt) -> UInt {
+    let txId = nextTxId++
+    transactions[txId] = {to: to, amount: amount}
+    emit TransactionCreated(txId, to, amount)
+    return txId
+  }
+
+  // Execute transaction if enough approvals
+  function execute(txId: UInt) {
+    let tx = transactions[txId]
+    require(tx, "Invalid transaction")
+    require(countApprovals(txId) >= 2, "Need 2 approvals")
+    send(tx.to, tx.amount)
+    emit Executed(txId)
+  }
+
+  // Helper: Count approvals for a transaction
+  function countApprovals(txId: UInt) -> UInt {
+    let count = 0
+    for (let owner of owners) {
+      if (approvals[txId][owner]) {
+        count += 1
+      }
+    }
+    return count
+  }
+}`
+    };
+
+    // DOM Elements
     const output = document.getElementById("clario-output");
     const runBtn = document.getElementById("run-btn");
     const copyBtn = document.getElementById("copy-btn");
     const resetBtn = document.getElementById("reset-btn");
+    const clearOutput = document.getElementById("clear-output");
+    const examplesBtn = document.getElementById("examples-btn");
+    const examplesDropdown = document.getElementById("examples-dropdown");
+    const exampleLinks = document.querySelectorAll("[data-example]");
 
     let editorView = null;
 
-    function createEditor() {
+    // Create editor
+    function createEditor(initialCode = examples.token) {
       return new EditorView({
         state: EditorState.create({
-          doc: exampleCode,
+          doc: initialCode,
           extensions: [
             keymap.of(historyKeymap),
-            javascript(),
-            syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
+            clarioLanguage(),
             history(),
             highlightActiveLine(),
             EditorView.updateListener.of((update) => {
@@ -184,85 +469,255 @@
       });
     }
 
-    function simulateClarioContract(code) {
-      // Simplistic parser & executor for demo purposes
-      let logs = [];
-      let balances = {};
-
-      if (!code.includes("contract")) {
-        throw new Error("No 'contract' keyword found.");
+    // Clario Virtual Machine
+    class ClarioVM {
+      constructor() {
+        this.state = {};
+        this.logs = [];
+        this.events = [];
+        this.currentContract = null;
       }
 
-      logs.push("=== Clario MVP Simulation Start ===");
-      logs.push("Created contract 'Token'");
-
-      // Parse simple mint and transfer calls from code (very naive)
-      // We simulate: mint(to="Alice", amount=100) then transfer(from="Alice", to="Bob", amount=30)
-
-      logs.push("Simulating mint: Minting 100 tokens to Alice");
-      balances["Alice"] = (balances["Alice"] || 0) + 100;
-
-      logs.push("Simulating transfer: Transferring 30 tokens from Alice to Bob");
-      if ((balances["Alice"] || 0) < 30) {
-        logs.push("Error: Insufficient balance for transfer");
-      } else {
-        balances["Alice"] -= 30;
-        balances["Bob"] = (balances["Bob"] || 0) + 30;
-        logs.push("Transfer successful");
+      reset() {
+        this.state = {};
+        this.logs = [];
+        this.events = [];
+        this.currentContract = null;
       }
 
-      logs.push("\nFinal balances:");
-      for (const [acc, bal] of Object.entries(balances)) {
-        logs.push(` - ${acc}: ${bal} tokens`);
+      log(message) {
+        this.logs.push(message);
       }
 
-      logs.push("=== Clario MVP Simulation End ===");
-      return logs.join("\n");
+      emit(event, ...args) {
+        this.events.push({event, args});
+        this.log(`EVENT: ${event}(${args.join(", ")})`);
+      }
+
+      execute(code) {
+        this.reset();
+        
+        try {
+          // Very basic parsing (in a real implementation this would be a proper parser)
+          if (!code.includes("contract")) {
+            throw new Error("No contract definition found");
+          }
+
+          // Extract contract name
+          const contractMatch = code.match(/contract\s+(\w+)/);
+          if (!contractMatch) {
+            throw new Error("Invalid contract syntax");
+          }
+          
+          this.currentContract = contractMatch[1];
+          this.log(`=== Initializing ${this.currentContract} ===`);
+          
+          // Process state variables
+          const stateVars = [...code.matchAll(/state\s+(\w+)\s*:\s*(\w+(?:<[^>]+>)?)/g)];
+          stateVars.forEach(([_, name, type]) => {
+            this.state[name] = this.initializeState(type);
+            this.log(`STATE: ${name} (${type}) initialized`);
+          });
+
+          // Find constructor
+          if (code.includes("constructor(")) {
+            this.log("Executing constructor...");
+            // In a real implementation, we would parse parameters
+          }
+
+          // Simulate some method calls based on contract type
+          if (this.currentContract === "Token") {
+            this.simulateToken();
+          } else if (this.currentContract === "Auction") {
+            this.simulateAuction();
+          } else if (this.currentContract === "Vault") {
+            this.simulateVault();
+          } else {
+            this.simulateGeneric();
+          }
+
+          this.log("\n=== Final State ===");
+          for (const [key, value] of Object.entries(this.state)) {
+            if (typeof value === "object" && !Array.isArray(value)) {
+              this.log(`${key}:`);
+              for (const [subKey, subValue] of Object.entries(value)) {
+                this.log(`  ${subKey}: ${subValue}`);
+              }
+            } else {
+              this.log(`${key}: ${JSON.stringify(value)}`);
+            }
+          }
+
+          this.log("\n=== Events Emitted ===");
+          if (this.events.length === 0) {
+            this.log("No events emitted");
+          } else {
+            this.events.forEach(evt => {
+              this.log(`${evt.event}(${evt.args.join(", ")})`);
+            });
+          }
+
+          return this.logs.join("\n");
+        } catch (err) {
+          return `ERROR: ${err.message}`;
+        }
+      }
+
+      initializeState(type) {
+        if (type.startsWith("Map")) {
+          return {};
+        } else if (type.startsWith("[") && type.endsWith("]")) {
+          return [];
+        } else if (type === "UInt") {
+          return 0;
+        } else if (type === "Bool") {
+          return false;
+        } else if (type === "Address") {
+          return "0x" + Math.random().toString(16).substring(2, 10);
+        }
+        return null;
+      }
+
+      simulateToken() {
+        // Simulate minting
+        const alice = "0xAlice123";
+        const bob = "0xBob456";
+        
+        this.state.balances[alice] = 1000;
+        this.state.balances[bob] = 500;
+        this.emit("Minted", alice, 1000);
+        this.emit("Minted", bob, 500);
+        this.log(`Minted 1000 tokens to Alice (${alice})`);
+        this.log(`Minted 500 tokens to Bob (${bob})`);
+
+        // Simulate transfer
+        const transferAmount = 300;
+        if (this.state.balances[alice] >= transferAmount) {
+          this.state.balances[alice] -= transferAmount;
+          this.state.balances[bob] = (this.state.balances[bob] || 0) + transferAmount;
+          this.emit("Transferred", alice, bob, transferAmount);
+          this.log(`Transferred ${transferAmount} tokens from Alice to Bob`);
+        }
+      }
+
+      simulateAuction() {
+        // Initialize
+        this.state.endTime = Date.now() + 86400000; // 1 day from now
+        this.state.highestBid = 0;
+        this.state.highestBidder = "0x0";
+        this.emit("AuctionStarted", this.state.endTime);
+        this.log(`Auction started, ends at ${new Date(this.state.endTime).toLocaleString()}`);
+
+        // Simulate bids
+        const bidders = [
+          {address: "0xAlice123", amount: 100},
+          {address: "0xBob456", amount: 150},
+          {address: "0xCharlie789", amount: 200}
+        ];
+
+        bidders.forEach(bidder => {
+          if (bidder.amount > this.state.highestBid) {
+            if (this.state.highestBid > 0) {
+              this.log(`Refunding previous highest bidder ${this.state.highestBidder} with ${this.state.highestBid}`);
+            }
+            this.state.highestBid = bidder.amount;
+            this.state.highestBidder = bidder.address;
+            this.emit("NewBid", bidder.address, bidder.amount);
+            this.log(`New highest bid: ${bidder.amount} from ${bidder.address}`);
+          }
+        });
+
+        // End auction
+        this.state.ended = true;
+        this.log(`Sending ${this.state.highestBid} to auction winner ${this.state.highestBidder}`);
+        this.emit("AuctionEnded", this.state.highestBidder, this.state.highestBid);
+      }
+
+      simulateVault() {
+        // Initialize owners
+        this.state.owners = [
+          "0xOwner1",
+          "0xOwner2", 
+          "0xOwner3"
+        ];
+        this.state.nextTxId = 1;
+        this.state.approvals = {};
+        this.state.transactions = {};
+
+        // Create transaction
+        const txId = this.state.nextTxId++;
+        this.state.transactions[txId] = {
+          to: "0xRecipient",
+          amount: 1000
+        };
+        this.emit("TransactionCreated", txId, "0xRecipient", 1000);
+        this.log(`Created transaction ${txId}: Send 1000 to 0xRecipient`);
+
+        // Simulate approvals
+        this.state.approvals[txId] = {};
+        this.state.owners.slice(0, 2).forEach(owner => {
+          this.state.approvals[txId][owner] = true;
+          this.emit("Approved", txId, owner);
+          this.log(`Owner ${owner} approved transaction ${txId}`);
+        });
+
+        // Execute transaction
+        const approvalsCount = Object.values(this.state.approvals[txId] || {}).filter(Boolean).length;
+        if (approvalsCount >= 2) {
+          this.log(`Executing transaction ${txId}: Sending 1000 to 0xRecipient`);
+          this.emit("Executed", txId);
+        }
+      }
+
+      simulateGeneric() {
+        this.log("Simulating generic contract execution...");
+        this.log("This is a placeholder for contracts without specific simulation logic");
+        
+        // Simulate some state changes
+        for (const [key, value] of Object.entries(this.state)) {
+          if (typeof value === "number") {
+            this.state[key] = value + 1;
+          } else if (typeof value === "boolean") {
+            this.state[key] = !value;
+          } else if (Array.isArray(value)) {
+            this.state[key].push("new_item");
+          } else if (typeof value === "object") {
+            this.state[key]["new_key"] = "new_value";
+          }
+        }
+      }
     }
 
-    function showStatus(msg) {
-      const prev = output.textContent;
-      output.textContent = msg;
-      setTimeout(() => {
-        output.textContent = prev;
-      }, 2000);
-    }
+    const clarioVM = new ClarioVM();
 
-    // Init editor and events
+    // Initialize editor
     window.addEventListener("load", () => {
       editorView = createEditor();
       runBtn.disabled = false;
-      output.textContent = "// Ready to run simulation.";
     });
 
+    // Run button handler
     runBtn.addEventListener("click", () => {
-      output.textContent = "";
-      try {
-        output.textContent = "Running simulation...";
-        setTimeout(() => {
-          const code = editorView.state.doc.toString();
-          const result = simulateClarioContract(code);
+      const code = editorView.state.doc.toString();
+      output.textContent = "Running simulation...";
+      
+      setTimeout(() => {
+        try {
+          const result = clarioVM.execute(code);
           output.textContent = result;
-        }, 600);
-      } catch (err) {
-        output.textContent = "Error: " + err.message;
-      }
+        } catch (err) {
+          output.textContent = `ERROR: ${err.message}`;
+        }
+      }, 300);
     });
 
+    // Copy button handler
     copyBtn.addEventListener("click", () => {
       const code = editorView.state.doc.toString();
       navigator.clipboard.writeText(code).then(() => {
-        showStatus("Code copied!");
-      });
-    });
-
-    resetBtn.addEventListener("click", () => {
-      editorView.dispatch({
-        changes: {from: 0, to: editorView.state.doc.length, insert: exampleCode},
-      });
-      runBtn.disabled = false;
-      output.textContent = "// Ready to run simulation.";
-    });
+        const prev = output.textContent;
+        output.textContent = "Code copied to clipboard!";
+        setTimeout(() =>
   </script>
 </body>
 </html>
