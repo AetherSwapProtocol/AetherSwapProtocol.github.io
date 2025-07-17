@@ -1,116 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pumpfun Live Tracker</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <style>
-    body { background: #000; color: white; font-family: 'Inter', sans-serif; }
-    .graph-line {
-      height: 32px;
-      width: 100px;
-    }
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pumpfun Live Tracker</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+  }
+  .graph-line {
+    height: 32px;
+    width: 100px;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  /* Language dropdown */
+  #lang-list {
+    display: none;
+  }
+  #lang-list.show {
+    display: block;
+  }
+</style>
 </head>
 <body class="pb-24">
 
-  <!-- Tabs -->
-  <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800">
-    <div class="flex space-x-6 text-sm font-medium">
-      <span class="text-green-400 border-b-2 border-green-400 pb-1">Tendances</span>
-      <span class="text-gray-400">Actualités</span>
-      <span class="text-gray-400">À la une</span>
-    </div>
-    <div>
-      <i data-lucide="bell" class="w-5 h-5 text-white/80"></i>
-    </div>
+<!-- Header Tabs -->
+<header class="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+  <nav id="tabs" class="flex space-x-6 text-sm font-semibold" role="tablist" aria-label="Sections">
+    <!-- Tabs injected dynamically -->
+  </nav>
+  <button aria-label="Notifications" class="text-white/80 focus:outline-none" id="btn-notif">
+    <i data-lucide="bell" class="w-5 h-5"></i>
+  </button>
+</header>
+
+<!-- Token List Container -->
+<main id="coin-list" class="mt-4 px-4 space-y-3" aria-live="polite" aria-relevant="additions"></main>
+
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full bg-black border-t border-gray-800 py-2 flex justify-around items-center text-white text-sm" role="navigation" aria-label="Main navigation">
+  <button aria-label="" class="focus:outline-none" id="nav-home"><i data-lucide="home" class="w-6 h-6"></i></button>
+  <button aria-label="" class="focus:outline-none" id="nav-search"><i data-lucide="search" class="w-6 h-6"></i></button>
+  <button aria-label="" class="bg-green-500 p-2 rounded-full focus:outline-none" id="nav-add">
+    <i data-lucide="plus" class="w-5 h-5 text-black"></i>
+  </button>
+  <button aria-label="" class="focus:outline-none" id="nav-msg"><i data-lucide="message-circle" class="w-6 h-6"></i></button>
+  <button aria-label="" class="focus:outline-none" id="nav-profile"><i data-lucide="user" class="w-6 h-6"></i></button>
+  <div class="relative" id="lang-selector-container">
+    <button id="btn-lang" aria-haspopup="listbox" aria-expanded="false" aria-label="Select Language" class="ml-2 text-white focus:outline-none border border-gray-700 px-2 rounded">
+      EN
+    </button>
+    <ul id="lang-list" role="listbox" tabindex="-1" class="absolute bottom-10 right-0 bg-gray-900 border border-gray-700 rounded shadow-lg z-50 w-28 text-sm" aria-label="Language options">
+      <!-- Language options injected dynamically -->
+    </ul>
   </div>
+</nav>
 
-  <!-- Liste des tokens -->
-  <div id="coin-list" class="mt-4 px-4 space-y-3"></div>
+<script>
+  lucide.createIcons();
 
-  <!-- Bottom Navbar -->
-  <div class="fixed bottom-0 left-0 w-full bg-black border-t border-gray-800 py-2 flex justify-around items-center text-white text-sm">
-    <i data-lucide="home" class="w-6 h-6"></i>
-    <i data-lucide="search" class="w-6 h-6"></i>
-    <div class="bg-green-500 p-2 rounded-full">
-      <i data-lucide="plus" class="w-5 h-5 text-black"></i>
-    </div>
-    <i data-lucide="message-circle" class="w-6 h-6"></i>
-    <i data-lucide="user" class="w-6 h-6"></i>
-  </div>
+  // Translation dictionary
+  const translations = {
+    en: {
+      tabs: ['Trending', 'News', 'Top Stories'],
+      ariaTabs: ['Trending tab', 'News tab', 'Top Stories tab'],
+      navLabels: {
+        home: 'Home',
+        search: 'Search',
+        add: 'Add',
+        messages: 'Messages',
+        profile: 'Profile',
+        notifications: 'Notifications',
+        language: 'Select Language',
+      },
+      timeUnits: {
+        min: 'min',
+        h: 'h',
+        d: 'd',
+        mo: 'mo',
+      },
+    },
+    fr: {
+      tabs: ['Tendances', 'Actualités', 'À la une'],
+      ariaTabs: ['Onglet Tendances', 'Onglet Actualités', 'Onglet À la une'],
+      navLabels: {
+        home: 'Accueil',
+        search: 'Rechercher',
+        add: 'Ajouter',
+        messages: 'Messages',
+        profile: 'Profil',
+        notifications: 'Notifications',
+        language: 'Choisir la langue',
+      },
+      timeUnits: {
+        min: 'min',
+        h: 'h',
+        d: 'j',
+        mo: 'mois',
+      },
+    },
+    de: {
+      tabs: ['Trends', 'Nachrichten', 'Top Themen'],
+      ariaTabs: ['Trends Tab', 'Nachrichten Tab', 'Top Themen Tab'],
+      navLabels: {
+        home: 'Startseite',
+        search: 'Suchen',
+        add: 'Hinzufügen',
+        messages: 'Nachrichten',
+        profile: 'Profil',
+        notifications: 'Benachrichtigungen',
+        language: 'Sprache wählen',
+      },
+      timeUnits: {
+        min: 'Min',
+        h: 'Std',
+        d: 'Tg',
+        mo: 'Mon',
+      },
+    },
+    zh: {
+      tabs: ['趋势', '新闻', '头条'],
+      ariaTabs: ['趋势标签', '新闻标签', '头条标签'],
+      navLabels: {
+        home: '首页',
+        search: '搜索',
+        add: '添加',
+        messages: '消息',
+        profile: '个人资料',
+        notifications: '通知',
+        language: '选择语言',
+      },
+      timeUnits: {
+        min: '分',
+        h: '时',
+        d: '天',
+        mo: '月',
+      },
+    },
+    es: {
+      tabs: ['Tendencias', 'Noticias', 'Destacados'],
+      ariaTabs: ['Pestaña Tendencias', 'Pestaña Noticias', 'Pestaña Destacados'],
+      navLabels: {
+        home: 'Inicio',
+        search: 'Buscar',
+        add: 'Agregar',
+        messages: 'Mensajes',
+        profile: 'Perfil',
+        notifications: 'Notificaciones',
+        language: 'Seleccionar idioma',
+      },
+      timeUnits: {
+        min: 'min',
+        h: 'h',
+        d: 'd',
+        mo: 'mes',
+      },
+    },
+  };
 
-  <script>
-    lucide.createIcons();
+  // Current language (default English or saved in localStorage)
+  let currentLang = localStorage.getItem('pf-lang') || 'en';
 
-    function formatTime(ms) {
-      const now = Date.now();
-      const diff = now - ms;
-      const min = Math.floor(diff / 60000);
-      if (min < 60) return `${min}min`;
-      const h = Math.floor(min / 60);
-      if (h < 24) return `${h}h`;
-      const d = Math.floor(h / 24);
-      if (d < 30) return `${d}j`;
-      return `${Math.floor(d / 30)}mois`;
-    }
+  // Utility: format elapsed time with dynamic units from translation
+  function formatTime(ms) {
+    const now = Date.now();
+    const diff = now - ms;
+    if (diff < 0) return '0' + translations[currentLang].timeUnits.min;
+    const min = Math.floor(diff / 60000);
+    if (min < 60) return min + translations[currentLang].timeUnits.min;
+    const h = Math.floor(min / 60);
+    if (h < 24) return h + translations[currentLang].timeUnits.h;
+    const d = Math.floor(h / 24);
+    if (d < 30) return d + translations[currentLang].timeUnits.d;
+    return Math.floor(d / 30) + translations[currentLang].timeUnits.mo;
+  }
 
-    function drawSparkline(data) {
-      const max = Math.max(...data);
-      const min = Math.min(...data);
-      const points = data.map((v, i) => {
-        const normY = (v - min) / (max - min || 1);
-        return `${(i * 100) / (data.length - 1)},${32 - normY * 32}`;
-      }).join(' ');
-      return `<svg class="graph-line" viewBox="0 0 100 32" preserveAspectRatio="none">
-        <polyline fill="none" stroke="#22c55e" stroke-width="2" points="${points}" />
-      </svg>`;
-    }
+  // Calculate recent % price change
+  function getRecentPriceChangePercent(coin) {
+    const hist = coin.price_history;
+    if (!hist || hist.length < 2) return 0;
+    const prev = hist[hist.length - 2];
+    const last = hist[hist.length - 1];
+    if (prev === 0) return 0;
+    return ((last - prev) / prev) * 100;
+  }
 
-    async function fetchCoins() {
+  // Format numbers with suffixes
+  function formatNumber(num) {
+    if (num === null || num === undefined) return '-';
+    if (num < 1000) return num.toFixed(0);
+    if (num < 1e6) return (num / 1000).toFixed(1) + 'k';
+    if (num < 1e9) return (num / 1e6).toFixed(1) + 'M';
+    return (num / 1e9).toFixed(1) + 'B';
+  }
+
+  // Draw sparkline with blue stroke
+  function drawSparkline(data) {
+    if (!data || data.length === 0) return '';
+    const max = Math.max(...data);
+    const min = Math.min(...data);
+    const points = data.map((v, i) => {
+      const normY = (v - min) / (max - min || 1);
+      return `${(i * 100) / (data.length - 1)},${32 - normY * 32}`;
+    }).join(' ');
+    return `<svg class="graph-line" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <polyline fill="none" stroke="#3b82f6" stroke-width="2" points="${points}" />
+    </svg>`;
+  }
+
+  // Update all UI texts based on currentLang
+  function updateTexts() {
+    // Update tabs
+    const tabsContainer = document.getElementById('tabs');
+    tabsContainer.innerHTML = '';
+    translations[currentLang].tabs.forEach((label, i) => {
+      const btn = document.createElement('button');
+      btn.textContent = label;
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+      btn.setAttribute('tabindex', i === 0 ? '0' : '-1');
+      btn.className = i === 0
+        ? 'text-green-400 border-b-2 border-green-400 pb-1 text-sm font-semibold'
+        : 'text-gray-400 text-sm font-semibold';
+      btn.setAttribute('aria-label', translations[currentLang].ariaTabs[i] || label);
+      tabsContainer.appendChild(btn);
+    });
+
+    // Update nav aria-labels & titles
+    document.getElementById('nav-home').setAttribute('aria-label', translations[currentLang].navLabels.home);
+    document.getElementById('nav-search').setAttribute('aria-label', translations[currentLang].navLabels.search);
+    document.getElementById('nav-add').setAttribute('aria-label', translations[currentLang].navLabels.add);
+    document.getElementById('nav-msg').setAttribute('aria-label', translations[currentLang].navLabels.messages);
+    document.getElementById('nav-profile').setAttribute('aria-label', translations[currentLang].navLabels.profile);
+    document.getElementById('btn-notif').setAttribute('aria-label', translations[currentLang].navLabels.notifications);
+    document.getElementById('btn-lang').setAttribute('aria-label', translations[currentLang].navLabels.language);
+
+    // Update lang selector button text to uppercase lang code
+    document.getElementById('btn-lang').textContent = currentLang.toUpperCase();
+  }
+
+  // Fetch and render coins
+  async function fetchCoins() {
+    const container = document.getElementById('coin-list');
+    try {
       const res = await fetch('https://pump.fun/api/projects');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      const top = data
-        .filter(c => c.market_cap > 0 && c.price_history?.length > 3)
-        .sort((a, b) => b.market_cap - a.market_cap)
-        .slice(0, 10);
 
-      const container = document.getElementById('coin-list');
+      const filtered = data.filter(c => c.market_cap > 0 && c.price_history?.length > 3);
+      filtered.sort((a, b) => {
+        const chA = getRecentPriceChangePercent(a);
+        const chB = getRecentPriceChangePercent(b);
+        if (chB !== chA) return chB - chA;
+        return b.market_cap - a.market_cap;
+      });
+
+      // Top 50
+      const top = filtered.slice(0, 50);
+
       container.innerHTML = '';
 
       top.forEach(coin => {
+        const change = getRecentPriceChangePercent(coin);
+        const changeColor = change > 0 ? 'text-green-400' : (change < 0 ? 'text-red-500' : 'text-gray-400');
+
         const html = `
-        <div class="flex items-center bg-[#0a0a0a] rounded-xl p-3 shadow border border-gray-800">
-          <img src="${coin.image}" alt="${coin.symbol}" class="w-10 h-10 rounded-full mr-3 border border-gray-700" onerror="this.src='https://via.placeholder.com/40x40'"/>
-          <div class="flex-1">
-            <div class="flex justify-between">
-              <div>
-                <p class="text-white font-semibold">${coin.name}</p>
-                <p class="text-xs text-gray-400">${coin.symbol}</p>
+          <div class="flex items-center bg-[#0a0a0a] rounded-xl p-3 shadow border border-gray-800">
+            <img src="${coin.image}" alt="${coin.symbol}" class="w-10 h-10 rounded-full mr-3 border border-gray-700" onerror="this.src='https://via.placeholder.com/40x40?text=?'"/>
+            <div class="flex-1">
+              <div class="flex justify-between">
+                <div>
+                  <p class="text-white font-semibold">${coin.name}</p>
+                  <p class="text-xs text-gray-400 uppercase">${coin.symbol}</p>
+                </div>
+                <div class="text-right text-sm">
+                  <p class="${changeColor}">${change.toFixed(2)}%</p>
+                  <p class="text-gray-500 text-xs">MC ${formatNumber(coin.market_cap)}</p>
+                </div>
               </div>
-              <div class="text-right text-sm">
-                <p class="text-green-400">$${(coin.market_cap/1000).toFixed(1)}k</p>
-                <p class="text-gray-500 text-xs">ATH $${(coin.ath/1000).toFixed(1)}k</p>
+              <div class="mt-2 flex items-center justify-between">
+                ${drawSparkline(coin.price_history)}
+                <p class="text-xs text-gray-500 ml-3">${formatTime(coin.created_at)}</p>
               </div>
-            </div>
-            <div class="mt-2 flex items-center justify-between">
-              ${drawSparkline(coin.price_history)}
-              <p class="text-xs text-gray-500 ml-3">${formatTime(coin.created_at)}</p>
             </div>
           </div>
-        </div>`;
+        `;
         container.innerHTML += html;
       });
-
       lucide.createIcons();
+    } catch (e) {
+      console.error('Failed to fetch coins:', e);
     }
+  }
 
+  // Language selector dropdown logic
+  function setupLangSelector() {
+    const btnLang = document.getElementById('btn-lang');
+    const langList = document.getElementById('lang-list');
+
+    // Fill lang options
+    const langs = Object.keys(translations);
+    langList.innerHTML = '';
+    langs.forEach(lang => {
+      const li = document.createElement('li');
+      li.setAttribute('role', 'option');
+      li.setAttribute('tabindex', '0');
+      li.textContent = lang.toUpperCase();
+      li.dataset.lang = lang;
+      li.className = 'cursor-pointer px-3 py-1 hover:bg-gray-700 focus:bg-gray-700 outline-none';
+      if (lang === currentLang) li.classList.add('font-bold');
+      langList.appendChild(li);
+    });
+
+    btnLang.addEventListener('click', () => {
+      const expanded = btnLang.getAttribute('aria-expanded') === 'true';
+      btnLang.setAttribute('aria-expanded', String(!expanded));
+      langList.classList.toggle('show');
+    });
+
+    langList.addEventListener('click', e => {
+      if (e.target && e.target.dataset.lang) {
+        changeLanguage(e.target.dataset.lang);
+        langList.classList.remove('show');
+        btnLang.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    langList.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        langList.classList.remove('show');
+        btnLang.setAttribute('aria-expanded', 'false');
+        btnLang.focus();
+      }
+    });
+
+    document.addEventListener('click', e => {
+      if (!langList.contains(e.target) && e.target !== btnLang) {
+        langList.classList.remove('show');
+        btnLang.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  // Change language handler
+  function changeLanguage(lang) {
+    if (!translations[lang]) return;
+    currentLang = lang;
+    localStorage.setItem('pf-lang', currentLang);
+    updateTexts();
     fetchCoins();
-    setInterval(fetchCoins, 60000); // refresh every 60s
-  </script>
+  }
+
+  // Initialization
+  function init() {
+    updateTexts();
+    setupLangSelector();
+    fetchCoins();
+    setInterval(fetchCoins, 7000);
+  }
+
+  window.onload = init;
+</script>
+
 </body>
 </html>
