@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pumpfun Live Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { background: #000; color: white; font-family: 'Inter', sans-serif; }
+    .graph-line {
+      height: 32px;
+      width: 100px;
+    }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="pb-24">
+
+  <!-- Tabs -->
+  <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+    <div class="flex space-x-6 text-sm font-medium">
+      <span class="text-green-400 border-b-2 border-green-400 pb-1">Tendances</span>
+      <span class="text-gray-400">Actualités</span>
+      <span class="text-gray-400">À la une</span>
+    </div>
+    <div>
+      <i data-lucide="bell" class="w-5 h-5 text-white/80"></i>
+    </div>
+  </div>
+
+  <!-- Liste des tokens -->
+  <div id="coin-list" class="mt-4 px-4 space-y-3"></div>
+
+  <!-- Bottom Navbar -->
+  <div class="fixed bottom-0 left-0 w-full bg-black border-t border-gray-800 py-2 flex justify-around items-center text-white text-sm">
+    <i data-lucide="home" class="w-6 h-6"></i>
+    <i data-lucide="search" class="w-6 h-6"></i>
+    <div class="bg-green-500 p-2 rounded-full">
+      <i data-lucide="plus" class="w-5 h-5 text-black"></i>
+    </div>
+    <i data-lucide="message-circle" class="w-6 h-6"></i>
+    <i data-lucide="user" class="w-6 h-6"></i>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    function formatTime(ms) {
+      const now = Date.now();
+      const diff = now - ms;
+      const min = Math.floor(diff / 60000);
+      if (min < 60) return `${min}min`;
+      const h = Math.floor(min / 60);
+      if (h < 24) return `${h}h`;
+      const d = Math.floor(h / 24);
+      if (d < 30) return `${d}j`;
+      return `${Math.floor(d / 30)}mois`;
+    }
+
+    function drawSparkline(data) {
+      const max = Math.max(...data);
+      const min = Math.min(...data);
+      const points = data.map((v, i) => {
+        const normY = (v - min) / (max - min || 1);
+        return `${(i * 100) / (data.length - 1)},${32 - normY * 32}`;
+      }).join(' ');
+      return `<svg class="graph-line" viewBox="0 0 100 32" preserveAspectRatio="none">
+        <polyline fill="none" stroke="#22c55e" stroke-width="2" points="${points}" />
+      </svg>`;
+    }
+
+    async function fetchCoins() {
+      const res = await fetch('https://pump.fun/api/projects');
+      const data = await res.json();
+      const top = data
+        .filter(c => c.market_cap > 0 && c.price_history?.length > 3)
+        .sort((a, b) => b.market_cap - a.market_cap)
+        .slice(0, 10);
+
+      const container = document.getElementById('coin-list');
+      container.innerHTML = '';
+
+      top.forEach(coin => {
+        const html = `
+        <div class="flex items-center bg-[#0a0a0a] rounded-xl p-3 shadow border border-gray-800">
+          <img src="${coin.image}" alt="${coin.symbol}" class="w-10 h-10 rounded-full mr-3 border border-gray-700" onerror="this.src='https://via.placeholder.com/40x40'"/>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div>
+                <p class="text-white font-semibold">${coin.name}</p>
+                <p class="text-xs text-gray-400">${coin.symbol}</p>
+              </div>
+              <div class="text-right text-sm">
+                <p class="text-green-400">$${(coin.market_cap/1000).toFixed(1)}k</p>
+                <p class="text-gray-500 text-xs">ATH $${(coin.ath/1000).toFixed(1)}k</p>
+              </div>
+            </div>
+            <div class="mt-2 flex items-center justify-between">
+              ${drawSparkline(coin.price_history)}
+              <p class="text-xs text-gray-500 ml-3">${formatTime(coin.created_at)}</p>
+            </div>
+          </div>
+        </div>`;
+        container.innerHTML += html;
+      });
+
+      lucide.createIcons();
+    }
+
+    fetchCoins();
+    setInterval(fetchCoins, 60000); // refresh every 60s
+  </script>
+</body>
+</html>
