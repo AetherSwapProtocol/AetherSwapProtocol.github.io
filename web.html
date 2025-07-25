@@ -1,217 +1,843 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>WERENOI — 30.01.2026</title>
-  <style>
-    * {
-      margin: 0; padding: 0; box-sizing: border-box;
-    }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #000;
-      color: #f0f0f0;
-      overflow-x: hidden;
-    }
-    header {
-      height: 100vh;
-      background: linear-gradient(rgba(0,0,0,0.7), #000), url('https://images.unsplash.com/photo-1608889175551-09bbd66041b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1050&q=80') no-repeat center center/cover;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 0 2rem;
-    }
-    header h1 {
-      font-size: 3rem;
-      letter-spacing: 0.3rem;
-    }
-    header p {
-      margin-top: 1rem;
-      font-size: 1.2rem;
-      opacity: 0.7;
-    }
-    header span {
-      margin-top: 2rem;
-      font-size: 1rem;
-      font-weight: bold;
-      color: #FFD700;
-    }
-    section {
-      padding: 4rem 2rem;
-      max-width: 900px;
-      margin: auto;
-    }
-    section h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      border-bottom: 2px solid #FFD700;
-      display: inline-block;
-      padding-bottom: 0.2rem;
-    }
-    .discographie, .clips {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-    .card {
-      background: #111;
-      padding: 1rem;
-      border: 1px solid #222;
-      border-radius: 8px;
-      transition: 0.3s;
-    }
-    .card:hover {
-      border-color: #FFD700;
-      transform: scale(1.02);
-    }
-    .card a {
-      color: #FFD700;
-      text-decoration: none;
-      display: block;
-      margin-top: 0.5rem;
-    }
-    .quote {
-      font-style: italic;
-      opacity: 0.8;
-      margin-top: 1rem;
-    }
-    .counter {
-      font-size: 2rem;
-      color: #FFD700;
-      text-align: center;
-      margin-top: 2rem;
-    }
-    footer {
-      background: #111;
-      text-align: center;
-      padding: 2rem;
-      font-size: 0.9rem;
-      color: #666;
-    }
-    .socials {
-      margin-top: 1rem;
-    }
-    .socials a {
-      margin: 0 1rem;
-      color: #FFD700;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    @media(max-width: 600px) {
-      header h1 { font-size: 2.2rem; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherSwap Ultra | The Most Advanced Swap Interface Ever Built</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+        }
+        
+        .neumorphism {
+            border-radius: 16px;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            box-shadow:  8px 8px 16px #0a101a, 
+                        -8px -8px 16px #243048;
+        }
+        
+        .token-input {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
 </head>
-<body>
-
-<header>
-  <h1>WERENOI</h1>
-  <p>Pas un artiste. Un écho.</p>
-  <span>30.01.2026 — Un rendez-vous</span>
-</header>
-
-<section>
-  <h2>À propos</h2>
-  <p>
-    Né de la rue, forgé par le silence.  
-    Pas de slogan. Pas d'équipe.  
-    Juste une vision que personne ne peut freiner.
-  </p>
-</section>
-
-<section>
-  <h2>Discographie</h2>
-  <div class="discographie">
-    <div class="card">
-      <strong>Telegram</strong>
-      <a href="https://open.spotify.com/album/6HZvFlXyGyZzzcHb2S7nrb" target="_blank">Écouter</a>
+<body class="p-4 md:p-8">
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-6">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+                <h1 class="text-xl font-bold gradient-text">AetherSwap Ultra</h1>
+            </div>
+            <div id="wallet-connector" class="relative">
+                <button id="connect-wallet-btn" class="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium transition-all duration-300">
+                    Connect Wallet
+                </button>
+                <div id="wallet-dropdown" class="hidden absolute right-0 mt-2 w-64 glass-card rounded-xl p-4 z-10">
+                    <h3 class="font-semibold mb-2">Connect Wallet</h3>
+                    <div class="space-y-2">
+                        <button class="wallet-option flex items-center w-full p-2 rounded-lg hover:bg-gray-800 transition-colors">
+                            <img src="https://phantom.app/favicon.ico" class="w-6 h-6 mr-2" alt="Phantom">
+                            Phantom
+                        </button>
+                        <button class="wallet-option flex items-center w-full p-2 rounded-lg hover:bg-gray-800 transition-colors">
+                            <img src="https://metamask.io/favicon.ico" class="w-6 h-6 mr-2" alt="MetaMask">
+                            MetaMask
+                        </button>
+                        <button class="wallet-option flex items-center w-full p-2 rounded-lg hover:bg-gray-800 transition-colors">
+                            <img src="https://walletconnect.com/favicon.ico" class="w-6 h-6 mr-2" alt="WalletConnect">
+                            WalletConnect
+                        </button>
+                        <button class="wallet-option flex items-center w-full p-2 rounded-lg hover:bg-gray-800 transition-colors">
+                            <img src="https://coinbase.com/favicon.ico" class="w-6 h-6 mr-2" alt="Coinbase Wallet">
+                            Coinbase Wallet
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Swap Card -->
+        <div class="glass-card rounded-2xl p-6 mb-6">
+            <!-- Network Selector -->
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex space-x-2">
+                    <button id="solana-btn" class="network-btn px-3 py-1 rounded-full bg-indigo-900 text-indigo-200 font-medium">Solana</button>
+                    <button id="evm-btn" class="network-btn px-3 py-1 rounded-full bg-gray-800 text-gray-400 font-medium">EVM</button>
+                </div>
+                <button id="settings-btn" class="p-2 rounded-full hover:bg-gray-800 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Token Input A -->
+            <div class="token-input rounded-xl p-4 mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm text-gray-400">From</span>
+                    <span id="balance-a" class="text-sm text-gray-400">Balance: 0.0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <input id="input-a" type="number" placeholder="0.0" class="bg-transparent text-2xl w-full outline-none">
+                    <button id="select-token-a" class="flex items-center bg-gray-800 hover:bg-gray-700 px-3 py-2 rounded-lg transition-colors">
+                        <img id="token-a-icon" src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-6 h-6 mr-2" alt="SOL">
+                        <span id="token-a-symbol" class="font-medium">SOL</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Swap Direction Button -->
+            <div class="flex justify-center -my-3 z-10 relative">
+                <button id="swap-direction" class="p-2 rounded-full bg-gray-800 border-2 border-gray-700 hover:bg-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Token Input B -->
+            <div class="token-input rounded-xl p-4 mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm text-gray-400">To</span>
+                    <span id="balance-b" class="text-sm text-gray-400">Balance: 0.0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <input id="input-b" type="number" placeholder="0.0" class="bg-transparent text-2xl w-full outline-none">
+                    <button id="select-token-b" class="flex items-center bg-gray-800 hover:bg-gray-700 px-3 py-2 rounded-lg transition-colors">
+                        <img id="token-b-icon" src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" class="w-6 h-6 mr-2" alt="USDC">
+                        <span id="token-b-symbol" class="font-medium">USDC</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Swap Details -->
+            <div class="bg-gray-900 rounded-xl p-4 mb-6 text-sm">
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-400">Exchange Rate</span>
+                    <span id="exchange-rate" class="font-medium">1 SOL = 150.42 USDC</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-400">Price Impact</span>
+                    <span id="price-impact" class="text-green-400">0.05%</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-400">Provider</span>
+                    <span id="provider" class="font-medium">Jupiter</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Network Fee</span>
+                    <span id="network-fee" class="font-medium">~$0.05</span>
+                </div>
+            </div>
+            
+            <!-- Swap Button -->
+            <button id="swap-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                Connect Wallet
+            </button>
+        </div>
+        
+        <!-- On-Ramp Section -->
+        <div class="glass-card rounded-2xl p-6 mb-6">
+            <h3 class="font-bold mb-4">Buy Crypto with Fiat</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <button class="on-ramp-option flex flex-col items-center p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
+                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" class="w-10 h-10 mb-2" alt="USDC">
+                    <span class="font-medium">Buy USDC</span>
+                </button>
+                <button class="on-ramp-option flex flex-col items-center p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
+                    <img src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-10 h-10 mb-2" alt="SOL">
+                    <span class="font-medium">Buy SOL</span>
+                </button>
+                <button class="on-ramp-option flex flex-col items-center p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
+                    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" class="w-10 h-10 mb-2" alt="ETH">
+                    <span class="font-medium">Buy ETH</span>
+                </button>
+                <button class="on-ramp-option flex flex-col items-center p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
+                    <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" class="w-10 h-10 mb-2" alt="BTC">
+                    <span class="font-medium">Buy BTC</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Recent Swaps -->
+        <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold mb-4">Recent Swaps</h3>
+            <div id="recent-swaps" class="space-y-3">
+                <div class="text-center py-4 text-gray-500">
+                    Your swap history will appear here
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card">
-      <strong>No Name</strong>
-      <a href="https://open.spotify.com/track/0X9jLphxA52RK1VrFEO2mA" target="_blank">Écouter</a>
+    
+    <!-- Token Selector Modal -->
+    <div id="token-selector" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="glass-card rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden">
+            <div class="p-4 border-b border-gray-800">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">Select Token</h3>
+                    <button id="close-token-selector" class="p-1 rounded-full hover:bg-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="relative">
+                    <input id="token-search" type="text" placeholder="Search token name or paste address" class="w-full bg-gray-800 rounded-lg px-4 py-2 pl-10 outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-2.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="p-2 border-b border-gray-800">
+                <div class="flex space-x-2 overflow-x-auto">
+                    <button class="token-category px-3 py-1 rounded-full bg-indigo-900 text-indigo-200 text-sm whitespace-nowrap">Popular</button>
+                    <button class="token-category px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-sm whitespace-nowrap">Stablecoins</button>
+                    <button class="token-category px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-sm whitespace-nowrap">Solana</button>
+                    <button class="token-category px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-sm whitespace-nowrap">Ethereum</button>
+                </div>
+            </div>
+            <div id="token-list" class="overflow-y-auto max-h-[50vh]">
+                <div class="p-2">
+                    <div class="token-item flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
+                        <div class="flex items-center">
+                            <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" class="w-8 h-8 mr-3" alt="USDC">
+                            <div>
+                                <div class="font-medium">USDC</div>
+                                <div class="text-xs text-gray-400">USD Coin</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-medium">0.0</div>
+                            <div class="text-xs text-gray-400">$0.00</div>
+                        </div>
+                    </div>
+                    <div class="token-item flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
+                        <div class="flex items-center">
+                            <img src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-8 h-8 mr-3" alt="SOL">
+                            <div>
+                                <div class="font-medium">SOL</div>
+                                <div class="text-xs text-gray-400">Solana</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-medium">0.0</div>
+                            <div class="text-xs text-gray-400">$0.00</div>
+                        </div>
+                    </div>
+                    <div class="token-item flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
+                        <div class="flex items-center">
+                            <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" class="w-8 h-8 mr-3" alt="ETH">
+                            <div>
+                                <div class="font-medium">ETH</div>
+                                <div class="text-xs text-gray-400">Ethereum</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-medium">0.0</div>
+                            <div class="text-xs text-gray-400">$0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-800">
+                <button class="w-full py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors">
+                    Manage Token Lists
+                </button>
+            </div>
+        </div>
     </div>
-    <div class="card">
-      <strong>Crack</strong>
-      <a href="https://open.spotify.com/track/3MTybEhdpo2DRzHtM2fAyP" target="_blank">Écouter</a>
+    
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="glass-card rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden">
+            <div class="p-4 border-b border-gray-800">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">Transaction Settings</h3>
+                    <button id="close-settings" class="p-1 rounded-full hover:bg-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-4 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Slippage Tolerance</label>
+                    <div class="flex space-x-2">
+                        <button class="slippage-btn px-3 py-1 rounded-lg bg-indigo-900 text-indigo-200">0.1%</button>
+                        <button class="slippage-btn px-3 py-1 rounded-lg bg-gray-800 text-gray-400">0.5%</button>
+                        <button class="slippage-btn px-3 py-1 rounded-lg bg-gray-800 text-gray-400">1%</button>
+                        <div class="relative flex-1">
+                            <input id="custom-slippage" type="number" placeholder="0.10" class="w-full bg-gray-800 rounded-lg px-3 py-1 pr-6 outline-none">
+                            <span class="absolute right-3 top-1 text-gray-400">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Transaction Deadline</label>
+                    <div class="flex items-center">
+                        <input id="tx-deadline" type="number" value="20" class="w-16 bg-gray-800 rounded-lg px-3 py-1 mr-2 outline-none">
+                        <span>minutes</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm">Expert Mode</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm">Disable Multihops</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-800">
+                <button id="save-settings" class="w-full py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium transition-all duration-300">
+                    Save Settings
+                </button>
+            </div>
+        </div>
     </div>
-    <div class="card">
-      <strong>Guerrero</strong>
-      <a href="https://www.youtube.com/watch?v=2U5LtQjEd0I" target="_blank">YouTube</a>
+    
+    <!-- Swap Confirmation Modal -->
+    <div id="confirm-swap-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="glass-card rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden">
+            <div class="p-4 border-b border-gray-800">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">Confirm Swap</h3>
+                    <button id="close-confirm-swap" class="p-1 rounded-full hover:bg-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-4">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center">
+                        <img id="confirm-token-a-icon" src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-10 h-10" alt="SOL">
+                        <span id="confirm-amount-a" class="ml-2 font-bold text-xl">1.0</span>
+                    </div>
+                    <div class="text-gray-400 mx-2">→</div>
+                    <div class="flex items-center">
+                        <img id="confirm-token-b-icon" src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" class="w-10 h-10" alt="USDC">
+                        <span id="confirm-amount-b" class="ml-2 font-bold text-xl">150.42</span>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-900 rounded-xl p-4 mb-6 text-sm">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-400">Exchange Rate</span>
+                        <span id="confirm-exchange-rate" class="font-medium">1 SOL = 150.42 USDC</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-400">Price Impact</span>
+                        <span id="confirm-price-impact" class="text-green-400">0.05%</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-400">Minimum Received</span>
+                        <span id="confirm-min-received" class="font-medium">149.15 USDC</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-400">Liquidity Provider</span>
+                        <span id="confirm-provider" class="font-medium">Jupiter</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Network Fee</span>
+                        <span id="confirm-network-fee" class="font-medium">~$0.05</span>
+                    </div>
+                </div>
+                
+                <button id="execute-swap" class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold transition-all duration-300">
+                    Confirm Swap
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
-</section>
-
-<section>
-  <h2>Clips</h2>
-  <div class="clips">
-    <div class="card">
-      <strong>Télégram</strong>
-      <a href="https://www.youtube.com/watch?v=QMiSvz3qx4s" target="_blank">Voir</a>
-      <div class="quote">"Les regrets parlent, mais les lions écoutent pas."</div>
-    </div>
-    <div class="card">
-      <strong>Guerrero</strong>
-      <a href="https://www.youtube.com/watch?v=2U5LtQjEd0I" target="_blank">Voir</a>
-      <div class="quote">"Je connais la rue, elle connaît mon nom."</div>
-    </div>
-    <div class="card">
-      <strong>Crack</strong>
-      <a href="https://www.youtube.com/watch?v=anP0UOmXX3Y" target="_blank">Voir</a>
-      <div class="quote">"J’te parle pas de cash, j’te parle de silence."</div>
-    </div>
-  </div>
-</section>
-
-<section>
-  <h2>La League</h2>
-  <p>
-    Ce n’est pas un label. Ce n’est pas un fan club.  
-    C’est ce qui reste quand tout s’efface.  
-    Tu te reconnais ? Marque 🔱 dans ton blaze.  
-    La League n’a pas besoin de validation.
-  </p>
-</section>
-
-<section>
-  <h2>30.01.2026</h2>
-  <p style="text-align:center; margin-top: 1rem;">
-    Un silence. Une attente.  
-    La légende s’écrit sans prévenir.
-  </p>
-  <div class="counter" id="countdown"></div>
-</section>
-
-<footer>
-  © 2026 — Tout droit réservé. Ou pas.
-  <div class="socials">
-    <a href="https://open.spotify.com/artist/2uYUM39cY6F5LfuwGZMgXk" target="_blank">Spotify</a>
-    <a href="https://www.youtube.com/channel/UCXzG92cwFYPDqA9DHWLuLmg" target="_blank">YouTube</a>
-    <a href="https://music.apple.com/fr/artist/werenoi/1555286471" target="_blank">Apple Music</a>
-  </div>
-</footer>
-
-<script>
-  const countDownDate = new Date("Jan 30, 2026 00:00:00").getTime();
-  const x = setInterval(function() {
-    const now = new Date().getTime();
-    const distance = countDownDate - now;
-    if (distance < 0) {
-      document.getElementById("countdown").innerHTML = "C'est l'heure.";
-      clearInterval(x);
-      return;
-    }
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    document.getElementById("countdown").innerHTML = 
-      days + "j " + hours + "h " + minutes + "m " + seconds + "s";
-  }, 1000);
-</script>
-
+    
+    <script>
+        // State management
+        const state = {
+            currentNetwork: 'solana',
+            connectedWallet: null,
+            walletType: null,
+            tokenA: {
+                symbol: 'SOL',
+                icon: 'https://cryptologos.cc/logos/solana-sol-logo.png',
+                balance: 0,
+                amount: 0
+            },
+            tokenB: {
+                symbol: 'USDC',
+                icon: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
+                balance: 0,
+                amount: 0
+            },
+            slippage: 0.5,
+            txDeadline: 20,
+            recentSwaps: []
+        };
+        
+        // DOM Elements
+        const connectWalletBtn = document.getElementById('connect-wallet-btn');
+        const walletDropdown = document.getElementById('wallet-dropdown');
+        const walletOptions = document.querySelectorAll('.wallet-option');
+        const solanaBtn = document.getElementById('solana-btn');
+        const evmBtn = document.getElementById('evm-btn');
+        const swapBtn = document.getElementById('swap-btn');
+        const inputA = document.getElementById('input-a');
+        const inputB = document.getElementById('input-b');
+        const selectTokenA = document.getElementById('select-token-a');
+        const selectTokenB = document.getElementById('select-token-b');
+        const tokenSelector = document.getElementById('token-selector');
+        const closeTokenSelector = document.getElementById('close-token-selector');
+        const tokenSearch = document.getElementById('token-search');
+        const tokenList = document.getElementById('token-list');
+        const tokenItems = document.querySelectorAll('.token-item');
+        const swapDirection = document.getElementById('swap-direction');
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettings = document.getElementById('close-settings');
+        const slippageBtns = document.querySelectorAll('.slippage-btn');
+        const customSlippage = document.getElementById('custom-slippage');
+        const txDeadline = document.getElementById('tx-deadline');
+        const saveSettings = document.getElementById('save-settings');
+        const confirmSwapModal = document.getElementById('confirm-swap-modal');
+        const closeConfirmSwap = document.getElementById('close-confirm-swap');
+        const executeSwap = document.getElementById('execute-swap');
+        const recentSwapsContainer = document.getElementById('recent-swaps');
+        
+        // Event Listeners
+        connectWalletBtn.addEventListener('click', toggleWalletDropdown);
+        walletOptions.forEach(option => option.addEventListener('click', connectWallet));
+        solanaBtn.addEventListener('click', () => switchNetwork('solana'));
+        evmBtn.addEventListener('click', () => switchNetwork('evm'));
+        selectTokenA.addEventListener('click', () => openTokenSelector('A'));
+        selectTokenB.addEventListener('click', () => openTokenSelector('B'));
+        closeTokenSelector.addEventListener('click', closeTokenSelectorModal);
+        tokenItems.forEach(item => item.addEventListener('click', selectToken));
+        swapDirection.addEventListener('click', swapTokens);
+        inputA.addEventListener('input', updateOutputAmount);
+        inputB.addEventListener('input', updateInputAmount);
+        settingsBtn.addEventListener('click', openSettings);
+        closeSettings.addEventListener('click', closeSettingsModal);
+        slippageBtns.forEach(btn => btn.addEventListener('click', setSlippage));
+        customSlippage.addEventListener('input', setCustomSlippage);
+        saveSettings.addEventListener('click', saveSettingsChanges);
+        swapBtn.addEventListener('click', openConfirmSwap);
+        closeConfirmSwap.addEventListener('click', closeConfirmSwapModal);
+        executeSwap.addEventListener('click', performSwap);
+        
+        // Initialize
+        loadRecentSwaps();
+        updateUI();
+        
+        // Functions
+        function toggleWalletDropdown() {
+            walletDropdown.classList.toggle('hidden');
+        }
+        
+        function connectWallet(e) {
+            const walletName = e.target.innerText.trim();
+            state.walletType = walletName.toLowerCase().replace(' ', '-');
+            state.connectedWallet = '0x742d35Cc6634C0532925a3b844Bc454e4438f44e'; // Mock address
+            
+            // In a real app, you would:
+            // 1. Initialize the appropriate wallet SDK
+            // 2. Call the connect method
+            // 3. Handle the connection response
+            // 4. Update the UI with the wallet address
+            
+            connectWalletBtn.innerHTML = `
+                <span class="truncate max-w-[120px]">${state.connectedWallet.substring(0, 6)}...${state.connectedWallet.substring(38)}</span>
+            `;
+            walletDropdown.classList.add('hidden');
+            swapBtn.disabled = false;
+            swapBtn.textContent = 'Swap';
+            
+            // Mock balance update
+            state.tokenA.balance = 5.42;
+            state.tokenB.balance = 1200.75;
+            updateUI();
+            
+            console.log(`Connected to ${walletName}`);
+        }
+        
+        function switchNetwork(network) {
+            state.currentNetwork = network;
+            
+            if (network === 'solana') {
+                solanaBtn.classList.remove('bg-gray-800', 'text-gray-400');
+                solanaBtn.classList.add('bg-indigo-900', 'text-indigo-200');
+                evmBtn.classList.remove('bg-indigo-900', 'text-indigo-200');
+                evmBtn.classList.add('bg-gray-800', 'text-gray-400');
+                
+                // Update default tokens for Solana
+                state.tokenA = {
+                    symbol: 'SOL',
+                    icon: 'https://cryptologos.cc/logos/solana-sol-logo.png',
+                    balance: state.tokenA.balance,
+                    amount: state.tokenA.amount
+                };
+                state.tokenB = {
+                    symbol: 'USDC',
+                    icon: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
+                    balance: state.tokenB.balance,
+                    amount: state.tokenB.amount
+                };
+            } else {
+                evmBtn.classList.remove('bg-gray-800', 'text-gray-400');
+                evmBtn.classList.add('bg-indigo-900', 'text-indigo-200');
+                solanaBtn.classList.remove('bg-indigo-900', 'text-indigo-200');
+                solanaBtn.classList.add('bg-gray-800', 'text-gray-400');
+                
+                // Update default tokens for EVM
+                state.tokenA = {
+                    symbol: 'ETH',
+                    icon: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+                    balance: state.tokenA.balance,
+                    amount: state.tokenA.amount
+                };
+                state.tokenB = {
+                    symbol: 'USDC',
+                    icon: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
+                    balance: state.tokenB.balance,
+                    amount: state.tokenB.amount
+                };
+            }
+            
+            updateUI();
+            console.log(`Switched to ${network} network`);
+        }
+        
+        function openTokenSelector(tokenSide) {
+            state.tokenSelectorSide = tokenSide;
+            tokenSelector.classList.remove('hidden');
+        }
+        
+        function closeTokenSelectorModal() {
+            tokenSelector.classList.add('hidden');
+        }
+        
+        function selectToken(e) {
+            const tokenElement = e.currentTarget;
+            const tokenSymbol = tokenElement.querySelector('div > div:first-child').textContent;
+            const tokenIcon = tokenElement.querySelector('img').src;
+            
+            if (state.tokenSelectorSide === 'A') {
+                state.tokenA.symbol = tokenSymbol;
+                state.tokenA.icon = tokenIcon;
+            } else {
+                state.tokenB.symbol = tokenSymbol;
+                state.tokenB.icon = tokenIcon;
+            }
+            
+            closeTokenSelectorModal();
+            updateUI();
+        }
+        
+        function swapTokens() {
+            // Swap token A and B
+            const tempToken = {...state.tokenA};
+            state.tokenA = {...state.tokenB};
+            state.tokenB = tempToken;
+            
+            // Swap input values
+            const tempAmount = inputA.value;
+            inputA.value = inputB.value;
+            inputB.value = tempAmount;
+            
+            updateUI();
+        }
+        
+        function updateOutputAmount() {
+            state.tokenA.amount = parseFloat(inputA.value) || 0;
+            
+            // In a real app, you would:
+            // 1. Fetch the exchange rate from the appropriate DEX API (Jupiter for Solana, 1inch/0x for EVM)
+            // 2. Calculate the expected output amount
+            // 3. Update the UI with the calculated amount
+            
+            // Mock calculation
+            if (state.tokenA.amount > 0) {
+                const rate = state.tokenA.symbol === 'SOL' ? 150.42 : 
+                            state.tokenA.symbol === 'ETH' ? 3200 : 1;
+                state.tokenB.amount = state.tokenA.amount * rate;
+                inputB.value = state.tokenB.amount.toFixed(6);
+            } else {
+                state.tokenB.amount = 0;
+                inputB.value = '';
+            }
+            
+            updateSwapDetails();
+        }
+        
+        function updateInputAmount() {
+            state.tokenB.amount = parseFloat(inputB.value) || 0;
+            
+            // Reverse calculation
+            if (state.tokenB.amount > 0) {
+                const rate = state.tokenA.symbol === 'SOL' ? 150.42 : 
+                            state.tokenA.symbol === 'ETH' ? 3200 : 1;
+                state.tokenA.amount = state.tokenB.amount / rate;
+                inputA.value = state.tokenA.amount.toFixed(6);
+            } else {
+                state.tokenA.amount = 0;
+                inputA.value = '';
+            }
+            
+            updateSwapDetails();
+        }
+        
+        function updateSwapDetails() {
+            // Update exchange rate display
+            const rate = state.tokenA.symbol === 'SOL' ? 150.42 : 
+                        state.tokenA.symbol === 'ETH' ? 3200 : 1;
+            document.getElementById('exchange-rate').textContent = 
+                `1 ${state.tokenA.symbol} = ${rate.toFixed(2)} ${state.tokenB.symbol}`;
+            
+            // Update provider based on network
+            document.getElementById('provider').textContent = 
+                state.currentNetwork === 'solana' ? 'Jupiter' : '1inch';
+        }
+        
+        function openSettings() {
+            settingsModal.classList.remove('hidden');
+        }
+        
+        function closeSettingsModal() {
+            settingsModal.classList.add('hidden');
+        }
+        
+        function setSlippage(e) {
+            slippageBtns.forEach(btn => {
+                btn.classList.remove('bg-indigo-900', 'text-indigo-200');
+                btn.classList.add('bg-gray-800', 'text-gray-400');
+            });
+            
+            e.target.classList.remove('bg-gray-800', 'text-gray-400');
+            e.target.classList.add('bg-indigo-900', 'text-indigo-200');
+            
+            state.slippage = parseFloat(e.target.textContent.replace('%', ''));
+            customSlippage.value = '';
+        }
+        
+        function setCustomSlippage(e) {
+            if (e.target.value) {
+                slippageBtns.forEach(btn => {
+                    btn.classList.remove('bg-indigo-900', 'text-indigo-200');
+                    btn.classList.add('bg-gray-800', 'text-gray-400');
+                });
+                
+                state.slippage = parseFloat(e.target.value);
+            }
+        }
+        
+        function saveSettingsChanges() {
+            state.txDeadline = parseInt(txDeadline.value) || 20;
+            closeSettingsModal();
+        }
+        
+        function openConfirmSwap() {
+            if (!state.connectedWallet || state.tokenA.amount <= 0) return;
+            
+            // Update confirmation modal with current swap details
+            document.getElementById('confirm-token-a-icon').src = state.tokenA.icon;
+            document.getElementById('confirm-amount-a').textContent = state.tokenA.amount.toFixed(6);
+            document.getElementById('confirm-token-b-icon').src = state.tokenB.icon;
+            document.getElementById('confirm-amount-b').textContent = state.tokenB.amount.toFixed(6);
+            
+            document.getElementById('confirm-exchange-rate').textContent = 
+                `1 ${state.tokenA.symbol} = ${(state.tokenB.amount / state.tokenA.amount).toFixed(6)} ${state.tokenB.symbol}`;
+            
+            document.getElementById('confirm-min-received').textContent = 
+                `${(state.tokenB.amount * (1 - state.slippage / 100)).toFixed(6)} ${state.tokenB.symbol}`;
+            
+            document.getElementById('confirm-provider').textContent = 
+                state.currentNetwork === 'solana' ? 'Jupiter' : '1inch';
+            
+            confirmSwapModal.classList.remove('hidden');
+        }
+        
+        function closeConfirmSwapModal() {
+            confirmSwapModal.classList.add('hidden');
+        }
+        
+        function performSwap() {
+            if (!state.connectedWallet || state.tokenA.amount <= 0) return;
+            
+            // In a real app, you would:
+            // 1. Construct the transaction based on the selected network and tokens
+            // 2. Use the appropriate wallet SDK to sign and send the transaction
+            // 3. Handle the transaction response
+            // 4. Update the UI with the transaction hash and status
+            
+            // Mock transaction
+            const txHash = '0x' + Math.random().toString(16).substr(2, 64);
+            
+            // Add to recent swaps
+            const swap = {
+                id: Date.now(),
+                fromToken: state.tokenA.symbol,
+                toToken: state.tokenB.symbol,
+                fromAmount: state.tokenA.amount,
+                toAmount: state.tokenB.amount,
+                txHash: txHash,
+                timestamp: new Date().toISOString(),
+                status: 'completed'
+            };
+            
+            state.recentSwaps.unshift(swap);
+            saveRecentSwaps();
+            loadRecentSwaps();
+            
+            // Update balances
+            state.tokenA.balance -= state.tokenA.amount;
+            state.tokenB.balance += state.tokenB.amount;
+            
+            // Reset inputs
+            state.tokenA.amount = 0;
+            state.tokenB.amount = 0;
+            inputA.value = '';
+            inputB.value = '';
+            
+            closeConfirmSwapModal();
+            updateUI();
+            
+            console.log(`Swap executed: ${txHash}`);
+        }
+        
+        function saveRecentSwaps() {
+            localStorage.setItem('aetherswap-recent-swaps', JSON.stringify(state.recentSwaps));
+        }
+        
+        function loadRecentSwaps() {
+            const savedSwaps = localStorage.getItem('aetherswap-recent-swaps');
+            if (savedSwaps) {
+                state.recentSwaps = JSON.parse(savedSwaps);
+            }
+            
+            renderRecentSwaps();
+        }
+        
+        function renderRecentSwaps() {
+            if (state.recentSwaps.length === 0) {
+                recentSwapsContainer.innerHTML = `
+                    <div class="text-center py-4 text-gray-500">
+                        Your swap history will appear here
+                    </div>
+                `;
+                return;
+            }
+            
+            recentSwapsContainer.innerHTML = state.recentSwaps.slice(0, 5).map(swap => `
+                <div class="flex justify-between items-center p-3 rounded-lg bg-gray-900">
+                    <div class="flex items-center">
+                        <div class="flex -space-x-2">
+                            <img src="${getTokenIcon(swap.fromToken)}" class="w-6 h-6" alt="${swap.fromToken}">
+                            <img src="${getTokenIcon(swap.toToken)}" class="w-6 h-6" alt="${swap.toToken}">
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-sm font-medium">${swap.fromAmount.toFixed(4)} ${swap.fromToken} → ${swap.toAmount.toFixed(4)} ${swap.toToken}</div>
+                            <div class="text-xs text-gray-400">${new Date(swap.timestamp).toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <a href="#" class="text-xs text-indigo-400 hover:text-indigo-300">View</a>
+                </div>
+            `).join('');
+        }
+        
+        function getTokenIcon(symbol) {
+            switch (symbol) {
+                case 'SOL': return 'https://cryptologos.cc/logos/solana-sol-logo.png';
+                case 'USDC': return 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
+                case 'ETH': return 'https://cryptologos.cc/logos/ethereum-eth-logo.png';
+                case 'BTC': return 'https://cryptologos.cc/logos/bitcoin-btc-logo.png';
+                default: return 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
+            }
+        }
+        
+        function updateUI() {
+            // Update token displays
+            document.getElementById('token-a-symbol').textContent = state.tokenA.symbol;
+            document.getElementById('token-a-icon').src = state.tokenA.icon;
+            document.getElementById('balance-a').textContent = `Balance: ${state.tokenA.balance.toFixed(4)}`;
+            
+            document.getElementById('token-b-symbol').textContent = state.tokenB.symbol;
+            document.getElementById('token-b-icon').src = state.tokenB.icon;
+            document.getElementById('balance-b').textContent = `Balance: ${state.tokenB.balance.toFixed(4)}`;
+            
+            // Update swap button state
+            swapBtn.disabled = !state.connectedWallet || state.tokenA.amount <= 0;
+            
+            // Update network indicators
+            if (state.currentNetwork === 'solana') {
+                document.getElementById('provider').textContent = 'Jupiter';
+            } else {
+                document.getElementById('provider').textContent = '1inch';
+            }
+            
+            updateSwapDetails();
+        }
+    </script>
 </body>
 </html>
