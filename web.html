@@ -1,283 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherSwap</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-wallets@0.19.16/lib/index.min.js"></script>
-    <script src="https://unpkg.com/jupiter-core@latest/dist/browser.js"></script>
-    <style>
-        :root {
-            --primary: #9945FF;
-            --secondary: #14F195;
-            --accent: #80ECFF;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #0F0F1B 0%, #1A1A2E 100%);
-            color: #E2E8F0;
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .glass-card {
-            background: rgba(15, 15, 27, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-        }
-        
-        .token-input {
-            background: rgba(26, 26, 46, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .gradient-text {
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AetherSwap Minimaliste</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
 </head>
-<body class="p-4 md:p-8">
-    <!-- [Votre interface existante identique] -->
-    <script>
-        // State management étendu
-        const state = {
-            connection: new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta')),
-            wallet: null,
-            walletAdapter: null,
-            tokens: [],
-            tokenA: {
-                symbol: 'SOL',
-                mint: 'So11111111111111111111111111111111111111112',
-                icon: 'https://cryptologos.cc/logos/solana-sol-logo.png',
-                balance: 0,
-                amount: 0,
-                decimals: 9
-            },
-            tokenB: {
-                symbol: 'USDC',
-                mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-                icon: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
-                balance: 0,
-                amount: 0,
-                decimals: 6
-            },
-            slippage: 0.5,
-            recentSwaps: [],
-            quote: null,
-            routes: null,
-            tokenSelectorSide: 'A',
-            supportedWallets: {
-                phantom: { name: 'Phantom', detect: () => window.phantom?.solana },
-                solflare: { name: 'Solflare', detect: () => window.solflare?.isSolflare },
-                backpack: { name: 'Backpack', detect: () => window.backpack }
-            },
-            dexAggregators: ['Jupiter', 'Raydium', 'Orca'],
-            customTokens: []
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+  <div class="w-full max-w-md bg-gray-800 rounded-lg p-6 space-y-6 shadow-lg">
+    <h1 class="text-3xl font-bold text-center mb-4">AetherSwap</h1>
+
+    <div>
+      <label for="amount" class="block mb-1">Montant SOL à swapper</label>
+      <input id="amount" type="number" step="0.0001" min="0" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Ex : 0.1" />
+    </div>
+
+    <div>
+      <label for="tokenOut" class="block mb-1">Token de sortie</label>
+      <select id="tokenOut" class="w-full p-2 rounded bg-gray-700 text-white">
+        <option value="">Sélectionner</option>
+        <option value="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v">USDC</option>
+        <option value="Es9vMFrzaCERBL6DgmzMC4sQSTBQLZYNwA9eUocQ7p9w">USDT</option>
+      </select>
+    </div>
+
+    <button id="connectBtn" class="w-full bg-purple-600 hover:bg-purple-700 p-3 rounded font-semibold">Connecter Phantom</button>
+    <button id="swapBtn" disabled class="w-full bg-green-600 hover:bg-green-700 p-3 rounded font-semibold">Swap</button>
+
+    <div id="status" class="mt-4 text-center text-sm text-gray-300"></div>
+  </div>
+
+  <script>
+    const connectBtn = document.getElementById('connectBtn');
+    const swapBtn = document.getElementById('swapBtn');
+    const amountInput = document.getElementById('amount');
+    const tokenOutSelect = document.getElementById('tokenOut');
+    const statusDiv = document.getElementById('status');
+
+    let publicKey = null;
+    const SOL_MINT = "So11111111111111111111111111111111111111112";
+
+    function shortenAddress(address) {
+      return address.slice(0, 4) + "…" + address.slice(-4);
+    }
+
+    async function connectWallet() {
+      if (!window.solana || !window.solana.isPhantom) {
+        statusDiv.textContent = "Phantom wallet non détecté";
+        return;
+      }
+      try {
+        const resp = await window.solana.connect();
+        publicKey = resp.publicKey.toString();
+        statusDiv.textContent = `Connecté: ${shortenAddress(publicKey)}`;
+        swapBtn.disabled = false;
+        connectBtn.textContent = "Wallet connecté";
+        connectBtn.disabled = true;
+      } catch (err) {
+        statusDiv.textContent = "Connexion au wallet refusée";
+      }
+    }
+
+    async function getQuote(amount, inputMint, outputMint) {
+      const amountLamports = Math.floor(amount * 1e9);
+      const url = `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amountLamports}&slippage=1`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Erreur récupération quote");
+      const data = await res.json();
+      if (!data || !data.data || data.data.length === 0) throw new Error("Aucune route trouvée");
+      return data.data[0];
+    }
+
+    async function performSwap() {
+      const amount = parseFloat(amountInput.value);
+      const outputMint = tokenOutSelect.value;
+
+      if (!publicKey) {
+        statusDiv.textContent = "Connectez votre wallet d'abord";
+        return;
+      }
+      if (!amount || amount <= 0) {
+        statusDiv.textContent = "Saisissez un montant valide";
+        return;
+      }
+      if (!outputMint) {
+        statusDiv.textContent = "Sélectionnez un token de sortie";
+        return;
+      }
+
+      statusDiv.textContent = "Obtention du meilleur taux...";
+      swapBtn.disabled = true;
+
+      try {
+        const quote = await getQuote(amount, SOL_MINT, outputMint);
+
+        const swapBody = {
+          quoteResponse: quote,
+          userPublicKey: publicKey,
+          slippageBps: 100, // 1%
+          dynamicComputeUnitLimit: true,
+          dynamicSlippage: true,
+          prioritizationFeeLamports: {
+            priorityLevelWithMaxLamports: {
+              maxLamports: 1000000,
+              priorityLevel: "veryHigh"
+            }
+          }
         };
 
-        // Initialisation des modules
-        class DexAggregator {
-            static async getBestQuote(inputAmount, tokenA, tokenB, slippage) {
-                const strategies = {
-                    pricePriority: (routes) => routes.sort((a,b) => b.outAmount - a.outAmount),
-                    safetyPriority: (routes) => routes.sort((a,b) => a.priceImpact - b.priceImpact)
-                };
+        const swapResp = await fetch("https://lite-api.jup.ag/swap/v1/swap", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(swapBody)
+        });
 
-                try {
-                    const routes = await Promise.race([
-                        this._fetchAllRoutes(inputAmount, tokenA, tokenB, slippage),
-                        new Promise((_, reject) => setTimeout(reject, 3000, new Error('Timeout fetching routes')))
-                    ]);
+        if (!swapResp.ok) throw new Error("Erreur préparation swap");
 
-                    return strategies.pricePriority(routes)[0];
-                } catch (error) {
-                    console.error('Aggregation error:', error);
-                    return this._getJupiterRoute(inputAmount, tokenA, tokenB, slippage);
-                }
-            }
+        const { swapTransaction } = await swapResp.json();
 
-            static async _fetchAllRoutes(inputAmount, tokenA, tokenB, slippage) {
-                const requests = [
-                    this._getJupiterRoute(inputAmount, tokenA, tokenB, slippage),
-                    this._getRaydiumRoute(inputAmount, tokenA, tokenB, slippage)
-                ];
+        const transaction = solanaWeb3.Transaction.from(
+          Uint8Array.from(atob(swapTransaction), c => c.charCodeAt(0))
+        );
 
-                const results = await Promise.allSettled(requests);
-                return results
-                    .filter(result => result.status === 'fulfilled')
-                    .map(result => result.value);
-            }
+        const signedTx = await window.solana.signTransaction(transaction);
+        const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
 
-            static async _getJupiterRoute(inputAmount, tokenA, tokenB, slippage) {
-                const amount = Math.floor(inputAmount * Math.pow(10, tokenA.decimals));
-                const response = await fetch(
-                    `https://quote-api.jup.ag/v6/quote?inputMint=${tokenA.mint}&outputMint=${tokenB.mint}&amount=${amount}&slippage=${slippage}`
-                );
-                if (!response.ok) throw new Error('Jupiter API error');
-                return await response.json();
-            }
+        statusDiv.textContent = "Envoi de la transaction...";
+        const txid = await connection.sendRawTransaction(signedTx.serialize());
 
-            static async _getRaydiumRoute(inputAmount, tokenA, tokenB, slippage) {
-                // Implémentation similaire pour Raydium
-                // ...
-            }
-        }
+        statusDiv.innerHTML = `Swap envoyé ! <a href="https://solscan.io/tx/${txid}" target="_blank" class="underline text-blue-400">Voir sur Solscan</a>`;
+      } catch (e) {
+        console.error(e);
+        statusDiv.textContent = `Erreur: ${e.message}`;
+      } finally {
+        swapBtn.disabled = false;
+      }
+    }
 
-        class WalletService {
-            static async connect(walletName) {
-                const wallet = state.supportedWallets[walletName];
-                if (!wallet || !wallet.detect()) throw new Error(`${walletName} not detected`);
-
-                try {
-                    const provider = wallet.detect();
-                    const response = await provider.connect();
-                    state.wallet = response.publicKey.toString();
-                    state.walletAdapter = provider;
-                    return true;
-                } catch (error) {
-                    throw new Error(`Connection failed: ${error.message}`);
-                }
-            }
-
-            static async disconnect() {
-                if (state.walletAdapter?.disconnect) {
-                    await state.walletAdapter.disconnect();
-                }
-                state.wallet = null;
-                state.walletAdapter = null;
-            }
-        }
-
-        class ErrorHandler {
-            static errorMap = {
-                'user rejected': 'Transaction rejected by user',
-                'insufficient funds': 'Insufficient balance',
-                'timeout': 'Network timeout',
-                'wallet not detected': 'Wallet not detected'
-            };
-
-            static handle(error, context = 'swap') {
-                const message = this.errorMap[error.message.toLowerCase()] 
-                    || `Error during ${context}: ${error.message}`;
-                
-                showTxStatus('Error', message, false);
-                console.error(`[${context}]`, error);
-            }
-        }
-
-        class TransactionManager {
-            static history = JSON.parse(localStorage.getItem('swapHistory')) || [];
-
-            static async executeSwap(quote) {
-                try {
-                    showTxStatus('Processing', 'Preparing transaction...');
-
-                    const swapResponse = await fetch('https://quote-api.jup.ag/v6/swap', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            quoteResponse: quote,
-                            userPublicKey: state.wallet,
-                            slippageBps: Math.floor(state.slippage * 100)
-                        })
-                    });
-
-                    if (!swapResponse.ok) throw new Error('Swap preparation failed');
-
-                    const { swapTransaction } = await swapResponse.json();
-                    const signedTx = await state.walletAdapter.signAndSendTransaction(
-                        Uint8Array.from(Buffer.from(swapTransaction, 'base64'))
-                    );
-
-                    this._recordTransaction(signedTx, quote);
-                    return signedTx;
-                } catch (error) {
-                    ErrorHandler.handle(error, 'swap execution');
-                    return null;
-                }
-            }
-
-            static _recordTransaction(tx, quote) {
-                const record = {
-                    id: tx.signature,
-                    date: new Date().toISOString(),
-                    fromAmount: state.tokenA.amount,
-                    fromToken: state.tokenA.symbol,
-                    toAmount: state.tokenB.amount,
-                    toToken: state.tokenB.symbol,
-                    explorerLink: `https://solscan.io/tx/${tx.signature}`
-                };
-
-                this.history.unshift(record);
-                localStorage.setItem('swapHistory', JSON.stringify(this.history));
-            }
-        }
-
-        // [Vos fonctions existantes modifiées pour utiliser les nouveaux modules]
-
-        async function connectWallet() {
-            try {
-                // Détection automatique du wallet
-                const detectedWallet = Object.keys(state.supportedWallets)
-                    .find(wallet => state.supportedWallets[wallet].detect());
-
-                if (!detectedWallet) throw new Error('No wallet detected');
-
-                await WalletService.connect(detectedWallet);
-                connectWalletBtn.innerHTML = `<span class="truncate max-w-[120px]">${shortenAddress(state.wallet)}</span>`;
-                swapBtn.disabled = false;
-                swapBtn.textContent = 'Swap';
-                await loadTokenBalances();
-                updateUI();
-            } catch (error) {
-                ErrorHandler.handle(error, 'wallet connection');
-            }
-        }
-
-        async function getQuote(inputAmount) {
-            if (!inputAmount || inputAmount <= 0) {
-                state.quote = null;
-                updateSwapDetails();
-                return;
-            }
-
-            try {
-                state.quote = await DexAggregator.getBestQuote(
-                    inputAmount,
-                    state.tokenA,
-                    state.tokenB,
-                    state.slippage
-                );
-
-                state.tokenB.amount = state.quote.outAmount / Math.pow(10, state.tokenB.decimals);
-                inputB.value = formatNumber(state.tokenB.amount, state.tokenB.decimals);
-                updateSwapDetails();
-            } catch (error) {
-                ErrorHandler.handle(error, 'quote fetching');
-                state.quote = null;
-                updateSwapDetails();
-            }
-        }
-
-        async function performSwap() {
-            if (!state.wallet || !state.quote) return;
-
-            const result = await TransactionManager.executeSwap(state.quote);
-            if (result) {
-                showTxStatus('Success', 'Swap completed', true, result.explorerLink);
-                await loadTokenBalances();
-                resetSwapForm();
-            }
-        }
-
-        // [Le reste de votre code existant avec les mêmes IDs et structure UI]
-    </script>
+    connectBtn.onclick = connectWallet;
+    swapBtn.onclick = performSwap;
+  </script>
 </body>
 </html>
