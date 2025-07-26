@@ -1,146 +1,151 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AetherSwap Minimaliste</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AetherSwap complet</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+<style>
+  body { background: #0f172a; color: #e0e7ff; font-family: 'Inter', sans-serif; }
+  .container { max-width: 400px; margin: 40px auto; padding: 20px; background: #1e293b; border-radius: 8px; }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  a { color: #60a5fa; text-decoration: underline; }
+</style>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+<body>
 
-  <div class="w-full max-w-md bg-gray-800 rounded-lg p-6 space-y-6 shadow-lg">
-    <h1 class="text-3xl font-bold text-center mb-4">AetherSwap</h1>
+<div class="container">
+  <h1 class="text-2xl font-bold mb-4 text-center">AetherSwap</h1>
 
-    <div>
-      <label for="amount" class="block mb-1">Montant SOL à swapper</label>
-      <input id="amount" type="number" step="0.0001" min="0" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Ex : 0.1" />
-    </div>
+  <label for="inputAmount" class="block mb-1">Montant SOL à swapper</label>
+  <input id="inputAmount" type="number" min="0" step="0.000000001" placeholder="Ex: 0.1" class="w-full p-2 mb-4 rounded bg-gray-800 text-white" />
 
-    <div>
-      <label for="tokenOut" class="block mb-1">Token de sortie</label>
-      <select id="tokenOut" class="w-full p-2 rounded bg-gray-700 text-white">
-        <option value="">Sélectionner</option>
-        <option value="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v">USDC</option>
-        <option value="Es9vMFrzaCERBL6DgmzMC4sQSTBQLZYNwA9eUocQ7p9w">USDT</option>
-      </select>
-    </div>
+  <label for="tokenOut" class="block mb-1">Token de sortie</label>
+  <select id="tokenOut" class="w-full p-2 mb-6 rounded bg-gray-800 text-white">
+    <option value="">Sélectionner un token</option>
+    <option value="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v">USDC</option>
+    <option value="Es9vMFrzaCERBL6DgmzMC4sQSTBQLZYNwA9eUocQ7p9w">USDT</option>
+    <!-- Ajouter ici d'autres tokens si besoin -->
+  </select>
 
-    <button id="connectBtn" class="w-full bg-purple-600 hover:bg-purple-700 p-3 rounded font-semibold">Connecter Phantom</button>
-    <button id="swapBtn" disabled class="w-full bg-green-600 hover:bg-green-700 p-3 rounded font-semibold">Swap</button>
+  <button id="connectBtn" class="w-full bg-purple-600 hover:bg-purple-700 p-3 rounded mb-3 font-semibold">Connecter Phantom</button>
+  <button id="swapBtn" class="w-full bg-green-600 hover:bg-green-700 p-3 rounded font-semibold" disabled>Swap</button>
 
-    <div id="status" class="mt-4 text-center text-sm text-gray-300"></div>
-  </div>
+  <div id="status" class="mt-4 text-center text-sm text-gray-300"></div>
+</div>
 
-  <script>
-    const connectBtn = document.getElementById('connectBtn');
-    const swapBtn = document.getElementById('swapBtn');
-    const amountInput = document.getElementById('amount');
-    const tokenOutSelect = document.getElementById('tokenOut');
-    const statusDiv = document.getElementById('status');
+<script>
+  const SOL_MINT = "So11111111111111111111111111111111111111112";
+  const connectBtn = document.getElementById('connectBtn');
+  const swapBtn = document.getElementById('swapBtn');
+  const inputAmount = document.getElementById('inputAmount');
+  const tokenOut = document.getElementById('tokenOut');
+  const status = document.getElementById('status');
 
-    let publicKey = null;
-    const SOL_MINT = "So11111111111111111111111111111111111111112";
+  let walletPublicKey = null;
 
-    function shortenAddress(address) {
-      return address.slice(0, 4) + "…" + address.slice(-4);
+  function shorten(address) {
+    return address.slice(0, 4) + '…' + address.slice(-4);
+  }
+
+  async function connectWallet() {
+    if (!window.solana || !window.solana.isPhantom) {
+      status.textContent = 'Phantom Wallet non détecté';
+      return;
+    }
+    try {
+      const resp = await window.solana.connect();
+      walletPublicKey = resp.publicKey.toString();
+      status.textContent = `Connecté: ${shorten(walletPublicKey)}`;
+      connectBtn.disabled = true;
+      connectBtn.textContent = 'Wallet connecté';
+      swapBtn.disabled = false;
+    } catch (e) {
+      status.textContent = 'Connexion au wallet refusée';
+    }
+  }
+
+  async function fetchQuote(amount, inputMint, outputMint) {
+    const amountLamports = Math.floor(amount * 1e9);
+    const url = `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amountLamports}&slippage=1`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Erreur récupération quote');
+    const json = await res.json();
+    if (!json.data || json.data.length === 0) throw new Error('Aucune route trouvée');
+    return json.data[0];
+  }
+
+  async function swap() {
+    const amount = parseFloat(inputAmount.value);
+    const outMint = tokenOut.value;
+
+    if (!walletPublicKey) {
+      status.textContent = 'Connectez votre wallet';
+      return;
+    }
+    if (!amount || amount <= 0) {
+      status.textContent = 'Montant invalide';
+      return;
+    }
+    if (!outMint) {
+      status.textContent = 'Sélectionnez un token de sortie';
+      return;
     }
 
-    async function connectWallet() {
-      if (!window.solana || !window.solana.isPhantom) {
-        statusDiv.textContent = "Phantom wallet non détecté";
-        return;
-      }
-      try {
-        const resp = await window.solana.connect();
-        publicKey = resp.publicKey.toString();
-        statusDiv.textContent = `Connecté: ${shortenAddress(publicKey)}`;
-        swapBtn.disabled = false;
-        connectBtn.textContent = "Wallet connecté";
-        connectBtn.disabled = true;
-      } catch (err) {
-        statusDiv.textContent = "Connexion au wallet refusée";
-      }
-    }
+    swapBtn.disabled = true;
+    status.textContent = 'Obtention du meilleur taux...';
 
-    async function getQuote(amount, inputMint, outputMint) {
-      const amountLamports = Math.floor(amount * 1e9);
-      const url = `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amountLamports}&slippage=1`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Erreur récupération quote");
-      const data = await res.json();
-      if (!data || !data.data || data.data.length === 0) throw new Error("Aucune route trouvée");
-      return data.data[0];
-    }
+    try {
+      const quote = await fetchQuote(amount, SOL_MINT, outMint);
 
-    async function performSwap() {
-      const amount = parseFloat(amountInput.value);
-      const outputMint = tokenOutSelect.value;
-
-      if (!publicKey) {
-        statusDiv.textContent = "Connectez votre wallet d'abord";
-        return;
-      }
-      if (!amount || amount <= 0) {
-        statusDiv.textContent = "Saisissez un montant valide";
-        return;
-      }
-      if (!outputMint) {
-        statusDiv.textContent = "Sélectionnez un token de sortie";
-        return;
-      }
-
-      statusDiv.textContent = "Obtention du meilleur taux...";
-      swapBtn.disabled = true;
-
-      try {
-        const quote = await getQuote(amount, SOL_MINT, outputMint);
-
-        const swapBody = {
-          quoteResponse: quote,
-          userPublicKey: publicKey,
-          slippageBps: 100, // 1%
-          dynamicComputeUnitLimit: true,
-          dynamicSlippage: true,
-          prioritizationFeeLamports: {
-            priorityLevelWithMaxLamports: {
-              maxLamports: 1000000,
-              priorityLevel: "veryHigh"
-            }
+      const swapBody = {
+        quoteResponse: quote,
+        userPublicKey: walletPublicKey,
+        slippageBps: 100,       // 1% slippage
+        dynamicComputeUnitLimit: true,
+        dynamicSlippage: true,
+        prioritizationFeeLamports: {
+          priorityLevelWithMaxLamports: {
+            maxLamports: 1000000,
+            priorityLevel: "veryHigh"
           }
-        };
+        }
+      };
 
-        const swapResp = await fetch("https://lite-api.jup.ag/swap/v1/swap", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify(swapBody)
-        });
+      const resp = await fetch('https://lite-api.jup.ag/swap/v1/swap', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(swapBody)
+      });
 
-        if (!swapResp.ok) throw new Error("Erreur préparation swap");
+      if (!resp.ok) throw new Error('Erreur préparation swap');
 
-        const { swapTransaction } = await swapResp.json();
+      const { swapTransaction } = await resp.json();
 
-        const transaction = solanaWeb3.Transaction.from(
-          Uint8Array.from(atob(swapTransaction), c => c.charCodeAt(0))
-        );
+      const tx = solanaWeb3.Transaction.from(
+        Uint8Array.from(atob(swapTransaction), c => c.charCodeAt(0))
+      );
 
-        const signedTx = await window.solana.signTransaction(transaction);
-        const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+      const signedTx = await window.solana.signTransaction(tx);
 
-        statusDiv.textContent = "Envoi de la transaction...";
-        const txid = await connection.sendRawTransaction(signedTx.serialize());
+      const connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
+      status.textContent = 'Envoi de la transaction...';
 
-        statusDiv.innerHTML = `Swap envoyé ! <a href="https://solscan.io/tx/${txid}" target="_blank" class="underline text-blue-400">Voir sur Solscan</a>`;
-      } catch (e) {
-        console.error(e);
-        statusDiv.textContent = `Erreur: ${e.message}`;
-      } finally {
-        swapBtn.disabled = false;
-      }
+      const txid = await connection.sendRawTransaction(signedTx.serialize());
+
+      status.innerHTML = `Swap envoyé ! <a href="https://solscan.io/tx/${txid}" target="_blank" rel="noopener noreferrer">Voir sur Solscan</a>`;
+    } catch (err) {
+      status.textContent = `Erreur : ${err.message}`;
+      console.error(err);
+    } finally {
+      swapBtn.disabled = false;
     }
+  }
 
-    connectBtn.onclick = connectWallet;
-    swapBtn.onclick = performSwap;
-  </script>
+  connectBtn.addEventListener('click', connectWallet);
+  swapBtn.addEventListener('click', swap);
+</script>
+
 </body>
 </html>
