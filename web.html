@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherSwap Ultra | The Most Advanced Swap Interface Ever Built</title>
+    <title>AetherSwap</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
     <style>
         :root {
-            --primary: #6366f1;
-            --secondary: #8b5cf6;
-            --accent: #ec4899;
+            --primary: #9945FF;
+            --secondary: #14F195;
+            --accent: #80ECFF;
         }
         
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #e2e8f0;
+            background: linear-gradient(135deg, #0F0F1B 0%, #1A1A2E 100%);
+            color: #E2E8F0;
             min-height: 100vh;
             font-family: 'Inter', sans-serif;
         }
         
         .glass-card {
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 15, 27, 0.7);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -31,13 +30,13 @@
         
         .neumorphism {
             border-radius: 16px;
-            background: linear-gradient(145deg, #1e293b, #0f172a);
-            box-shadow:  8px 8px 16px #0a101a, 
-                        -8px -8px 16px #243048;
+            background: linear-gradient(145deg, #1A1A2E, #0F0F1B);
+            box-shadow:  8px 8px 16px #0A0A12, 
+                        -8px -8px 16px #242446;
         }
         
         .token-input {
-            background: rgba(30, 41, 59, 0.5);
+            background: rgba(26, 26, 46, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
@@ -68,58 +67,23 @@
     </style>
 </head>
 <body class="p-4 md:p-8">
-    <div class="max-w-2xl mx-auto">
+    <div class="max-w-md mx-auto">
         <!-- Header -->
         <header class="flex justify-between items-center mb-6">
             <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"></div>
-                <h1 class="text-xl font-bold gradient-text">AetherSwap Ultra</h1>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-blue-500"></div>
+                <h1 class="text-xl font-bold gradient-text">AetherSwap</h1>
             </div>
-            <div id="wallet-connector" class="relative">
-                <button id="connect-wallet-btn" class="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium transition-all duration-300">
+            <div id="wallet-connector">
+                <button id="connect-wallet-btn" class="px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-medium transition-all duration-300">
                     Connect Wallet
                 </button>
-                <div id="wallet-dropdown" class="hidden absolute right-0 mt-2 w-64 glass-card rounded-xl p-4 z-10">
-                    <h3 class="font-semibold mb-2">Connect Wallet</h3>
-                    <div class="space-y-2">
-                        <button class="wallet-option flex items-center w-full p-2 rounded-lg hover:bg-gray-800 transition-colors">
-                            <img src="https://phantom.app/favicon.ico" class="w-6 h-6 mr-2" alt="Phantom">
-                            Phantom
-                        </button>
-                        <button class="wallet-option flex items-center w-full p-2 rounded-lg hover:bg-gray-800 transition-colors">
-                            <img src="https://metamask.io/favicon.ico" class="w-6 h-6 mr-2" alt="MetaMask">
-                            MetaMask
-                        </button>
-                        <button class="wallet-option flex items-center w-full p-2 rounded-lg hover:bg-gray-800 transition-colors">
-                            <img src="https://walletconnect.com/favicon.ico" class="w-6 h-6 mr-2" alt="WalletConnect">
-                            WalletConnect
-                        </button>
-                        <button class="wallet-option flex items-center w-full p-2 rounded-lg hover:bg-gray-800 transition-colors">
-                            <img src="https://coinbase.com/favicon.ico" class="w-6 h-6 mr-2" alt="Coinbase Wallet">
-                            Coinbase Wallet
-                        </button>
-                    </div>
-                </div>
             </div>
         </header>
         
         <!-- Main Swap Card -->
         <div class="glass-card rounded-2xl p-6 mb-6">
-            <!-- Network Selector -->
-            <div class="flex justify-between items-center mb-4">
-                <div class="flex space-x-2">
-                    <button id="solana-btn" class="network-btn px-3 py-1 rounded-full bg-indigo-900 text-indigo-200 font-medium">Solana</button>
-                    <button id="evm-btn" class="network-btn px-3 py-1 rounded-full bg-gray-800 text-gray-400 font-medium">EVM</button>
-                </div>
-                <button id="settings-btn" class="p-2 rounded-full hover:bg-gray-800 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </button>
-            </div>
-            
-            <!-- Token Input A -->
+            <!-- Token Input From -->
             <div class="token-input rounded-xl p-4 mb-4">
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-sm text-gray-400">From</span>
@@ -146,14 +110,14 @@
                 </button>
             </div>
             
-            <!-- Token Input B -->
+            <!-- Token Input To -->
             <div class="token-input rounded-xl p-4 mb-6">
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-sm text-gray-400">To</span>
                     <span id="balance-b" class="text-sm text-gray-400">Balance: 0.0</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <input id="input-b" type="number" placeholder="0.0" class="bg-transparent text-2xl w-full outline-none">
+                    <input id="input-b" type="number" placeholder="0.0" class="bg-transparent text-2xl w-full outline-none" disabled>
                     <button id="select-token-b" class="flex items-center bg-gray-800 hover:bg-gray-700 px-3 py-2 rounded-lg transition-colors">
                         <img id="token-b-icon" src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" class="w-6 h-6 mr-2" alt="USDC">
                         <span id="token-b-symbol" class="font-medium">USDC</span>
@@ -168,49 +132,40 @@
             <div class="bg-gray-900 rounded-xl p-4 mb-6 text-sm">
                 <div class="flex justify-between mb-2">
                     <span class="text-gray-400">Exchange Rate</span>
-                    <span id="exchange-rate" class="font-medium">1 SOL = 150.42 USDC</span>
+                    <span id="exchange-rate" class="font-medium">-</span>
                 </div>
                 <div class="flex justify-between mb-2">
                     <span class="text-gray-400">Price Impact</span>
-                    <span id="price-impact" class="text-green-400">0.05%</span>
+                    <span id="price-impact" class="text-green-400">-</span>
                 </div>
                 <div class="flex justify-between mb-2">
-                    <span class="text-gray-400">Provider</span>
-                    <span id="provider" class="font-medium">Jupiter</span>
+                    <span class="text-gray-400">Provider Fee</span>
+                    <span id="provider-fee" class="font-medium">-</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-400">Network Fee</span>
-                    <span id="network-fee" class="font-medium">~$0.05</span>
+                    <span id="network-fee" class="font-medium">-</span>
+                </div>
+            </div>
+            
+            <!-- Slippage Settings -->
+            <div class="flex items-center justify-between mb-6">
+                <span class="text-sm">Slippage Tolerance</span>
+                <div class="flex space-x-2">
+                    <button data-slippage="0.5" class="slippage-btn px-3 py-1 rounded-lg bg-purple-900 text-purple-200">0.5%</button>
+                    <button data-slippage="1" class="slippage-btn px-3 py-1 rounded-lg bg-gray-800 text-gray-400">1%</button>
+                    <button data-slippage="3" class="slippage-btn px-3 py-1 rounded-lg bg-gray-800 text-gray-400">3%</button>
+                    <div class="relative">
+                        <input id="custom-slippage" type="number" placeholder="0.5" class="w-16 bg-gray-800 rounded-lg px-3 py-1 pr-6 outline-none">
+                        <span class="absolute right-3 top-1 text-gray-400">%</span>
+                    </div>
                 </div>
             </div>
             
             <!-- Swap Button -->
-            <button id="swap-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <button id="swap-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-bold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                 Connect Wallet
             </button>
-        </div>
-        
-        <!-- On-Ramp Section -->
-        <div class="glass-card rounded-2xl p-6 mb-6">
-            <h3 class="font-bold mb-4">Buy Crypto with Fiat</h3>
-            <div class="grid grid-cols-2 gap-4">
-                <button class="on-ramp-option flex flex-col items-center p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
-                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" class="w-10 h-10 mb-2" alt="USDC">
-                    <span class="font-medium">Buy USDC</span>
-                </button>
-                <button class="on-ramp-option flex flex-col items-center p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
-                    <img src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-10 h-10 mb-2" alt="SOL">
-                    <span class="font-medium">Buy SOL</span>
-                </button>
-                <button class="on-ramp-option flex flex-col items-center p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
-                    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" class="w-10 h-10 mb-2" alt="ETH">
-                    <span class="font-medium">Buy ETH</span>
-                </button>
-                <button class="on-ramp-option flex flex-col items-center p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
-                    <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" class="w-10 h-10 mb-2" alt="BTC">
-                    <span class="font-medium">Buy BTC</span>
-                </button>
-            </div>
         </div>
         
         <!-- Recent Swaps -->
@@ -245,115 +200,21 @@
             </div>
             <div class="p-2 border-b border-gray-800">
                 <div class="flex space-x-2 overflow-x-auto">
-                    <button class="token-category px-3 py-1 rounded-full bg-indigo-900 text-indigo-200 text-sm whitespace-nowrap">Popular</button>
+                    <button class="token-category px-3 py-1 rounded-full bg-purple-900 text-purple-200 text-sm whitespace-nowrap">Popular</button>
                     <button class="token-category px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-sm whitespace-nowrap">Stablecoins</button>
                     <button class="token-category px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-sm whitespace-nowrap">Solana</button>
-                    <button class="token-category px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-sm whitespace-nowrap">Ethereum</button>
                 </div>
             </div>
             <div id="token-list" class="overflow-y-auto max-h-[50vh]">
                 <div class="p-2">
-                    <div class="token-item flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-                        <div class="flex items-center">
-                            <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" class="w-8 h-8 mr-3" alt="USDC">
-                            <div>
-                                <div class="font-medium">USDC</div>
-                                <div class="text-xs text-gray-400">USD Coin</div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="font-medium">0.0</div>
-                            <div class="text-xs text-gray-400">$0.00</div>
-                        </div>
-                    </div>
-                    <div class="token-item flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-                        <div class="flex items-center">
-                            <img src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-8 h-8 mr-3" alt="SOL">
-                            <div>
-                                <div class="font-medium">SOL</div>
-                                <div class="text-xs text-gray-400">Solana</div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="font-medium">0.0</div>
-                            <div class="text-xs text-gray-400">$0.00</div>
-                        </div>
-                    </div>
-                    <div class="token-item flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-                        <div class="flex items-center">
-                            <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" class="w-8 h-8 mr-3" alt="ETH">
-                            <div>
-                                <div class="font-medium">ETH</div>
-                                <div class="text-xs text-gray-400">Ethereum</div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="font-medium">0.0</div>
-                            <div class="text-xs text-gray-400">$0.00</div>
+                    <!-- Tokens will be loaded here dynamically -->
+                    <div class="text-center py-8">
+                        <div class="animate-pulse flex flex-col items-center">
+                            <div class="h-4 w-32 bg-gray-800 rounded mb-2"></div>
+                            <div class="h-4 w-24 bg-gray-800 rounded"></div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="p-4 border-t border-gray-800">
-                <button class="w-full py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors">
-                    Manage Token Lists
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
-        <div class="glass-card rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden">
-            <div class="p-4 border-b border-gray-800">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">Transaction Settings</h3>
-                    <button id="close-settings" class="p-1 rounded-full hover:bg-gray-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="p-4 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-2">Slippage Tolerance</label>
-                    <div class="flex space-x-2">
-                        <button class="slippage-btn px-3 py-1 rounded-lg bg-indigo-900 text-indigo-200">0.1%</button>
-                        <button class="slippage-btn px-3 py-1 rounded-lg bg-gray-800 text-gray-400">0.5%</button>
-                        <button class="slippage-btn px-3 py-1 rounded-lg bg-gray-800 text-gray-400">1%</button>
-                        <div class="relative flex-1">
-                            <input id="custom-slippage" type="number" placeholder="0.10" class="w-full bg-gray-800 rounded-lg px-3 py-1 pr-6 outline-none">
-                            <span class="absolute right-3 top-1 text-gray-400">%</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2">Transaction Deadline</label>
-                    <div class="flex items-center">
-                        <input id="tx-deadline" type="number" value="20" class="w-16 bg-gray-800 rounded-lg px-3 py-1 mr-2 outline-none">
-                        <span>minutes</span>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm">Expert Mode</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                    </label>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm">Disable Multihops</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                    </label>
-                </div>
-            </div>
-            <div class="p-4 border-t border-gray-800">
-                <button id="save-settings" class="w-full py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium transition-all duration-300">
-                    Save Settings
-                </button>
             </div>
         </div>
     </div>
@@ -374,28 +235,28 @@
             <div class="p-4">
                 <div class="flex justify-between items-center mb-6">
                     <div class="flex items-center">
-                        <img id="confirm-token-a-icon" src="https://cryptologos.cc/logos/solana-sol-logo.png" class="w-10 h-10" alt="SOL">
-                        <span id="confirm-amount-a" class="ml-2 font-bold text-xl">1.0</span>
+                        <img id="confirm-token-a-icon" src="" class="w-10 h-10" alt="">
+                        <span id="confirm-amount-a" class="ml-2 font-bold text-xl">0.0</span>
                     </div>
                     <div class="text-gray-400 mx-2">→</div>
                     <div class="flex items-center">
-                        <img id="confirm-token-b-icon" src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" class="w-10 h-10" alt="USDC">
-                        <span id="confirm-amount-b" class="ml-2 font-bold text-xl">150.42</span>
+                        <img id="confirm-token-b-icon" src="" class="w-10 h-10" alt="">
+                        <span id="confirm-amount-b" class="ml-2 font-bold text-xl">0.0</span>
                     </div>
                 </div>
                 
                 <div class="bg-gray-900 rounded-xl p-4 mb-6 text-sm">
                     <div class="flex justify-between mb-2">
                         <span class="text-gray-400">Exchange Rate</span>
-                        <span id="confirm-exchange-rate" class="font-medium">1 SOL = 150.42 USDC</span>
+                        <span id="confirm-exchange-rate" class="font-medium">-</span>
                     </div>
                     <div class="flex justify-between mb-2">
                         <span class="text-gray-400">Price Impact</span>
-                        <span id="confirm-price-impact" class="text-green-400">0.05%</span>
+                        <span id="confirm-price-impact" class="text-green-400">-</span>
                     </div>
                     <div class="flex justify-between mb-2">
                         <span class="text-gray-400">Minimum Received</span>
-                        <span id="confirm-min-received" class="font-medium">149.15 USDC</span>
+                        <span id="confirm-min-received" class="font-medium">-</span>
                     </div>
                     <div class="flex justify-between mb-2">
                         <span class="text-gray-400">Liquidity Provider</span>
@@ -403,13 +264,29 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-400">Network Fee</span>
-                        <span id="confirm-network-fee" class="font-medium">~$0.05</span>
+                        <span id="confirm-network-fee" class="font-medium">-</span>
                     </div>
                 </div>
                 
-                <button id="execute-swap" class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold transition-all duration-300">
+                <button id="execute-swap" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-bold transition-all duration-300">
                     Confirm Swap
                 </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Transaction Status Modal -->
+    <div id="tx-status-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="glass-card rounded-2xl w-full max-w-md overflow-hidden">
+            <div class="p-6 text-center">
+                <div id="tx-status-icon" class="mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                </div>
+                <h3 id="tx-status-title" class="font-bold text-lg mb-2">Processing Transaction</h3>
+                <p id="tx-status-message" class="text-gray-400 mb-4">Waiting for confirmation...</p>
+                <a id="tx-explorer-link" href="#" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm">View on Explorer</a>
             </div>
         </div>
     </div>
@@ -417,32 +294,33 @@
     <script>
         // State management
         const state = {
-            currentNetwork: 'solana',
-            connectedWallet: null,
-            walletType: null,
+            connection: new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta')),
+            wallet: null,
+            tokens: [],
             tokenA: {
                 symbol: 'SOL',
+                mint: 'So11111111111111111111111111111111111111112',
                 icon: 'https://cryptologos.cc/logos/solana-sol-logo.png',
                 balance: 0,
-                amount: 0
+                amount: 0,
+                decimals: 9
             },
             tokenB: {
                 symbol: 'USDC',
+                mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
                 icon: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
                 balance: 0,
-                amount: 0
+                amount: 0,
+                decimals: 6
             },
             slippage: 0.5,
-            txDeadline: 20,
-            recentSwaps: []
+            recentSwaps: [],
+            quote: null,
+            routes: null
         };
         
         // DOM Elements
         const connectWalletBtn = document.getElementById('connect-wallet-btn');
-        const walletDropdown = document.getElementById('wallet-dropdown');
-        const walletOptions = document.querySelectorAll('.wallet-option');
-        const solanaBtn = document.getElementById('solana-btn');
-        const evmBtn = document.getElementById('evm-btn');
         const swapBtn = document.getElementById('swap-btn');
         const inputA = document.getElementById('input-a');
         const inputB = document.getElementById('input-b');
@@ -452,126 +330,232 @@
         const closeTokenSelector = document.getElementById('close-token-selector');
         const tokenSearch = document.getElementById('token-search');
         const tokenList = document.getElementById('token-list');
-        const tokenItems = document.querySelectorAll('.token-item');
         const swapDirection = document.getElementById('swap-direction');
-        const settingsBtn = document.getElementById('settings-btn');
-        const settingsModal = document.getElementById('settings-modal');
-        const closeSettings = document.getElementById('close-settings');
         const slippageBtns = document.querySelectorAll('.slippage-btn');
         const customSlippage = document.getElementById('custom-slippage');
-        const txDeadline = document.getElementById('tx-deadline');
-        const saveSettings = document.getElementById('save-settings');
         const confirmSwapModal = document.getElementById('confirm-swap-modal');
         const closeConfirmSwap = document.getElementById('close-confirm-swap');
         const executeSwap = document.getElementById('execute-swap');
+        const txStatusModal = document.getElementById('tx-status-modal');
         const recentSwapsContainer = document.getElementById('recent-swaps');
         
         // Event Listeners
-        connectWalletBtn.addEventListener('click', toggleWalletDropdown);
-        walletOptions.forEach(option => option.addEventListener('click', connectWallet));
-        solanaBtn.addEventListener('click', () => switchNetwork('solana'));
-        evmBtn.addEventListener('click', () => switchNetwork('evm'));
+        connectWalletBtn.addEventListener('click', connectWallet);
         selectTokenA.addEventListener('click', () => openTokenSelector('A'));
         selectTokenB.addEventListener('click', () => openTokenSelector('B'));
         closeTokenSelector.addEventListener('click', closeTokenSelectorModal);
-        tokenItems.forEach(item => item.addEventListener('click', selectToken));
         swapDirection.addEventListener('click', swapTokens);
-        inputA.addEventListener('input', updateOutputAmount);
-        inputB.addEventListener('input', updateInputAmount);
-        settingsBtn.addEventListener('click', openSettings);
-        closeSettings.addEventListener('click', closeSettingsModal);
+        inputA.addEventListener('input', debounce(updateOutputAmount, 500));
+        inputB.addEventListener('input', debounce(updateInputAmount, 500));
         slippageBtns.forEach(btn => btn.addEventListener('click', setSlippage));
         customSlippage.addEventListener('input', setCustomSlippage);
-        saveSettings.addEventListener('click', saveSettingsChanges);
         swapBtn.addEventListener('click', openConfirmSwap);
         closeConfirmSwap.addEventListener('click', closeConfirmSwapModal);
         executeSwap.addEventListener('click', performSwap);
         
         // Initialize
-        loadRecentSwaps();
-        updateUI();
-        
-        // Functions
-        function toggleWalletDropdown() {
-            walletDropdown.classList.toggle('hidden');
-        }
-        
-        function connectWallet(e) {
-            const walletName = e.target.innerText.trim();
-            state.walletType = walletName.toLowerCase().replace(' ', '-');
-            state.connectedWallet = '0x742d35Cc6634C0532925a3b844Bc454e4438f44e'; // Mock address
-            
-            // In a real app, you would:
-            // 1. Initialize the appropriate wallet SDK
-            // 2. Call the connect method
-            // 3. Handle the connection response
-            // 4. Update the UI with the wallet address
-            
-            connectWalletBtn.innerHTML = `
-                <span class="truncate max-w-[120px]">${state.connectedWallet.substring(0, 6)}...${state.connectedWallet.substring(38)}</span>
-            `;
-            walletDropdown.classList.add('hidden');
-            swapBtn.disabled = false;
-            swapBtn.textContent = 'Swap';
-            
-            // Mock balance update
-            state.tokenA.balance = 5.42;
-            state.tokenB.balance = 1200.75;
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadRecentSwaps();
+            await loadTokenList();
             updateUI();
             
-            console.log(`Connected to ${walletName}`);
+            // Check if Phantom is installed
+            if ('phantom' in window) {
+                const provider = window.phantom?.solana;
+                if (provider?.isPhantom) {
+                    console.log('Phantom is installed!');
+                }
+            }
+        });
+        
+        // Utility Functions
+        function debounce(func, timeout = 300) {
+            let timer;
+            return (...args) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => { func.apply(this, args); }, timeout);
+            };
         }
         
-        function switchNetwork(network) {
-            state.currentNetwork = network;
-            
-            if (network === 'solana') {
-                solanaBtn.classList.remove('bg-gray-800', 'text-gray-400');
-                solanaBtn.classList.add('bg-indigo-900', 'text-indigo-200');
-                evmBtn.classList.remove('bg-indigo-900', 'text-indigo-200');
-                evmBtn.classList.add('bg-gray-800', 'text-gray-400');
+        function formatNumber(num, decimals = 6) {
+            return new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: decimals
+            }).format(num);
+        }
+        
+        function shortenAddress(address, chars = 4) {
+            return `${address.substring(0, chars)}...${address.substring(address.length - chars)}`;
+        }
+        
+        // Core Functions
+        async function connectWallet() {
+            try {
+                // Check if Phantom is installed
+                if (!('phantom' in window)) {
+                    throw new Error('Phantom wallet is not installed');
+                }
                 
-                // Update default tokens for Solana
-                state.tokenA = {
+                const provider = window.phantom?.solana;
+                if (!provider?.isPhantom) {
+                    throw new Error('Phantom wallet is not available');
+                }
+                
+                // Connect to Phantom
+                const response = await provider.connect();
+                state.wallet = response.publicKey.toString();
+                
+                // Update UI
+                connectWalletBtn.innerHTML = `
+                    <span class="truncate max-w-[120px]">${shortenAddress(state.wallet)}</span>
+                `;
+                swapBtn.disabled = false;
+                swapBtn.textContent = 'Swap';
+                
+                // Load token balances
+                await loadTokenBalances();
+                updateUI();
+                
+                console.log('Connected to Phantom wallet:', state.wallet);
+            } catch (error) {
+                console.error('Error connecting to wallet:', error);
+                alert(`Failed to connect wallet: ${error.message}`);
+            }
+        }
+        
+        async function loadTokenList() {
+            try {
+                // Load Jupiter token list
+                const response = await fetch('https://token.jup.ag/strict');
+                const tokens = await response.json();
+                
+                // Sort by volume/liquidity and take top 100
+                state.tokens = tokens
+                    .sort((a, b) => (b.coingeckoId ? 1 : 0) - (a.coingeckoId ? 1 : 0))
+                    .slice(0, 100);
+                
+                // Add SOL as first token
+                state.tokens.unshift({
                     symbol: 'SOL',
-                    icon: 'https://cryptologos.cc/logos/solana-sol-logo.png',
-                    balance: state.tokenA.balance,
-                    amount: state.tokenA.amount
-                };
-                state.tokenB = {
-                    symbol: 'USDC',
-                    icon: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
-                    balance: state.tokenB.balance,
-                    amount: state.tokenB.amount
-                };
-            } else {
-                evmBtn.classList.remove('bg-gray-800', 'text-gray-400');
-                evmBtn.classList.add('bg-indigo-900', 'text-indigo-200');
-                solanaBtn.classList.remove('bg-indigo-900', 'text-indigo-200');
-                solanaBtn.classList.add('bg-gray-800', 'text-gray-400');
+                    name: 'Solana',
+                    address: 'So11111111111111111111111111111111111111112',
+                    decimals: 9,
+                    logoURI: 'https://cryptologos.cc/logos/solana-sol-logo.png',
+                    coingeckoId: 'solana'
+                });
                 
-                // Update default tokens for EVM
-                state.tokenA = {
-                    symbol: 'ETH',
-                    icon: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-                    balance: state.tokenA.balance,
-                    amount: state.tokenA.amount
-                };
-                state.tokenB = {
-                    symbol: 'USDC',
-                    icon: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
-                    balance: state.tokenB.balance,
-                    amount: state.tokenB.amount
-                };
+                renderTokenList();
+            } catch (error) {
+                console.error('Error loading token list:', error);
+                tokenList.innerHTML = `
+                    <div class="text-center py-8 text-red-400">
+                        Failed to load token list. Please try again.
+                    </div>
+                `;
+            }
+        }
+        
+        function renderTokenList(filter = '') {
+            const filteredTokens = state.tokens.filter(token => 
+                token.symbol.toLowerCase().includes(filter.toLowerCase()) || 
+                token.name.toLowerCase().includes(filter.toLowerCase()) ||
+                token.address.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            if (filteredTokens.length === 0) {
+                tokenList.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        No tokens found
+                    </div>
+                `;
+                return;
             }
             
-            updateUI();
-            console.log(`Switched to ${network} network`);
+            tokenList.innerHTML = filteredTokens.map(token => `
+                <div class="token-item flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 cursor-pointer" data-address="${token.address}">
+                    <div class="flex items-center">
+                        <img src="${token.logoURI || 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png'}" class="w-8 h-8 mr-3 rounded-full" alt="${token.symbol}">
+                        <div>
+                            <div class="font-medium">${token.symbol}</div>
+                            <div class="text-xs text-gray-400">${token.name}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-400">${token.address ? shortenAddress(token.address) : ''}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add event listeners to token items
+            document.querySelectorAll('.token-item').forEach(item => {
+                item.addEventListener('click', selectToken);
+            });
+        }
+        
+        async function loadTokenBalances() {
+            if (!state.wallet) return;
+            
+            try {
+                // Get SOL balance
+                const solBalance = await state.connection.getBalance(new solanaWeb3.PublicKey(state.wallet));
+                state.tokenA.balance = solBalance / Math.pow(10, 9);
+                
+                // Get token balances (for USDC in this example)
+                // In a real app, you would fetch all token balances for the connected wallet
+                const tokenAccounts = await state.connection.getParsedTokenAccountsByOwner(
+                    new solanaWeb3.PublicKey(state.wallet),
+                    { mint: new solanaWeb3.PublicKey(state.tokenB.mint) }
+                );
+                
+                if (tokenAccounts.value.length > 0) {
+                    state.tokenB.balance = tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount;
+                } else {
+                    state.tokenB.balance = 0;
+                }
+                
+                updateUI();
+            } catch (error) {
+                console.error('Error loading token balances:', error);
+            }
+        }
+        
+        async function getQuote(inputAmount) {
+            if (!inputAmount || inputAmount <= 0) {
+                state.quote = null;
+                state.routes = null;
+                updateSwapDetails();
+                return;
+            }
+            
+            try {
+                const amount = Math.floor(inputAmount * Math.pow(10, state.tokenA.decimals));
+                
+                // Fetch quote from Jupiter API
+                const response = await fetch(
+                    `https://quote-api.jup.ag/v6/quote?inputMint=${state.tokenA.mint}&outputMint=${state.tokenB.mint}&amount=${amount}&slippage=${state.slippage}`
+                );
+                
+                const data = await response.json();
+                state.quote = data;
+                
+                // Calculate output amount with decimals
+                state.tokenB.amount = data.outAmount / Math.pow(10, state.tokenB.decimals);
+                inputB.value = formatNumber(state.tokenB.amount, state.tokenB.decimals);
+                
+                updateSwapDetails();
+            } catch (error) {
+                console.error('Error fetching quote:', error);
+                state.quote = null;
+                state.routes = null;
+                updateSwapDetails();
+            }
         }
         
         function openTokenSelector(tokenSide) {
             state.tokenSelectorSide = tokenSide;
             tokenSelector.classList.remove('hidden');
+            tokenSearch.value = '';
+            renderTokenList();
         }
         
         function closeTokenSelectorModal() {
@@ -580,18 +564,53 @@
         
         function selectToken(e) {
             const tokenElement = e.currentTarget;
-            const tokenSymbol = tokenElement.querySelector('div > div:first-child').textContent;
-            const tokenIcon = tokenElement.querySelector('img').src;
+            const tokenAddress = tokenElement.getAttribute('data-address');
+            const token = state.tokens.find(t => t.address === tokenAddress);
+            
+            if (!token) return;
             
             if (state.tokenSelectorSide === 'A') {
-                state.tokenA.symbol = tokenSymbol;
-                state.tokenA.icon = tokenIcon;
+                state.tokenA = {
+                    symbol: token.symbol,
+                    mint: token.address,
+                    icon: token.logoURI || 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
+                    balance: 0,
+                    amount: state.tokenA.amount,
+                    decimals: token.decimals
+                };
+                
+                // If swapping with same token, automatically switch
+                if (state.tokenA.mint === state.tokenB.mint) {
+                    swapTokens();
+                }
             } else {
-                state.tokenB.symbol = tokenSymbol;
-                state.tokenB.icon = tokenIcon;
+                state.tokenB = {
+                    symbol: token.symbol,
+                    mint: token.address,
+                    icon: token.logoURI || 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
+                    balance: 0,
+                    amount: state.tokenB.amount,
+                    decimals: token.decimals
+                };
+                
+                // If swapping with same token, automatically switch
+                if (state.tokenA.mint === state.tokenB.mint) {
+                    swapTokens();
+                }
             }
             
             closeTokenSelectorModal();
+            
+            // Reload balances if wallet is connected
+            if (state.wallet) {
+                loadTokenBalances();
+            }
+            
+            // Get new quote if amount is set
+            if (state.tokenA.amount > 0) {
+                getQuote(state.tokenA.amount);
+            }
+            
             updateUI();
         }
         
@@ -606,114 +625,153 @@
             inputA.value = inputB.value;
             inputB.value = tempAmount;
             
+            // Get new quote if amount is set
+            if (state.tokenA.amount > 0) {
+                getQuote(state.tokenA.amount);
+            }
+            
             updateUI();
         }
         
         function updateOutputAmount() {
-            state.tokenA.amount = parseFloat(inputA.value) || 0;
+            const amount = parseFloat(inputA.value);
+            state.tokenA.amount = isNaN(amount) ? 0 : amount;
             
-            // In a real app, you would:
-            // 1. Fetch the exchange rate from the appropriate DEX API (Jupiter for Solana, 1inch/0x for EVM)
-            // 2. Calculate the expected output amount
-            // 3. Update the UI with the calculated amount
-            
-            // Mock calculation
             if (state.tokenA.amount > 0) {
-                const rate = state.tokenA.symbol === 'SOL' ? 150.42 : 
-                            state.tokenA.symbol === 'ETH' ? 3200 : 1;
-                state.tokenB.amount = state.tokenA.amount * rate;
-                inputB.value = state.tokenB.amount.toFixed(6);
+                getQuote(state.tokenA.amount);
             } else {
                 state.tokenB.amount = 0;
                 inputB.value = '';
+                state.quote = null;
+                state.routes = null;
+                updateSwapDetails();
             }
             
-            updateSwapDetails();
+            updateUI();
         }
         
         function updateInputAmount() {
-            state.tokenB.amount = parseFloat(inputB.value) || 0;
+            const amount = parseFloat(inputB.value);
+            state.tokenB.amount = isNaN(amount) ? 0 : amount;
             
-            // Reverse calculation
             if (state.tokenB.amount > 0) {
-                const rate = state.tokenA.symbol === 'SOL' ? 150.42 : 
-                            state.tokenA.symbol === 'ETH' ? 3200 : 1;
-                state.tokenA.amount = state.tokenB.amount / rate;
-                inputA.value = state.tokenA.amount.toFixed(6);
+                // In a real app, you would calculate the reverse quote
+                // For simplicity, we'll just estimate based on the last quote
+                if (state.quote) {
+                    const rate = state.quote.outAmount / state.quote.inAmount;
+                    state.tokenA.amount = state.tokenB.amount / (rate / Math.pow(10, state.tokenB.decimals - state.tokenA.decimals));
+                    inputA.value = formatNumber(state.tokenA.amount, state.tokenA.decimals);
+                }
             } else {
                 state.tokenA.amount = 0;
                 inputA.value = '';
+                state.quote = null;
+                state.routes = null;
             }
             
             updateSwapDetails();
+            updateUI();
         }
         
         function updateSwapDetails() {
-            // Update exchange rate display
-            const rate = state.tokenA.symbol === 'SOL' ? 150.42 : 
-                        state.tokenA.symbol === 'ETH' ? 3200 : 1;
-            document.getElementById('exchange-rate').textContent = 
-                `1 ${state.tokenA.symbol} = ${rate.toFixed(2)} ${state.tokenB.symbol}`;
+            if (!state.quote) {
+                document.getElementById('exchange-rate').textContent = '-';
+                document.getElementById('price-impact').textContent = '-';
+                document.getElementById('provider-fee').textContent = '-';
+                document.getElementById('network-fee').textContent = '-';
+                return;
+            }
             
-            // Update provider based on network
-            document.getElementById('provider').textContent = 
-                state.currentNetwork === 'solana' ? 'Jupiter' : '1inch';
-        }
-        
-        function openSettings() {
-            settingsModal.classList.remove('hidden');
-        }
-        
-        function closeSettingsModal() {
-            settingsModal.classList.add('hidden');
+            // Calculate exchange rate
+            const rate = state.quote.outAmount / state.quote.inAmount * 
+                        Math.pow(10, state.tokenA.decimals - state.tokenB.decimals);
+            document.getElementById('exchange-rate').textContent = 
+                `1 ${state.tokenA.symbol} = ${formatNumber(rate, 6)} ${state.tokenB.symbol}`;
+            
+            // Update price impact
+            if (state.quote.priceImpactPct) {
+                const impact = state.quote.priceImpactPct * 100;
+                document.getElementById('price-impact').textContent = 
+                    `${formatNumber(impact, 2)}%`;
+                document.getElementById('price-impact').className = 
+                    impact > 1 ? 'text-yellow-400' : 'text-green-400';
+            }
+            
+            // Update fees
+            document.getElementById('provider-fee').textContent = 
+                state.quote.feeAmount ? 
+                `${(state.quote.feeAmount / Math.pow(10, state.tokenB.decimals)).toFixed(6)} ${state.tokenB.symbol}` : 
+                'No fee';
+            
+            document.getElementById('network-fee').textContent = 
+                state.quote.feeAmount ? 
+                `~$${(state.quote.feeAmount / Math.pow(10, state.tokenB.decimals) * 1).toFixed(2)}` : 
+                '-';
         }
         
         function setSlippage(e) {
             slippageBtns.forEach(btn => {
-                btn.classList.remove('bg-indigo-900', 'text-indigo-200');
+                btn.classList.remove('bg-purple-900', 'text-purple-200');
                 btn.classList.add('bg-gray-800', 'text-gray-400');
             });
             
             e.target.classList.remove('bg-gray-800', 'text-gray-400');
-            e.target.classList.add('bg-indigo-900', 'text-indigo-200');
+            e.target.classList.add('bg-purple-900', 'text-purple-200');
             
-            state.slippage = parseFloat(e.target.textContent.replace('%', ''));
+            state.slippage = parseFloat(e.target.getAttribute('data-slippage'));
             customSlippage.value = '';
+            
+            // Refresh quote if amount is set
+            if (state.tokenA.amount > 0) {
+                getQuote(state.tokenA.amount);
+            }
         }
         
         function setCustomSlippage(e) {
             if (e.target.value) {
                 slippageBtns.forEach(btn => {
-                    btn.classList.remove('bg-indigo-900', 'text-indigo-200');
+                    btn.classList.remove('bg-purple-900', 'text-purple-200');
                     btn.classList.add('bg-gray-800', 'text-gray-400');
                 });
                 
-                state.slippage = parseFloat(e.target.value);
+                state.slippage = parseFloat(e.target.value) || 0.5;
+                
+                // Refresh quote if amount is set
+                if (state.tokenA.amount > 0) {
+                    getQuote(state.tokenA.amount);
+                }
             }
         }
         
-        function saveSettingsChanges() {
-            state.txDeadline = parseInt(txDeadline.value) || 20;
-            closeSettingsModal();
-        }
-        
         function openConfirmSwap() {
-            if (!state.connectedWallet || state.tokenA.amount <= 0) return;
+            if (!state.wallet || !state.quote || state.tokenA.amount <= 0) return;
             
             // Update confirmation modal with current swap details
             document.getElementById('confirm-token-a-icon').src = state.tokenA.icon;
-            document.getElementById('confirm-amount-a').textContent = state.tokenA.amount.toFixed(6);
+            document.getElementById('confirm-amount-a').textContent = formatNumber(state.tokenA.amount, state.tokenA.decimals);
             document.getElementById('confirm-token-b-icon').src = state.tokenB.icon;
-            document.getElementById('confirm-amount-b').textContent = state.tokenB.amount.toFixed(6);
+            document.getElementById('confirm-amount-b').textContent = formatNumber(state.tokenB.amount, state.tokenB.decimals);
             
+            const rate = state.quote.outAmount / state.quote.inAmount * 
+                        Math.pow(10, state.tokenA.decimals - state.tokenB.decimals);
             document.getElementById('confirm-exchange-rate').textContent = 
-                `1 ${state.tokenA.symbol} = ${(state.tokenB.amount / state.tokenA.amount).toFixed(6)} ${state.tokenB.symbol}`;
+                `1 ${state.tokenA.symbol} = ${formatNumber(rate, 6)} ${state.tokenB.symbol}`;
+            
+            if (state.quote.priceImpactPct) {
+                const impact = state.quote.priceImpactPct * 100;
+                document.getElementById('confirm-price-impact').textContent = 
+                    `${formatNumber(impact, 2)}%`;
+                document.getElementById('confirm-price-impact').className = 
+                    impact > 1 ? 'text-yellow-400' : 'text-green-400';
+            }
             
             document.getElementById('confirm-min-received').textContent = 
-                `${(state.tokenB.amount * (1 - state.slippage / 100)).toFixed(6)} ${state.tokenB.symbol}`;
+                `${formatNumber(state.tokenB.amount * (1 - state.slippage / 100), state.tokenB.decimals)} ${state.tokenB.symbol}`;
             
-            document.getElementById('confirm-provider').textContent = 
-                state.currentNetwork === 'solana' ? 'Jupiter' : '1inch';
+            document.getElementById('confirm-network-fee').textContent = 
+                state.quote.feeAmount ? 
+                `~$${(state.quote.feeAmount / Math.pow(10, state.tokenB.decimals) * 1).toFixed(2)}` : 
+                '-';
             
             confirmSwapModal.classList.remove('hidden');
         }
@@ -722,56 +780,130 @@
             confirmSwapModal.classList.add('hidden');
         }
         
-        function performSwap() {
-            if (!state.connectedWallet || state.tokenA.amount <= 0) return;
-            
-            // In a real app, you would:
-            // 1. Construct the transaction based on the selected network and tokens
-            // 2. Use the appropriate wallet SDK to sign and send the transaction
-            // 3. Handle the transaction response
-            // 4. Update the UI with the transaction hash and status
-            
-            // Mock transaction
-            const txHash = '0x' + Math.random().toString(16).substr(2, 64);
-            
-            // Add to recent swaps
-            const swap = {
-                id: Date.now(),
-                fromToken: state.tokenA.symbol,
-                toToken: state.tokenB.symbol,
-                fromAmount: state.tokenA.amount,
-                toAmount: state.tokenB.amount,
-                txHash: txHash,
-                timestamp: new Date().toISOString(),
-                status: 'completed'
-            };
-            
-            state.recentSwaps.unshift(swap);
-            saveRecentSwaps();
-            loadRecentSwaps();
-            
-            // Update balances
-            state.tokenA.balance -= state.tokenA.amount;
-            state.tokenB.balance += state.tokenB.amount;
-            
-            // Reset inputs
-            state.tokenA.amount = 0;
-            state.tokenB.amount = 0;
-            inputA.value = '';
-            inputB.value = '';
+        async function performSwap() {
+            if (!state.wallet || !state.quote || state.tokenA.amount <= 0) return;
             
             closeConfirmSwapModal();
-            updateUI();
+            showTxStatus('Processing Transaction', 'Waiting for confirmation...');
             
-            console.log(`Swap executed: ${txHash}`);
+            try {
+                const provider = window.phantom?.solana;
+                if (!provider) {
+                    throw new Error('Phantom wallet is not available');
+                }
+                
+                // Get swap transaction from Jupiter API
+                const swapResponse = await fetch('https://quote-api.jup.ag/v6/swap', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        quoteResponse: state.quote,
+                        userPublicKey: state.wallet,
+                        slippageBps: Math.floor(state.slippage * 100)
+                    })
+                });
+                
+                const { swapTransaction } = await swapResponse.json();
+                
+                // Send transaction to Phantom
+                const transaction = solanaWeb3.VersionedTransaction.deserialize(
+                    Buffer.from(swapTransaction, 'base64')
+                );
+                
+                const { signature } = await provider.signAndSendTransaction(transaction);
+                
+                // Show success
+                showTxStatus('Swap Successful', 'Transaction confirmed', true, `https://solscan.io/tx/${signature}`);
+                
+                // Add to recent swaps
+                const swap = {
+                    id: Date.now(),
+                    fromToken: state.tokenA.symbol,
+                    toToken: state.tokenB.symbol,
+                    fromAmount: state.tokenA.amount,
+                    toAmount: state.tokenB.amount,
+                    txHash: signature,
+                    timestamp: new Date().toISOString(),
+                    status: 'completed'
+                };
+                
+                state.recentSwaps.unshift(swap);
+                saveRecentSwaps();
+                loadRecentSwaps();
+                
+                // Update balances
+                await loadTokenBalances();
+                
+                // Reset inputs
+                state.tokenA.amount = 0;
+                state.tokenB.amount = 0;
+                inputA.value = '';
+                inputB.value = '';
+                state.quote = null;
+                
+                updateUI();
+                
+                console.log('Swap executed:', signature);
+            } catch (error) {
+                console.error('Error performing swap:', error);
+                showTxStatus('Swap Failed', error.message, false);
+            }
+        }
+        
+        function showTxStatus(title, message, isSuccess = false, explorerLink = '') {
+            const icon = document.getElementById('tx-status-icon');
+            const statusTitle = document.getElementById('tx-status-title');
+            const statusMessage = document.getElementById('tx-status-message');
+            const explorerLinkEl = document.getElementById('tx-explorer-link');
+            
+            if (isSuccess) {
+                icon.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                `;
+            } else if (isSuccess === false) {
+                icon.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                `;
+            } else {
+                icon.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                `;
+            }
+            
+            statusTitle.textContent = title;
+            statusMessage.textContent = message;
+            
+            if (explorerLink) {
+                explorerLinkEl.href = explorerLink;
+                explorerLinkEl.classList.remove('hidden');
+            } else {
+                explorerLinkEl.classList.add('hidden');
+            }
+            
+            txStatusModal.classList.remove('hidden');
+            
+            // Auto-close after 5 seconds if successful
+            if (isSuccess) {
+                setTimeout(() => {
+                    txStatusModal.classList.add('hidden');
+                }, 5000);
+            }
         }
         
         function saveRecentSwaps() {
-            localStorage.setItem('aetherswap-recent-swaps', JSON.stringify(state.recentSwaps));
+            localStorage.setItem('solana-swap-recent', JSON.stringify(state.recentSwaps));
         }
         
         function loadRecentSwaps() {
-            const savedSwaps = localStorage.getItem('aetherswap-recent-swaps');
+            const savedSwaps = localStorage.getItem('solana-swap-recent');
             if (savedSwaps) {
                 state.recentSwaps = JSON.parse(savedSwaps);
             }
@@ -801,43 +933,44 @@
                             <div class="text-xs text-gray-400">${new Date(swap.timestamp).toLocaleString()}</div>
                         </div>
                     </div>
-                    <a href="#" class="text-xs text-indigo-400 hover:text-indigo-300">View</a>
+                    <a href="https://solscan.io/tx/${swap.txHash}" target="_blank" class="text-xs text-blue-400 hover:text-blue-300">View</a>
                 </div>
             `).join('');
         }
         
         function getTokenIcon(symbol) {
-            switch (symbol) {
-                case 'SOL': return 'https://cryptologos.cc/logos/solana-sol-logo.png';
-                case 'USDC': return 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
-                case 'ETH': return 'https://cryptologos.cc/logos/ethereum-eth-logo.png';
-                case 'BTC': return 'https://cryptologos.cc/logos/bitcoin-btc-logo.png';
-                default: return 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
-            }
+            const token = state.tokens.find(t => t.symbol === symbol);
+            return token?.logoURI || 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
         }
         
         function updateUI() {
             // Update token displays
             document.getElementById('token-a-symbol').textContent = state.tokenA.symbol;
             document.getElementById('token-a-icon').src = state.tokenA.icon;
-            document.getElementById('balance-a').textContent = `Balance: ${state.tokenA.balance.toFixed(4)}`;
+            document.getElementById('balance-a').textContent = `Balance: ${formatNumber(state.tokenA.balance, state.tokenA.decimals)}`;
             
             document.getElementById('token-b-symbol').textContent = state.tokenB.symbol;
             document.getElementById('token-b-icon').src = state.tokenB.icon;
-            document.getElementById('balance-b').textContent = `Balance: ${state.tokenB.balance.toFixed(4)}`;
+            document.getElementById('balance-b').textContent = `Balance: ${formatNumber(state.tokenB.balance, state.tokenB.decimals)}`;
             
             // Update swap button state
-            swapBtn.disabled = !state.connectedWallet || state.tokenA.amount <= 0;
+            swapBtn.disabled = !state.wallet || !state.quote || state.tokenA.amount <= 0 || state.tokenA.amount > state.tokenA.balance;
             
-            // Update network indicators
-            if (state.currentNetwork === 'solana') {
-                document.getElementById('provider').textContent = 'Jupiter';
+            if (!state.wallet) {
+                swapBtn.textContent = 'Connect Wallet';
+            } else if (state.tokenA.amount > state.tokenA.balance) {
+                swapBtn.textContent = 'Insufficient Balance';
+            } else if (!state.quote) {
+                swapBtn.textContent = 'Enter Amount';
             } else {
-                document.getElementById('provider').textContent = '1inch';
+                swapBtn.textContent = 'Swap';
             }
-            
-            updateSwapDetails();
         }
+        
+        // Token search functionality
+        tokenSearch.addEventListener('input', (e) => {
+            renderTokenList(e.target.value);
+        });
     </script>
 </body>
 </html>
