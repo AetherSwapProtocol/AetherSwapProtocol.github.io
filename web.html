@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Raydium Clone</title>
+    <title>DiumSwap</title>
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.73.0/lib/index.iife.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Arial', sans-serif; margin: 0; padding: 20px; background: #0f0f1a; color: white; }
         .container { max-width: 800px; margin: 0 auto; }
         .swap-box { background: #1e1e2e; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        button { background: #9945FF; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        button { background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
         select, input { width: 100%; padding: 10px; margin: 10px 0; background: #2d2d3d; color: white; border: none; border-radius: 5px; }
         #chart { background: #1e1e2e; border-radius: 12px; padding: 15px; margin-top: 20px; }
         #log { margin-top: 20px; color: #aaa; }
@@ -16,7 +16,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Raydium Clone</h1>
+        <h1>DiumSwap</h1>
         
         <!-- Connexion Wallet -->
         <button id="connectWallet">Connect Phantom Wallet</button>
@@ -74,14 +74,14 @@
                 logSuccess("Wallet connected!");
                 loadPriceChart();
             } catch (err) {
-                logError(err.message);
+                logError("Wallet connection failed: " + err.message);
             }
         });
 
         // Swap via Raydium
         swapBtn.addEventListener("click", async () => {
             if (!wallet?.isConnected) {
-                logError("Connect wallet first!");
+                logError("Connect your wallet first!");
                 return;
             }
 
@@ -90,14 +90,10 @@
             const tokenOut = document.getElementById("tokenOut").value;
 
             try {
-                // 1. Get swap quote from Raydium API
                 const quote = await fetchRaydiumQuote(tokenIn, tokenOut, amount);
-                
-                // 2. Build transaction
                 const tx = await buildRaydiumTransaction(quote);
-                
-                // 3. Send transaction
                 const txid = await sendTransaction(tx);
+
                 logSuccess(`Swap executed! TX: <a href="https://solscan.io/tx/${txid}" target="_blank">${txid}</a>`);
             } catch (err) {
                 logError(`Swap failed: ${err.message}`);
@@ -120,15 +116,11 @@
         }
 
         async function buildRaydiumTransaction(quote) {
-            // Note: In a real app, you would need to properly construct the transaction
-            // using Raydium's SDK or similar. This is a simplified version.
-            return new solanaWeb3.Transaction().add(
-                solanaWeb3.SystemProgram.transfer({
-                    fromPubkey: publicKey,
-                    toPubkey: publicKey, // Simplified for example
-                    lamports: 10000 // Placeholder
-                })
-            );
+            const instructions = quote.transaction.instructions.map(instr => solanaWeb3.TransactionInstruction.from(instr));
+            const tx = new solanaWeb3.Transaction().add(...instructions);
+            tx.feePayer = publicKey;
+            tx.recentBlockhash = (await SOLANA_CONNECTION.getRecentBlockhash()).blockhash;
+            return tx;
         }
 
         async function sendTransaction(tx) {
@@ -147,7 +139,7 @@
                     datasets: [{
                         label: "SOL/USDC",
                         data: [95, 97, 96.5, 98],
-                        borderColor: "#9945FF",
+                        borderColor: "#22c55e",
                         tension: 0.1
                     }]
                 },
