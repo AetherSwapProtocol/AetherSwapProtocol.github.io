@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We Diamond - Boutique Officielle</title>
+  <style>
+    :root {
+      --background: #0b0b0b;
+      --gold: #d4af37;
+      --white: #ffffff;
+      --gray: #aaaaaa;
+      --accent: #1e1e1e;
+      --font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--background);
+      color: var(--white);
+      line-height: 1.6;
+      padding-top: 70px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header Sticky */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--accent);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .nav-link {
+      color: var(--gray);
+      text-decoration: none;
+      margin: 0 1em;
+      font-size: 0.95em;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 5px 0;
+    }
+
+    .nav-link.active {
+      color: var(--gold);
+      font-weight: bold;
+    }
+
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--gold);
+    }
+
+    .logo {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: var(--gold);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 30px;
+      height: 30px;
+      fill: var(--gold);
+    }
+
+    .cart-icon {
+      position: relative;
+      cursor: pointer;
+    }
+
+    #cart-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--gold);
+      color: var(--background);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7em;
+      font-weight: bold;
+      display: none;
+    }
+
+    /* Main Content */
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex: 1;
+      width: 100%;
+    }
+
+    section {
+      margin-bottom: 3rem;
+      scroll-margin-top: 90px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    section.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .product {
+      background-color: var(--accent);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+    }
+
+    .product h2 {
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .product label {
+      display: block;
+      margin: 0.5rem 0 0.3rem;
+    }
+
+    .product select, .product button {
+      width: 100%;
+      margin: 0.5em 0;
+      padding: 0.7em;
+      font-size: 1em;
+      background-color: var(--background);
+      color: var(--white);
+      border: 1px solid var(--gray);
+      border-radius: 4px;
+    }
+
+    .product button {
+      background-color: var(--gold);
+      color: var(--background);
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.3s ease;
+    }
+
+    .product button:hover {
+      opacity: 0.9;
+    }
+
+    .views {
+      font-size: 0.85em;
+      color: var(--gray);
+      margin-top: 1em;
+    }
+
+    /* Footer Légal Complet */
+    footer {
+      background-color: var(--accent);
+      padding: 2rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .footer-logo svg {
+      width: 40px;
+      height: 40px;
+      fill: var(--gold);
+    }
+
+    .footer-logo-text {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: var(--gold);
+    }
+
+    .legal-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .legal-links a {
+      color: var(--gray);
+      text-decoration: none;
+      transition: color 0.3s;
+      font-size: 0.9em;
+    }
+
+    .legal-links a:hover {
+      color: var(--gold);
+    }
+
+    .trademark-notice {
+      font-size: 0.8em;
+      color: var(--gray);
+      margin-top: 1rem;
+      border-top: 1px solid rgba(170, 170, 170, 0.2);
+      padding-top: 1rem;
+      grid-column: 1 / -1;
+      text-align: center;
+    }
+
+    .trademark-notice strong {
+      color: var(--gold);
+    }
+
+    /* Cookie Banner RGPD */
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--accent);
+      padding: 1.5rem;
+      display: none;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      z-index: 999;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+      border-top: 1px solid var(--gold);
+    }
+
+    .cookie-banner p {
+      flex: 1;
+      min-width: 250px;
+      margin: 0;
+    }
+
+    .cookie-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .cookie-banner button {
+      padding: 0.5rem 1.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .cookie-accept {
+      background: var(--gold);
+      color: var(--background);
+      border: none;
+    }
+
+    .cookie-decline {
+      background: transparent;
+      color: var(--gray);
+      border: 1px solid var(--gray);
+    }
+
+    .cookie-settings {
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+    }
+
+    /* Panier latéral */
+    .cart-sidebar {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 100%;
+      max-width: 400px;
+      height: 100%;
+      background: var(--accent);
+      box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+      transition: right 0.3s ease;
+      z-index: 999;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .cart-sidebar.active {
+      right: 0;
+    }
+
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray);
+    }
+
+    .close-cart {
+      background: none;
+      border: none;
+      color: var(--gray);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(170, 170, 170, 0.2);
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cart-item-actions button {
+      background: var(--gold);
+      color: var(--background);
+      border: none;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .cart-total {
+      margin-top: 1.5rem;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .checkout-btn {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1rem;
+      background: var(--gold);
+      color: var(--background);
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    /* Notification */
+    .cart-notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent);
+      padding: 1rem;
+      border-left: 4px solid var(--gold);
+      transform: translateX(200%);
+      transition: transform 0.3s ease;
+      z-index: 999;
+    }
+
+    .cart-notification.show {
+      transform: translateX(0);
+    }
+
+    .cart-notification a {
+      color: var(--gold);
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    /* Modal Cookies */
+    .cookie-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .cookie-modal .modal-content {
+      background: var(--accent);
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      border-radius: 8px;
+    }
+
+    .cookie-modal h3 {
+      margin-bottom: 1.5rem;
+      color: var(--gold);
+    }
+
+    .cookie-option {
+      margin-bottom: 1.5rem;
+    }
+
+    .cookie-option label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .cookie-option p {
+      margin-left: 30px;
+      font-size: 0.9em;
+      color: var(--gray);
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+      }
+
+      .logo {
+        margin-bottom: 1rem;
+      }
+
+      .cart-sidebar {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <svg viewBox="0 0 100 100" class="logo-icon">
+        <path d="M50 10L20 50L50 90L80 50L50 10Z" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M35 50L50 30L65 50L50 70L35 50Z" stroke="currentColor" stroke-width="2" fill="none"/>
+      </svg>
+      We Diamond®
+    </div>
+    <nav>
+      <a href="#shop" class="nav-link active" data-section="shop">Shop</a>
+      <a href="#bestseller" class="nav-link" data-section="bestseller">Best Seller</a>
+      <a href="#about" class="nav-link" data-section="about">À propos</a>
+    </nav>
+    <div class="socials">
+      <a href="https://www.tiktok.com/@WeDiamond" target="_blank" aria-label="TikTok">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+        </svg>
+      </a>
+      <a href="https://www.instagram.com/WeDiamond" target="_blank" aria-label="Instagram">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+      </a>
+      <a href="https://x.com/WeDiamond" target="_blank" aria-label="Twitter">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+        </svg>
+      </a>
+      <div class="cart-icon" id="cart-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span id="cart-count">0</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="shop" class="active">
+      <div class="product" data-id="1">
+        <h2>Polo We Diamond</h2>
+        <label for="color">Choisissez la couleur :</label>
+        <select id="color">
+          <option value="noir">Noir</option>
+          <option value="blanc">Blanc</option>
+        </select>
+        <label for="size">Choisissez la taille :</label>
+        <select id="size">
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+        </select>
+        <button class="add-to-cart" data-product-id="1">Ajouter au panier</button>
+        <p class="views" id="views-1">Vues : 0</p>
+      </div>
+    </section>
+
+    <section id="bestseller">
+      <h2>Best Seller</h2>
+      <p>Produit en tête : <span id="best-seller-name">Polo We Diamond</span> (<span id="best-seller-views">0 vues</span>)</p>
+    </section>
+
+    <section id="about">
+      <h2>À propos</h2>
+      <p>We Diamond est une marque inspirée de l'héritage, du luxe et de l'exigence du détail.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-column">
+        <div class="footer-logo">
+          <svg viewBox="0 0 100 100" class="footer-logo-icon">
+            <path d="M50 10L20 50L50 90L80 50L50 10Z" stroke="currentColor" stroke-width="2" fill="none"/>
+            <path d="M35 50L50 30L65 50L50 70L35 50Z" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+          <span class="footer-logo-text">We Diamond®</span>
+        </div>
+        <p>Marque de luxe et d'excellence depuis 2023</p>
+      </div>
+
+      <div class="footer-column">
+        <h3>Légal</h3>
+        <div class="legal-links">
+          <a href="/mentions-legales">Mentions légales</a>
+          <a href="/politique-confidentialite">Politique de confidentialité</a>
+          <a href="/conditions-generales">Conditions générales</a>
+          <a href="/politique-cookies">Politique des cookies</a>
+          <a href="/protection-des-donnees">Protection des données</a>
+        </div>
+      </div>
+
+      <div class="footer-column">
+        <h3>Contact</h3>
+        <p>contact@wediamond.com</p>
+        <p>+33 1 23 45 67 89</p>
+      </div>
+
+      <div class="trademark-notice">
+        <p><strong>We Diamond®</strong> est une marque déposée. Tous droits réservés. Le logo We Diamond et les produits associés sont protégés par des droits d'auteur et des droits de propriété intellectuelle en France et à l'international.</p>
+        <p>© 2025 We Diamond SAS. Toute reproduction ou utilisation non autorisée est strictement interdite.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Panier latéral -->
+  <div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+      <h3>Votre Panier</h3>
+      <button class="close-cart" id="close-cart">&times;</button>
+    </div>
+    <div id="cart-items"></div>
+    <div class="cart-total">
+      Total: <span id="cart-total-price">0.00</span> €
+    </div>
+    <a href="/checkout" class="checkout-btn">Commander</a>
+  </div>
+
+  <!-- Cookie Banner conforme RGPD -->
+  <div class="cookie-banner" id="cookieBanner">
+    <p>Nous utilisons des cookies pour améliorer votre expérience. En continuant, vous acceptez notre <a href="/politique-cookies" style="color: var(--gold);">politique des cookies</a>.</p>
+    <div class="cookie-buttons">
+      <button class="cookie-decline" onclick="cookieManager.declineCookies()">Refuser</button>
+      <button class="cookie-settings" onclick="cookieManager.showCookieSettings()">Préférences</button>
+      <button class="cookie-accept" onclick="cookieManager.acceptCookies()">Accepter</button>
+    </div>
+  </div>
+
+  <script>
+    // Gestion des cookies RGPD
+    const cookieManager = {
+      init() {
+        this.setupCookieBanner();
+        this.setupNavigation();
+        this.setupCart();
+      },
+
+      // Gestion du bandeau cookies
+      setupCookieBanner() {
+        const accepted = localStorage.getItem('cookiesAccepted');
+        const banner = document.getElementById('cookieBanner');
+
+        if (accepted === 'true') {
+          banner.style.display = 'none';
+          this.initAnalytics();
+        } else if (accepted === 'false') {
+          banner.style.display = 'none';
+          this.clearCookies();
+        } else {
+          banner.style.display = 'flex';
+        }
+      },
+
+      acceptCookies() {
+        localStorage.setItem('cookiesAccepted', 'true');
+        document.getElementById('cookieBanner').style.display = 'none';
+        this.initAnalytics();
+        this.trackEvent('Cookies', 'Accepted');
+      },
+
+      declineCookies() {
+        localStorage.setItem('cookiesAccepted', 'false');
+        document.getElementById('cookieBanner').style.display = 'none';
+        this.clearCookies();
+        this.trackEvent('Cookies', 'Declined');
+      },
+
+      showCookieSettings() {
+        const modal = document.createElement('div');
+        modal.className = 'cookie-modal';
+        modal.innerHTML = `
+          <div class="modal-content">
+            <h3>Préférences des cookies</h3>
+            <div class="cookie-option">
+              <label>
+                <input type="checkbox" id="analyticsCookies" checked>
+                Cookies analytiques
+              </label>
+              <p>Nous aident à améliorer notre site</p>
+            </div>
+            <div class="cookie-option">
+              <label>
+                <input type="checkbox" id="marketingCookies">
+                Cookies marketing
+              </label>
+              <p>Pour personnaliser les publicités</p>
+            </div>
+            <div class="modal-buttons">
+              <button onclick="cookieManager.saveCookieSettings()">Enregistrer</button>
+              <button onclick="this.parentElement.parentElement.remove()">Annuler</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+      },
+
+      saveCookieSettings() {
+        const analytics = document.getElementById('analyticsCookies').checked;
+        const marketing = document.getElementById('marketingCookies').checked;
+        
+        localStorage.setItem('cookiesSettings', JSON.stringify({
+          analytics,
+          marketing
+        }));
+        
+        if (analytics) this.initAnalytics();
+        document.querySelector('.cookie-modal').remove();
+        this.trackEvent('Cookies', 'SettingsSaved');
+      },
+
+      initAnalytics() {
+        // Exemple d'initialisation de Google Analytics
+        if (typeof gtag !== 'undefined') {
+          gtag('config', 'UA-XXXXX-Y');
+        }
+        console.log('Analytics initialisés');
+      },
+
+      clearCookies() {
+        // Suppression des cookies analytiques
+        document.cookie.split(';').forEach(cookie => {
+          const name = cookie.trim().split('=')[0];
+          if (name.includes('_ga') || name.includes('_gid')) {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          }
+        });
+        console.log('Cookies analytiques supprimés');
+      },
+
+      trackEvent(category, action) {
+        if (localStorage.getItem('cookiesAccepted') === 'true' && typeof gtag !== 'undefined') {
+          gtag('event', action, {
+            'event_category': category
+          });
+        }
+      },
+
+      // Gestion de la navigation
+      setupNavigation() {
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        // Gestion des clics
+        navLinks.forEach(link => {
+          link.addEventListener('click', e => {
+            e.preventDefault();
+            const sectionId = link.getAttribute('href').substring(1);
+            this.navigateToSection(sectionId);
+          });
+        });
+
+        // Gestion du scroll
+        window.addEventListener('scroll', () => {
+          this.updateActiveSection();
+        });
+
+        // Initialisation
+        this.updateActiveSection();
+      },
+
+      navigateToSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          // Animation fluide
+          window.scrollTo({
+            top: section.offsetTop - 70,
+            behavior: 'smooth'
+          });
+          
+          // Mise à jour de l'URL sans rechargement
+          history.pushState(null, null, `#${sectionId}`);
+          
+          // Mise à jour visuelle
+          this.setActiveLink(sectionId);
+          
+          // Suivi analytique
+          this.trackEvent('Navigation', `Viewed_${sectionId}`);
+        }
+      },
+
+      updateActiveSection() {
+        let currentSection = '';
+        const scrollPosition = window.scrollY + 100;
+        
+        document.querySelectorAll('section').forEach(section => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.offsetHeight;
+          
+          if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+            currentSection = section.id;
+          }
+        });
+        
+        if (currentSection) {
+          this.setActiveLink(currentSection);
+        }
+      },
+
+      setActiveLink(sectionId) {
+        document.querySelectorAll('.nav-link').forEach(link => {
+          if (link.getAttribute('href').substring(1) === sectionId) {
+            link.classList.add('active');
+            document.getElementById(sectionId).classList.add('active');
+          } else {
+            link.classList.remove('active');
+            document.getElementById(link.getAttribute('href').substring(1))?.classList.remove('active');
+          }
+        });
+      },
+
+      // Gestion du panier
+      setupCart() {
+        this.loadCart();
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+          button.addEventListener('click', (e) => {
+            const productId = e.target.dataset.productId;
+            this.addToCart(productId);
+          });
+        });
+
+        document.getElementById('cart-toggle').addEventListener('click', () => {
+          this.toggleCart();
+        });
+
+        document.getElementById('close-cart').addEventListener('click', () => {
+          this.toggleCart(false);
+        });
+      },
+
+      toggleCart(show = true) {
+        const sidebar = document.getElementById('cart-sidebar');
+        if (show) {
+          sidebar.classList.add('active');
+        } else {
+          sidebar.classList.remove('active');
+        }
+      },
+
+      addToCart(productId) {
+        const cart = JSON.parse(localStorage.getItem('cart') || []);
+        const product = this.getProductDetails(productId);
+        
+        // Vérifier si le produit est déjà dans le panier
+        const existingItem = cart.find(item => item.id === productId && item.color === product.color && item.size === product.size);
+        
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cart.push({
+            ...product,
+            id: productId,
+            quantity: 1,
+            addedAt: new Date().toISOString()
+          });
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cart));
+        this.updateCartUI();
+        this.showCartNotification(product.name);
+        this.trackEvent('Cart', 'ProductAdded', product.name);
+        this.toggleCart(true);
+      },
+
+      getProductDetails(productId) {
+        const productElement = document.querySelector(`[data-id="${productId}"]`);
+        return {
+          name: productElement.querySelector('h2').textContent,
+          price: 99.99, // À remplacer par le vrai prix
+          color: productElement.querySelector('#color').value,
+          size: productElement.querySelector('#size').value
+        };
+      },
+
+      loadCart() {
+        const cart = JSON.parse(localStorage.getItem('cart') || []);
+        this.updateCartUI(cart);
+      },
+
+      updateCartUI(cart = JSON.parse(localStorage.getItem('cart') || [])) {
+        const cartCount = document.getElementById('cart-count');
+        const cartItems = document.getElementById('cart-items');
+        const cartTotal = document.getElementById('cart-total-price');
+        
+        // Mise à jour du compteur
+        if (cartCount) {
+          const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+          cartCount.textContent = itemCount;
+          cartCount.style.display = itemCount > 0 ? 'flex' : 'none';
+        }
+        
+        // Mise à jour des articles
+        if (cartItems) {
+          cartItems.innerHTML = '';
+          if (cart.length === 0) {
+            cartItems.innerHTML = '<p>Votre panier est vide</p>';
+            return;
+          }
+          
+          let total = 0;
+          cart.forEach(item => {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+            
+            const itemElement = document.createElement('div');
+            itemElement.className = 'cart-item';
+            itemElement.innerHTML = `
+              <div class="cart-item-info">
+                <h4>${item.name}</h4>
+                <p>${item.color}, ${item.size}</p>
+                <p>${item.price.toFixed(2)} € × ${item.quantity} = ${itemTotal.toFixed(2)} €</p>
+              </div>
+              <div class="cart-item-actions">
+                <button onclick="cookieManager.updateQuantity('${item.id}', '${item.color}', '${item.size}', ${item.quantity - 1})">-</button>
+                <span>${item.quantity}</span>
+                <button onclick="cookieManager.updateQuantity('${item.id}', '${item.color}', '${item.size}', ${item.quantity + 1})">+</button>
+                <button onclick="cookieManager.removeFromCart('${item.id}', '${item.color}', '${item.size}')">×</button>
+              </div>
+            `;
+            cartItems.appendChild(itemElement);
+          });
+          
+          // Mise à jour du total
+          if (cartTotal) {
+            cartTotal.textContent = total.toFixed(2);
+          }
+        }
+      },
+
+      updateQuantity(productId, color, size, newQuantity) {
+        if (newQuantity < 1) {
+          this.removeFromCart(productId, color, size);
+          return;
+        }
+        
+        const cart = JSON.parse(localStorage.getItem('cart') || []);
+        const item = cart.find(item => item.id === productId && item.color === color && item.size === size);
+        
+        if (item) {
+          item.quantity = newQuantity;
+          localStorage.setItem('cart', JSON.stringify(cart));
+          this.updateCartUI(cart);
+          this.trackEvent('Cart', 'QuantityUpdated');
+        }
+      },
+
+      removeFromCart(productId, color, size) {
+        const cart = JSON.parse(localStorage.getItem('cart') || []);
+        const updatedCart = cart.filter(item => !(item.id === productId && item.color === color && item.size === size));
+        
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        this.updateCartUI(updatedCart);
+        this.trackEvent('Cart', 'ProductRemoved');
+      },
+
+      showCartNotification(productName) {
+        const notification = document.createElement('div');
+        notification.className = 'cart-notification';
+        notification.innerHTML = `
+          <p>${productName} ajouté au panier</p>
+          <a href="#cart" onclick="cookieManager.toggleCart(true); return false;">Voir le panier</a>
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+          notification.classList.remove('show');
+          setTimeout(() => notification.remove(), 500);
+        }, 3000);
+      }
+    };
+
+    // Initialisation au chargement
+    document.addEventListener('DOMContentLoaded', () => {
+      cookieManager.init();
+      
+      // Mise à jour des vues
+      updateViewsCounter();
+      
+      // Mise à jour du best seller
+      updateBestSeller();
+    });
+
+    // Compteur de vues
+    function updateViewsCounter() {
+      const views = JSON.parse(localStorage.getItem('views') || '{}');
+      document.querySelectorAll('.product').forEach(product => {
+        const id = product.getAttribute('data-id');
+        views[id] = (views[id] || 0) + 1;
+        
+        // Animation progressive du compteur
+        let current = 0;
+        const target = views[id];
+        const viewsElement = product.querySelector('.views');
+        const increment = target / 20;
+        
+        const timer = setInterval(() => {
+          current = Math.min(current + increment, target);
+          viewsElement.textContent = 'Vues : ' + Math.floor(current);
+          if (current >= target) clearInterval(timer);
+        }, 50);
+        
+        localStorage.setItem('views', JSON.stringify(views));
+      });
+    }
+
+    // Mise à jour du best seller
+    function updateBestSeller() {
+      const views = JSON.parse(localStorage.getItem('views') || '{}');
+      let bestSeller = { id: null, views: 0 };
+      
+      for (const [id, count] of Object.entries(views)) {
+        if (count > bestSeller.views) {
+          bestSeller = { id, views: count };
+        }
+      }
+      
+      if (bestSeller.id) {
+        const productName = document.querySelector(`[data-id="${bestSeller.id}"] h2`).textContent;
+        document.getElementById('best-seller-name').textContent = productName;
+        document.getElementById('best-seller-views').textContent = `${bestSeller.views} vues`;
+      }
+    }
+  </script>
+</body>
+</html>
