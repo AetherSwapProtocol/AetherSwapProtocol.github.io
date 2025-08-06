@@ -3,90 +3,147 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>We Diamond - Boutique Officielle</title>
+  <title>We Diamond - Haute Joaillerie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --background: #0b0b0b;
+      --bg: #0a0a0a;
       --gold: #d4af37;
-      --white: #ffffff;
+      --gold-light: #e8c874;
+      --white: #f8f8f8;
       --gray: #aaaaaa;
-      --accent: #1e1e1e;
-      --font-family: 'Helvetica Neue', Arial, sans-serif;
+      --gray-dark: #333333;
+      --accent: #1a1a1a;
+      --font-serif: 'Playfair Display', serif;
+      --font-sans: 'Montserrat', sans-serif;
+      --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-      font-family: var(--font-family);
-      background-color: var(--background);
+      font-family: var(--font-sans);
+      background-color: var(--bg);
       color: var(--white);
       line-height: 1.6;
-      padding-top: 70px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      overflow-x: hidden;
+      padding-top: 80px;
     }
 
-    /* Header Sticky */
+    /* Header Luxe */
     header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      background-color: var(--accent);
-      padding: 1rem 2rem;
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+      padding: 0 5%;
+      height: 80px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
+      justify-content: space-between;
       z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      transition: var(--transition);
+    }
+
+    header.scrolled {
+      height: 70px;
+      background: rgba(10, 10, 10, 0.98);
+    }
+
+    .logo {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      fill: var(--gold);
+      transition: var(--transition);
+    }
+
+    .logo:hover .logo-icon {
+      transform: rotate(15deg);
+    }
+
+    /* Navigation Principale */
+    .main-nav {
+      display: flex;
+      gap: 2.5rem;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
     .nav-link {
-      color: var(--gray);
+      color: var(--white);
       text-decoration: none;
-      margin: 0 1em;
-      font-size: 0.95em;
-      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
       position: relative;
-      padding: 5px 0;
+      padding: 10px 0;
+      transition: var(--transition);
     }
 
-    .nav-link.active {
-      color: var(--gold);
-      font-weight: bold;
-    }
-
-    .nav-link.active::after {
+    .nav-link:after {
       content: '';
       position: absolute;
       bottom: 0;
       left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: var(--gold);
+      width: 0;
+      height: 1px;
+      background: var(--gold);
+      transition: var(--transition);
     }
 
-    .logo {
-      font-size: 1.5em;
-      font-weight: bold;
+    .nav-link:hover,
+    .nav-link.active {
       color: var(--gold);
-      white-space: nowrap;
+    }
+
+    .nav-link:hover:after,
+    .nav-link.active:after {
+      width: 100%;
+    }
+
+    /* Header Right Elements */
+    .header-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 1.5rem;
     }
 
-    .logo-icon {
-      width: 30px;
-      height: 30px;
+    .social-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .social-icon {
+      width: 20px;
+      height: 20px;
+      fill: var(--white);
+      transition: var(--transition);
+    }
+
+    .social-icon:hover {
       fill: var(--gold);
+      transform: translateY(-2px);
     }
 
     .cart-icon {
@@ -99,226 +156,311 @@
       top: -8px;
       right: -8px;
       background: var(--gold);
-      color: var(--background);
+      color: var(--bg);
       border-radius: 50%;
       width: 20px;
       height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.7em;
-      font-weight: bold;
+      font-size: 0.7rem;
+      font-weight: 600;
       display: none;
     }
 
-    /* Main Content */
-    main {
-      padding: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      flex: 1;
-      width: 100%;
+    /* Hero Section */
+    .hero {
+      height: calc(100vh - 80px);
+      background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)), 
+                  url('https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1587&q=80') no-repeat center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 5%;
     }
 
-    section {
-      margin-bottom: 3rem;
-      scroll-margin-top: 90px;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
+    .hero-content {
+      max-width: 800px;
     }
 
-    section.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .product {
-      background-color: var(--accent);
-      padding: 1.5rem;
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--white);
       margin-bottom: 1.5rem;
-      border-radius: 8px;
-      transition: transform 0.3s ease;
+      letter-spacing: 1px;
     }
 
-    .product:hover {
-      transform: translateY(-5px);
+    .hero p {
+      font-size: 1.1rem;
+      margin-bottom: 2.5rem;
+      color: var(--gray);
     }
 
-    .product h2 {
+    .cta-button {
+      display: inline-block;
+      padding: 15px 40px;
+      background: transparent;
       color: var(--gold);
+      border: 1px solid var(--gold);
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .cta-button:hover {
+      background: var(--gold);
+      color: var(--bg);
+    }
+
+    /* Product Section */
+    .product-section {
+      padding: 8rem 5%;
+      background: var(--bg);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-header h2 {
+      font-family: var(--font-serif);
+      font-size: 2.5rem;
+      color: var(--white);
       margin-bottom: 1rem;
     }
 
-    .product label {
-      display: block;
-      margin: 0.5rem 0 0.3rem;
-    }
-
-    .product select, .product button {
-      width: 100%;
-      margin: 0.5em 0;
-      padding: 0.7em;
-      font-size: 1em;
-      background-color: var(--background);
-      color: var(--white);
-      border: 1px solid var(--gray);
-      border-radius: 4px;
-    }
-
-    .product button {
-      background-color: var(--gold);
-      color: var(--background);
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-      transition: opacity 0.3s ease;
-    }
-
-    .product button:hover {
-      opacity: 0.9;
-    }
-
-    .views {
-      font-size: 0.85em;
+    .section-header p {
       color: var(--gray);
-      margin-top: 1em;
-    }
-
-    /* Footer Légal Complet */
-    footer {
-      background-color: var(--accent);
-      padding: 2rem;
-      border-top: 1px solid rgba(212, 175, 55, 0.3);
-    }
-
-    .footer-container {
-      max-width: 1200px;
+      max-width: 600px;
       margin: 0 auto;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .product-card {
+      background: var(--accent);
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      transition: var(--transition);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .product-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      border-color: rgba(212, 175, 55, 0.3);
+    }
+
+    .product-image {
+      height: 400px;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+
+    .product-card:hover .product-image img {
+      transform: scale(1.05);
+    }
+
+    .product-info {
+      padding: 1.5rem;
+    }
+
+    .product-title {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .product-price {
+      color: var(--gold);
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+
+    .product-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .add-to-cart {
+      flex: 1;
+      padding: 12px;
+      background: var(--gold);
+      color: var(--bg);
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .add-to-cart:hover {
+      background: var(--gold-light);
+    }
+
+    .view-details {
+      flex: 1;
+      padding: 12px;
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .view-details:hover {
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    /* Footer Luxe */
+    footer {
+      background: var(--accent);
+      padding: 5rem 5% 3rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.1);
+    }
+
+    .footer-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
+      gap: 3rem;
+      margin-bottom: 3rem;
     }
 
     .footer-logo {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 1rem;
+      gap: 12px;
+      margin-bottom: 1.5rem;
     }
 
     .footer-logo svg {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       fill: var(--gold);
     }
 
     .footer-logo-text {
-      font-size: 1.2em;
-      font-weight: bold;
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 700;
       color: var(--gold);
     }
 
-    .legal-links {
+    .footer-description {
+      color: var(--gray);
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+    .footer-social {
       display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+      gap: 1rem;
     }
 
-    .legal-links a {
-      color: var(--gray);
-      text-decoration: none;
-      transition: color 0.3s;
-      font-size: 0.9em;
+    .footer-social a {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--gray-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
     }
 
-    .legal-links a:hover {
-      color: var(--gold);
+    .footer-social a:hover {
+      border-color: var(--gold);
+      background: rgba(212, 175, 55, 0.1);
     }
 
-    .trademark-notice {
-      font-size: 0.8em;
-      color: var(--gray);
-      margin-top: 1rem;
-      border-top: 1px solid rgba(170, 170, 170, 0.2);
-      padding-top: 1rem;
-      grid-column: 1 / -1;
-      text-align: center;
+    .footer-social svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--white);
     }
 
-    .trademark-notice strong {
-      color: var(--gold);
+    .footer-title {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      color: var(--white);
+      margin-bottom: 1.5rem;
+      position: relative;
+      padding-bottom: 10px;
     }
 
-    /* Cookie Banner RGPD */
-    .cookie-banner {
-      position: fixed;
+    .footer-title:after {
+      content: '';
+      position: absolute;
       bottom: 0;
       left: 0;
-      right: 0;
-      background: var(--accent);
-      padding: 1.5rem;
-      display: none;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      z-index: 999;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-      border-top: 1px solid var(--gold);
-    }
-
-    .cookie-banner p {
-      flex: 1;
-      min-width: 250px;
-      margin: 0;
-    }
-
-    .cookie-buttons {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .cookie-banner button {
-      padding: 0.5rem 1.5rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s;
-    }
-
-    .cookie-accept {
+      width: 40px;
+      height: 1px;
       background: var(--gold);
-      color: var(--background);
-      border: none;
     }
 
-    .cookie-decline {
-      background: transparent;
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.8rem;
+    }
+
+    .footer-links a {
       color: var(--gray);
-      border: 1px solid var(--gray);
+      text-decoration: none;
+      transition: var(--transition);
     }
 
-    .cookie-settings {
-      background: transparent;
+    .footer-links a:hover {
       color: var(--gold);
-      border: 1px solid var(--gold);
+      padding-left: 5px;
     }
 
-    /* Panier latéral */
+    .footer-bottom {
+      border-top: 1px solid var(--gray-dark);
+      padding-top: 2rem;
+      text-align: center;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    /* Panier Latéral Luxe */
     .cart-sidebar {
       position: fixed;
       top: 0;
-      right: -400px;
+      right: -450px;
       width: 100%;
-      max-width: 400px;
-      height: 100%;
+      max-width: 450px;
+      height: 100vh;
       background: var(--accent);
-      box-shadow: -2px 0 10px rgba(0,0,0,0.2);
-      transition: right 0.3s ease;
-      z-index: 999;
-      padding: 20px;
+      box-shadow: -5px 0 30px rgba(0, 0, 0, 0.3);
+      transition: right 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+      z-index: 9999;
+      padding: 2rem;
       overflow-y: auto;
     }
 
@@ -330,9 +472,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--gray);
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--gray-dark);
+    }
+
+    .cart-title {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      color: var(--white);
     }
 
     .close-cart {
@@ -341,151 +489,211 @@
       color: var(--gray);
       font-size: 1.5rem;
       cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .close-cart:hover {
+      color: var(--gold);
+      transform: rotate(90deg);
+    }
+
+    .cart-items {
+      margin-bottom: 2rem;
     }
 
     .cart-item {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid rgba(170, 170, 170, 0.2);
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--gray-dark);
     }
 
-    .cart-item-info {
+    .cart-item-image {
+      width: 80px;
+      height: 80px;
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+
+    .cart-item-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cart-item-details {
       flex: 1;
+    }
+
+    .cart-item-title {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .cart-item-variant {
+      color: var(--gray);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .cart-item-price {
+      color: var(--gold);
+      font-weight: 500;
     }
 
     .cart-item-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 1rem;
+      margin-top: 0.5rem;
     }
 
-    .cart-item-actions button {
-      background: var(--gold);
-      color: var(--background);
-      border: none;
+    .quantity-btn {
       width: 25px;
       height: 25px;
       border-radius: 50%;
+      background: var(--bg);
+      border: none;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .quantity-btn:hover {
+      background: var(--gold);
+      color: var(--bg);
+    }
+
+    .remove-item {
+      color: var(--gray);
+      font-size: 0.9rem;
+      margin-left: auto;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .remove-item:hover {
+      color: var(--gold);
+    }
+
+    .cart-summary {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--gray-dark);
     }
 
     .cart-total {
-      margin-top: 1.5rem;
-      font-weight: bold;
-      text-align: right;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .cart-total-label {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      color: var(--white);
+    }
+
+    .cart-total-price {
+      font-size: 1.5rem;
+      color: var(--gold);
+      font-weight: 500;
     }
 
     .checkout-btn {
       display: block;
       width: 100%;
-      padding: 1rem;
-      margin-top: 1rem;
+      padding: 15px;
       background: var(--gold);
-      color: var(--background);
+      color: var(--bg);
       border: none;
-      font-weight: bold;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       cursor: pointer;
-      text-align: center;
-      text-decoration: none;
+      transition: var(--transition);
     }
 
-    /* Notification */
-    .cart-notification {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--accent);
-      padding: 1rem;
-      border-left: 4px solid var(--gold);
-      transform: translateX(200%);
-      transition: transform 0.3s ease;
-      z-index: 999;
+    .checkout-btn:hover {
+      background: var(--gold-light);
     }
 
-    .cart-notification.show {
-      transform: translateX(0);
-    }
-
-    .cart-notification a {
-      color: var(--gold);
-      font-weight: bold;
-      margin-left: 10px;
-    }
-
-    /* Modal Cookies */
-    .cookie-modal {
+    /* Overlay */
+    .overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0,0,0,0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
     }
 
-    .cookie-modal .modal-content {
-      background: var(--accent);
-      padding: 2rem;
-      max-width: 500px;
-      width: 90%;
-      border-radius: 8px;
-    }
-
-    .cookie-modal h3 {
-      margin-bottom: 1.5rem;
-      color: var(--gold);
-    }
-
-    .cookie-option {
-      margin-bottom: 1.5rem;
-    }
-
-    .cookie-option label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .cookie-option p {
-      margin-left: 30px;
-      font-size: 0.9em;
-      color: var(--gray);
-    }
-
-    .modal-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 2rem;
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
     }
 
     /* Responsive */
+    @media (max-width: 1024px) {
+      .main-nav {
+        gap: 1.5rem;
+      }
+      
+      .hero h1 {
+        font-size: 2.8rem;
+      }
+    }
+
     @media (max-width: 768px) {
       header {
-        flex-direction: column;
-        text-align: center;
-        padding: 1rem;
+        padding: 0 2rem;
       }
+      
+      .main-nav {
+        display: none;
+      }
+      
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+      
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
+    @media (max-width: 480px) {
+      header {
+        padding: 0 1.5rem;
+      }
+      
       .logo {
-        margin-bottom: 1rem;
+        font-size: 1.5rem;
       }
-
+      
+      .hero h1 {
+        font-size: 1.8rem;
+      }
+      
       .cart-sidebar {
-        width: 90%;
+        max-width: 100%;
       }
     }
   </style>
 </head>
 <body>
 
+  <!-- Header Luxe -->
   <header>
     <div class="logo">
       <svg viewBox="0 0 100 100" class="logo-icon">
@@ -494,27 +702,28 @@
       </svg>
       We Diamond®
     </div>
-    <nav>
-      <a href="#shop" class="nav-link active" data-section="shop">Shop</a>
-      <a href="#bestseller" class="nav-link" data-section="bestseller">Best Seller</a>
-      <a href="#about" class="nav-link" data-section="about">À propos</a>
+
+    <nav class="main-nav">
+      <a href="#shop" class="nav-link active">Shop</a>
+      <a href="#collections" class="nav-link">Collections</a>
+      <a href="#about" class="nav-link">Haute Joaillerie</a>
+      <a href="#heritage" class="nav-link">Notre Héritage</a>
     </nav>
-    <div class="socials">
-      <a href="https://www.tiktok.com/@WeDiamond" target="_blank" aria-label="TikTok">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
-        </svg>
-      </a>
-      <a href="https://www.instagram.com/WeDiamond" target="_blank" aria-label="Instagram">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-        </svg>
-      </a>
-      <a href="https://x.com/WeDiamond" target="_blank" aria-label="Twitter">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-        </svg>
-      </a>
+
+    <div class="header-right">
+      <div class="social-links">
+        <a href="https://www.instagram.com/wediamond" target="_blank" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="social-icon">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </a>
+        <a href="https://www.tiktok.com/@wediamond" target="_blank" aria-label="TikTok">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="social-icon">
+            <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+          </svg>
+        </a>
+      </div>
+
       <div class="cart-icon" id="cart-toggle">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="9" cy="21" r="1"></circle>
@@ -526,494 +735,261 @@
     </div>
   </header>
 
-  <main>
-    <section id="shop" class="active">
-      <div class="product" data-id="1">
-        <h2>Polo We Diamond</h2>
-        <label for="color">Choisissez la couleur :</label>
-        <select id="color">
-          <option value="noir">Noir</option>
-          <option value="blanc">Blanc</option>
-        </select>
-        <label for="size">Choisissez la taille :</label>
-        <select id="size">
-          <option value="S">S</option>
-          <option value="M">M</option>
-          <option value="L">L</option>
-          <option value="XL">XL</option>
-        </select>
-        <button class="add-to-cart" data-product-id="1">Ajouter au panier</button>
-        <p class="views" id="views-1">Vues : 0</p>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>L'Excellence Cristallisée</h1>
+      <p>Chaque pièce We Diamond est une œuvre d'art joaillière, minutieusement conçue pour incarner le luxe absolu.</p>
+      <a href="#shop" class="cta-button">Découvrir la Collection</a>
+    </div>
+  </section>
+
+  <!-- Product Section -->
+  <section class="product-section" id="shop">
+    <div class="section-header">
+      <h2>Nos Créations Signature</h2>
+      <p>Des pièces uniques façonnées par nos maîtres joailliers avec les diamants les plus exceptionnels</p>
+    </div>
+
+    <div class="product-grid">
+      <!-- Produit 1 -->
+      <div class="product-card">
+        <div class="product-image">
+          <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1587&q=80" alt="Bague We Diamond Éternité">
+        </div>
+        <div class="product-info">
+          <h3 class="product-title">Bague Éternité</h3>
+          <span class="product-price">12,500 €</span>
+          <div class="product-actions">
+            <button class="add-to-cart">Ajouter au panier</button>
+            <button class="view-details">Détails</button>
+          </div>
+        </div>
       </div>
-    </section>
 
-    <section id="bestseller">
-      <h2>Best Seller</h2>
-      <p>Produit en tête : <span id="best-seller-name">Polo We Diamond</span> (<span id="best-seller-views">0 vues</span>)</p>
-    </section>
+      <!-- Produit 2 -->
+      <div class="product-card">
+        <div class="product-image">
+          <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Collier We Diamond Radiance">
+        </div>
+        <div class="product-info">
+          <h3 class="product-title">Collier Radiance</h3>
+          <span class="product-price">24,800 €</span>
+          <div class="product-actions">
+            <button class="add-to-cart">Ajouter au panier</button>
+            <button class="view-details">Détails</button>
+          </div>
+        </div>
+      </div>
 
-    <section id="about">
-      <h2>À propos</h2>
-      <p>We Diamond est une marque inspirée de l'héritage, du luxe et de l'exigence du détail.</p>
-    </section>
-  </main>
+      <!-- Produit 3 -->
+      <div class="product-card">
+        <div class="product-image">
+          <img src="https://images.unsplash.com/photo-1611591437281-4608be122683?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Boucles d'oreilles We Diamond Luna">
+        </div>
+        <div class="product-info">
+          <h3 class="product-title">Boucles Luna</h3>
+          <span class="product-price">8,900 €</span>
+          <div class="product-actions">
+            <button class="add-to-cart">Ajouter au panier</button>
+            <button class="view-details">Détails</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- Footer Luxe -->
   <footer>
-    <div class="footer-container">
-      <div class="footer-column">
+    <div class="footer-grid">
+      <div class="footer-col">
         <div class="footer-logo">
-          <svg viewBox="0 0 100 100" class="footer-logo-icon">
+          <svg viewBox="0 0 100 100">
             <path d="M50 10L20 50L50 90L80 50L50 10Z" stroke="currentColor" stroke-width="2" fill="none"/>
             <path d="M35 50L50 30L65 50L50 70L35 50Z" stroke="currentColor" stroke-width="2" fill="none"/>
           </svg>
           <span class="footer-logo-text">We Diamond®</span>
         </div>
-        <p>Marque de luxe et d'excellence depuis 2023</p>
-      </div>
-
-      <div class="footer-column">
-        <h3>Légal</h3>
-        <div class="legal-links">
-          <a href="/mentions-legales">Mentions légales</a>
-          <a href="/politique-confidentialite">Politique de confidentialité</a>
-          <a href="/conditions-generales">Conditions générales</a>
-          <a href="/politique-cookies">Politique des cookies</a>
-          <a href="/protection-des-donnees">Protection des données</a>
+        <p class="footer-description">
+          Fondée en 2025, We Diamond incarne l'excellence joaillière française, 
+          alliant savoir-faire ancestral et design avant-gardiste.
+        </p>
+        <div class="footer-social">
+          <a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/>
+            </svg>
+          </a>
+          <a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </a>
+          <a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+            </svg>
+          </a>
         </div>
       </div>
 
-      <div class="footer-column">
-        <h3>Contact</h3>
-        <p>contact@wediamond.com</p>
-        <p>+33 1 23 45 67 89</p>
+      <div class="footer-col">
+        <h3 class="footer-title">Boutique</h3>
+        <ul class="footer-links">
+          <li><a href="#">Nouveautés</a></li>
+          <li><a href="#">Collections</a></li>
+          <li><a href="#">Bagues</a></li>
+          <li><a href="#">Colliers</a></li>
+          <li><a href="#">Boucles d'oreilles</a></li>
+        </ul>
       </div>
 
-      <div class="trademark-notice">
-        <p><strong>We Diamond®</strong> est une marque déposée. Tous droits réservés. Le logo We Diamond et les produits associés sont protégés par des droits d'auteur et des droits de propriété intellectuelle en France et à l'international.</p>
-        <p>© 2025 We Diamond SAS. Toute reproduction ou utilisation non autorisée est strictement interdite.</p>
+      <div class="footer-col">
+        <h3 class="footer-title">Services</h3>
+        <ul class="footer-links">
+          <li><a href="#">Livraison & Retours</a></li>
+          <li><a href="#">Conseils en Joaillerie</a></li>
+          <li><a href="#">Personnalisation</a></li>
+          <li><a href="#">Entretien & Réparation</a></li>
+          <li><a href="#">Certificats d'Authenticité</a></li>
+        </ul>
       </div>
+
+      <div class="footer-col">
+        <h3 class="footer-title">Maison We Diamond</h3>
+        <ul class="footer-links">
+          <li><a href="#">Notre Histoire</a></li>
+          <li><a href="#">Savoir-Faire</a></li>
+          <li><a href="#">Éthique & Durabilité</a></li>
+          <li><a href="#">Carrières</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2025 We Diamond SAS. Tous droits réservés. | <a href="#">Mentions Légales</a> | <a href="#">Politique de Confidentialité</a> | <a href="#">Conditions Générales</a></p>
+      <p>We Diamond® est une marque déposée. Toute reproduction interdite.</p>
     </div>
   </footer>
 
-  <!-- Panier latéral -->
+  <!-- Panier Latéral -->
   <div class="cart-sidebar" id="cart-sidebar">
     <div class="cart-header">
-      <h3>Votre Panier</h3>
+      <h3 class="cart-title">Votre Sélection</h3>
       <button class="close-cart" id="close-cart">&times;</button>
     </div>
-    <div id="cart-items"></div>
-    <div class="cart-total">
-      Total: <span id="cart-total-price">0.00</span> €
+    
+    <div class="cart-items">
+      <!-- Les articles seront ajoutés dynamiquement ici -->
+      <p>Votre panier est vide</p>
     </div>
-    <a href="/checkout" class="checkout-btn">Commander</a>
+    
+    <div class="cart-summary">
+      <div class="cart-total">
+        <span class="cart-total-label">Total</span>
+        <span class="cart-total-price">0 €</span>
+      </div>
+      <button class="checkout-btn">Procéder au paiement</button>
+    </div>
   </div>
 
-  <!-- Cookie Banner conforme RGPD -->
-  <div class="cookie-banner" id="cookieBanner">
-    <p>Nous utilisons des cookies pour améliorer votre expérience. En continuant, vous acceptez notre <a href="/politique-cookies" style="color: var(--gold);">politique des cookies</a>.</p>
-    <div class="cookie-buttons">
-      <button class="cookie-decline" onclick="cookieManager.declineCookies()">Refuser</button>
-      <button class="cookie-settings" onclick="cookieManager.showCookieSettings()">Préférences</button>
-      <button class="cookie-accept" onclick="cookieManager.acceptCookies()">Accepter</button>
-    </div>
-  </div>
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
 
   <script>
-    // Gestion des cookies RGPD
-    const cookieManager = {
-      init() {
-        this.setupCookieBanner();
-        this.setupNavigation();
-        this.setupCart();
-      },
-
-      // Gestion du bandeau cookies
-      setupCookieBanner() {
-        const accepted = localStorage.getItem('cookiesAccepted');
-        const banner = document.getElementById('cookieBanner');
-
-        if (accepted === 'true') {
-          banner.style.display = 'none';
-          this.initAnalytics();
-        } else if (accepted === 'false') {
-          banner.style.display = 'none';
-          this.clearCookies();
-        } else {
-          banner.style.display = 'flex';
-        }
-      },
-
-      acceptCookies() {
-        localStorage.setItem('cookiesAccepted', 'true');
-        document.getElementById('cookieBanner').style.display = 'none';
-        this.initAnalytics();
-        this.trackEvent('Cookies', 'Accepted');
-      },
-
-      declineCookies() {
-        localStorage.setItem('cookiesAccepted', 'false');
-        document.getElementById('cookieBanner').style.display = 'none';
-        this.clearCookies();
-        this.trackEvent('Cookies', 'Declined');
-      },
-
-      showCookieSettings() {
-        const modal = document.createElement('div');
-        modal.className = 'cookie-modal';
-        modal.innerHTML = `
-          <div class="modal-content">
-            <h3>Préférences des cookies</h3>
-            <div class="cookie-option">
-              <label>
-                <input type="checkbox" id="analyticsCookies" checked>
-                Cookies analytiques
-              </label>
-              <p>Nous aident à améliorer notre site</p>
-            </div>
-            <div class="cookie-option">
-              <label>
-                <input type="checkbox" id="marketingCookies">
-                Cookies marketing
-              </label>
-              <p>Pour personnaliser les publicités</p>
-            </div>
-            <div class="modal-buttons">
-              <button onclick="cookieManager.saveCookieSettings()">Enregistrer</button>
-              <button onclick="this.parentElement.parentElement.remove()">Annuler</button>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(modal);
-      },
-
-      saveCookieSettings() {
-        const analytics = document.getElementById('analyticsCookies').checked;
-        const marketing = document.getElementById('marketingCookies').checked;
-        
-        localStorage.setItem('cookiesSettings', JSON.stringify({
-          analytics,
-          marketing
-        }));
-        
-        if (analytics) this.initAnalytics();
-        document.querySelector('.cookie-modal').remove();
-        this.trackEvent('Cookies', 'SettingsSaved');
-      },
-
-      initAnalytics() {
-        // Exemple d'initialisation de Google Analytics
-        if (typeof gtag !== 'undefined') {
-          gtag('config', 'UA-XXXXX-Y');
-        }
-        console.log('Analytics initialisés');
-      },
-
-      clearCookies() {
-        // Suppression des cookies analytiques
-        document.cookie.split(';').forEach(cookie => {
-          const name = cookie.trim().split('=')[0];
-          if (name.includes('_ga') || name.includes('_gid')) {
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-          }
-        });
-        console.log('Cookies analytiques supprimés');
-      },
-
-      trackEvent(category, action) {
-        if (localStorage.getItem('cookiesAccepted') === 'true' && typeof gtag !== 'undefined') {
-          gtag('event', action, {
-            'event_category': category
-          });
-        }
-      },
-
-      // Gestion de la navigation
-      setupNavigation() {
-        const navLinks = document.querySelectorAll('.nav-link');
-        
-        // Gestion des clics
-        navLinks.forEach(link => {
-          link.addEventListener('click', e => {
-            e.preventDefault();
-            const sectionId = link.getAttribute('href').substring(1);
-            this.navigateToSection(sectionId);
-          });
-        });
-
-        // Gestion du scroll
-        window.addEventListener('scroll', () => {
-          this.updateActiveSection();
-        });
-
-        // Initialisation
-        this.updateActiveSection();
-      },
-
-      navigateToSection(sectionId) {
-        const section = document.getElementById(sectionId);
-        if (section) {
-          // Animation fluide
-          window.scrollTo({
-            top: section.offsetTop - 70,
-            behavior: 'smooth'
-          });
-          
-          // Mise à jour de l'URL sans rechargement
-          history.pushState(null, null, `#${sectionId}`);
-          
-          // Mise à jour visuelle
-          this.setActiveLink(sectionId);
-          
-          // Suivi analytique
-          this.trackEvent('Navigation', `Viewed_${sectionId}`);
-        }
-      },
-
-      updateActiveSection() {
-        let currentSection = '';
-        const scrollPosition = window.scrollY + 100;
-        
-        document.querySelectorAll('section').forEach(section => {
-          const sectionTop = section.offsetTop;
-          const sectionHeight = section.offsetHeight;
-          
-          if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-            currentSection = section.id;
-          }
-        });
-        
-        if (currentSection) {
-          this.setActiveLink(currentSection);
-        }
-      },
-
-      setActiveLink(sectionId) {
-        document.querySelectorAll('.nav-link').forEach(link => {
-          if (link.getAttribute('href').substring(1) === sectionId) {
-            link.classList.add('active');
-            document.getElementById(sectionId).classList.add('active');
-          } else {
-            link.classList.remove('active');
-            document.getElementById(link.getAttribute('href').substring(1))?.classList.remove('active');
-          }
-        });
-      },
-
-      // Gestion du panier
-      setupCart() {
-        this.loadCart();
-        document.querySelectorAll('.add-to-cart').forEach(button => {
-          button.addEventListener('click', (e) => {
-            const productId = e.target.dataset.productId;
-            this.addToCart(productId);
-          });
-        });
-
-        document.getElementById('cart-toggle').addEventListener('click', () => {
-          this.toggleCart();
-        });
-
-        document.getElementById('close-cart').addEventListener('click', () => {
-          this.toggleCart(false);
-        });
-      },
-
-      toggleCart(show = true) {
-        const sidebar = document.getElementById('cart-sidebar');
-        if (show) {
-          sidebar.classList.add('active');
-        } else {
-          sidebar.classList.remove('active');
-        }
-      },
-
-      addToCart(productId) {
-        const cart = JSON.parse(localStorage.getItem('cart') || []);
-        const product = this.getProductDetails(productId);
-        
-        // Vérifier si le produit est déjà dans le panier
-        const existingItem = cart.find(item => item.id === productId && item.color === product.color && item.size === product.size);
-        
-        if (existingItem) {
-          existingItem.quantity += 1;
-        } else {
-          cart.push({
-            ...product,
-            id: productId,
-            quantity: 1,
-            addedAt: new Date().toISOString()
-          });
-        }
-        
-        localStorage.setItem('cart', JSON.stringify(cart));
-        this.updateCartUI();
-        this.showCartNotification(product.name);
-        this.trackEvent('Cart', 'ProductAdded', product.name);
-        this.toggleCart(true);
-      },
-
-      getProductDetails(productId) {
-        const productElement = document.querySelector(`[data-id="${productId}"]`);
-        return {
-          name: productElement.querySelector('h2').textContent,
-          price: 99.99, // À remplacer par le vrai prix
-          color: productElement.querySelector('#color').value,
-          size: productElement.querySelector('#size').value
-        };
-      },
-
-      loadCart() {
-        const cart = JSON.parse(localStorage.getItem('cart') || []);
-        this.updateCartUI(cart);
-      },
-
-      updateCartUI(cart = JSON.parse(localStorage.getItem('cart') || [])) {
-        const cartCount = document.getElementById('cart-count');
-        const cartItems = document.getElementById('cart-items');
-        const cartTotal = document.getElementById('cart-total-price');
-        
-        // Mise à jour du compteur
-        if (cartCount) {
-          const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
-          cartCount.textContent = itemCount;
-          cartCount.style.display = itemCount > 0 ? 'flex' : 'none';
-        }
-        
-        // Mise à jour des articles
-        if (cartItems) {
-          cartItems.innerHTML = '';
-          if (cart.length === 0) {
-            cartItems.innerHTML = '<p>Votre panier est vide</p>';
-            return;
-          }
-          
-          let total = 0;
-          cart.forEach(item => {
-            const itemTotal = item.price * item.quantity;
-            total += itemTotal;
-            
-            const itemElement = document.createElement('div');
-            itemElement.className = 'cart-item';
-            itemElement.innerHTML = `
-              <div class="cart-item-info">
-                <h4>${item.name}</h4>
-                <p>${item.color}, ${item.size}</p>
-                <p>${item.price.toFixed(2)} € × ${item.quantity} = ${itemTotal.toFixed(2)} €</p>
-              </div>
-              <div class="cart-item-actions">
-                <button onclick="cookieManager.updateQuantity('${item.id}', '${item.color}', '${item.size}', ${item.quantity - 1})">-</button>
-                <span>${item.quantity}</span>
-                <button onclick="cookieManager.updateQuantity('${item.id}', '${item.color}', '${item.size}', ${item.quantity + 1})">+</button>
-                <button onclick="cookieManager.removeFromCart('${item.id}', '${item.color}', '${item.size}')">×</button>
-              </div>
-            `;
-            cartItems.appendChild(itemElement);
-          });
-          
-          // Mise à jour du total
-          if (cartTotal) {
-            cartTotal.textContent = total.toFixed(2);
-          }
-        }
-      },
-
-      updateQuantity(productId, color, size, newQuantity) {
-        if (newQuantity < 1) {
-          this.removeFromCart(productId, color, size);
-          return;
-        }
-        
-        const cart = JSON.parse(localStorage.getItem('cart') || []);
-        const item = cart.find(item => item.id === productId && item.color === color && item.size === size);
-        
-        if (item) {
-          item.quantity = newQuantity;
-          localStorage.setItem('cart', JSON.stringify(cart));
-          this.updateCartUI(cart);
-          this.trackEvent('Cart', 'QuantityUpdated');
-        }
-      },
-
-      removeFromCart(productId, color, size) {
-        const cart = JSON.parse(localStorage.getItem('cart') || []);
-        const updatedCart = cart.filter(item => !(item.id === productId && item.color === color && item.size === size));
-        
-        localStorage.setItem('cart', JSON.stringify(updatedCart));
-        this.updateCartUI(updatedCart);
-        this.trackEvent('Cart', 'ProductRemoved');
-      },
-
-      showCartNotification(productName) {
-        const notification = document.createElement('div');
-        notification.className = 'cart-notification';
-        notification.innerHTML = `
-          <p>${productName} ajouté au panier</p>
-          <a href="#cart" onclick="cookieManager.toggleCart(true); return false;">Voir le panier</a>
-        `;
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-          notification.classList.add('show');
-        }, 100);
-        
-        setTimeout(() => {
-          notification.classList.remove('show');
-          setTimeout(() => notification.remove(), 500);
-        }, 3000);
+    // Gestion du header scroll
+    window.addEventListener('scroll', function() {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
       }
-    };
-
-    // Initialisation au chargement
-    document.addEventListener('DOMContentLoaded', () => {
-      cookieManager.init();
-      
-      // Mise à jour des vues
-      updateViewsCounter();
-      
-      // Mise à jour du best seller
-      updateBestSeller();
     });
 
-    // Compteur de vues
-    function updateViewsCounter() {
-      const views = JSON.parse(localStorage.getItem('views') || '{}');
-      document.querySelectorAll('.product').forEach(product => {
-        const id = product.getAttribute('data-id');
-        views[id] = (views[id] || 0) + 1;
-        
-        // Animation progressive du compteur
-        let current = 0;
-        const target = views[id];
-        const viewsElement = product.querySelector('.views');
-        const increment = target / 20;
-        
-        const timer = setInterval(() => {
-          current = Math.min(current + increment, target);
-          viewsElement.textContent = 'Vues : ' + Math.floor(current);
-          if (current >= target) clearInterval(timer);
-        }, 50);
-        
-        localStorage.setItem('views', JSON.stringify(views));
-      });
-    }
+    // Gestion du panier
+    const cartToggle = document.getElementById('cart-toggle');
+    const closeCart = document.getElementById('close-cart');
+    const cartSidebar = document.getElementById('cart-sidebar');
+    const overlay = document.getElementById('overlay');
 
-    // Mise à jour du best seller
-    function updateBestSeller() {
-      const views = JSON.parse(localStorage.getItem('views') || '{}');
-      let bestSeller = { id: null, views: 0 };
+    cartToggle.addEventListener('click', function() {
+      cartSidebar.classList.add('active');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+
+    closeCart.addEventListener('click', function() {
+      cartSidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+
+    overlay.addEventListener('click', function() {
+      cartSidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+
+    // Ajout au panier
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    
+    addToCartButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const productCard = this.closest('.product-card');
+        const productName = productCard.querySelector('.product-title').textContent;
+        const productPrice = productCard.querySelector('.product-price').textContent;
+        
+        // Ici vous ajouteriez la logique pour ajouter au panier
+        // Pour l'exemple, nous allons juste afficher une notification
+        
+        alert(`${productName} a été ajouté à votre panier`);
+        
+        // Mettre à jour le compteur du panier
+        const cartCount = document.getElementById('cart-count');
+        let count = parseInt(cartCount.textContent) || 0;
+        cartCount.textContent = count + 1;
+        cartCount.style.display = 'flex';
+      });
+    });
+
+    // Animation au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animation du hero
+      gsap.from('.hero h1', { 
+        duration: 1.2, 
+        y: 50, 
+        opacity: 0, 
+        ease: "power3.out" 
+      });
       
-      for (const [id, count] of Object.entries(views)) {
-        if (count > bestSeller.views) {
-          bestSeller = { id, views: count };
-        }
-      }
+      gsap.from('.hero p', { 
+        duration: 1, 
+        y: 30, 
+        opacity: 0, 
+        delay: 0.3, 
+        ease: "power3.out" 
+      });
       
-      if (bestSeller.id) {
-        const productName = document.querySelector(`[data-id="${bestSeller.id}"] h2`).textContent;
-        document.getElementById('best-seller-name').textContent = productName;
-        document.getElementById('best-seller-views').textContent = `${bestSeller.views} vues`;
-      }
-    }
+      gsap.from('.cta-button', { 
+        duration: 0.8, 
+        y: 20, 
+        opacity: 0, 
+        delay: 0.6, 
+        ease: "power3.out" 
+      });
+      
+      // Animation des produits
+      gsap.from('.product-card', {
+        duration: 1,
+        y: 50,
+        opacity: 0,
+        stagger: 0.15,
+        delay: 0.8,
+        ease: "power3.out"
+      });
+    });
   </script>
 </body>
 </html>
