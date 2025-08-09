@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Raydium-style Swap — Clone (Jupiter v6)</title>
+<link rel="preconnect" href="https://quote-api.jup.ag">
+<style>
+  :root{
+    --bg:#061025; --card:#07152a; --muted:#9fb0c6; --accent:#6ee7b7; --glass: rgba(255,255,255,0.03);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:linear-gradient(180deg,#020617 0%, #071025 100%);color:#e6eef8;display:flex;align-items:start;justify-content:center;padding:28px 14px;}
+  .wrap{width:100%;max-width:1100px}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#4fd1c5);display:flex;align-items:center;justify-content:center;font-weight:700;color:#022}
+  .title{font-size:18px}
+  .small{font-size:13px;color:var(--muted)}
+  .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.03);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
+  .connect{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:10px;background:linear-gradient(90deg,#061227,#07122a);border:1px solid rgba(255,255,255,0.04);cursor:pointer}
+  main{display:grid;grid-template-columns:1fr 320px;gap:18px}
+  @media (max-width:900px){main{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+  .swap-card{max-width:760px;margin:auto}
+  .row{display:flex;align-items:center;justify-content:space-between}
+  .label{color:var(--muted);font-size:13px;margin-bottom:6px}
+  .token-box{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.01);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+  .token-select{display:flex;gap:8px;align-items:center;cursor:pointer}
+  .token-symbol{font-weight:700}
+  input[type="number"], input[type="text"]{width:100%;background:transparent;border:none;color:inherit;font-size:18px;outline:none}
+  .invert{width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg, #0b1220, #08101a);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+  .meta{font-size:13px;color:var(--muted);margin-top:10px;display:flex;gap:12px;flex-wrap:wrap}
+  .quote{margin-top:14px;padding:12px;border-radius:10px;background:rgba(0,0,0,0.25);font-size:14px}
+  .swap-btn{width:100%;padding:12px;border-radius:12px;border:none;font-weight:700;font-size:16px;cursor:pointer;margin-top:14px}
+  .swap-btn.primary{background:linear-gradient(90deg, rgba(110,231,183,0.12), rgba(79,209,197,0.06)); color:var(--accent); border:1px solid rgba(110,231,183,0.15)}
+  .swap-btn:disabled{opacity:0.45;cursor:not-allowed}
+  .sidebar .box{padding:12px;border-radius:10px;background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.02);margin-bottom:12px}
+  .modal{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;padding:20px}
+  .modal.open{display:flex}
+  .modal .panel{width:100%;max-width:640px;background:#071028;padding:14px;border-radius:12px}
+  .token-list{max-height:340px;overflow:auto;margin-top:8px}
+  .token-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;cursor:pointer}
+  .token-item:hover{background:rgba(255,255,255,0.01)}
+  .hint{font-size:13px;color:var(--muted);margin-top:8px}
+  footer{margin-top:16px;color:var(--muted);font-size:13px;text-align:center}
+  a.link{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">RC</div>
+      <div>
+        <div class="title">Raydium-style Swap — Clone</div>
+        <div class="small">Demo intégration Jupiter v6 — lecture + exécution</div>
+      </div>
+    </div>
+    <div>
+      <button id="networkBtn" class="btn">Network: <span id="networkLabel">mainnet</span></button>
+      <button id="connectBtn" class="connect"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L19 9" stroke="#9fb6c9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="connectLabel">Connect Wallet</span></button>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div class="card swap-card">
+        <div class="row">
+          <div>
+            <div class="label">Swap</div>
+            <div class="small">Aggregator: Jupiter v6 — construction TX & signature</div>
+          </div>
+          <div class="small">Slippage <input id="slippage" type="number" value="0.5" step="0.1" style="width:70px;background:transparent;border:none;color:var(--muted);outline:none">%</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <!-- FROM -->
+          <div class="label">From</div>
+          <div class="token-box" style="margin-bottom:8px">
+            <div style="width:84px">
+              <div class="token-select" id="fromSelect">
+                <div style="width:36px;height:36px;border-radius:8px;background:#fff2"></div>
+                <div style="margin-left:8px">
+                  <div class="token-symbol" id="fromSym">SOL</div>
+                  <div class="small" id="fromName">Solana</div>
+                </div>
+              </div>
+            </div>
+            <div style="flex:1">
+              <input id="fromAmount" type="number" min="0" placeholder="0.00" />
+            </div>
+            <div style="width:120px;text-align:right;color:var(--muted)">Balance: <span id="balFrom">—</span></div>
+          </div>
+
+          <div style="display:flex;justify-content:center;margin:8px 0">
+            <button class="invert" id="invertBtn" title="Invert">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7 7V3l-4 4 4 4V9h10v6h2V7H7z" fill="#9fb6c9"></path></svg>
+            </button>
+          </div>
+
+          <!-- TO -->
+          <div class="label">To</div>
+          <div class="token-box">
+            <div style="width:84px">
+              <div class="token-select" id="toSelect">
+                <div style="width:36px;height:36px;border-radius:8px;background:#fff2"></div>
+                <div style="margin-left:8px">
+                  <div class="token-symbol" id="toSym">USDC</div>
+                  <div class="small" id="toName">USD Coin</div>
+                </div>
+              </div>
+            </div>
+            <div style="flex:1"><input id="toAmount" type="text" placeholder="—" readonly/></div>
+            <div style="width:120px;text-align:right;color:var(--muted)">Balance: <span id="balTo">—</span></div>
+          </div>
+
+          <div class="meta">
+            <div class="small">Price impact: <span id="priceImpact">—</span></div>
+            <div class="small">Minimum received: <span id="minRec">—</span></div>
+            <div class="small">Route: <span id="routeLabel">—</span></div>
+          </div>
+
+          <div class="quote" id="quoteBox">Quote: —</div>
+
+          <button id="swapBtn" class="swap-btn primary" disabled>Connect wallet</button>
+
+          <div class="hint">Astuce : pour tokens non listés, colle l'adresse mint dans la recherche. Teste en <strong>devnet</strong> avant mainnet.</div>
+        </div>
+      </div>
+
+      <!-- token modal -->
+      <div id="modal" class="modal" aria-hidden="true">
+        <div class="panel card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="label">Sélectionner token</div>
+            <button id="closeModal" class="btn">Close</button>
+          </div>
+          <input id="filter" placeholder="Search token / paste mint" style="width:100%;margin-top:8px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:inherit"/>
+          <div class="token-list" id="tokenList"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <aside class="sidebar">
+      <div class="box card">
+        <div class="small">Network: <strong id="sidebarNet">mainnet-beta</strong></div>
+        <div style="margin-top:8px" class="small">Endpoint (RPC): <span id="rpcUrl">https://api.mainnet-beta.solana.com</span></div>
+      </div>
+
+      <div class="box card">
+        <div class="label">Recent actions</div>
+        <div id="events" class="small">—</div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    Sources : Jupiter v6 (quote / swap) · Phantom provider (signTransaction / signAndSendTransaction).  
+  </footer>
+</div>
+
+<!-- solana web3 (browser bundle) -->
+<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+<script>
+/*
+  Raydium-style Swap clone (single-file).
+  - Uses Jupiter v6 REST endpoints:
+      GET https://quote-api.jup.ag/v6/quote
+      POST https://quote-api.jup.ag/v6/swap
+    See Jupiter docs: https://dev.jup.ag/docs (used for this implementation).
+  - Uses injected wallet (Phantom or compatible).
+  - Uses @solana/web3.js browser bundle (global: solanaWeb3).
+*/
+
+/* ------------------ Configuration & token list (demo) ------------------ */
+const CONFIG = {
+  JUPITER_QUOTE: 'https://quote-api.jup.ag/v6/quote',
+  JUPITER_SWAP: 'https://quote-api.jup.ag/v6/swap',
+  RPC_MAINNET: 'https://rpc.ankr.com/solana', // fallback public RPC (change for production / paid like QuickNode)
+  RPC_DEVNET: solanaWeb3.clusterApiUrl('devnet'),
+  DEFAULT_NETWORK: 'mainnet', // 'devnet' for tests
+  // Minimal token list for demo. Add full token list (tokenlist.json) in prod.
+  TOKENS: [
+    { sym:'SOL', name:'Solana', mint:'So11111111111111111111111111111111111111112', decimals:9 },
+    { sym:'USDC', name:'USD Coin', mint:'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', decimals:6 },
+    { sym:'RAY', name:'Raydium', mint:'4k3Dyjzv...not-full', decimals:6 },
+    { sym:'SRM', name:'Serum', mint:'9xQeWvG816bUx9EPg4rA7s9on3...' , decimals:6 }
+  ]
+};
+
+let NETWORK = CONFIG.DEFAULT_NETWORK;
+let RPC_URL = (NETWORK === 'devnet') ? CONFIG.RPC_DEVNET : CONFIG.RPC_MAINNET;
+
+/* ------------------ DOM refs ------------------ */
+const connectBtn = document.getElementById('connectBtn');
+const connectLabel = document.getElementById('connectLabel');
+const networkBtn = document.getElementById('networkBtn');
+const networkLabel = document.getElementById('networkLabel');
+const rpcUrlSpan = document.getElementById('rpcUrl');
+const sidebarNet = document.getElementById('sidebarNet');
+
+const fromSelect = document.getElementById('fromSelect');
+const toSelect = document.getElementById('toSelect');
+const fromSym = document.getElementById('fromSym');
+const fromName = document.getElementById('fromName');
+const toSym = document.getElementById('toSym');
+const toName = document.getElementById('toName');
+const fromAmountInput = document.getElementById('fromAmount');
+const toAmountInput = document.getElementById('toAmount');
+const slippageInput = document.getElementById('slippage');
+const priceImpactEl = document.getElementById('priceImpact');
+const minRecEl = document.getElementById('minRec');
+const quoteBox = document.getElementById('quoteBox');
+const routeLabel = document.getElementById('routeLabel');
+const swapBtn = document.getElementById('swapBtn');
+const balFrom = document.getElementById('balFrom');
+const balTo = document.getElementById('balTo');
+const events = document.getElementById('events');
+
+/* Modal */
+const modal = document.getElementById('modal');
+const closeModalBtn = document.getElementById('closeModal');
+const tokenListEl = document.getElementById('tokenList');
+const filterInput = document.getElementById('filter');
+
+/* ------------------ App state ------------------ */
+let provider = null;            // injected wallet (window.solana)
+let publicKey = null;           // user public key (solanaWeb3.PublicKey)
+let connection = null;          // solanaWeb3.Connection instance
+let fromToken = CONFIG.TOKENS[0];
+let toToken = CONFIG.TOKENS[1];
+let currentQuote = null;        // raw quote response from Jupiter
+let modalTarget = null;
+
+/* ------------------ Utility helpers ------------------ */
+function logEvent(txt){
+  const time = new Date().toLocaleTimeString();
+  events.innerHTML = time + ' — ' + txt + '<br/>' + events.innerHTML;
+}
+function humanAmount(amountRaw, decimals){ return Number(amountRaw) / (10 ** decimals); }
+function toBaseUnits(amountFloat, decimals){
+  // convert e.g. "0.5" SOL -> 0.5 * 10^9 = integer lamports
+  const v = BigInt(Math.round(Number(amountFloat) * (10 ** decimals)));
+  return v.toString();
+}
+function safeJSON(obj){ try{ return JSON.stringify(obj,null,2)}catch(e){ return String(obj)} }
+
+/* ------------------ Network selection (devnet/mainnet) ------------------ */
+networkBtn.addEventListener('click', ()=>{
+  NETWORK = (NETWORK === 'mainnet') ? 'devnet' : 'mainnet';
+  RPC_URL = (NETWORK === 'devnet') ? CONFIG.RPC_DEVNET : CONFIG.RPC_MAINNET;
+  networkLabel.innerText = NETWORK;
+  rpcUrlSpan.innerText = RPC_URL;
+  sidebarNet.innerText = (NETWORK === 'devnet') ? 'devnet' : 'mainnet-beta';
+  initConnection();
+  logEvent('Network switched to ' + NETWORK);
+});
+
+/* ------------------ Init connection & provider detection ------------------ */
+function initConnection(){
+  connection = new solanaWeb3.Connection(RPC_URL, 'confirmed');
+}
+initConnection();
+
+function detectProvider(){
+  if(window.solana && window.solana.isPhantom){
+    provider = window.solana;
+    return provider;
+  }
+  // generic injected wallet detection fallback
+  if(window.solana){
+    provider = window.solana;
+    return provider;
+  }
+  provider = null;
+  return null;
+}
+detectProvider();
+
+/* ------------------ Wallet connect / disconnect ------------------ */
+async function connectWallet(){
+  detectProvider();
+  if(!provider){
+    alert('Aucun wallet injecté détecté. Installe Phantom / Backpack / Solflare.');
+    return;
+  }
+  try{
+    const resp = await provider.connect();
+    publicKey = new solanaWeb3.PublicKey(resp.publicKey || provider.publicKey);
+    connectLabel.innerText = truncateKey(publicKey.toBase58());
+    swapBtn.disabled = false;
+    logEvent('Wallet connecté: ' + publicKey.toBase58());
+    await refreshBalances();
+  }catch(e){
+    console.error('connect error', e);
+    alert('Connexion refusée ou erreur: ' + (e.message || e));
+  }
+}
+
+async function disconnectWallet(){
+  if(provider && provider.disconnect) {
+    try { await provider.disconnect(); } catch(e){ console.warn('disconnect err', e); }
+  }
+  publicKey = null;
+  connectLabel.innerText = 'Connect Wallet';
+  swapBtn.disabled = true;
+  balFrom.innerText = '—';
+  balTo.innerText = '—';
+  logEvent('Wallet déconnecté');
+}
+
+connectBtn.addEventListener('click', async ()=>{
+  if(!publicKey) await connectWallet(); else await disconnectWallet();
+});
+
+/* helper to shorten pubkey */
+function truncateKey(key){
+  return key.slice(0,4) + '…' + key.slice(-4);
+}
+
+/* ------------------ Balances (SOL only minimal sample) ------------------ */
+async function refreshBalances(){
+  if(!publicKey) return;
+  try{
+    const lamports = await connection.getBalance(publicKey);
+    const solBal = lamports / (10 ** 9);
+    balFrom.innerText = `${solBal.toFixed(6)} SOL`;
+    // For SPL tokens: you'd call getTokenAccountsByOwner and parse amounts using token decimals.
+  }catch(e){
+    console.error('balance error', e);
+    balFrom.innerText = 'error';
+  }
+}
+
+/* ------------------ Token UI & modal ------------------ */
+function fillTokenUI(){
+  fromSym.innerText = fromToken.sym;
+  fromName.innerText = fromToken.name;
+  toSym.innerText = toToken.sym;
+  toName.innerText = toToken.name;
+}
+fillTokenUI();
+
+fromSelect.addEventListener('click', ()=>openModal('from'));
+toSelect.addEventListener('click', ()=>openModal('to'));
+document.getElementById('invertBtn').addEventListener('click', invert);
+
+function openModal(which){
+  modalTarget = which;
+  modal.classList.add('open');
+  renderTokenList();
+  filterInput.value = '';
+  filterInput.focus();
+}
+closeModalBtn.addEventListener('click', ()=>modal.classList.remove('open'));
+
+filterInput.addEventListener('input', renderTokenList);
+
+function renderTokenList(){
+  const q = (filterInput.value||'').trim().toLowerCase();
+  tokenListEl.innerHTML = '';
+  // in prod, use tokenlist (e.g. https://cdn.jsdelivr.net/npm/@solana/spl-token-registry)
+  const all = CONFIG.TOKENS.concat([]); // sample
+  all.forEach(t=>{
+    if(q && !(t.sym.toLowerCase().includes(q) || t.name.toLowerCase().includes(q) || (t.mint && t.mint.toLowerCase().includes(q)))) return;
+    const el = document.createElement('div'); el.className = 'token-item';
+    el.innerHTML = `<div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(90deg,#fff4, #fff2)"></div>
+      <div style="flex:1"><div style="font-weight:700">${escapeHtml(t.sym)}</div><div class="small">${escapeHtml(t.name)}</div></div>
+      <div class="small">${t.mint? escapeHtml(t.mint.slice(0,8)): ''}</div>`;
+    el.addEventListener('click', ()=>{ selectToken(t); });
+    tokenListEl.appendChild(el);
+  });
+}
+
+function selectToken(t){
+  if(modalTarget === 'from') fromToken = t; else toToken = t;
+  if(fromToken.mint === toToken.mint){
+    alert('Impossible: mêmes tokens');
+    return;
+  }
+  fillTokenUI();
+  modal.classList.remove('open');
+  recalcQuoteDebounced();
+}
+
+/* ------------------ Quote fetching (Jupiter) ------------------ */
+let quoteTimeout = null;
+fromAmountInput.addEventListener('input', ()=>recalcQuoteDebounced());
+slippageInput.addEventListener('change', ()=>recalcQuoteDebounced());
+
+function recalcQuoteDebounced(){
+  if(quoteTimeout) clearTimeout(quoteTimeout);
+  quoteTimeout = setTimeout(recalcQuote, 300);
+}
+
+async function recalcQuote(){
+  const amt = Number(fromAmountInput.value || 0);
+  if(!amt || amt <= 0){ quoteBox.innerText = 'Quote: —'; toAmountInput.value=''; priceImpactEl.innerText='—'; minRecEl.innerText='—'; routeLabel.innerText='—'; currentQuote = null; return; }
+
+  // convert to base units
+  const amountBase = toBaseUnits(amt, fromToken.decimals || 6);
+  const slippageBps = Math.round((Number(slippageInput.value || 0) * 100)); // 0.5% -> 50 bps
+
+  // build query
+  const url = new URL(CONFIG.JUPITER_QUOTE);
+  url.searchParams.set('inputMint', fromToken.mint);
+  url.searchParams.set('outputMint', toToken.mint);
+  url.searchParams.set('amount', amountBase);
+  url.searchParams.set('slippageBps', String(slippageBps));
+
+  quoteBox.innerText = 'Quote: fetching…';
+  try{
+    const res = await fetch(url.toString());
+    if(!res.ok) throw new Error('Quote API error ' + res.status);
+    const data = await res.json();
+    if(!data || !data.routes || data.routes.length === 0){
+      quoteBox.innerText = 'Quote: no route found';
+      currentQuote = null;
+      return;
+    }
+    // choose top route
+    const route = data.routes[0];
+    currentQuote = data; // store whole response (used when calling /swap)
+    const outRaw = route.outAmount; // amount in base units (string)
+    const outHuman = humanAmount(outRaw, toToken.decimals || 6);
+    toAmountInput.value = outHuman.toFixed(Math.max(2, (toToken.decimals || 6)));
+    priceImpactEl.innerText = (route.estimatedPriceImpact || 0).toFixed(4) + '%';
+    // min received = out * (1 - slippage)
+    const sl = Number(slippageInput.value || 0) / 100;
+    const minRec = (outHuman * (1 - sl)).toFixed(Math.max(2,(toToken.decimals||6)));
+    minRecEl.innerText = `${minRec} ${toToken.sym}`;
+    routeLabel.innerText = route.marketInfos ? route.marketInfos.map(m=>m.label).slice(0,3).join(' • ') : 'Jupiter route';
+    quoteBox.innerText = `1 ${fromToken.sym} ≈ ${( (route.inputAmount / route.outAmount) ? ( (route.inputAmount / route.outAmount) ) : (Number(1)) ).toString()} ${toToken.sym} · Estimated out: ${outHuman}`;
+    logEvent(`Quote fetched — ${amt} ${fromToken.sym} → ${outHuman} ${toToken.sym}`);
+  }catch(err){
+    console.error('quote err', err);
+    quoteBox.innerText = 'Quote: erreur (' + (err.message || err) + ')';
+    currentQuote = null;
+  }
+}
+
+/* ------------------ Swap execution (Jupiter / wallet signing) ------------------ */
+swapBtn.addEventListener('click', async ()=>{
+  if(!publicKey){
+    alert('Connecte ton wallet');
+    return;
+  }
+  if(!currentQuote){
+    alert('Aucun quote disponible — entre un montant et attends la réponse');
+    return;
+  }
+
+  swapBtn.disabled = true;
+  swapBtn.innerText = 'Processing...';
+  try{
+    // POST to /swap to get serialized transaction (base64) from Jupiter
+    const body = {
+      quoteResponse: currentQuote,
+      userPublicKey: publicKey.toString(),
+      // wrapAndUnwrapSol: true, // optional
+    };
+    const res = await fetch(CONFIG.JUPITER_SWAP, {
+      method: 'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify(body)
+    });
+    if(!res.ok){
+      const txt = await res.text();
+      throw new Error('Jupiter swap API error ' + res.status + ': ' + txt);
+    }
+    const swapResp = await res.json();
+    // Jupiter may return swapTransaction (single) or swapTransactions (array)
+    const txBase64 = swapResp.swapTransaction || (swapResp.swapTransactions && swapResp.swapTransactions[0]) || null;
+    if(!txBase64){
+      throw new Error('No swapTransaction supplied by Jupiter (see response: ' + JSON.stringify(Object.keys(swapResp)) + ')');
+    }
+
+    logEvent('Swap transaction received from Jupiter (base64) — preparing to sign');
+
+    // Deserialize VersionedTransaction or legacy Transaction
+    let vtx = null;
+    try {
+      // VersionedTransaction.deserialize requires Uint8Array
+      const txBytes = Uint8Array.from(atob(txBase64), c=>c.charCodeAt(0));
+      // Use solanaWeb3.VersionedTransaction if available
+      if(solanaWeb3.VersionedTransaction && solanaWeb3.VersionedTransaction.deserialize){
+        vtx = solanaWeb3.VersionedTransaction.deserialize(txBytes);
+      } else if (solanaWeb3.Transaction && solanaWeb3.Transaction.from){
+        // fallback (legacy)
+        vtx = solanaWeb3.Transaction.from(txBytes);
+      } else {
+        throw new Error('web3.js VersionedTransaction API non disponible dans ce bundle');
+      }
+    } catch(err){
+      console.warn('deserialize error', err);
+      // as fallback, try to call wallet's signAndSend with base64 if provider supports it
+    }
+
+    // Try wallet provider high-level signing APIs (most robust)
+    // 1) provider.signAndSendTransaction (supports VersionedTransaction)
+    if(provider && provider.signAndSendTransaction && vtx){
+      try{
+        const { signature } = await provider.signAndSendTransaction(vtx);
+        logEvent('Transaction signed & sent (provider.signAndSendTransaction): ' + signature);
+        await waitForConfirm(signature);
+        alert('Swap ok — signature: ' + signature);
+        swapBtn.innerText = 'Swap';
+        swapBtn.disabled = false;
+        return;
+      }catch(e){
+        console.warn('provider.signAndSendTransaction failed', e);
+      }
+    }
+
+    // 2) provider.signTransaction then sendRawTransaction via connection
+    if(provider && provider.signTransaction && vtx){
+      try{
+        // provider.signTransaction expects a Transaction or VersionedTransaction object
+        const signed = await provider.signTransaction(vtx);
+        // Serialize signed (signed.serialize() for legacy tx, for versioned use .serialize())
+        let raw;
+        if(signed.serialize){
+          raw = signed.serialize();
+        } else if(signed._serialize){
+          raw = signed._serialize();
+        } else {
+          // attempt to use web3 API
+          raw = vtx.serialize();
+        }
+        const sig = await connection.sendRawTransaction(raw, { skipPreflight:false });
+        logEvent('Transaction sent via connection.sendRawTransaction: ' + sig);
+        await waitForConfirm(sig);
+        alert('Swap OK — signature: ' + sig);
+        swapBtn.innerText = 'Swap';
+        swapBtn.disabled = false;
+        return;
+      }catch(e){
+        console.warn('provider.signTransaction path failed', e);
+      }
+    }
+
+    // 3) As last resort: if provider exposes signAndSendAllTransactions or signAllTransactions etc.
+    if(provider && provider.signAndSendAllTransactions){
+      try{
+        // For simplicity if swapResp.swapTransactions exists (array)
+        let arr = [];
+        if(swapResp.swapTransactions && swapResp.swapTransactions.length){
+          arr = swapResp.swapTransactions.map(b64=>{
+            const bytes = Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
+            try { return solanaWeb3.VersionedTransaction.deserialize(bytes); } catch(e){ return solanaWeb3.Transaction.from(bytes); }
+          });
+        } else {
+          // single
+          arr = [vtx];
+        }
+        const out = await provider.signAndSendAllTransactions(arr);
+        logEvent('signAndSendAllTransactions output: ' + JSON.stringify(out));
+        alert('Swap(s) sent. Signatures: ' + JSON.stringify(out.signatures));
+        swapBtn.innerText = 'Swap';
+        swapBtn.disabled = false;
+        return;
+      }catch(e){
+        console.warn('signAndSendAllTransactions failed', e);
+      }
+    }
+
+    // If we reach here, integrator must handle special wallet compatibility / VersionedTransaction / LUTs.
+    throw new Error('Impossible de signer/expédier automatiquement : wallet non compatible avec la transaction fournie (VersionedTx/LUT). Voir console pour détails.');
+
+  }catch(err){
+    console.error('swap error', err);
+    alert('Erreur swap: ' + (err.message || err));
+    swapBtn.innerText = 'Swap';
+    swapBtn.disabled = false;
+  }
+});
+
+/* helper: wait for confirmation */
+async function waitForConfirm(sig){
+  logEvent('Awaiting confirmation for ' + sig);
+  try{
+    const conf = await connection.confirmTransaction(sig, 'confirmed');
+    logEvent('Confirmed: ' + sig);
+    return conf;
+  }catch(e){
+    console.warn('confirm error', e);
+  }
+}
+
+/* ------------------ invert & small helpers ------------------ */
+function invert(){
+  const tmp = fromToken; fromToken = toToken; toToken = tmp;
+  fillTokenUI();
+  recalcQuoteDebounced();
+}
+
+/* safe escape */
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+/* ------------------ Init handlers ------------------ */
+(function init(){
+  // init UI tokens
+  fillTokenUI();
+  swapBtn.disabled = true;
+  // connect detection
+  window.addEventListener('load', ()=> {
+    detectProvider();
+    if(provider){
+      connectLabel.innerText = provider?.publicKey ? truncateKey(provider.publicKey.toString()) : 'Connect Wallet';
+      // auto attempt silent connect? (not here)
+    }
+  });
+})();
+</script>
+</body>
+</html>
