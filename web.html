@@ -12,7 +12,6 @@
   --gold:#d4af37;
   --gold-2:#f0d98a;
   --muted:#9b9b9b;
-  --glass: rgba(255,255,255,0.03);
   --accent:#101010;
   --transition: all 0.45s cubic-bezier(.2,.9,.2,1);
   --ff-sans: 'Montserrat', sans-serif;
@@ -102,7 +101,7 @@ body{
 }
 .lang-btn{
   border:1px solid rgba(212,175,55,0.12);
-  background:var(--glass);
+  background:rgba(255,255,255,0.05);
   color:var(--gold);
   padding:8px 12px;
   border-radius:999px;
@@ -144,7 +143,7 @@ body{
 .nav-overlay a{font-size:1.15rem;color:var(--muted);text-decoration:none}
 .nav-overlay a.active, .nav-overlay a:hover{color:var(--gold)}
 
-/* Hero */
+/* Hero avec particules */
 .hero{
   min-height:calc(100vh - 80px);
   display:grid;
@@ -153,39 +152,28 @@ body{
   position:relative;
   text-align:center;
   overflow:hidden;
+  background:var(--bg);
 }
-.hero::before{
-  content:'';
-  position:absolute;inset:0;
-  background:
-    radial-gradient(800px 400px at 10% 20%, rgba(212,175,55,0.06), transparent 10%),
-    radial-gradient(600px 300px at 90% 80%, rgba(255,255,255,0.02), transparent 15%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.6));
-  pointer-events:none;
-}
+#tsparticles{position:absolute;inset:0;z-index:0}
 .hero-inner{max-width:1100px;z-index:2}
 .hero-title{
   font-family:var(--ff-serif);
   font-size:3.6rem;
   line-height:1;
   margin-bottom:0.6rem;
-  background:linear-gradient(90deg,var(--gold),var(--gold-2));
+  background:linear-gradient(90deg,var(--gold),#ff4f81,#00ffff,var(--gold-2));
   -webkit-background-clip:text;
   background-clip:text;
   color:transparent;
   letter-spacing: -1px;
-  transform:translateY(10px);
-  opacity:0;
-  transition:var(--transition);
   text-shadow:0 6px 30px rgba(0,0,0,0.6);
+  animation: fadeInUp 1s ease forwards;
 }
 .hero-sub{
   color:var(--muted);
   margin-bottom:1.4rem;
   font-size:1.05rem;
-  transform:translateY(14px);
-  opacity:0;
-  transition:var(--transition);
+  animation: fadeInUp 1.2s ease forwards;
 }
 .cta{
   display:inline-flex;
@@ -193,18 +181,18 @@ body{
   align-items:center;
   padding:14px 28px;
   border-radius:999px;
-  border:1px solid rgba(212,175,55,0.12);
-  background:linear-gradient(90deg, rgba(212,175,55,0.06), rgba(0,0,0,0.18));
-  color:var(--gold);
+  border:none;
+  background:linear-gradient(90deg,#ff4f81,#00ffff,#f0d98a);
+  color:#0b0b0b;
   font-weight:700;
   text-decoration:none;
   text-transform:uppercase;
   letter-spacing:1px;
-  transform:translateY(18px);
-  opacity:0;
-  transition:var(--transition);
+  cursor:pointer;
+  animation: fadeInUp 1.4s ease forwards;
+  transition:transform 0.3s, box-shadow 0.3s;
 }
-.cta:hover{transform:translateY(12px) scale(1.01);box-shadow:0 14px 36px rgba(0,0,0,0.6)}
+.cta:hover{transform:scale(1.05);box-shadow:0 10px 40px rgba(255,255,255,0.3);}
 
 /* Sections */
 section {
@@ -221,18 +209,19 @@ section {
 /* Grid & cards */
 .grid{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));max-width:1200px;margin:0 auto}
 .card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
-  border-radius:10px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.05));
+  border-radius:16px;
   overflow:hidden;
-  border:1px solid rgba(255,255,255,0.03);
-  transition:var(--transition);
+  border:1px solid rgba(255,255,255,0.05);
+  transition:all 0.3s ease;
 }
-.card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,0.5)}
-.card img{width:100%;height:180px;object-fit:cover;display:block}
+.card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 40px rgba(255,255,255,0.1)}
+.card img{width:100%;height:180px;object-fit:cover;display:block;filter:brightness(0.95)}
 .card-body{padding:1rem}
 .card-title{font-family:var(--ff-serif);font-size:1.05rem;color:#fff;margin-bottom:6px}
 .card-desc{color:var(--muted);font-size:0.95rem;margin-bottom:10px}
-.card-button{width:100%;padding:10px;border-radius:8px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold-2));color:#0b0b0b;font-weight:700;cursor:pointer}
+.card-button{width:100%;padding:10px;border-radius:12px;border:none;background:linear-gradient(90deg,#ff4f81,#00ffff);color:#0b0b0b;font-weight:700;cursor:pointer;transition:all 0.3s}
+.card-button:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(255,255,255,0.3)}
 
 /* Carousel TikTok */
 .tiktok-carousel{
@@ -251,14 +240,17 @@ section {
   border-radius:16px;
   overflow:hidden;
   position:relative;
-  transition:transform 0.35s;
+  transition:all 0.35s;
 }
+.tiktok-item:hover{transform:scale(1.03);}
 .tiktok-item video{
   width:100%;
   height:400px;
   object-fit:cover;
   display:block;
+  transition:all 0.3s;
 }
+.tiktok-item:hover video{filter:brightness(1.1) contrast(1.1)}
 .tiktok-info{
   position:absolute;
   bottom:8px;
@@ -271,13 +263,8 @@ section {
   font-weight:500;
   text-shadow:0 6px 20px rgba(0,0,0,0.5);
 }
-.tiktok-artist{
-  font-size:0.95rem;
-}
-.tiktok-title{
-  font-size:1.05rem;
-  font-weight:700;
-}
+.tiktok-artist{font-size:0.95rem}
+.tiktok-title{font-size:1.05rem;font-weight:700}
 .tiktok-actions{
   position:absolute;
   right:8px;
@@ -298,10 +285,10 @@ section {
   justify-content:center;
   font-size:1.2rem;
   cursor:pointer;
-  transition:transform 0.25s;
+  transition:transform 0.25s, box-shadow 0.25s;
 }
-.tiktok-actions button:hover{transform:scale(1.15)}
-.tiktok-likes{position:absolute;top:8px;left:8px;font-size:0.9rem;color:var(--gold);font-weight:700}
+.tiktok-actions button:hover{transform:scale(1.2);box-shadow:0 0 20px #ff4f81,0 0 30px #00ffff}
+.tiktok-likes{position:absolute;top:8px;left:8px;font-size:0.9rem;color:#ff4f81;font-weight:700}
 
 /* Fiche artiste modal */
 .artist-backdrop{
@@ -325,7 +312,7 @@ section {
 }
 .artist-modal h3{font-family:var(--ff-serif);color:var(--gold);margin-bottom:12px;text-align:center}
 .artist-modal .music-list{display:flex;flex-direction:column;gap:10px}
-.artist-modal .music-item{padding:10px;border-radius:8px;background:linear-gradient(90deg,rgba(212,175,55,0.05),rgba(0,0,0,0.1));display:flex;justify-content:space-between;align-items:center}
+.artist-modal .music-item{padding:10px;border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,0.05),rgba(0,0,0,0.1));display:flex;justify-content:space-between;align-items:center}
 .artist-modal .music-item button{background:var(--gold);border:none;color:#000;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:700}
 .artist-modal .close-artist{margin-top:12px;text-align:right}
 .artist-modal .close-artist button{background:transparent;border:1px solid rgba(255,255,255,0.05);color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer}
@@ -340,6 +327,12 @@ section {
   .hero{padding:2.5rem 4%}
   .hero-title{font-size:2.2rem}
 }
+
+/* Animations */
+@keyframes fadeInUp{
+  0%{opacity:0;transform:translateY(20px);}
+  100%{opacity:1;transform:translateY(0);}
+}
 </style>
 </head>
 <body>
@@ -349,10 +342,10 @@ section {
     <div class="brand">Empire Is Yours</div>
   </div>
   <nav class="nav" id="desktop-nav">
-    <a href="#avant-premieres" class="nav-link" data-target="avant-premieres">Avant-premières</a>
-    <a href="#news" class="nav-link" data-target="news">News</a>
-    <a href="#rap-fr" class="nav-link" data-target="rap-fr">Rap FR</a>
-    <a href="#rap-us" class="nav-link" data-target="rap-us">Rap US</a>
+    <a href="#avant-premieres" class="nav-link">Avant-premières</a>
+    <a href="#news" class="nav-link">News</a>
+    <a href="#rap-fr" class="nav-link">Rap FR</a>
+    <a href="#rap-us" class="nav-link">Rap US</a>
   </nav>
   <div class="header-actions">
     <button class="lang-btn" id="lang-btn"><span id="lang-label">FR</span></button>
@@ -369,6 +362,7 @@ section {
 
 <main>
 <section class="hero" id="hero">
+  <div id="tsparticles"></div>
   <div class="hero-inner">
     <h1 class="hero-title">Empire Is Yours</h1>
     <p class="hero-sub">Découvre les clips et talents qui feront la scène demain — exclus, premiers drops, interviews.</p>
@@ -382,9 +376,8 @@ section {
     <p>Swipe à gauche pour découvrir les clips exclusifs.</p>
   </div>
   <div class="tiktok-carousel" id="tiktok-carousel">
-    <!-- Exemple de vidéos -->
     <div class="tiktok-item" data-artist="Artiste 1" data-title="Clip Alpha">
-      <video src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video>
+      <video src="https://www.w3schools.com/html/mov_bbb.mp4" autoplay muted loop playsinline></video>
       <div class="tiktok-likes" id="likes-1">❤ 0</div>
       <div class="tiktok-info">
         <div class="tiktok-artist">Artiste 1</div>
@@ -396,7 +389,7 @@ section {
       </div>
     </div>
     <div class="tiktok-item" data-artist="Artiste 2" data-title="Clip Beta">
-      <video src="https://www.w3schools.com/html/movie.mp4" controls></video>
+      <video src="https://www.w3schools.com/html/movie.mp4" autoplay muted loop playsinline></video>
       <div class="tiktok-likes" id="likes-2">❤ 0</div>
       <div class="tiktok-info">
         <div class="tiktok-artist">Artiste 2</div>
@@ -462,13 +455,10 @@ section {
   </div>
 </section>
 
-<!-- Fiche artiste modal -->
 <div class="artist-backdrop" id="artist-backdrop">
   <div class="artist-modal">
     <h3 id="artist-name">Artiste</h3>
-    <div class="music-list" id="music-list">
-      <!-- Les musiques seront injectées ici -->
-    </div>
+    <div class="music-list" id="music-list"></div>
     <div class="close-artist">
       <button id="close-artist">Fermer</button>
     </div>
@@ -479,22 +469,31 @@ section {
   &copy; 2025 Empire Is Yours. Tous droits réservés.
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
 <script>
-// CARROUSEL LIKE & ARTISTE
-const likeButtons = document.querySelectorAll('.like-btn');
-const artistButtons = document.querySelectorAll('.artist-btn');
-const backdrop = document.getElementById('artist-backdrop');
-const artistNameEl = document.getElementById('artist-name');
-const musicListEl = document.getElementById('music-list');
-const closeBtn = document.getElementById('close-artist');
+// PARTICLES HERO
+tsParticles.load("tsparticles", {
+  particles: {
+    number: { value: 40, density: { enable: true, area: 800 } },
+    color: { value: ["#f2c94c","#ff4f81","#00ffff"] },
+    shape: { type: "circle" },
+    opacity: { value: 0.2, random: true },
+    size: { value: 3, random: true },
+    move: { enable: true, speed: 0.7, direction: "none", outModes: "out" }
+  },
+  interactivity: {
+    events: { onHover: { enable: true, mode: "repulse" } },
+    modes: { repulse: { distance: 100 } }
+  },
+  detectRetina: true
+});
 
-// Initialisation likes depuis localStorage
-likeButtons.forEach(btn => {
+// Likes
+document.querySelectorAll('.like-btn').forEach(btn => {
   const id = btn.dataset.id;
   const likesEl = document.getElementById(`likes-${id}`);
   let likes = parseInt(localStorage.getItem(`likes-${id}`)) || 0;
   likesEl.textContent = `❤ ${likes}`;
-
   btn.addEventListener('click', () => {
     likes++;
     likesEl.textContent = `❤ ${likes}`;
@@ -502,22 +501,17 @@ likeButtons.forEach(btn => {
   });
 });
 
-// Afficher fiche artiste
-artistButtons.forEach(btn => {
+// Artist modal
+const backdrop = document.getElementById('artist-backdrop');
+const artistNameEl = document.getElementById('artist-name');
+const musicListEl = document.getElementById('music-list');
+document.querySelectorAll('.artist-btn').forEach(btn => {
   btn.addEventListener('click', (e) => {
     const item = e.target.closest('.tiktok-item');
     const artist = item.dataset.artist;
     const title = item.dataset.title;
-
     artistNameEl.textContent = artist;
-
-    // Exemple de musiques (pour l'instant statique)
-    const musiques = [
-      {title: title},
-      {title: "Autre morceau 1"},
-      {title: "Autre morceau 2"}
-    ];
-
+    const musiques = [{title}, {title:"Autre morceau 1"}, {title:"Autre morceau 2"}];
     musicListEl.innerHTML = '';
     musiques.forEach(m => {
       const div = document.createElement('div');
@@ -525,23 +519,16 @@ artistButtons.forEach(btn => {
       div.innerHTML = `<span>${m.title}</span> <button>Écouter</button>`;
       musicListEl.appendChild(div);
     });
-
     backdrop.classList.add('open');
   });
 });
+document.getElementById('close-artist').addEventListener('click', () => backdrop.classList.remove('open'));
 
-// Fermer modal
-closeBtn.addEventListener('click', () => {
-  backdrop.classList.remove('open');
-});
-
-// Animations sections
+// Section animation
 const sections = document.querySelectorAll('.content-section');
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
-    if(entry.isIntersecting){
-      entry.target.classList.add('section-visible');
-    }
+    if(entry.isIntersecting) entry.target.classList.add('section-visible');
   });
 },{threshold:0.1});
 sections.forEach(section => observer.observe(section));
