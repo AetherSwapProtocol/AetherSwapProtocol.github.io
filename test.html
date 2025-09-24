@@ -1,211 +1,705 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Empire Is Yours</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0a0a;
-  --gold: #d4af37;
-  --gold-light: #e8c874;
-  --white: #f8f8f8;
-  --gray: #aaaaaa;
-  --gray-dark: #333333;
-  --accent: #1a1a1a;
-  --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  --font-serif: 'Playfair Display', serif;
-  --font-sans: 'Montserrat', sans-serif;
+:root{
+  --bg:#070607;
+  --panel:#0f0f10;
+  --gold:#d4af37;
+  --gold-2:#f0d98a;
+  --muted:#9b9b9b;
+  --glass: rgba(255,255,255,0.03);
+  --accent:#101010;
+  --transition: all 0.45s cubic-bezier(.2,.9,.2,1);
+  --ff-sans: 'Montserrat', sans-serif;
+  --ff-serif: 'Playfair Display', serif;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:var(--font-sans);background:var(--bg);color:var(--white);overflow-x:hidden;padding-top:80px;line-height:1.6;}
-header{position:fixed;top:0;left:0;right:0;height:80px;background:rgba(10,10,10,0.95);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;padding:0 5%;z-index:1000;transition:var(--transition);}
-header.scrolled{height:70px;background:rgba(10,10,10,0.98);}
-.logo{font-family:var(--font-serif);font-size:1.8rem;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:12px;cursor:pointer;}
-.logo svg{width:32px;height:32px;fill:var(--gold);transition:var(--transition);}
-.logo:hover svg{transform:rotate(15deg);}
-.main-nav{display:flex;gap:2rem;}
-.nav-link{color:var(--white);text-decoration:none;font-size:0.95rem;font-weight:400;position:relative;padding:10px 0;transition:var(--transition);}
-.nav-link:after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--gold);transition:var(--transition);}
-.nav-link:hover, .nav-link.active{color:var(--gold);}
-.nav-link:hover:after, .nav-link.active:after{width:100%;}
-.header-right{display:flex;align-items:center;gap:1rem;}
-.lang-btn{padding:5px 10px;background:var(--accent);border:1px solid var(--gold);color:var(--gold);cursor:pointer;transition:var(--transition);}
-.lang-btn:hover{background:var(--gold);color:var(--bg);}
-.hero{height:calc(100vh - 80px);background:linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1602233141234-01f34c1d7f8f?crop=entropy&fit=crop&w=1470&q=80') center/cover no-repeat;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 5%;}
-.hero h1{font-family:var(--font-serif);font-size:3rem;color:var(--white);margin-bottom:1rem;}
-.hero p{color:var(--gray);margin-bottom:2rem;}
-.cta-button{padding:15px 40px;border:1px solid var(--gold);color:var(--gold);text-decoration:none;text-transform:uppercase;font-weight:500;transition:var(--transition);}
-.cta-button:hover{background:var(--gold);color:var(--bg);}
-section{padding:5rem 5%;}
-.section-header{text-align:center;margin-bottom:3rem;}
-.section-header h2{font-family:var(--font-serif);font-size:2.2rem;color:var(--white);}
-.section-header p{color:var(--gray);}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;}
-.card{background:var(--accent);border:1px solid rgba(212,175,55,0.1);overflow:hidden;transition:var(--transition);position:relative;}
-.card:hover{transform:translateY(-8px);box-shadow:0 20px 30px rgba(0,0,0,0.3);border-color:rgba(212,175,55,0.3);}
-.card img{width:100%;height:200px;object-fit:cover;transition:var(--transition);}
-.card:hover img{transform:scale(1.05);}
-.card-body{padding:1rem;}
-.card-title{font-family:var(--font-serif);color:var(--white);margin-bottom:0.5rem;}
-.card-desc{color:var(--gray);font-size:0.9rem;margin-bottom:0.8rem;}
-.card-button{padding:10px;background:var(--gold);color:var(--bg);border:none;width:100%;cursor:pointer;transition:var(--transition);}
-.card-button:hover{background:var(--gold-light);}
-.carousel{display:flex;overflow-x:auto;scroll-behavior:smooth;gap:1rem;padding-bottom:1rem;}
-.carousel::-webkit-scrollbar{display:none;}
-.carousel video{border-radius:8px;width:300px;height:170px;flex-shrink:0;}
-footer{background:var(--accent);padding:3rem 5% 2rem;border-top:1px solid rgba(212,175,55,0.1);}
-.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;margin-bottom:2rem;}
-.footer-logo{display:flex;align-items:center;gap:12px;margin-bottom:1rem;cursor:pointer;}
-.footer-logo svg{width:36px;height:36px;fill:var(--gold);}
-.footer-logo span{font-family:var(--font-serif);font-weight:700;color:var(--gold);}
-.footer-links a{display:block;color:var(--gray);margin-bottom:0.5rem;text-decoration:none;transition:var(--transition);}
-.footer-links a:hover{color:var(--gold);}
-.footer-legal{padding:2rem 0;border-top:1px solid rgba(212,175,55,0.1);text-align:center;max-width:900px;margin:0 auto;}
-.footer-legal p{font-size:0.85rem;line-height:1.6;color:var(--gray);}
-.footer-bottom{text-align:center;color:var(--gray);font-size:0.8rem;}
 
-/* MODAL LANGUE */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:2000;}
-.modal-content{background:var(--accent);padding:2rem;border-radius:8px;max-width:400px;width:90%;text-align:center;}
-.modal-content h3{margin-bottom:1rem;color:var(--gold);}
-.modal-content button{margin:0.5rem;padding:10px 20px;border:none;background:var(--gold);color:var(--bg);cursor:pointer;transition:var(--transition);}
-.modal-content button:hover{background:var(--gold-light);}
-@media(max-width:768px){.main-nav{display:none;}.header-right{gap:0.5rem;}}
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:linear-gradient(180deg,#050505 0%, #0b0b0b 100%);
+  color:#fff;
+  font-family:var(--ff-sans);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+  scroll-behavior:smooth;
+  padding-top:80px;
+  line-height:1.5;
+}
+
+/* Header */
+.header {
+  position:fixed;
+  inset:0 0 auto 0;
+  height:80px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  padding:0 4%;
+  z-index:1200;
+  background:linear-gradient(180deg, rgba(10,10,10,0.18), rgba(10,10,10,0.6));
+  backdrop-filter: blur(8px) saturate(1.05);
+  transition:var(--transition);
+}
+.header.shrink{height:64px;padding:0 3%;}
+
+/* Logo */
+.logo {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  user-select:none;
+}
+.logo svg{width:36px;height:36px;fill:var(--gold);transition:var(--transition)}
+.logo .brand{
+  font-family:var(--ff-serif);
+  font-weight:700;
+  letter-spacing:0.6px;
+  font-size:1.05rem;
+  color:var(--gold);
+}
+
+/* Desktop nav */
+.nav {
+  display:flex;
+  gap:1.5rem;
+  align-items:center;
+}
+.nav a{
+  color:var(--muted);
+  text-decoration:none;
+  font-weight:500;
+  padding:8px 6px;
+  position:relative;
+  transition:var(--transition);
+}
+.nav a.active, .nav a:hover{
+  color:var(--gold);
+}
+.nav a::after{
+  content:'';
+  position:absolute;
+  left:0;bottom:0;
+  width:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-2));
+  transition:var(--transition);
+}
+.nav a:hover::after, .nav a.active::after{width:100%}
+
+/* Header right */
+.header-actions{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.lang-btn{
+  border:1px solid rgba(212,175,55,0.12);
+  background:var(--glass);
+  color:var(--gold);
+  padding:8px 12px;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  transition:var(--transition);
+}
+.lang-btn svg{width:18px;height:18px;transform:translateY(1px)}
+.lang-btn:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+
+/* Burger for mobile */
+.burger{
+  display:none;
+  width:46px;height:36px;
+  align-items:center;justify-content:center;
+  cursor:pointer;
+  background:transparent;border-radius:8px;border:none;
+}
+.burger .lines{display:flex;flex-direction:column;gap:5px;padding:6px}
+.burger .lines span{
+  width:22px;height:2px;background:var(--gold);display:block;border-radius:2px;transition:var(--transition)
+}
+
+/* Nav overlay (mobile) */
+.nav-overlay{
+  position:fixed;top:0;right:-120%;
+  width:78%;max-width:420px;height:100vh;
+  background:linear-gradient(180deg, rgba(15,15,15,0.98), rgba(12,12,12,0.99));
+  box-shadow:-24px 0 56px rgba(0,0,0,0.6);
+  padding:6rem 2.5rem;
+  display:flex;flex-direction:column;gap:1.5rem;
+  z-index:1300;
+  transition:var(--transition);
+}
+.nav-overlay.open{right:0}
+.nav-overlay a{font-size:1.15rem;color:var(--muted);text-decoration:none}
+.nav-overlay a.active, .nav-overlay a:hover{color:var(--gold)}
+
+/* Hero */
+.hero{
+  min-height:calc(100vh - 80px);
+  display:grid;
+  place-items:center;
+  padding:3.5rem 4%;
+  position:relative;
+  text-align:center;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;inset:0;
+  background:
+    radial-gradient(800px 400px at 10% 20%, rgba(212,175,55,0.06), transparent 10%),
+    radial-gradient(600px 300px at 90% 80%, rgba(255,255,255,0.02), transparent 15%),
+    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.6));
+  pointer-events:none;
+}
+.hero-inner{max-width:1100px;z-index:2}
+.hero-title{
+  font-family:var(--ff-serif);
+  font-size:3.6rem;
+  line-height:1;
+  margin-bottom:0.6rem;
+  background:linear-gradient(90deg,var(--gold),var(--gold-2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  letter-spacing: -1px;
+  transform:translateY(10px);
+  opacity:0;
+  transition:var(--transition);
+  text-shadow:0 6px 30px rgba(0,0,0,0.6);
+}
+.hero-sub{
+  color:var(--muted);
+  margin-bottom:1.4rem;
+  font-size:1.05rem;
+  transform:translateY(14px);
+  opacity:0;
+  transition:var(--transition);
+}
+.cta{
+  display:inline-flex;
+  gap:12px;
+  align-items:center;
+  padding:14px 28px;
+  border-radius:999px;
+  border:1px solid rgba(212,175,55,0.12);
+  background:linear-gradient(90deg, rgba(212,175,55,0.06), rgba(0,0,0,0.18));
+  color:var(--gold);
+  font-weight:700;
+  text-decoration:none;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  transform:translateY(18px);
+  opacity:0;
+  transition:var(--transition);
+}
+.cta:hover{transform:translateY(12px) scale(1.01);box-shadow:0 14px 36px rgba(0,0,0,0.6)}
+
+/* Sections */
+section {
+  padding:5rem 4%;
+  opacity:0;
+  transform:translateY(20px);
+  transition:var(--transition);
+}
+.section-visible{opacity:1;transform:translateY(0)}
+.section-header{text-align:left;max-width:1200px;margin:0 auto 2.2rem}
+.section-header h2{font-family:var(--ff-serif);font-size:1.9rem;color:#fff;margin-bottom:6px}
+.section-header p{color:var(--muted)}
+
+/* Grid & cards */
+.grid{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));max-width:1200px;margin:0 auto}
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.03);
+  transition:var(--transition);
+}
+.card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,0.5)}
+.card img{width:100%;height:180px;object-fit:cover;display:block}
+.card-body{padding:1rem}
+.card-title{font-family:var(--ff-serif);font-size:1.05rem;color:#fff;margin-bottom:6px}
+.card-desc{color:var(--muted);font-size:0.95rem;margin-bottom:10px}
+.card-button{width:100%;padding:10px;border-radius:8px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold-2));color:#0b0b0b;font-weight:700;cursor:pointer}
+
+/* Carousel */
+.carousel{display:flex;gap:1rem;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x mandatory}
+.carousel::-webkit-scrollbar{display:none}
+.carousel .item{flex:0 0 auto;width:330px;scroll-snap-align:start;border-radius:12px;overflow:hidden;background:#080808;border:1px solid rgba(255,255,255,0.02)}
+.carousel video{width:100%;height:190px;display:block;object-fit:cover}
+
+/* Footer */
+footer{background:linear-gradient(180deg, rgba(10,10,10,0.6), rgba(8,8,8,0.95));padding:3rem 4%}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;max-width:1200px;margin:0 auto}
+.footer-logo{display:flex;align-items:center;gap:12px}
+.footer-logo svg{width:44px;height:44px;fill:var(--gold)}
+.footer-links a{display:block;color:var(--muted);text-decoration:none;margin:6px 0}
+.footer-bottom{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:1.5rem}
+
+/* Modals */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px}
+.modal-backdrop.open{display:flex}
+.modal{
+  width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#0b0b0b);
+  padding:1.6rem;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
+  box-shadow:0 30px 80px rgba(0,0,0,0.6)
+}
+.modal h3{font-family:var(--ff-serif);color:var(--gold);margin-bottom:0.8rem}
+.lang-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.lang-option{
+  display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);
+  cursor:pointer;background:transparent;transition:var(--transition)
+}
+.lang-option:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,0.6)}
+.lang-flag{width:36px;height:24px;flex-shrink:0}
+
+/* Legal modal text */
+.legal-body{max-height:55vh;overflow:auto;color:var(--muted);line-height:1.6;margin-bottom:1rem}
+
+/* Responsive tweaks */
+@media (max-width: 980px){
+  .hero-title{font-size:2.6rem}
+  .nav{display:none}
+  .burger{display:flex}
+}
+@media (max-width:600px){
+  .hero{padding:2.5rem 4%}
+  .hero-title{font-size:2.2rem}
+  .lang-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">
-    <svg viewBox="0 0 24 24" role="img" aria-label="Logo Empire">
-      <title>Empire Logo</title>
-      <path d="M12 2L15 8H9L12 2Z"/>
-    </svg>
-    Empire Is Yours
+<header class="header" id="header">
+  <div class="logo" id="home">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2L15 8H9L12 2Z"/></svg>
+    <div class="brand">Empire Is Yours</div>
   </div>
-  <nav class="main-nav">
-    <a href="#avant-premieres" class="nav-link active">Avant-premières</a>
-    <a href="#news" class="nav-link">News</a>
-    <a href="#rap-fr" class="nav-link">Rap FR</a>
-    <a href="#rap-us" class="nav-link">Rap US</a>
+
+  <!-- Desktop nav -->
+  <nav class="nav" id="desktop-nav" aria-label="Navigation principale">
+    <a href="#avant-premieres" class="nav-link" data-target="avant-premieres">Avant-premières</a>
+    <a href="#news" class="nav-link" data-target="news">News</a>
+    <a href="#rap-fr" class="nav-link" data-target="rap-fr">Rap FR</a>
+    <a href="#rap-us" class="nav-link" data-target="rap-us">Rap US</a>
   </nav>
-  <div class="header-right">
-    <button class="lang-btn" id="open-lang">Langue</button>
+
+  <div class="header-actions">
+    <button class="lang-btn" id="lang-btn" aria-haspopup="dialog" aria-expanded="false" title="Choisir la langue">
+      <!-- flag + code will be injected -->
+      <svg class="flag-mini" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" fill="none"/></svg>
+      <span id="lang-label">FR</span>
+    </button>
+
+    <button class="burger" id="burger" aria-label="ouvrir le menu" aria-expanded="false">
+      <div class="lines">
+        <span></span><span></span><span></span>
+      </div>
+    </button>
   </div>
 </header>
 
-<section class="hero">
-  <div class="hero-content">
-    <h1>Empire Is Yours</h1>
-    <p>Découvrez le meilleur du rap français et international, avant-premières et exclusivités.</p>
-    <a href="#rap-fr" class="cta-button">Explorer</a>
+<!-- Mobile overlay nav -->
+<nav class="nav-overlay" id="nav-overlay" aria-hidden="true" aria-label="Menu mobile">
+  <a href="#avant-premieres" class="nav-link">Avant-premières</a>
+  <a href="#news" class="nav-link">News</a>
+  <a href="#rap-fr" class="nav-link">Rap FR</a>
+  <a href="#rap-us" class="nav-link">Rap US</a>
+  <div style="margin-top:auto">
+    <button class="lang-btn" id="lang-btn-2" style="width:100%;justify-content:center">Langue</button>
   </div>
-</section>
+</nav>
 
-<!-- RAP FR -->
-<section id="rap-fr">
-  <div class="section-header"><h2>Rap Français</h2><p>Les artistes français qui font vibrer la scène avec leurs hits.</p></div>
-  <div class="grid">
-    <div class="card"><img src="https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?crop=entropy&fit=crop&w=600&q=80" alt="Artiste FR"><div class="card-body"><h3 class="card-title">Artiste 1</h3><p class="card-desc">Dernier projet qui fait sensation.</p><button class="card-button">Découvrir</button></div></div>
-    <div class="card"><img src="https://images.unsplash.com/photo-1543007634-01f345d95e8d?crop=entropy&fit=crop&w=600&q=80" alt="Artiste FR"><div class="card-body"><h3 class="card-title">Artiste 2</h3><p class="card-desc">Flow unique et collaborations fortes.</p><button class="card-button">Découvrir</button></div></div>
-  </div>
-</section>
+<main>
 
-<!-- RAP US -->
-<section id="rap-us">
-  <div class="section-header"><h2>Rap US</h2><p>Talents internationaux qui dictent les tendances.</p></div>
-  <div class="grid">
-    <div class="card"><img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?crop=entropy&fit=crop&w=600&q=80" alt="Artiste US"><div class="card-body"><h3 class="card-title">Artiste A</h3><p class="card-desc">Hits et clips qui font vibrer la scène mondiale.</p><button class="card-button">Découvrir</button></div></div>
-    <div class="card"><img src="https://images.unsplash.com/photo-1534367610415-726c6f1a38f5?crop=entropy&fit=crop&w=600&q=80" alt="Artiste US"><div class="card-body"><h3 class="card-title">Artiste B</h3><p class="card-desc">Style unique et énergie irrésistible.</p><button class="card-button">Découvrir</button></div></div>
-  </div>
-</section>
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+      <h1 class="hero-title" id="hero-title">Empire Is Yours</h1>
+      <p class="hero-sub">Découvre les clips et talents qui feront la scène demain — exclus, premiers drops, interviews.</p>
+      <a class="cta" href="#avant-premieres">Voir les avant-premières</a>
+    </div>
+  </section>
 
-<!-- AVANT-PREMIÈRES -->
-<section id="avant-premieres">
-  <div class="section-header"><h2>Avant-premières</h2><p>Visionnez clips et vidéos exclusives.</p></div>
-  <div class="carousel">
-    <video src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video>
-    <video src="https://www.w3schools.com/html/movie.mp4" controls></video>
-  </div>
-</section>
+  <!-- RAP FR -->
+  <section id="rap-fr" class="content-section">
+    <div class="section-header">
+      <h2>Rap Français</h2>
+      <p>Les artistes français qui font vibrer la scène.</p>
+    </div>
+    <div class="grid">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste FR">
+        <div class="card-body">
+          <h3 class="card-title">Artiste 1</h3>
+          <p class="card-desc">Dernier projet qui fait sensation.</p>
+          <button class="card-button">Découvrir</button>
+        </div>
+      </article>
 
-<!-- NEWS -->
-<section id="news">
-  <div class="section-header"><h2>News</h2><p>Dernières sorties et événements musicaux.</p></div>
-  <div class="grid">
-    <div class="card"><img src="https://images.unsplash.com/photo-1508766206392-8bd5cf550d1b?crop=entropy&fit=crop&w=600&q=80" alt="News"><div class="card-body"><h3 class="card-title">Actualité 1</h3><p class="card-desc">Tout savoir sur la scène musicale actuelle.</p><button class="card-button">Lire</button></div></div>
-    <div class="card"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?crop=entropy&fit=crop&w=600&q=80" alt="News"><div class="card-body"><h3 class="card-title">Actualité 2</h3><p class="card-desc">Coulisses et interviews exclusives.</p><button class="card-button">Lire</button></div></div>
-  </div>
-</section>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1543007634-01f345d95e8d?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste FR 2">
+        <div class="card-body">
+          <h3 class="card-title">Artiste 2</h3>
+          <p class="card-desc">Flow unique et collaborations fortes.</p>
+          <button class="card-button">Découvrir</button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- RAP US -->
+  <section id="rap-us" class="content-section">
+    <div class="section-header">
+      <h2>Rap US</h2>
+      <p>Talents internationaux qui dictent les tendances.</p>
+    </div>
+    <div class="grid">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste US">
+        <div class="card-body">
+          <h3 class="card-title">Artiste A</h3>
+          <p class="card-desc">Hits et clips qui font vibrer la scène mondiale.</p>
+          <button class="card-button">Découvrir</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1534367610415-726c6f1a38f5?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste US 2">
+        <div class="card-body">
+          <h3 class="card-title">Artiste B</h3>
+          <p class="card-desc">Style unique et énergie irrésistible.</p>
+          <button class="card-button">Découvrir</button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- AVANT-PREMIÈRES -->
+  <section id="avant-premieres" class="content-section">
+    <div class="section-header">
+      <h2>Avant-premières</h2>
+      <p>Visionne clips et vidéos exclusives — premiers drops.</p>
+    </div>
+    <div class="carousel" aria-label="Avant-premières">
+      <div class="item"><video src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video></div>
+      <div class="item"><video src="https://www.w3schools.com/html/movie.mp4" controls></video></div>
+      <div class="item"><video src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video></div>
+    </div>
+  </section>
+
+  <!-- NEWS -->
+  <section id="news" class="content-section">
+    <div class="section-header">
+      <h2>News</h2>
+      <p>Dernières sorties, dates, coulisses et interviews exclusives.</p>
+    </div>
+    <div class="grid">
+      <article class="card"><img src="https://images.unsplash.com/photo-1508766206392-8bd5cf550d1b?crop=entropy&fit=crop&w=1200&q=80" alt="News"><div class="card-body"><h3 class="card-title">Actualité 1</h3><p class="card-desc">Tout savoir sur la scène musicale actuelle.</p><button class="card-button">Lire</button></div></article>
+
+      <article class="card"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?crop=entropy&fit=crop&w=1200&q=80" alt="News 2"><div class="card-body"><h3 class="card-title">Actualité 2</h3><p class="card-desc">Coulisses et interviews exclusives.</p><button class="card-button">Lire</button></div></article>
+    </div>
+  </section>
+
+</main>
 
 <!-- FOOTER -->
 <footer>
   <div class="footer-grid">
-    <div class="footer-logo"><svg viewBox="0 0 24 24"><path d="M12 2L15 8H9L12 2Z"/></svg><span>Empire Is Yours™</span></div>
-    <div class="footer-links"><h4>Liens rapides</h4><a href="#rap-fr">Rap FR</a><a href="#rap-us">Rap US</a><a href="#avant-premieres">Avant-premières</a><a href="#news">News</a></div>
-    <div class="footer-links"><h4>Légal & Sécurité</h4><a href="#" class="legal-link" data-page="mentions">Mentions légales</a><a href="#" class="legal-link" data-page="cgu">Conditions générales</a><a href="#" class="legal-link" data-page="privacy">Politique de confidentialité</a></div>
+    <div>
+      <div class="footer-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L15 8H9L12 2Z"/></svg><div style="font-family:var(--ff-serif);font-weight:700;color:var(--gold)">Empire Is Yours™</div></div>
+      <p style="color:var(--muted);margin-top:8px;max-width:320px">Vitrine des nouveaux clips et des talents émergents. Reste connecté, rejoins la communauté.</p>
+    </div>
+
+    <div class="footer-links">
+      <h4 style="color:var(--gold);margin-bottom:8px">Navigation</h4>
+      <a href="#avant-premieres">Avant-premières</a>
+      <a href="#news">News</a>
+      <a href="#rap-fr">Rap FR</a>
+      <a href="#rap-us">Rap US</a>
+    </div>
+
+    <div class="footer-links">
+      <h4 style="color:var(--gold);margin-bottom:8px">Légal & Sécurité</h4>
+      <a href="#" class="legal-link" data-page="mentions">Mentions légales</a>
+      <a href="#" class="legal-link" data-page="cgu">Conditions générales</a>
+      <a href="#" class="legal-link" data-page="privacy">Politique de confidentialité</a>
+    </div>
   </div>
-  <div class="footer-legal"><p>Empire Is Yours™ respecte la loi française et européenne (RGPD). Vos données sont protégées et utilisées uniquement pour nos services. Vous pouvez les modifier ou supprimer à tout moment.</p></div>
-  <div class="footer-bottom">&copy; 2025 Empire Is Yours™. Tous droits réservés.</div>
+
+  <div class="footer-bottom">© <span id="year"></span> Empire Is Yours™ — Tous droits réservés.</div>
 </footer>
 
-<!-- MODAL LANGUE -->
-<div class="modal" id="lang-modal">
-  <div class="modal-content">
-    <h3>Choisir la langue</h3>
-    <button data-lang="fr">Français</button>
-    <button data-lang="en">English</button>
-    <button data-lang="es">Español</button>
-    <button data-lang="de">Deutsch</button>
-    <br><br>
-    <button id="close-lang">Fermer</button>
+<!-- LANGUE MODAL -->
+<div class="modal-backdrop" id="lang-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="lang-title">
+    <h3 id="lang-title">Choisir la langue</h3>
+
+    <div class="lang-grid" id="lang-grid">
+      <!-- Each option has a data-lang attribute and will set html.lang -->
+      <button class="lang-option" data-lang="fr" title="Français">
+        <svg class="lang-flag" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#fff"/><rect width="20" height="40" fill="#0055A4"/><rect x="40" width="20" height="40" fill="#EF4135"/></svg>
+        <div>
+          <div style="font-weight:700">Français</div>
+          <div style="color:var(--muted);font-size:0.9rem">FR</div>
+        </div>
+      </button>
+
+      <button class="lang-option" data-lang="en" title="English">
+        <svg class="lang-flag" viewBox="0 0 60 30" aria-hidden="true"><rect width="60" height="30" fill="#012169"/><path d="M0 0L60 30M60 0L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0L60 30M60 0L0 30" stroke="#C8102E" stroke-width="4"/><rect width="60" height="30" fill="none"/><rect x="22" width="16" height="30" fill="#fff"/><rect y="7" width="60" height="16" fill="#fff"/><rect x="24" width="12" height="30" fill="#C8102E"/><rect y="10" width="60" height="10" fill="#C8102E"/></svg>
+        <div>
+          <div style="font-weight:700">English</div>
+          <div style="color:var(--muted);font-size:0.9rem">EN</div>
+        </div>
+      </button>
+
+      <button class="lang-option" data-lang="es" title="Español">
+        <svg class="lang-flag" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#C60B1E"/><rect y="10" width="60" height="20" fill="#FFC400"/></svg>
+        <div>
+          <div style="font-weight:700">Español</div>
+          <div style="color:var(--muted);font-size:0.9rem">ES</div>
+        </div>
+      </button>
+
+      <button class="lang-option" data-lang="de" title="Deutsch">
+        <svg class="lang-flag" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#000"/><rect y="13" width="60" height="14" fill="#DD0000"/><rect y="26" width="60" height="14" fill="#FFCE00"/></svg>
+        <div>
+          <div style="font-weight:700">Deutsch</div>
+          <div style="color:var(--muted);font-size:0.9rem">DE</div>
+        </div>
+      </button>
+    </div>
+
+    <div style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end">
+      <button id="lang-close" class="lang-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04)">Fermer</button>
+    </div>
   </div>
 </div>
 
-<!-- MODAL LÉGAL -->
-<div class="modal" id="legal-modal">
-  <div class="modal-content" id="legal-content">
+<!-- LEGAL MODAL -->
+<div class="modal-backdrop" id="legal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="legal-title">
     <h3 id="legal-title">Titre</h3>
-    <p id="legal-text">Texte</p>
-    <button id="close-legal">Fermer</button>
+    <div class="legal-body" id="legal-text">Texte légal</div>
+    <div style="display:flex;justify-content:flex-end;gap:8px">
+      <button id="close-legal" class="lang-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04)">Fermer</button>
+    </div>
   </div>
 </div>
 
 <script>
-// LANGUE
-const langBtn = document.getElementById('open-lang');
-const langModal = document.getElementById('lang-modal');
-const closeLang = document.getElementById('close-lang');
-langBtn.addEventListener('click',()=>{langModal.style.display='flex';});
-closeLang.addEventListener('click',()=>{langModal.style.display='none';});
+/* ---------- Utilitaires ---------- */
+const $ = (s, ctx = document) => ctx.querySelector(s);
+const $$ = (s, ctx = document) => Array.from(ctx.querySelectorAll(s));
+document.getElementById('year').textContent = new Date().getFullYear();
 
-// LÉGAL
-const legalLinks = document.querySelectorAll('.legal-link');
-const legalModal = document.getElementById('legal-modal');
-const legalTitle = document.getElementById('legal-title');
-const legalText = document.getElementById('legal-text');
-const closeLegal = document.getElementById('close-legal');
+/* ---------- Header shrink on scroll & reveal animations ---------- */
+const header = $('#header');
+const heroTitle = $('#hero-title');
+const revealTargets = $$('.content-section, .hero-inner');
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('section-visible');
+      io.unobserve(e.target);
+    }
+  });
+},{threshold:0.12});
+revealTargets.forEach(t => io.observe(t));
+
+window.addEventListener('scroll', ()=>{
+  if(window.scrollY > 30) header.classList.add('shrink');
+  else header.classList.remove('shrink');
+});
+
+/* Fade-in hero children after load */
+window.addEventListener('load', ()=>{
+  setTimeout(()=> {
+    document.querySelector('.hero-title').style.opacity = 1;
+    document.querySelector('.hero-title').style.transform = 'translateY(0)';
+    document.querySelector('.hero-sub').style.opacity = 1;
+    document.querySelector('.hero-sub').style.transform = 'translateY(0)';
+    document.querySelector('.cta').style.opacity = 1;
+    document.querySelector('.cta').style.transform = 'translateY(0)';
+  }, 220);
+});
+
+/* ---------- Mobile nav (overlay) ---------- */
+const burger = $('#burger');
+const navOverlay = $('#nav-overlay');
+burger.addEventListener('click', ()=>{
+  const open = navOverlay.classList.toggle('open');
+  burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  navOverlay.setAttribute('aria-hidden', open ? 'false' : 'true');
+  document.body.style.overflow = open ? 'hidden' : '';
+});
+
+/* Close overlay when link clicked */
+$$('.nav-overlay .nav-link').forEach(a=>{
+  a.addEventListener('click', (e)=>{
+    navOverlay.classList.remove('open');
+    burger.setAttribute('aria-expanded','false');
+    navOverlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  });
+});
+
+/* ---------- Active nav link highlight based on scroll ---------- */
+const navLinks = $$('.nav a');
+const sections = navLinks.map(a => document.getElementById(a.getAttribute('data-target')));
+const sectionObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('data-target') === entry.target.id));
+      // also in overlay
+      $$('#nav-overlay .nav-link').forEach(link => link.classList.toggle('active', link.getAttribute('href').slice(1) === entry.target.id));
+    }
+  });
+},{threshold:0.45});
+sections.forEach(s => s && sectionObserver.observe(s));
+
+/* ---------- Smooth focus when using nav (accessibility) ---------- */
+navLinks.forEach(a=>{
+  a.addEventListener('click', (e)=>{
+    // default anchor scroll is fine; provide focus
+    const id = a.getAttribute('href').slice(1);
+    const target = document.getElementById(id);
+    if(target){ target.setAttribute('tabindex','-1'); target.focus({preventScroll:true}); }
+  });
+});
+
+/* ---------- LANGUAGE MODAL (flags) ---------- */
+const langBtn = $('#lang-btn');
+const langBtn2 = $('#lang-btn-2');
+const langBackdrop = $('#lang-backdrop');
+const langClose = $('#lang-close');
+const langGrid = $('#lang-grid');
+const langLabel = $('#lang-label');
+const flagMini = $('.flag-mini');
+
+const setLang = (code)=>{
+  document.documentElement.lang = code;
+  localStorage.setItem('siteLang', code);
+  langLabel.textContent = code.toUpperCase();
+  // small flag injection for header (use same SVG inner HTML as selected option)
+  const selected = langGrid.querySelector(`[data-lang="${code}"]`);
+  if(selected){
+    const flagSvg = selected.querySelector('svg').outerHTML;
+    flagMini.innerHTML = flagSvg;
+  }
+};
+
+const openLangModal = (sourceBtn) => {
+  langBackdrop.classList.add('open');
+  langBackdrop.setAttribute('aria-hidden','false');
+  // accessibility
+  langBackdrop.querySelector('.modal').focus();
+  document.body.style.overflow = 'hidden';
+  langBtn.setAttribute('aria-expanded','true');
+};
+
+const closeLangModal = ()=>{
+  langBackdrop.classList.remove('open');
+  langBackdrop.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+  langBtn.setAttribute('aria-expanded','false');
+  langBtn.focus();
+};
+
+langBtn.addEventListener('click', ()=> openLangModal());
+langBtn2.addEventListener('click', ()=> openLangModal());
+langClose.addEventListener('click', closeLangModal);
+langBackdrop.addEventListener('click', (e)=>{
+  if(e.target === langBackdrop) closeLangModal();
+});
+window.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    if(langBackdrop.classList.contains('open')) closeLangModal();
+    if($('#legal-backdrop').classList.contains('open')) closeLegalModal();
+    if(navOverlay.classList.contains('open')){ navOverlay.classList.remove('open'); burger.setAttribute('aria-expanded','false'); document.body.style.overflow='';}
+  }
+});
+
+/* Language selection */
+langGrid.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.lang-option');
+  if(!btn) return;
+  const code = btn.dataset.lang;
+  setLang(code);
+  closeLangModal();
+});
+
+/* persist language from localStorage */
+const saved = localStorage.getItem('siteLang') || 'fr';
+setLang(saved);
+
+/* ---------- LEGAL MODAL ---------- */
+const legalLinks = $$('.legal-link');
+const legalBackdrop = $('#legal-backdrop');
+const legalTitle = $('#legal-title');
+const legalText = $('#legal-text');
+const closeLegal = $('#close-legal');
 
 const legalPages = {
-  mentions:{title:'Mentions légales',text:'Nom protégé Empire Is Yours™. Informations sur l’entreprise, siège, contact et droits.'},
-  cgu:{title:'Conditions générales',text:'Conditions d’utilisation du site, droits et obligations des utilisateurs.'},
-  privacy:{title:'Politique de confidentialité',text:'Vos données sont protégées, conservées en toute sécurité et utilisées uniquement pour les services proposés. Conformité RGPD.'}
+  mentions:{title:'Mentions légales', text:'Nom protégé Empire Is Yours™. Informations sur l’entreprise, siège, contact et droits.'},
+  cgu:{title:'Conditions générales', text:'Conditions d’utilisation du site, droits et obligations des utilisateurs.'},
+  privacy:{title:'Politique de confidentialité', text:'Vos données sont protégées, conservées en toute sécurité et utilisées uniquement pour les services proposés. Conformité RGPD.'}
 };
 
 legalLinks.forEach(link=>{
-  link.addEventListener('click',(e)=>{
+  link.addEventListener('click', (e)=>{
     e.preventDefault();
     const page = e.target.dataset.page;
     legalTitle.textContent = legalPages[page].title;
     legalText.textContent = legalPages[page].text;
-    legalModal.style.display='flex';
+    legalBackdrop.classList.add('open');
+    legalBackdrop.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
   });
 });
 
-closeLegal.addEventListener('click',()=>{legalModal.style.display='none';});
-</script>
+const closeLegalModal = () => {
+  legalBackdrop.classList.remove('open');
+  legalBackdrop.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+};
+closeLegal.addEventListener('click', closeLegalModal);
+legalBackdrop.addEventListener('click', (e)=> { if(e.target === legalBackdrop) closeLegalModal(); });
 
+/* ---------- Tiny improvements: allow keyboard tab focus inside modals ---------- */
+const trapFocus = (container) => {
+  const focusable = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  const first = focusable[0];
+  const last = focusable[focusable.length-1];
+  container.addEventListener('keydown', (e)=>{
+    if(e.key !== 'Tab') return;
+    if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  });
+};
+trapFocus($('#lang-backdrop').querySelector('.modal'));
+trapFocus($('#legal-backdrop').querySelector('.modal'));
+
+/* ---------- Polishing: ensure anchor focus visible on click (accessibility) ---------- */
+$$('a').forEach(a=>{
+  a.addEventListener('click', ()=> {
+    setTimeout(()=> a.classList.add('visited-temp'), 800);
+  });
+});
+
+</script>
 </body>
 </html>
