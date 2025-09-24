@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Empire Is Yours</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -234,79 +234,83 @@ section {
 .card-desc{color:var(--muted);font-size:0.95rem;margin-bottom:10px}
 .card-button{width:100%;padding:10px;border-radius:8px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold-2));color:#0b0b0b;font-weight:700;cursor:pointer}
 
-/* Carousel TikTok */
-.tiktok-carousel{
+/* Carousel Avant-premières style TikTok */
+.carousel-tk{
   display:flex;
   overflow-x:auto;
   scroll-snap-type:x mandatory;
   gap:16px;
-  padding-bottom:20px;
+  padding-bottom:12px;
 }
-.tiktok-carousel::-webkit-scrollbar{display:none}
-.tiktok-item{
-  flex:0 0 auto;
+.carousel-tk::-webkit-scrollbar{display:none;}
+.carousel-item{
+  flex:0 0 280px;
   scroll-snap-align:start;
-  width:300px;
-  background:var(--panel);
   border-radius:16px;
   overflow:hidden;
+  background:#080808;
   position:relative;
-  transition:transform 0.35s;
+  border:1px solid rgba(255,255,255,0.03);
 }
-.tiktok-item video{
+.carousel-item video{
   width:100%;
   height:400px;
   object-fit:cover;
-  display:block;
+  cursor:pointer;
 }
-.tiktok-info{
+.video-overlay{
   position:absolute;
-  bottom:8px;
-  left:8px;
-  color:#fff;
+  bottom:12px;
+  left:12px;
   display:flex;
   flex-direction:column;
-  gap:6px;
-  font-family:var(--ff-sans);
-  font-weight:500;
-  text-shadow:0 6px 20px rgba(0,0,0,0.5);
-}
-.tiktok-artist{
-  font-size:0.95rem;
-}
-.tiktok-title{
-  font-size:1.05rem;
-  font-weight:700;
-}
-.tiktok-actions{
-  position:absolute;
-  right:8px;
-  bottom:8px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.tiktok-actions button{
-  background:rgba(0,0,0,0.4);
-  border:none;
-  border-radius:50%;
+  gap:12px;
   color:#fff;
-  width:46px;
-  height:46px;
+}
+.video-overlay .artist-badge{
   display:flex;
   align-items:center;
-  justify-content:center;
-  font-size:1.2rem;
-  cursor:pointer;
-  transition:transform 0.25s;
+  gap:8px;
+  background:rgba(0,0,0,0.6);
+  padding:6px 10px;
+  border-radius:20px;
 }
-.tiktok-actions button:hover{transform:scale(1.15)}
-.tiktok-likes{position:absolute;top:8px;left:8px;font-size:0.9rem;color:var(--gold);font-weight:700}
+.artist-badge img{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  border:1px solid var(--gold);
+}
+.artist-badge .info{
+  display:flex;
+  flex-direction:column;
+}
+.artist-badge .info .name{font-weight:700;font-size:0.95rem}
+.artist-badge .info .title{font-size:0.85rem;color:var(--muted)}
+.video-overlay .like{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  gap:6px;
+}
+.video-overlay .like span{font-size:0.85rem;color:var(--gold)}
+.video-overlay .follow{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  gap:6px;
+  margin-top:8px;
+}
+.video-overlay .follow img{
+  width:36px;height:36px;border-radius:50%;border:2px solid var(--gold);
+}
 
-/* Fiche artiste modal */
+/* Artist modal */
 .artist-backdrop{
   position:fixed;inset:0;
-  background:rgba(0,0,0,0.8);
+  background:rgba(0,0,0,0.85);
   display:none;
   align-items:center;
   justify-content:center;
@@ -315,28 +319,42 @@ section {
 }
 .artist-backdrop.open{display:flex}
 .artist-modal{
-  width:100%;
-  max-width:500px;
-  background:var(--panel);
+  width:100%;max-width:600px;
+  background:linear-gradient(180deg,var(--panel),#0b0b0b);
+  padding:1.6rem;
   border-radius:16px;
-  padding:1.5rem;
+  border:1px solid rgba(255,255,255,0.03);
+  max-height:90vh;
   overflow-y:auto;
-  max-height:80vh;
 }
-.artist-modal h3{font-family:var(--ff-serif);color:var(--gold);margin-bottom:12px;text-align:center}
-.artist-modal .music-list{display:flex;flex-direction:column;gap:10px}
-.artist-modal .music-item{padding:10px;border-radius:8px;background:linear-gradient(90deg,rgba(212,175,55,0.05),rgba(0,0,0,0.1));display:flex;justify-content:space-between;align-items:center}
-.artist-modal .music-item button{background:var(--gold);border:none;color:#000;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:700}
-.artist-modal .close-artist{margin-top:12px;text-align:right}
-.artist-modal .close-artist button{background:transparent;border:1px solid rgba(255,255,255,0.05);color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer}
+.artist-modal .header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+}
+.artist-modal .header img{
+  width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);
+}
+.artist-modal .header .info{
+  display:flex;
+  flex-direction:column;
+}
+.artist-modal .header .info .name{font-weight:700;font-size:1rem}
+.artist-modal .header .info .username{font-size:0.85rem;color:var(--muted)}
+.artist-modal .desc{color:var(--muted);margin-bottom:12px;font-size:0.9rem}
+.artist-modal .videos{
+  display:flex;flex-direction:column;gap:12px;
+}
+.artist-modal .videos video{width:100%;height:250px;object-fit:cover;border-radius:12px;cursor:pointer}
 
 /* Responsive */
-@media(max-width:980px){
+@media (max-width:980px){
   .hero-title{font-size:2.6rem}
   .nav{display:none}
   .burger{display:flex}
 }
-@media(max-width:600px){
+@media (max-width:600px){
   .hero{padding:2.5rem 4%}
   .hero-title{font-size:2.2rem}
 }
@@ -345,211 +363,188 @@ section {
 <body>
 <header class="header" id="header">
   <div class="logo" id="home">
-    <svg viewBox="0 0 24 24"><path d="M12 2L15 8H9L12 2Z"/></svg>
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2L15 8H9L12 2Z"/></svg>
     <div class="brand">Empire Is Yours</div>
   </div>
-  <nav class="nav" id="desktop-nav">
+  <nav class="nav" id="desktop-nav" aria-label="Navigation principale">
     <a href="#avant-premieres" class="nav-link" data-target="avant-premieres">Avant-premières</a>
     <a href="#news" class="nav-link" data-target="news">News</a>
     <a href="#rap-fr" class="nav-link" data-target="rap-fr">Rap FR</a>
     <a href="#rap-us" class="nav-link" data-target="rap-us">Rap US</a>
   </nav>
   <div class="header-actions">
-    <button class="lang-btn" id="lang-btn"><span id="lang-label">FR</span></button>
-    <button class="burger" id="burger"><div class="lines"><span></span><span></span><span></span></div></button>
+    <button class="lang-btn" id="lang-btn" aria-haspopup="dialog" aria-expanded="false" title="Choisir la langue">
+      <svg class="flag-mini" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" fill="none"/></svg>
+      <span id="lang-label">FR</span>
+    </button>
+    <button class="burger" id="burger" aria-label="ouvrir le menu" aria-expanded="false">
+      <div class="lines"><span></span><span></span><span></span></div>
+    </button>
   </div>
 </header>
 
-<nav class="nav-overlay" id="nav-overlay">
-  <a href="#avant-premieres" class="nav-link">Avant-premières</a>
-  <a href="#news" class="nav-link">News</a>
-  <a href="#rap-fr" class="nav-link">Rap FR</a>
-  <a href="#rap-us" class="nav-link">Rap US</a>
-</nav>
-
 <main>
-<section class="hero" id="hero">
-  <div class="hero-inner">
-    <h1 class="hero-title">Empire Is Yours</h1>
-    <p class="hero-sub">Découvre les clips et talents qui feront la scène demain — exclus, premiers drops, interviews.</p>
-    <a class="cta" href="#avant-premieres">Voir les avant-premières</a>
-  </div>
-</section>
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+      <h1 class="hero-title" id="hero-title">Empire Is Yours</h1>
+      <p class="hero-sub">Découvre les clips et talents qui feront la scène demain — exclus, premiers drops, interviews.</p>
+      <a class="cta" href="#avant-premieres">Voir les avant-premières</a>
+    </div>
+  </section>
 
-<section id="avant-premieres" class="content-section">
-  <div class="section-header">
-    <h2>Avant-premières</h2>
-    <p>Swipe à gauche pour découvrir les clips exclusifs.</p>
-  </div>
-  <div class="tiktok-carousel" id="tiktok-carousel">
-    <!-- Exemple de vidéos -->
-    <div class="tiktok-item" data-artist="Artiste 1" data-title="Clip Alpha">
-      <video src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video>
-      <div class="tiktok-likes" id="likes-1">❤ 0</div>
-      <div class="tiktok-info">
-        <div class="tiktok-artist">Artiste 1</div>
-        <div class="tiktok-title">Clip Alpha</div>
+  <!-- RAP FR -->
+  <section id="rap-fr" class="content-section">
+    <div class="section-header">
+      <h2>Rap Français</h2>
+      <p>Les artistes français qui font vibrer la scène.</p>
+    </div>
+    <div class="grid">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste FR">
+        <div class="card-body">
+          <h3 class="card-title">Artiste 1</h3>
+          <p class="card-desc">Dernier projet qui fait sensation.</p>
+          <button class="card-button">Découvrir</button>
+        </div>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1543007634-01f345d95e8d?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste FR 2">
+        <div class="card-body">
+          <h3 class="card-title">Artiste 2</h3>
+          <p class="card-desc">Flow unique et collaborations fortes.</p>
+          <button class="card-button">Découvrir</button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- AVANT-PREMIÈRES -->
+  <section id="avant-premieres" class="content-section">
+    <div class="section-header">
+      <h2>Avant-premières</h2>
+      <p>Visionne clips et vidéos exclusives — premiers drops. Swipe pour découvrir les prochaines vidéos.</p>
+    </div>
+    <div class="carousel-tk" id="carousel-tk">
+      <div class="carousel-item" data-artist="Artiste 1" data-title="Clip 1">
+        <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop></video>
+        <div class="video-overlay">
+          <div class="artist-badge" data-artist-modal>
+            <img src="https://images.unsplash.com/photo-1502767089025-6572583495e4?crop=entropy&fit=crop&w=80&q=80" alt="Artiste 1">
+            <div class="info">
+              <span class="name">Artiste 1</span>
+              <span class="title">Clip 1</span>
+            </div>
+          </div>
+          <div class="like" data-like>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="var(--gold)"/></svg>
+            <span>0</span>
+          </div>
+        </div>
       </div>
-      <div class="tiktok-actions">
-        <button class="like-btn" data-id="1">❤</button>
-        <button class="artist-btn">+</button>
+      <div class="carousel-item" data-artist="Artiste 2" data-title="Clip 2">
+        <video src="https://www.w3schools.com/html/movie.mp4" muted loop></video>
+        <div class="video-overlay">
+          <div class="artist-badge" data-artist-modal>
+            <img src="https://images.unsplash.com/photo-1502767089025-6572583495e4?crop=entropy&fit=crop&w=80&q=80" alt="Artiste 2">
+            <div class="info">
+              <span class="name">Artiste 2</span>
+              <span class="title">Clip 2</span>
+            </div>
+          </div>
+          <div class="like" data-like>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="var(--gold)"/></svg>
+            <span>0</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="tiktok-item" data-artist="Artiste 2" data-title="Clip Beta">
-      <video src="https://www.w3schools.com/html/movie.mp4" controls></video>
-      <div class="tiktok-likes" id="likes-2">❤ 0</div>
-      <div class="tiktok-info">
-        <div class="tiktok-artist">Artiste 2</div>
-        <div class="tiktok-title">Clip Beta</div>
-      </div>
-      <div class="tiktok-actions">
-        <button class="like-btn" data-id="2">❤</button>
-        <button class="artist-btn">+</button>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<!-- RAP FR -->
-<section id="rap-fr" class="content-section">
-  <div class="section-header">
-    <h2>Rap Français</h2>
-    <p>Les artistes français qui font vibrer la scène.</p>
-  </div>
-  <div class="grid">
-    <article class="card">
-      <img src="https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste FR">
-      <div class="card-body">
-        <h3 class="card-title">Artiste FR 1</h3>
-        <p class="card-desc">Dernier projet qui fait sensation.</p>
-        <button class="card-button">Découvrir</button>
-      </div>
-    </article>
-    <article class="card">
-      <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste FR">
-      <div class="card-body">
-        <h3 class="card-title">Artiste FR 2</h3>
-        <p class="card-desc">Nouveau clip exclusif.</p>
-        <button class="card-button">Découvrir</button>
-      </div>
-    </article>
-  </div>
-</section>
+</main>
 
-<!-- RAP US -->
-<section id="rap-us" class="content-section">
-  <div class="section-header">
-    <h2>Rap US</h2>
-    <p>Les artistes américains incontournables.</p>
-  </div>
-  <div class="grid">
-    <article class="card">
-      <img src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste US">
-      <div class="card-body">
-        <h3 class="card-title">Artiste US 1</h3>
-        <p class="card-desc">Le hit du moment.</p>
-        <button class="card-button">Découvrir</button>
-      </div>
-    </article>
-    <article class="card">
-      <img src="https://images.unsplash.com/photo-1502950845461-0d4b1db16c2c?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste US">
-      <div class="card-body">
-        <h3 class="card-title">Artiste US 2</h3>
-        <p class="card-desc">Nouveau projet en exclusivité.</p>
-        <button class="card-button">Découvrir</button>
-      </div>
-    </article>
-  </div>
-</section>
-
-<!-- Fiche artiste modal -->
+<!-- Artist Modal -->
 <div class="artist-backdrop" id="artist-backdrop">
   <div class="artist-modal">
-    <h3 id="artist-name">Artiste</h3>
-    <div class="music-list" id="music-list">
-      <!-- Les musiques seront injectées ici -->
+    <div class="header">
+      <img src="" id="artist-photo" alt="photo artiste">
+      <div class="info">
+        <span class="name" id="artist-name"></span>
+        <span class="username" id="artist-username">@artist</span>
+      </div>
     </div>
-    <div class="close-artist">
-      <button id="close-artist">Fermer</button>
-    </div>
+    <p class="desc" id="artist-desc">Description de l'artiste ici.</p>
+    <div class="videos" id="artist-videos"></div>
   </div>
 </div>
 
-<footer class="footer" style="padding:2rem 4%;text-align:center;color:var(--muted);border-top:1px solid rgba(255,255,255,0.03);">
-  &copy; 2025 Empire Is Yours. Tous droits réservés.
-</footer>
-
 <script>
-// CARROUSEL LIKE & ARTISTE
-const likeButtons = document.querySelectorAll('.like-btn');
-const artistButtons = document.querySelectorAll('.artist-btn');
-const backdrop = document.getElementById('artist-backdrop');
-const artistNameEl = document.getElementById('artist-name');
-const musicListEl = document.getElementById('music-list');
-const closeBtn = document.getElementById('close-artist');
-
-// Initialisation likes depuis localStorage
-likeButtons.forEach(btn => {
-  const id = btn.dataset.id;
-  const likesEl = document.getElementById(`likes-${id}`);
-  let likes = parseInt(localStorage.getItem(`likes-${id}`)) || 0;
-  likesEl.textContent = `❤ ${likes}`;
-
-  btn.addEventListener('click', () => {
-    likes++;
-    likesEl.textContent = `❤ ${likes}`;
-    localStorage.setItem(`likes-${id}`, likes);
-  });
-});
-
-// Afficher fiche artiste
-artistButtons.forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    const item = e.target.closest('.tiktok-item');
-    const artist = item.dataset.artist;
-    const title = item.dataset.title;
-
-    artistNameEl.textContent = artist;
-
-    // Exemple de musiques (pour l'instant statique)
-    const musiques = [
-      {title: title},
-      {title: "Autre morceau 1"},
-      {title: "Autre morceau 2"}
-    ];
-
-    musicListEl.innerHTML = '';
-    musiques.forEach(m => {
-      const div = document.createElement('div');
-      div.classList.add('music-item');
-      div.innerHTML = `<span>${m.title}</span> <button>Écouter</button>`;
-      musicListEl.appendChild(div);
-    });
-
-    backdrop.classList.add('open');
-  });
-});
-
-// Fermer modal
-closeBtn.addEventListener('click', () => {
-  backdrop.classList.remove('open');
-});
-
-// Animations sections
-const sections = document.querySelectorAll('.content-section');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if(entry.isIntersecting){
-      entry.target.classList.add('section-visible');
-    }
-  });
-},{threshold:0.1});
-sections.forEach(section => observer.observe(section));
-
-// Burger menu
+// Burger menu mobile
 const burger = document.getElementById('burger');
-const navOverlay = document.getElementById('nav-overlay');
-burger.addEventListener('click', ()=>navOverlay.classList.toggle('open'));
+const navOverlay = document.querySelector('.nav-overlay');
+burger.addEventListener('click', () => {
+  navOverlay.classList.toggle('open');
+  burger.setAttribute('aria-expanded', navOverlay.classList.contains('open'));
+});
+
+// Swipe videos autoplay
+const carousel = document.getElementById('carousel-tk');
+const items = carousel.querySelectorAll('video');
+let currentVideo = null;
+
+function playCurrentVideo(){
+  items.forEach(v=>v.pause());
+  const rects = Array.from(items).map(v=>v.getBoundingClientRect());
+  let index = rects.findIndex(r=>r.left>=0 && r.right<=window.innerWidth);
+  if(index===-1) index=0;
+  items[index].play();
+  currentVideo=items[index];
+}
+playCurrentVideo();
+carousel.addEventListener('scroll',()=>{
+  playCurrentVideo();
+});
+
+// Pause/play on click
+items.forEach(v=>{
+  v.addEventListener('click', ()=>v.paused?v.play():v.pause());
+});
+
+// Likes
+document.querySelectorAll('[data-like]').forEach(likeDiv=>{
+  let count = 0;
+  likeDiv.addEventListener('click', ()=>{
+    count++;
+    likeDiv.querySelector('span').textContent = count;
+  });
+});
+
+// Artist modal
+const artistBackdrop = document.getElementById('artist-backdrop');
+const artistPhoto = document.getElementById('artist-photo');
+const artistName = document.getElementById('artist-name');
+const artistUsername = document.getElementById('artist-username');
+const artistDesc = document.getElementById('artist-desc');
+const artistVideos = document.getElementById('artist-videos');
+
+document.querySelectorAll('[data-artist-modal]').forEach(badge=>{
+  badge.addEventListener('click', ()=>{
+    const parent = badge.closest('.carousel-item');
+    const artist = parent.dataset.artist;
+    const title = parent.dataset.title;
+    artistPhoto.src = badge.querySelector('img').src;
+    artistName.textContent = artist;
+    artistUsername.textContent = '@'+artist.replace(/\s+/g,'').toLowerCase();
+    artistDesc.textContent = `Voici tous les clips de ${artist}.`;
+    artistVideos.innerHTML = '';
+    const video = parent.querySelector('video').cloneNode(true);
+    video.controls = true;
+    artistVideos.appendChild(video);
+    artistBackdrop.classList.add('open');
+  });
+});
+artistBackdrop.addEventListener('click',(e)=>{
+  if(e.target===artistBackdrop) artistBackdrop.classList.remove('open');
+});
 </script>
 </body>
 </html>
