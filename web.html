@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Empire Is Yours</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -234,122 +234,16 @@ section {
 .card-desc{color:var(--muted);font-size:0.95rem;margin-bottom:10px}
 .card-button{width:100%;padding:10px;border-radius:8px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold-2));color:#0b0b0b;font-weight:700;cursor:pointer}
 
-/* Carousel Avant-premières style TikTok */
-.carousel-tk{
-  display:flex;
-  overflow-x:auto;
-  scroll-snap-type:x mandatory;
-  gap:16px;
-  padding-bottom:12px;
-}
-.carousel-tk::-webkit-scrollbar{display:none;}
-.carousel-item{
-  flex:0 0 280px;
-  scroll-snap-align:start;
-  border-radius:16px;
-  overflow:hidden;
-  background:#080808;
-  position:relative;
-  border:1px solid rgba(255,255,255,0.03);
-}
-.carousel-item video{
-  width:100%;
-  height:400px;
-  object-fit:cover;
-  cursor:pointer;
-}
-.video-overlay{
-  position:absolute;
-  bottom:12px;
-  left:12px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  color:#fff;
-}
-.video-overlay .artist-badge{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  background:rgba(0,0,0,0.6);
-  padding:6px 10px;
-  border-radius:20px;
-}
-.artist-badge img{
-  width:32px;
-  height:32px;
-  border-radius:50%;
-  border:1px solid var(--gold);
-}
-.artist-badge .info{
-  display:flex;
-  flex-direction:column;
-}
-.artist-badge .info .name{font-weight:700;font-size:0.95rem}
-.artist-badge .info .title{font-size:0.85rem;color:var(--muted)}
-.video-overlay .like{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-  gap:6px;
-}
-.video-overlay .like span{font-size:0.85rem;color:var(--gold)}
-.video-overlay .follow{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-  gap:6px;
-  margin-top:8px;
-}
-.video-overlay .follow img{
-  width:36px;height:36px;border-radius:50%;border:2px solid var(--gold);
-}
+/* Footer */
+footer{background:linear-gradient(180deg, rgba(10,10,10,0.6), rgba(8,8,8,0.95));padding:3rem 4%}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;max-width:1200px;margin:0 auto}
+.footer-logo{display:flex;align-items:center;gap:12px}
+.footer-logo svg{width:44px;height:44px;fill:var(--gold)}
+.footer-links a{display:block;color:var(--muted);text-decoration:none;margin:6px 0}
+.footer-bottom{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:1.5rem}
 
-/* Artist modal */
-.artist-backdrop{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,0.85);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:2000;
-  padding:20px;
-}
-.artist-backdrop.open{display:flex}
-.artist-modal{
-  width:100%;max-width:600px;
-  background:linear-gradient(180deg,var(--panel),#0b0b0b);
-  padding:1.6rem;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.03);
-  max-height:90vh;
-  overflow-y:auto;
-}
-.artist-modal .header{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:16px;
-}
-.artist-modal .header img{
-  width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);
-}
-.artist-modal .header .info{
-  display:flex;
-  flex-direction:column;
-}
-.artist-modal .header .info .name{font-weight:700;font-size:1rem}
-.artist-modal .header .info .username{font-size:0.85rem;color:var(--muted)}
-.artist-modal .desc{color:var(--muted);margin-bottom:12px;font-size:0.9rem}
-.artist-modal .videos{
-  display:flex;flex-direction:column;gap:12px;
-}
-.artist-modal .videos video{width:100%;height:250px;object-fit:cover;border-radius:12px;cursor:pointer}
-
-/* Responsive */
-@media (max-width:980px){
+/* Responsive tweaks */
+@media (max-width: 980px){
   .hero-title{font-size:2.6rem}
   .nav{display:none}
   .burger{display:flex}
@@ -358,20 +252,84 @@ section {
   .hero{padding:2.5rem 4%}
   .hero-title{font-size:2.2rem}
 }
+
+/* ---------- Avant-premieres custom ---------- */
+.carousel-container{
+  position:relative;
+  overflow:hidden;
+  max-width:1200px;
+  margin:0 auto;
+}
+.carousel-track{
+  display:flex;
+  transition:transform 0.4s ease;
+}
+.carousel-item{
+  min-width:100%;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.carousel-item video{
+  width:100%;
+  max-height:600px;
+  object-fit:cover;
+  border-radius:12px;
+  cursor:pointer;
+}
+.carousel-controls{
+  position:absolute;
+  bottom:16px;left:50%;
+  transform:translateX(-50%);
+  display:flex;gap:12px;
+}
+.like-btn, .profile-btn{
+  background:rgba(0,0,0,0.5);
+  border:none;
+  padding:8px 12px;
+  color:#fff;
+  font-weight:700;
+  border-radius:999px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:0.9rem;
+}
+.profile-bubble{
+  width:50px;height:50px;
+  border-radius:50%;
+  overflow:hidden;
+  border:2px solid var(--gold);
+  cursor:pointer;
+  margin-bottom:6px;
+}
+.profile-bubble img{
+  width:100%;height:100%;object-fit:cover;
+}
+.artist-modal .modal video{
+  max-height:200px;
+  margin-bottom:12px;
+}
 </style>
 </head>
 <body>
+
 <header class="header" id="header">
   <div class="logo" id="home">
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2L15 8H9L12 2Z"/></svg>
     <div class="brand">Empire Is Yours</div>
   </div>
+
+  <!-- Desktop nav -->
   <nav class="nav" id="desktop-nav" aria-label="Navigation principale">
     <a href="#avant-premieres" class="nav-link" data-target="avant-premieres">Avant-premières</a>
     <a href="#news" class="nav-link" data-target="news">News</a>
     <a href="#rap-fr" class="nav-link" data-target="rap-fr">Rap FR</a>
     <a href="#rap-us" class="nav-link" data-target="rap-us">Rap US</a>
   </nav>
+
   <div class="header-actions">
     <button class="lang-btn" id="lang-btn" aria-haspopup="dialog" aria-expanded="false" title="Choisir la langue">
       <svg class="flag-mini" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" fill="none"/></svg>
@@ -383,7 +341,19 @@ section {
   </div>
 </header>
 
+<!-- Mobile overlay nav -->
+<nav class="nav-overlay" id="nav-overlay" aria-hidden="true" aria-label="Menu mobile">
+  <a href="#avant-premieres" class="nav-link">Avant-premières</a>
+  <a href="#news" class="nav-link">News</a>
+  <a href="#rap-fr" class="nav-link">Rap FR</a>
+  <a href="#rap-us" class="nav-link">Rap US</a>
+  <div style="margin-top:auto">
+    <button class="lang-btn" id="lang-btn-2" style="width:100%;justify-content:center">Langue</button>
+  </div>
+</nav>
+
 <main>
+
   <section class="hero" id="hero">
     <div class="hero-inner">
       <h1 class="hero-title" id="hero-title">Empire Is Yours</h1>
@@ -407,6 +377,7 @@ section {
           <button class="card-button">Découvrir</button>
         </div>
       </article>
+
       <article class="card">
         <img src="https://images.unsplash.com/photo-1543007634-01f345d95e8d?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste FR 2">
         <div class="card-body">
@@ -418,42 +389,61 @@ section {
     </div>
   </section>
 
+  <!-- RAP US -->
+  <section id="rap-us" class="content-section">
+    <div class="section-header">
+      <h2>Rap US</h2>
+      <p>Talents internationaux qui dictent les tendances.</p>
+    </div>
+    <div class="grid">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste US">
+        <div class="card-body">
+          <h3 class="card-title">Artiste A</h3>
+          <p class="card-desc">Hits et clips qui font vibrer la scène mondiale.</p>
+          <button class="card-button">Découvrir</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1534367610415-726c6f1a38f5?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste US 2">
+        <div class="card-body">
+          <h3 class="card-title">Artiste B</h3>
+          <p class="card-desc">Style unique et énergie irrésistible.</p>
+          <button class="card-button">Découvrir</button>
+        </div>
+      </article>
+    </div>
+  </section>
+
   <!-- AVANT-PREMIÈRES -->
   <section id="avant-premieres" class="content-section">
     <div class="section-header">
-      <h2>Avant-premières</h2>
-      <p>Visionne clips et vidéos exclusives — premiers drops. Swipe pour découvrir les prochaines vidéos.</p>
+      <h2>Avant-Premières</h2>
+      <p>Swipe à gauche ou à droite pour découvrir les dernières vidéos exclusives.</p>
     </div>
-    <div class="carousel-tk" id="carousel-tk">
-      <div class="carousel-item" data-artist="Artiste 1" data-title="Clip 1">
-        <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop></video>
-        <div class="video-overlay">
-          <div class="artist-badge" data-artist-modal>
-            <img src="https://images.unsplash.com/photo-1502767089025-6572583495e4?crop=entropy&fit=crop&w=80&q=80" alt="Artiste 1">
-            <div class="info">
-              <span class="name">Artiste 1</span>
-              <span class="title">Clip 1</span>
-            </div>
+    <div class="carousel-container">
+      <div class="carousel-track" id="carousel-track">
+        <!-- Video Item 1 -->
+        <div class="carousel-item">
+          <div class="profile-bubble" data-artist="artiste1">
+            <img src="https://images.unsplash.com/photo-1603415526960-fbf0f90efc1b?crop=entropy&fit=crop&w=120&q=80" alt="Profil Artiste 1">
           </div>
-          <div class="like" data-like>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="var(--gold)"/></svg>
-            <span>0</span>
+          <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted playsinline></video>
+          <div class="carousel-controls">
+            <button class="like-btn">❤️ <span>0</span></button>
+            <button class="profile-btn">+</button>
           </div>
         </div>
-      </div>
-      <div class="carousel-item" data-artist="Artiste 2" data-title="Clip 2">
-        <video src="https://www.w3schools.com/html/movie.mp4" muted loop></video>
-        <div class="video-overlay">
-          <div class="artist-badge" data-artist-modal>
-            <img src="https://images.unsplash.com/photo-1502767089025-6572583495e4?crop=entropy&fit=crop&w=80&q=80" alt="Artiste 2">
-            <div class="info">
-              <span class="name">Artiste 2</span>
-              <span class="title">Clip 2</span>
-            </div>
+        <!-- Video Item 2 -->
+        <div class="carousel-item">
+          <div class="profile-bubble" data-artist="artiste2">
+            <img src="https://images.unsplash.com/photo-1603415526960-fbf0f90efc1b?crop=entropy&fit=crop&w=120&q=80" alt="Profil Artiste 2">
           </div>
-          <div class="like" data-like>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="var(--gold)"/></svg>
-            <span>0</span>
+          <video src="https://www.w3schools.com/html/movie.mp4" muted playsinline></video>
+          <div class="carousel-controls">
+            <button class="like-btn">❤️ <span>0</span></button>
+            <button class="profile-btn">+</button>
           </div>
         </div>
       </div>
@@ -462,88 +452,85 @@ section {
 
 </main>
 
-<!-- Artist Modal -->
-<div class="artist-backdrop" id="artist-backdrop">
-  <div class="artist-modal">
-    <div class="header">
-      <img src="" id="artist-photo" alt="photo artiste">
-      <div class="info">
-        <span class="name" id="artist-name"></span>
-        <span class="username" id="artist-username">@artist</span>
-      </div>
+<!-- Footer -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2L15 8H9L12 2Z"/></svg>
+      <span>Empire Is Yours</span>
     </div>
-    <p class="desc" id="artist-desc">Description de l'artiste ici.</p>
-    <div class="videos" id="artist-videos"></div>
+    <div class="footer-links">
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+      <a href="#">YouTube</a>
+      <a href="#">Twitter</a>
+    </div>
   </div>
-</div>
+  <div class="footer-bottom">© 2025 Empire Is Yours. Tous droits réservés.</div>
+</footer>
 
 <script>
-// Burger menu mobile
+// Burger toggle
 const burger = document.getElementById('burger');
-const navOverlay = document.querySelector('.nav-overlay');
-burger.addEventListener('click', () => {
+const navOverlay = document.getElementById('nav-overlay');
+burger.addEventListener('click', ()=>{
   navOverlay.classList.toggle('open');
   burger.setAttribute('aria-expanded', navOverlay.classList.contains('open'));
 });
 
-// Swipe videos autoplay
-const carousel = document.getElementById('carousel-tk');
-const items = carousel.querySelectorAll('video');
-let currentVideo = null;
+// Scroll header shrink
+const header = document.getElementById('header');
+window.addEventListener('scroll', ()=>{
+  if(window.scrollY>50){header.classList.add('shrink');}
+  else{header.classList.remove('shrink');}
+});
 
-function playCurrentVideo(){
-  items.forEach(v=>v.pause());
-  const rects = Array.from(items).map(v=>v.getBoundingClientRect());
-  let index = rects.findIndex(r=>r.left>=0 && r.right<=window.innerWidth);
-  if(index===-1) index=0;
-  items[index].play();
-  currentVideo=items[index];
+// Carousel swipe logic
+const track = document.getElementById('carousel-track');
+const items = Array.from(track.children);
+let index = 0;
+
+function showItem(i){
+  if(i<0)i=0;
+  if(i>=items.length)i=items.length-1;
+  index=i;
+  const offset=-index*100;
+  track.style.transform=`translateX(${offset}%)`;
+  items.forEach((item,idx)=>{
+    const video=item.querySelector('video');
+    if(idx===index){video.play();}
+    else{video.pause();}
+  });
 }
-playCurrentVideo();
-carousel.addEventListener('scroll',()=>{
-  playCurrentVideo();
-});
 
-// Pause/play on click
-items.forEach(v=>{
-  v.addEventListener('click', ()=>v.paused?v.play():v.pause());
-});
+// Initialize first video
+showItem(0);
 
-// Likes
-document.querySelectorAll('[data-like]').forEach(likeDiv=>{
-  let count = 0;
-  likeDiv.addEventListener('click', ()=>{
-    count++;
-    likeDiv.querySelector('span').textContent = count;
+// Like buttons
+document.querySelectorAll('.like-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const span = btn.querySelector('span');
+    span.textContent=parseInt(span.textContent)+1;
   });
 });
 
-// Artist modal
-const artistBackdrop = document.getElementById('artist-backdrop');
-const artistPhoto = document.getElementById('artist-photo');
-const artistName = document.getElementById('artist-name');
-const artistUsername = document.getElementById('artist-username');
-const artistDesc = document.getElementById('artist-desc');
-const artistVideos = document.getElementById('artist-videos');
-
-document.querySelectorAll('[data-artist-modal]').forEach(badge=>{
-  badge.addEventListener('click', ()=>{
-    const parent = badge.closest('.carousel-item');
-    const artist = parent.dataset.artist;
-    const title = parent.dataset.title;
-    artistPhoto.src = badge.querySelector('img').src;
-    artistName.textContent = artist;
-    artistUsername.textContent = '@'+artist.replace(/\s+/g,'').toLowerCase();
-    artistDesc.textContent = `Voici tous les clips de ${artist}.`;
-    artistVideos.innerHTML = '';
-    const video = parent.querySelector('video').cloneNode(true);
-    video.controls = true;
-    artistVideos.appendChild(video);
-    artistBackdrop.classList.add('open');
+// Profile bubble + modal
+document.querySelectorAll('.profile-bubble').forEach(bubble=>{
+  bubble.addEventListener('click', ()=>{
+    const artist=bubble.getAttribute('data-artist');
+    alert(`Fiche de ${artist} (photo, bio, vidéos...)`);
   });
 });
-artistBackdrop.addEventListener('click',(e)=>{
-  if(e.target===artistBackdrop) artistBackdrop.classList.remove('open');
+
+// Swipe detection
+let startX=0;
+track.addEventListener('pointerdown', e=>{
+  startX=e.clientX;
+});
+track.addEventListener('pointerup', e=>{
+  const diff=startX-e.clientX;
+  if(diff>40){showItem(index+1);}
+  else if(diff<-40){showItem(index-1);}
 });
 </script>
 </body>
