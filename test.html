@@ -1,202 +1,155 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Empire Is Yours</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0a0a0a;
-      --gold: #d4af37;
-      --gold-light: #e8c874;
-      --white: #f8f8f8;
-      --gray: #aaaaaa;
-      --gray-dark: #333333;
-      --accent: #1a1a1a;
-      --font-serif: 'Playfair Display', serif;
-      --font-sans: 'Montserrat', sans-serif;
-      --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empire Is Yours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0a;
+  --gold: #d4af37;
+  --gold-light: #e8c874;
+  --white: #f8f8f8;
+  --gray: #aaaaaa;
+  --accent: #1a1a1a;
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Montserrat', sans-serif;
+  --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+/* RESET */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--white); line-height:1.6; overflow-x:hidden; padding-top:80px; }
 
-    body {
-      font-family: var(--font-sans);
-      background-color: var(--bg);
-      color: var(--white);
-      line-height: 1.6;
-      overflow-x: hidden;
-      padding-top: 80px;
-    }
+/* HEADER FIXE */
+header {
+  position: fixed; top:0; left:0; right:0;
+  background: rgba(10,10,10,0.95); backdrop-filter: blur(10px);
+  height:80px; display:flex; align-items:center; justify-content:space-between;
+  padding:0 5%; border-bottom:1px solid rgba(212,175,55,0.1); z-index:1000; transition: var(--transition);
+}
+header.scrolled { height:70px; background: rgba(10,10,10,0.98); }
+.logo { font-family: var(--font-serif); font-size:1.8rem; font-weight:700; color:var(--gold); display:flex; align-items:center; gap:12px; }
+.logo-icon { width:32px; height:32px; fill:var(--gold); transition: var(--transition);}
+.logo:hover .logo-icon { transform: rotate(15deg); }
 
-    /* Header Luxe */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(10,10,10,0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(212,175,55,0.1);
-      padding: 0 5%;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      z-index: 1000;
-      transition: var(--transition);
-    }
+/* NAVIGATION */
+.main-nav { display:flex; gap:2rem; flex-wrap:wrap; justify-content:center; }
+.nav-link { color:var(--white); text-decoration:none; font-size:0.95rem; font-weight:400; padding:10px 0; position:relative; transition:var(--transition); }
+.nav-link:after { content:''; position:absolute; bottom:0; left:0; width:0; height:1px; background:var(--gold); transition:var(--transition);}
+.nav-link:hover, .nav-link.active { color:var(--gold);}
+.nav-link:hover:after, .nav-link.active:after { width:100%; }
 
-    header.scrolled { height:70px; background: rgba(10,10,10,0.98); }
+/* HEADER RIGHT */
+.header-right { display:flex; align-items:center; gap:1.5rem;}
+.social-links { display:flex; gap:1rem;}
+.social-icon { width:20px; height:20px; fill:var(--white); transition:var(--transition);}
+.social-icon:hover { fill:var(--gold); transform:translateY(-2px);}
+.lang-switch { position:relative; cursor:pointer;}
+.lang-switch img { width:32px; height:32px; border-radius:50%; border:1px solid var(--gray); transition:var(--transition);}
+.lang-switch img:hover { border-color: var(--gold);}
 
-    .logo {
-      font-family: var(--font-serif);
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--gold);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+/* POPUP LANGUES */
+.lang-popup { position:absolute; top:50px; right:0; background:var(--accent); border:1px solid var(--gray-dark); border-radius:6px; display:none; flex-direction:column; min-width:120px; z-index:2000;}
+.lang-popup button { background:none; border:none; color:var(--white); text-align:left; padding:10px; cursor:pointer; font-size:0.9rem; transition:var(--transition);}
+.lang-popup button:hover { background: rgba(212,175,55,0.2); color:var(--gold);}
 
-    .logo-icon { width:32px; height:32px; fill:var(--gold); transition: var(--transition);}
-    .logo:hover .logo-icon { transform: rotate(15deg); }
+/* HERO */
+.hero { height:calc(100vh - 80px); background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1602233141234-01f34c1d7f8f?crop=entropy&fit=crop&w=1470&q=80') no-repeat center/cover; display:flex; align-items:center; justify-content:center; text-align:center; padding:0 5%;}
+.hero h1 { font-family:var(--font-serif); font-size:3.5rem; color:var(--white); margin-bottom:1.5rem;}
+.hero p { font-size:1.1rem; margin-bottom:2rem; color:var(--gray);}
+.cta-button { padding:15px 40px; border:1px solid var(--gold); background:none; color:var(--gold); text-transform:uppercase; font-weight:500; text-decoration:none; transition:var(--transition);}
+.cta-button:hover { background:var(--gold); color:var(--bg);}
 
-    /* Navigation Principale */
-    .main-nav { display: flex; gap:2.5rem; position: absolute; left:50%; transform:translateX(-50%);}
-    .nav-link {
-      color: var(--white);
-      text-decoration: none;
-      font-size: 0.95rem;
-      font-weight: 400;
-      letter-spacing: 0.5px;
-      position: relative;
-      padding: 10px 0;
-      transition: var(--transition);
-    }
-    .nav-link:after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 1px;
-      background: var(--gold);
-      transition: var(--transition);
-    }
-    .nav-link:hover, .nav-link.active { color: var(--gold); }
-    .nav-link:hover:after, .nav-link.active:after { width:100%; }
+/* TABS */
+.tabs { display:flex; justify-content:center; gap:2rem; margin-bottom:2rem; flex-wrap:wrap; }
+.tab-link { padding:10px 25px; border:1px solid var(--gold); background:none; color:var(--gold); font-weight:500; cursor:pointer; border-radius:6px; transition:var(--transition);}
+.tab-link.active, .tab-link:hover { background:var(--gold); color:var(--bg); }
+.tab-pane { display:none; }
+.tab-pane.active { display:block; }
 
-    /* Header Right Elements */
-    .header-right { display: flex; align-items: center; gap:1.5rem;}
-    .social-links { display:flex; gap:1rem;}
-    .social-icon { width:20px; height:20px; fill:var(--white); transition: var(--transition);}
-    .social-icon:hover { fill: var(--gold); transform:translateY(-2px); }
+/* SECTIONS */
+.section-header { text-align:center; margin-bottom:2rem;}
+.section-header h2 { font-family:var(--font-serif); font-size:2.2rem; color:var(--white); margin-bottom:0.5rem;}
+.section-header p { color:var(--gray); max-width:600px; margin:0 auto;}
+.grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:1.5rem; }
 
-    /* Langue */
-    .lang-switch { display:flex; gap:0.5rem; cursor:pointer;}
-    .lang-switch img { width:24px; height:24px; border-radius:50%; border:1px solid var(--gray); transition: var(--transition);}
-    .lang-switch img:hover { border-color: var(--gold); }
+/* CARD */
+.card { background:var(--accent); border:1px solid rgba(212,175,55,0.1); overflow:hidden; transition:var(--transition);}
+.card img { width:100%; height:200px; object-fit:cover; transition:var(--transition);}
+.card:hover img { transform:scale(1.05);}
+.card-body { padding:1rem;}
+.card-title { font-family:var(--font-serif); font-size:1.2rem; color:var(--white); margin-bottom:0.5rem;}
+.card-desc { color:var(--gray); font-size:0.9rem; margin-bottom:1rem;}
+.card-button { width:100%; padding:10px; background:var(--gold); color:var(--bg); border:none; cursor:pointer; transition:var(--transition);}
+.card-button:hover { background:var(--gold-light); }
 
-    /* Hero Section */
-    .hero {
-      height: calc(100vh - 80px);
-      background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1602233141234-01f34c1d7f8f?crop=entropy&fit=crop&w=1470&q=80') no-repeat center/cover;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      padding:0 5%;
-    }
-    .hero-content { max-width:800px; }
-    .hero h1 { font-family: var(--font-serif); font-size:3.5rem; font-weight:700; color: var(--white); margin-bottom:1.5rem; letter-spacing:1px; }
-    .hero p { font-size:1.1rem; margin-bottom:2.5rem; color:var(--gray);}
-    .cta-button {
-      display:inline-block; padding:15px 40px; background:transparent; color:var(--gold);
-      border:1px solid var(--gold); font-size:0.9rem; font-weight:500; text-transform:uppercase;
-      text-decoration:none; transition:var(--transition);
-    }
-    .cta-button:hover { background:var(--gold); color:var(--bg); }
+/* FOOTER */
+footer { background:var(--accent); padding:3rem 5%; border-top:1px solid rgba(212,175,55,0.1);}
+.footer-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:2rem;}
+.footer-logo { display:flex; align-items:center; gap:12px; margin-bottom:1rem;}
+.footer-logo svg { width:36px; height:36px; fill:var(--gold);}
+.footer-links a { display:block; color:var(--gray); margin-bottom:0.5rem; text-decoration:none; transition:var(--transition);}
+.footer-links a:hover { color:var(--gold);}
+.footer-bottom { text-align:center; color:var(--gray); font-size:0.8rem; margin-top:2rem;}
 
-    /* Sections multi-volets */
-    section { padding:6rem 5%; }
-    .section-header { text-align:center; margin-bottom:4rem; }
-    .section-header h2 { font-family: var(--font-serif); font-size:2.5rem; color: var(--white); margin-bottom:1rem; }
-    .section-header p { color:var(--gray); max-width:600px; margin:0 auto; }
-
-    /* Product / Artiste Grid */
-    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap:2rem; }
-    .card {
-      background:var(--accent); border:1px solid rgba(212,175,55,0.1); transition:var(--transition); overflow:hidden; position:relative;
-    }
-    .card:hover { transform: translateY(-10px); box-shadow:0 20px 40px rgba(0,0,0,0.3); border-color:rgba(212,175,55,0.3);}
-    .card img { width:100%; height:250px; object-fit:cover; transition: var(--transition);}
-    .card:hover img { transform: scale(1.05); }
-    .card-body { padding:1.2rem; }
-    .card-title { font-family: var(--font-serif); font-size:1.2rem; color:var(--white); margin-bottom:0.5rem; }
-    .card-desc { color: var(--gray); font-size:0.9rem; margin-bottom:1rem; }
-    .card-button { padding:10px; background:var(--gold); color:var(--bg); border:none; width:100%; cursor:pointer; transition:var(--transition);}
-    .card-button:hover { background: var(--gold-light); }
-
-    /* Carousel Vidéo */
-    .carousel { display:flex; overflow-x:auto; scroll-behavior:smooth; gap:1rem; padding-bottom:1rem;}
-    .carousel::-webkit-scrollbar { display:none;}
-    .carousel video { border-radius:8px; width:300px; height:170px; flex-shrink:0; }
-
-    /* Footer */
-    footer { background: var(--accent); padding:5rem 5% 3rem; border-top:1px solid rgba(212,175,55,0.1);}
-    .footer-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap:3rem; margin-bottom:3rem;}
-    .footer-logo { display:flex; align-items:center; gap:12px; margin-bottom:1.5rem;}
-    .footer-logo svg { width:36px; height:36px; fill:var(--gold);}
-    .footer-logo span { font-family: var(--font-serif); font-size:1.5rem; font-weight:700; color:var(--gold);}
-    .footer-links a { display:block; color:var(--gray); margin-bottom:0.7rem; font-size:0.9rem; text-decoration:none; transition:var(--transition);}
-    .footer-links a:hover { color: var(--gold); }
-    .footer-bottom { text-align:center; color:var(--gray); font-size:0.8rem;}
-  </style>
+/* RESPONSIVE */
+@media(max-width:768px){
+  .hero h1 { font-size:2.5rem; }
+  .hero p { font-size:1rem; }
+  .tabs { flex-direction:column; gap:1rem;}
+}
+</style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <div class="logo"><svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2L15 8H9L12 2Z"/></svg>Empire</div>
-    <nav class="main-nav">
-      <a href="#rap-fr" class="nav-link active">Rap FR</a>
-      <a href="#rap-us" class="nav-link">Rap US</a>
-      <a href="#avant-premieres" class="nav-link">Avant-premières</a>
-      <a href="#news" class="nav-link">News</a>
-    </nav>
-    <div class="header-right">
-      <div class="social-links">
-        <a href="#" target="_blank"><svg class="social-icon" viewBox="0 0 24 24"><path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2z"/></svg></a>
-        <a href="#" target="_blank"><svg class="social-icon" viewBox="0 0 24 24"><path d="M22 2H2v20h20V2z"/></svg></a>
-        <a href="#" target="_blank"><svg class="social-icon" viewBox="0 0 24 24"><path d="M12 0l3 6h-6l3-6z"/></svg></a>
-      </div>
-      <div class="lang-switch">
-        <img src="https://flagcdn.com/fr.svg" alt="FR">
-        <img src="https://flagcdn.com/us.svg" alt="EN">
+<header>
+  <div class="logo">
+    <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2L15 8H9L12 2Z"/></svg>
+    Empire
+  </div>
+  <nav class="main-nav">
+    <a href="#" class="nav-link">Accueil</a>
+    <a href="#avant-premieres" class="nav-link">Avant-premières</a>
+    <a href="#news" class="nav-link">News</a>
+  </nav>
+  <div class="header-right">
+    <div class="social-links">
+      <a href="#" target="_blank"><svg class="social-icon" viewBox="0 0 24 24"><path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2z"/></svg></a>
+      <a href="#" target="_blank"><svg class="social-icon" viewBox="0 0 24 24"><path d="M22 2H2v20h20V2z"/></svg></a>
+    </div>
+    <div class="lang-switch">
+      <img src="https://flagcdn.com/fr.svg" alt="Langue" id="current-lang">
+      <div class="lang-popup" id="lang-popup">
+        <button data-lang="fr">Français</button>
+        <button data-lang="en">English</button>
+        <button data-lang="es">Español</button>
+        <button data-lang="de">Deutsch</button>
+        <button data-lang="it">Italiano</button>
+        <!-- Ajouter d'autres langues -->
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Empire Is Yours</h1>
-      <p>Découvrez les dernières tendances du rap, les avant-premières vidéo et le meilleur de la scène musicale internationale.</p>
-      <a href="#rap-fr" class="cta-button">Explorer</a>
-    </div>
-  </section>
+<section class="hero">
+  <div class="hero-content">
+    <h1>Empire Is Yours</h1>
+    <p>Découvrez les dernières tendances du rap, les avant-premières vidéo et le meilleur de la scène musicale internationale.</p>
+    <a href="#rap-section" class="cta-button">Explorer</a>
+  </div>
+</section>
 
-  <!-- RAP FR -->
-  <section id="rap-fr">
+<!-- TABS RAP -->
+<section id="rap-section">
+  <div class="tabs">
+    <button class="tab-link active" data-tab="rap-fr">Rap FR</button>
+    <button class="tab-link" data-tab="rap-us">Rap US</button>
+  </div>
+  <div class="tab-pane active" id="rap-fr">
     <div class="section-header">
       <h2>Rap Français</h2>
       <p>Les artistes qui font vibrer la scène française avec des sons innovants et des clips exceptionnels.</p>
@@ -219,10 +172,8 @@
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- RAP US -->
-  <section id="rap-us">
+  </div>
+  <div class="tab-pane" id="rap-us">
     <div class="section-header">
       <h2>Rap US</h2>
       <p>Les talents internationaux qui dictent les tendances musicales aux États-Unis et dans le monde.</p>
@@ -245,78 +196,42 @@
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- AVANT-PREMIÈRES -->
-  <section id="avant-premieres">
-    <div class="section-header">
-      <h2>Avant-premières</h2>
-      <p>Visionnez les clips, teasers et vidéos exclusives avant tout le monde.</p>
-    </div>
-    <div class="carousel">
-      <video src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video>
-      <video src="https://www.w3schools.com/html/movie.mp4" controls></video>
-      <video src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video>
-      <video src="https://www.w3schools.com/html/movie.mp4" controls></video>
-    </div>
-  </section>
+<script>
+// TABS RAP
+document.querySelectorAll('.tab-link').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
 
-  <!-- NEWS -->
-  <section id="news">
-    <div class="section-header">
-      <h2>News</h2>
-      <p>Restez informé des dernières sorties, événements et collaborations musicales.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1508766206392-8bd5cf550d1b?crop=entropy&fit=crop&w=600&q=80" alt="News">
-        <div class="card-body">
-          <h3 class="card-title">Actualité 1</h3>
-          <p class="card-desc">Tout ce que vous devez savoir sur la scène musicale du moment.</p>
-          <button class="card-button">Lire</button>
-        </div>
-      </div>
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?crop=entropy&fit=crop&w=600&q=80" alt="News">
-        <div class="card-body">
-          <h3 class="card-title">Actualité 2</h3>
-          <p class="card-desc">Découvrez les coulisses et interviews exclusives d'artistes.</p>
-          <button class="card-button">Lire</button>
-        </div>
-      </div>
-    </div>
-  </section>
+// POPUP LANGUES
+const langSwitch = document.querySelector('.lang-switch');
+const langPopup = document.getElementById('lang-popup');
+const currentLang = document.getElementById('current-lang');
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-grid">
-      <div>
-        <div class="footer-logo">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2L15 8H9L12 2Z"/></svg>
-          <span>Empire Is Yours</span>
-        </div>
-        <p style="color:var(--gray); font-size:0.9rem;">L'univers du rap français et international, exclusivités et avant-premières.</p>
-      </div>
-      <div class="footer-links">
-        <h4>Liens rapides</h4>
-        <a href="#rap-fr">Rap FR</a>
-        <a href="#rap-us">Rap US</a>
-        <a href="#avant-premieres">Avant-premières</a>
-        <a href="#news">News</a>
-      </div>
-      <div class="footer-links">
-        <h4>Suivez-nous</h4>
-        <a href="#" target="_blank">YouTube</a>
-        <a href="#" target="_blank">TikTok</a>
-        <a href="#" target="_blank">Instagram</a>
-        <a href="#" target="_blank">X</a>
-        <a href="#" target="_blank">Telegram</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      &copy; 2025 Empire Is Yours. Tous droits réservés.
-    </div>
-  </footer>
+langSwitch.addEventListener('click', e => {
+  langPopup.style.display = langPopup.style.display === 'flex' ? 'none' : 'flex';
+});
+langPopup.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const langCode = btn.dataset.lang;
+    currentLang.src = `https://flagcdn.com/${langCode}.svg`;
+    langPopup.style.display = 'none';
+    // Ici tu peux ajouter un code pour changer la langue du site via API ou i18n
+  });
+});
+
+// Fermer le popup si clic en dehors
+document.addEventListener('click', e => {
+  if(!langSwitch.contains(e.target)) langPopup.style.display = 'none';
+});
+</script>
 
 </body>
 </html>
