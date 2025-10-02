@@ -1,705 +1,444 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Empire Is Yours</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#070607;
-  --panel:#0f0f10;
-  --gold:#d4af37;
-  --gold-2:#f0d98a;
-  --muted:#9b9b9b;
-  --glass: rgba(255,255,255,0.03);
-  --accent:#101010;
-  --transition: all 0.45s cubic-bezier(.2,.9,.2,1);
-  --ff-sans: 'Montserrat', sans-serif;
-  --ff-serif: 'Playfair Display', serif;
-}
-
-/* Reset */
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  background:linear-gradient(180deg,#050505 0%, #0b0b0b 100%);
-  color:#fff;
-  font-family:var(--ff-sans);
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  overflow-x:hidden;
-  scroll-behavior:smooth;
-  padding-top:80px;
-  line-height:1.5;
-}
-
-/* Header */
-.header {
-  position:fixed;
-  inset:0 0 auto 0;
-  height:80px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:1rem;
-  padding:0 4%;
-  z-index:1200;
-  background:linear-gradient(180deg, rgba(10,10,10,0.18), rgba(10,10,10,0.6));
-  backdrop-filter: blur(8px) saturate(1.05);
-  transition:var(--transition);
-}
-.header.shrink{height:64px;padding:0 3%;}
-
-/* Logo */
-.logo {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  cursor:pointer;
-  user-select:none;
-}
-.logo svg{width:36px;height:36px;fill:var(--gold);transition:var(--transition)}
-.logo .brand{
-  font-family:var(--ff-serif);
-  font-weight:700;
-  letter-spacing:0.6px;
-  font-size:1.05rem;
-  color:var(--gold);
-}
-
-/* Desktop nav */
-.nav {
-  display:flex;
-  gap:1.5rem;
-  align-items:center;
-}
-.nav a{
-  color:var(--muted);
-  text-decoration:none;
-  font-weight:500;
-  padding:8px 6px;
-  position:relative;
-  transition:var(--transition);
-}
-.nav a.active, .nav a:hover{
-  color:var(--gold);
-}
-.nav a::after{
-  content:'';
-  position:absolute;
-  left:0;bottom:0;
-  width:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-2));
-  transition:var(--transition);
-}
-.nav a:hover::after, .nav a.active::after{width:100%}
-
-/* Header right */
-.header-actions{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-.lang-btn{
-  border:1px solid rgba(212,175,55,0.12);
-  background:var(--glass);
-  color:var(--gold);
-  padding:8px 12px;
-  border-radius:999px;
-  cursor:pointer;
-  font-weight:600;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  transition:var(--transition);
-}
-.lang-btn svg{width:18px;height:18px;transform:translateY(1px)}
-.lang-btn:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,0.6)}
-
-/* Burger for mobile */
-.burger{
-  display:none;
-  width:46px;height:36px;
-  align-items:center;justify-content:center;
-  cursor:pointer;
-  background:transparent;border-radius:8px;border:none;
-}
-.burger .lines{display:flex;flex-direction:column;gap:5px;padding:6px}
-.burger .lines span{
-  width:22px;height:2px;background:var(--gold);display:block;border-radius:2px;transition:var(--transition)
-}
-
-/* Nav overlay (mobile) */
-.nav-overlay{
-  position:fixed;top:0;right:-120%;
-  width:78%;max-width:420px;height:100vh;
-  background:linear-gradient(180deg, rgba(15,15,15,0.98), rgba(12,12,12,0.99));
-  box-shadow:-24px 0 56px rgba(0,0,0,0.6);
-  padding:6rem 2.5rem;
-  display:flex;flex-direction:column;gap:1.5rem;
-  z-index:1300;
-  transition:var(--transition);
-}
-.nav-overlay.open{right:0}
-.nav-overlay a{font-size:1.15rem;color:var(--muted);text-decoration:none}
-.nav-overlay a.active, .nav-overlay a:hover{color:var(--gold)}
-
-/* Hero */
-.hero{
-  min-height:calc(100vh - 80px);
-  display:grid;
-  place-items:center;
-  padding:3.5rem 4%;
-  position:relative;
-  text-align:center;
-  overflow:hidden;
-}
-.hero::before{
-  content:'';
-  position:absolute;inset:0;
-  background:
-    radial-gradient(800px 400px at 10% 20%, rgba(212,175,55,0.06), transparent 10%),
-    radial-gradient(600px 300px at 90% 80%, rgba(255,255,255,0.02), transparent 15%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.6));
-  pointer-events:none;
-}
-.hero-inner{max-width:1100px;z-index:2}
-.hero-title{
-  font-family:var(--ff-serif);
-  font-size:3.6rem;
-  line-height:1;
-  margin-bottom:0.6rem;
-  background:linear-gradient(90deg,var(--gold),var(--gold-2));
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-  letter-spacing: -1px;
-  transform:translateY(10px);
-  opacity:0;
-  transition:var(--transition);
-  text-shadow:0 6px 30px rgba(0,0,0,0.6);
-}
-.hero-sub{
-  color:var(--muted);
-  margin-bottom:1.4rem;
-  font-size:1.05rem;
-  transform:translateY(14px);
-  opacity:0;
-  transition:var(--transition);
-}
-.cta{
-  display:inline-flex;
-  gap:12px;
-  align-items:center;
-  padding:14px 28px;
-  border-radius:999px;
-  border:1px solid rgba(212,175,55,0.12);
-  background:linear-gradient(90deg, rgba(212,175,55,0.06), rgba(0,0,0,0.18));
-  color:var(--gold);
-  font-weight:700;
-  text-decoration:none;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  transform:translateY(18px);
-  opacity:0;
-  transition:var(--transition);
-}
-.cta:hover{transform:translateY(12px) scale(1.01);box-shadow:0 14px 36px rgba(0,0,0,0.6)}
-
-/* Sections */
-section {
-  padding:5rem 4%;
-  opacity:0;
-  transform:translateY(20px);
-  transition:var(--transition);
-}
-.section-visible{opacity:1;transform:translateY(0)}
-.section-header{text-align:left;max-width:1200px;margin:0 auto 2.2rem}
-.section-header h2{font-family:var(--ff-serif);font-size:1.9rem;color:#fff;margin-bottom:6px}
-.section-header p{color:var(--muted)}
-
-/* Grid & cards */
-.grid{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));max-width:1200px;margin:0 auto}
-.card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
-  border-radius:10px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,0.03);
-  transition:var(--transition);
-}
-.card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,0.5)}
-.card img{width:100%;height:180px;object-fit:cover;display:block}
-.card-body{padding:1rem}
-.card-title{font-family:var(--ff-serif);font-size:1.05rem;color:#fff;margin-bottom:6px}
-.card-desc{color:var(--muted);font-size:0.95rem;margin-bottom:10px}
-.card-button{width:100%;padding:10px;border-radius:8px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold-2));color:#0b0b0b;font-weight:700;cursor:pointer}
-
-/* Carousel */
-.carousel{display:flex;gap:1rem;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x mandatory}
-.carousel::-webkit-scrollbar{display:none}
-.carousel .item{flex:0 0 auto;width:330px;scroll-snap-align:start;border-radius:12px;overflow:hidden;background:#080808;border:1px solid rgba(255,255,255,0.02)}
-.carousel video{width:100%;height:190px;display:block;object-fit:cover}
-
-/* Footer */
-footer{background:linear-gradient(180deg, rgba(10,10,10,0.6), rgba(8,8,8,0.95));padding:3rem 4%}
-.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;max-width:1200px;margin:0 auto}
-.footer-logo{display:flex;align-items:center;gap:12px}
-.footer-logo svg{width:44px;height:44px;fill:var(--gold)}
-.footer-links a{display:block;color:var(--muted);text-decoration:none;margin:6px 0}
-.footer-bottom{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:1.5rem}
-
-/* Modals */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px}
-.modal-backdrop.open{display:flex}
-.modal{
-  width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#0b0b0b);
-  padding:1.6rem;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
-  box-shadow:0 30px 80px rgba(0,0,0,0.6)
-}
-.modal h3{font-family:var(--ff-serif);color:var(--gold);margin-bottom:0.8rem}
-.lang-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.lang-option{
-  display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);
-  cursor:pointer;background:transparent;transition:var(--transition)
-}
-.lang-option:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,0.6)}
-.lang-flag{width:36px;height:24px;flex-shrink:0}
-
-/* Legal modal text */
-.legal-body{max-height:55vh;overflow:auto;color:var(--muted);line-height:1.6;margin-bottom:1rem}
-
-/* Responsive tweaks */
-@media (max-width: 980px){
-  .hero-title{font-size:2.6rem}
-  .nav{display:none}
-  .burger{display:flex}
-}
-@media (max-width:600px){
-  .hero{padding:2.5rem 4%}
-  .hero-title{font-size:2.2rem}
-  .lang-grid{grid-template-columns:1fr}
-}
-</style>
+    <base target="_self">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werenoi Fan Club - Rassemblement des Fans</title>
+    <meta name="description" content="Site officiel du fan club de Werenoi, le rappeur français. Actualités, musique, événements et communauté de fans.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1a365d",
+                        secondary: "#2d3748",
+                        accent: "#e53e3e"
+                    },
+                    fontFamily: {
+                        'montserrat': ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hero-pattern {
+            background: linear-gradient(135deg, rgba(26, 54, 93, 0.9) 0%, rgba(45, 55, 72, 0.9) 100%);
+        }
+        .album-cover {
+            transition: transform 0.3s ease;
+        }
+        .album-cover:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen bg-gray-100 font-montserrat">
+    <!-- Header avec navigation -->
+    <header class="bg-primary text-white shadow-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold">WERENOI FAN CLUB</h1>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#accueil" class="hover:text-accent transition-colors">Accueil</a>
+                    <a href="#musique" class="hover:text-accent transition-colors">Musique</a>
+                    <a href="#actualites" class="hover:text-accent transition-colors">Actualités</a>
+                    <a href="#evenements" class="hover:text-accent transition-colors">Événements</a>
+                    <a href="#galerie" class="hover:text-accent transition-colors">Galerie</a>
+                    <a href="#communaute" class="hover:text-accent transition-colors">Communauté</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-white focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Menu mobile -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+                <div class="flex flex-col space-y-3">
+                    <a href="#accueil" class="hover:text-accent transition-colors">Accueil</a>
+                    <a href="#musique" class="hover:text-accent transition-colors">Musique</a>
+                    <a href="#actualites" class="hover:text-accent transition-colors">Actualités</a>
+                    <a href="#evenements" class="hover:text-accent transition-colors">Événements</a>
+                    <a href="#galerie" class="hover:text-accent transition-colors">Galerie</a>
+                    <a href="#communaute" class="hover:text-accent transition-colors">Communauté</a>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-<header class="header" id="header">
-  <div class="logo" id="home">
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2L15 8H9L12 2Z"/></svg>
-    <div class="brand">Empire Is Yours</div>
-  </div>
-
-  <!-- Desktop nav -->
-  <nav class="nav" id="desktop-nav" aria-label="Navigation principale">
-    <a href="#avant-premieres" class="nav-link" data-target="avant-premieres">Avant-premières</a>
-    <a href="#news" class="nav-link" data-target="news">News</a>
-    <a href="#rap-fr" class="nav-link" data-target="rap-fr">Rap FR</a>
-    <a href="#rap-us" class="nav-link" data-target="rap-us">Rap US</a>
-  </nav>
-
-  <div class="header-actions">
-    <button class="lang-btn" id="lang-btn" aria-haspopup="dialog" aria-expanded="false" title="Choisir la langue">
-      <!-- flag + code will be injected -->
-      <svg class="flag-mini" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" fill="none"/></svg>
-      <span id="lang-label">FR</span>
-    </button>
-
-    <button class="burger" id="burger" aria-label="ouvrir le menu" aria-expanded="false">
-      <div class="lines">
-        <span></span><span></span><span></span>
-      </div>
-    </button>
-  </div>
-</header>
-
-<!-- Mobile overlay nav -->
-<nav class="nav-overlay" id="nav-overlay" aria-hidden="true" aria-label="Menu mobile">
-  <a href="#avant-premieres" class="nav-link">Avant-premières</a>
-  <a href="#news" class="nav-link">News</a>
-  <a href="#rap-fr" class="nav-link">Rap FR</a>
-  <a href="#rap-us" class="nav-link">Rap US</a>
-  <div style="margin-top:auto">
-    <button class="lang-btn" id="lang-btn-2" style="width:100%;justify-content:center">Langue</button>
-  </div>
-</nav>
-
-<main>
-
-  <section class="hero" id="hero">
-    <div class="hero-inner">
-      <h1 class="hero-title" id="hero-title">Empire Is Yours</h1>
-      <p class="hero-sub">Découvre les clips et talents qui feront la scène demain — exclus, premiers drops, interviews.</p>
-      <a class="cta" href="#avant-premieres">Voir les avant-premières</a>
-    </div>
-  </section>
-
-  <!-- RAP FR -->
-  <section id="rap-fr" class="content-section">
-    <div class="section-header">
-      <h2>Rap Français</h2>
-      <p>Les artistes français qui font vibrer la scène.</p>
-    </div>
-    <div class="grid">
-      <article class="card">
-        <img src="https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste FR">
-        <div class="card-body">
-          <h3 class="card-title">Artiste 1</h3>
-          <p class="card-desc">Dernier projet qui fait sensation.</p>
-          <button class="card-button">Découvrir</button>
+    <!-- Section Hero -->
+    <section id="accueil" class="relative py-20 bg-gray-900 text-white">
+        <div class="absolute inset-0 hero-pattern"></div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="flex flex-col items-center text-center">
+                <h2 class="text-4xl md:text-6xl font-bold mb-6">WERENOI</h2>
+                <p class="text-xl md:text-2xl mb-8">Rassemblement officiel des fans</p>
+                <div class="flex space-x-4">
+                    <button class="bg-accent hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full transition-colors">
+                        Rejoindre le club
+                    </button>
+                    <button class="border-2 border-white hover:bg-white hover:text-primary text-white font-bold py-3 px-6 rounded-full transition-colors">
+                        Découvrir la musique
+                    </button>
+                </div>
+            </div>
         </div>
-      </article>
+    </section>
 
-      <article class="card">
-        <img src="https://images.unsplash.com/photo-1543007634-01f345d95e8d?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste FR 2">
-        <div class="card-body">
-          <h3 class="card-title">Artiste 2</h3>
-          <p class="card-desc">Flow unique et collaborations fortes.</p>
-          <button class="card-button">Découvrir</button>
+    <!-- Section À propos -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                    <img src="https://picsum.photos/500/600?random=1" alt="Werenoi portrait" class="rounded-lg shadow-xl w-full" loading="lazy">
+                </div>
+                <div class="md:w-1/2 md:pl-12">
+                    <h2 class="text-3xl font-bold mb-6 text-primary">Qui est Werenoi?</h2>
+                    <p class="text-lg text-gray-700 mb-4">
+                        Werenoi, de son vrai nom Mathieu Morand, est un rappeur français originaire de Lyon. 
+                        Membre du collectif 667, il s'est fait connaître par son flow unique et ses textes percutants.
+                    </p>
+                    <p class="text-lg text-gray-700 mb-6">
+                        Depuis ses débuts, Werenoi a su se construire une place importante dans le paysage du rap français,
+                        avec des projets acclamés par la critique et un public toujours plus nombreux.
+                    </p>
+                    <div class="flex space-x-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-microphone text-accent text-2xl mr-2"></i>
+                            <span class="font-semibold">Albums: 3</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-users text-accent text-2xl mr-2"></i>
+                            <span class="font-semibold">Fans: 250K+</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-music text-accent text-2xl mr-2"></i>
+                            <span class="font-semibold">Titres: 50+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </article>
-    </div>
-  </section>
+    </section>
 
-  <!-- RAP US -->
-  <section id="rap-us" class="content-section">
-    <div class="section-header">
-      <h2>Rap US</h2>
-      <p>Talents internationaux qui dictent les tendances.</p>
-    </div>
-    <div class="grid">
-      <article class="card">
-        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste US">
-        <div class="card-body">
-          <h3 class="card-title">Artiste A</h3>
-          <p class="card-desc">Hits et clips qui font vibrer la scène mondiale.</p>
-          <button class="card-button">Découvrir</button>
+    <!-- Section Musique -->
+    <section id="musique" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-primary">Discographie</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="https://picsum.photos/400/400?random=2" alt="Album Carré" class="w-full album-cover" loading="lazy">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Carré (2022)</h3>
+                        <p class="text-gray-600 mb-4">Album studio avec des featurings prestigieux</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-accent font-semibold">15 titres</span>
+                            <button class="bg-primary hover:bg-secondary text-white py-2 px-4 rounded transition-colors">
+                                Écouter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="https://picsum.photos/400/400?random=3" alt="Album Telegram" class="w-full album-cover" loading="lazy">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Telegram (2020)</h3>
+                        <p class="text-gray-600 mb-4">Projet qui a confirmé son talent</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-accent font-semibold">12 titres</span>
+                            <button class="bg-primary hover:bg-secondary text-white py-2 px-4 rounded transition-colors">
+                                Écouter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="https://picsum.photos/400/400?random=4" alt="Mixtape 667" class="w-full album-cover" loading="lazy">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Avec le 667 (2019)</h3>
+                        <p class="text-gray-600 mb-4">Collaboration avec le collectif</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-accent font-semibold">10 titres</span>
+                            <button class="bg-primary hover:bg-secondary text-white py-2 px-4 rounded transition-colors">
+                                Écouter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </article>
+    </section>
 
-      <article class="card">
-        <img src="https://images.unsplash.com/photo-1534367610415-726c6f1a38f5?crop=entropy&fit=crop&w=1200&q=80" alt="Artiste US 2">
-        <div class="card-body">
-          <h3 class="card-title">Artiste B</h3>
-          <p class="card-desc">Style unique et énergie irrésistible.</p>
-          <button class="card-button">Découvrir</button>
+    <!-- Section Actualités -->
+    <section id="actualites" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-primary">Dernières Actualités</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md">
+                    <img src="https://picsum.photos/400/250?random=5" alt="Nouveau single" class="w-full" loading="lazy">
+                    <div class="p-6">
+                        <span class="text-sm text-accent font-semibold">15 Novembre 2023</span>
+                        <h3 class="text-xl font-bold my-2">Nouveau single en featuring</h3>
+                        <p class="text-gray-600">Werenoi dévoile un nouveau titre en collaboration avec un artiste surprise.</p>
+                        <a href="#" class="inline-block mt-4 text-primary hover:text-accent font-semibold">Lire plus →</a>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md">
+                    <img src="https://picsum.photos/400/250?random=6" alt="Concert annoncé" class="w-full" loading="lazy">
+                    <div class="p-6">
+                        <span class="text-sm text-accent font-semibold">8 Novembre 2023</span>
+                        <h3 class="text-xl font-bold my-2">Tournée 2024 annoncée</h3>
+                        <p class="text-gray-600">Une nouvelle tournée avec des dates dans toute la France vient d'être annoncée.</p>
+                        <a href="#" class="inline-block mt-4 text-primary hover:text-accent font-semibold">Lire plus →</a>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md">
+                    <img src="https://picsum.photos/400/250?random=7" alt="Interview exclusive" class="w-full" loading="lazy">
+                    <div class="p-6">
+                        <span class="text-sm text-accent font-semibold">1 Novembre 2023</span>
+                        <h3 class="text-xl font-bold my-2">Interview exclusive</h3>
+                        <p class="text-gray-600">Werenoi se confie sur son parcours et ses projets futurs dans une interview exclusive.</p>
+                        <a href="#" class="inline-block mt-4 text-primary hover:text-accent font-semibold">Lire plus →</a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </article>
-    </div>
-  </section>
+    </section>
 
-  <!-- AVANT-PREMIÈRES -->
-  <section id="avant-premieres" class="content-section">
-    <div class="section-header">
-      <h2>Avant-premières</h2>
-      <p>Visionne clips et vidéos exclusives — premiers drops.</p>
-    </div>
-    <div class="carousel" aria-label="Avant-premières">
-      <div class="item"><video src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video></div>
-      <div class="item"><video src="https://www.w3schools.com/html/movie.mp4" controls></video></div>
-      <div class="item"><video src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video></div>
-    </div>
-  </section>
-
-  <!-- NEWS -->
-  <section id="news" class="content-section">
-    <div class="section-header">
-      <h2>News</h2>
-      <p>Dernières sorties, dates, coulisses et interviews exclusives.</p>
-    </div>
-    <div class="grid">
-      <article class="card"><img src="https://images.unsplash.com/photo-1508766206392-8bd5cf550d1b?crop=entropy&fit=crop&w=1200&q=80" alt="News"><div class="card-body"><h3 class="card-title">Actualité 1</h3><p class="card-desc">Tout savoir sur la scène musicale actuelle.</p><button class="card-button">Lire</button></div></article>
-
-      <article class="card"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?crop=entropy&fit=crop&w=1200&q=80" alt="News 2"><div class="card-body"><h3 class="card-title">Actualité 2</h3><p class="card-desc">Coulisses et interviews exclusives.</p><button class="card-button">Lire</button></div></article>
-    </div>
-  </section>
-
-</main>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-grid">
-    <div>
-      <div class="footer-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L15 8H9L12 2Z"/></svg><div style="font-family:var(--ff-serif);font-weight:700;color:var(--gold)">Empire Is Yours™</div></div>
-      <p style="color:var(--muted);margin-top:8px;max-width:320px">Vitrine des nouveaux clips et des talents émergents. Reste connecté, rejoins la communauté.</p>
-    </div>
-
-    <div class="footer-links">
-      <h4 style="color:var(--gold);margin-bottom:8px">Navigation</h4>
-      <a href="#avant-premieres">Avant-premières</a>
-      <a href="#news">News</a>
-      <a href="#rap-fr">Rap FR</a>
-      <a href="#rap-us">Rap US</a>
-    </div>
-
-    <div class="footer-links">
-      <h4 style="color:var(--gold);margin-bottom:8px">Légal & Sécurité</h4>
-      <a href="#" class="legal-link" data-page="mentions">Mentions légales</a>
-      <a href="#" class="legal-link" data-page="cgu">Conditions générales</a>
-      <a href="#" class="legal-link" data-page="privacy">Politique de confidentialité</a>
-    </div>
-  </div>
-
-  <div class="footer-bottom">© <span id="year"></span> Empire Is Yours™ — Tous droits réservés.</div>
-</footer>
-
-<!-- LANGUE MODAL -->
-<div class="modal-backdrop" id="lang-backdrop" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="lang-title">
-    <h3 id="lang-title">Choisir la langue</h3>
-
-    <div class="lang-grid" id="lang-grid">
-      <!-- Each option has a data-lang attribute and will set html.lang -->
-      <button class="lang-option" data-lang="fr" title="Français">
-        <svg class="lang-flag" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#fff"/><rect width="20" height="40" fill="#0055A4"/><rect x="40" width="20" height="40" fill="#EF4135"/></svg>
-        <div>
-          <div style="font-weight:700">Français</div>
-          <div style="color:var(--muted);font-size:0.9rem">FR</div>
+    <!-- Section Événements -->
+    <section id="evenements" class="py-16 bg-primary text-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Prochains Événements</h2>
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-secondary rounded-lg p-6 mb-6">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                            <div class="bg-accent rounded-lg p-4 text-center w-20">
+                                <div class="text-2xl font-bold">15</div>
+                                <div class="text-sm">DEC</div>
+                            </div>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-bold">Paris - Zenith</h3>
+                            <p class="text-gray-300">Concert exceptionnel avec invités surprises</p>
+                        </div>
+                        <div class="flex-shrink-0 mt-4 md:mt-0">
+                            <button class="bg-accent hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors">
+                                Billetterie
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-secondary rounded-lg p-6 mb-6">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                            <div class="bg-accent rounded-lg p-4 text-center w-20">
+                                <div class="text-2xl font-bold">22</div>
+                                <div class="text-sm">JAN</div>
+                            </div>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-bold">Lyon - Halle Tony Garnier</h3>
+                            <p class="text-gray-300">Retour aux sources pour Werenoi</p>
+                        </div>
+                        <div class="flex-shrink-0 mt-4 md:mt-0">
+                            <button class="bg-accent hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors">
+                                Billetterie
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-secondary rounded-lg p-6">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                            <div class="bg-accent rounded-lg p-4 text-center w-20">
+                                <div class="text-2xl font-bold">5</div>
+                                <div class="text-sm">FÉV</div>
+                            </div>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-bold">Marseille - Le Dôme</h3>
+                            <p class="text-gray-300">Première date à Marseille</p>
+                        </div>
+                        <div class="flex-shrink-0 mt-4 md:mt-0">
+                            <button class="bg-accent hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors">
+                                Billetterie
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </button>
+    </section>
 
-      <button class="lang-option" data-lang="en" title="English">
-        <svg class="lang-flag" viewBox="0 0 60 30" aria-hidden="true"><rect width="60" height="30" fill="#012169"/><path d="M0 0L60 30M60 0L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0L60 30M60 0L0 30" stroke="#C8102E" stroke-width="4"/><rect width="60" height="30" fill="none"/><rect x="22" width="16" height="30" fill="#fff"/><rect y="7" width="60" height="16" fill="#fff"/><rect x="24" width="12" height="30" fill="#C8102E"/><rect y="10" width="60" height="10" fill="#C8102E"/></svg>
-        <div>
-          <div style="font-weight:700">English</div>
-          <div style="color:var(--muted);font-size:0.9rem">EN</div>
+    <!-- Section Communauté -->
+    <section id="communaute" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-primary">Rejoignez la Communauté</h2>
+            <div class="max-w-2xl mx-auto bg-gray-50 rounded-lg p-8 shadow-md">
+                <h3 class="text-2xl font-bold mb-6 text-center">Inscription au Fan Club</h3>
+                <p class="text-gray-600 text-center mb-6">
+                    Rejoignez la communauté officielle des fans de Werenoi et recevez des contenus exclusifs, 
+                    des pré-accès aux concerts et bien plus encore!
+                </p>
+                <form class="space-y-4">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label for="pseudo" class="block text-sm font-medium text-gray-700 mb-1">Pseudo</label>
+                        <input type="text" id="pseudo" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label for="ville" class="block text-sm font-medium text-gray-700 mb-1">Ville</label>
+                        <input type="text" id="ville" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <button type="submit" class="w-full bg-primary hover:bg-secondary text-white font-bold py-3 px-4 rounded-md transition-colors">
+                        Rejoindre le club
+                    </button>
+                </form>
+            </div>
         </div>
-      </button>
+    </section>
 
-      <button class="lang-option" data-lang="es" title="Español">
-        <svg class="lang-flag" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#C60B1E"/><rect y="10" width="60" height="20" fill="#FFC400"/></svg>
-        <div>
-          <div style="font-weight:700">Español</div>
-          <div style="color:var(--muted);font-size:0.9rem">ES</div>
+    <!-- Footer -->
+    <footer class="bg-secondary text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Werenoi Fan Club</h3>
+                    <p class="text-gray-300">Le site officiel de rassemblement des fans de Werenoi.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Liens Rapides</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#accueil" class="text-gray-300 hover:text-white transition-colors">Accueil</a></li>
+                        <li><a href="#musique" class="text-gray-300 hover:text-white transition-colors">Musique</a></li>
+                        <li><a href="#actualites" class="text-gray-300 hover:text-white transition-colors">Actualités</a></li>
+                        <li><a href="#evenements" class="text-gray-300 hover:text-white transition-colors">Événements</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Ressources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Paroles</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Photos</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Vidéos</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Presse</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Suivez-nous</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors text-2xl"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors text-2xl"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors text-2xl"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors text-2xl"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 Werenoi Fan Club. Tous droits réservés.</p>
+            </div>
         </div>
-      </button>
+    </footer>
 
-      <button class="lang-option" data-lang="de" title="Deutsch">
-        <svg class="lang-flag" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#000"/><rect y="13" width="60" height="14" fill="#DD0000"/><rect y="26" width="60" height="14" fill="#FFCE00"/></svg>
-        <div>
-          <div style="font-weight:700">Deutsch</div>
-          <div style="color:var(--muted);font-size:0.9rem">DE</div>
-        </div>
-      </button>
-    </div>
+    <script>
+        // Données pour le site
+        const albums = [
+            { 
+                "id": 1, 
+                "title": "Carré", 
+                "year": "2022", 
+                "tracks": 15, 
+                "description": "Album studio avec des featurings prestigieux",
+                "image": "https://picsum.photos/400/400?random=2"
+            },
+            { 
+                "id": 2, 
+                "title": "Telegram", 
+                "year": "2020", 
+                "tracks": 12, 
+                "description": "Projet qui a confirmé son talent",
+                "image": "https://picsum.photos/400/400?random=3"
+            },
+            { 
+                "id": 3, 
+                "title": "Avec le 667", 
+                "year": "2019", 
+                "tracks": 10, 
+                "description": "Collaboration avec le collectif",
+                "image": "https://picsum.photos/400/400?random=4"
+            }
+        ];
 
-    <div style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end">
-      <button id="lang-close" class="lang-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04)">Fermer</button>
-    </div>
-  </div>
-</div>
+        const events = [
+            {
+                "id": 1,
+                "date": "15 DEC",
+                "day": 15,
+                "month": "DEC",
+                "venue": "Paris - Zenith",
+                "description": "Concert exceptionnel avec invités surprises"
+            },
+            {
+                "id": 2,
+                "date": "22 JAN",
+                "day": 22,
+                "month": "JAN",
+                "venue": "Lyon - Halle Tony Garnier",
+                "description": "Retour aux sources pour Werenoi"
+            },
+            {
+                "id": 3,
+                "date": "5 FÉV",
+                "day": 5,
+                "month": "FÉV",
+                "venue": "Marseille - Le Dôme",
+                "description": "Première date à Marseille"
+            }
+        ];
 
-<!-- LEGAL MODAL -->
-<div class="modal-backdrop" id="legal-backdrop" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="legal-title">
-    <h3 id="legal-title">Titre</h3>
-    <div class="legal-body" id="legal-text">Texte légal</div>
-    <div style="display:flex;justify-content:flex-end;gap:8px">
-      <button id="close-legal" class="lang-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04)">Fermer</button>
-    </div>
-  </div>
-</div>
+        // Gestion du menu mobile
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
 
-<script>
-/* ---------- Utilitaires ---------- */
-const $ = (s, ctx = document) => ctx.querySelector(s);
-const $$ = (s, ctx = document) => Array.from(ctx.querySelectorAll(s));
-document.getElementById('year').textContent = new Date().getFullYear();
+        // Navigation fluide
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId !== '#') {
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
 
-/* ---------- Header shrink on scroll & reveal animations ---------- */
-const header = $('#header');
-const heroTitle = $('#hero-title');
-const revealTargets = $$('.content-section, .hero-inner');
-
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      e.target.classList.add('section-visible');
-      io.unobserve(e.target);
-    }
-  });
-},{threshold:0.12});
-revealTargets.forEach(t => io.observe(t));
-
-window.addEventListener('scroll', ()=>{
-  if(window.scrollY > 30) header.classList.add('shrink');
-  else header.classList.remove('shrink');
-});
-
-/* Fade-in hero children after load */
-window.addEventListener('load', ()=>{
-  setTimeout(()=> {
-    document.querySelector('.hero-title').style.opacity = 1;
-    document.querySelector('.hero-title').style.transform = 'translateY(0)';
-    document.querySelector('.hero-sub').style.opacity = 1;
-    document.querySelector('.hero-sub').style.transform = 'translateY(0)';
-    document.querySelector('.cta').style.opacity = 1;
-    document.querySelector('.cta').style.transform = 'translateY(0)';
-  }, 220);
-});
-
-/* ---------- Mobile nav (overlay) ---------- */
-const burger = $('#burger');
-const navOverlay = $('#nav-overlay');
-burger.addEventListener('click', ()=>{
-  const open = navOverlay.classList.toggle('open');
-  burger.setAttribute('aria-expanded', open ? 'true' : 'false');
-  navOverlay.setAttribute('aria-hidden', open ? 'false' : 'true');
-  document.body.style.overflow = open ? 'hidden' : '';
-});
-
-/* Close overlay when link clicked */
-$$('.nav-overlay .nav-link').forEach(a=>{
-  a.addEventListener('click', (e)=>{
-    navOverlay.classList.remove('open');
-    burger.setAttribute('aria-expanded','false');
-    navOverlay.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  });
-});
-
-/* ---------- Active nav link highlight based on scroll ---------- */
-const navLinks = $$('.nav a');
-const sections = navLinks.map(a => document.getElementById(a.getAttribute('data-target')));
-const sectionObserver = new IntersectionObserver(entries => {
-  entries.forEach(entry=>{
-    if(entry.isIntersecting){
-      navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('data-target') === entry.target.id));
-      // also in overlay
-      $$('#nav-overlay .nav-link').forEach(link => link.classList.toggle('active', link.getAttribute('href').slice(1) === entry.target.id));
-    }
-  });
-},{threshold:0.45});
-sections.forEach(s => s && sectionObserver.observe(s));
-
-/* ---------- Smooth focus when using nav (accessibility) ---------- */
-navLinks.forEach(a=>{
-  a.addEventListener('click', (e)=>{
-    // default anchor scroll is fine; provide focus
-    const id = a.getAttribute('href').slice(1);
-    const target = document.getElementById(id);
-    if(target){ target.setAttribute('tabindex','-1'); target.focus({preventScroll:true}); }
-  });
-});
-
-/* ---------- LANGUAGE MODAL (flags) ---------- */
-const langBtn = $('#lang-btn');
-const langBtn2 = $('#lang-btn-2');
-const langBackdrop = $('#lang-backdrop');
-const langClose = $('#lang-close');
-const langGrid = $('#lang-grid');
-const langLabel = $('#lang-label');
-const flagMini = $('.flag-mini');
-
-const setLang = (code)=>{
-  document.documentElement.lang = code;
-  localStorage.setItem('siteLang', code);
-  langLabel.textContent = code.toUpperCase();
-  // small flag injection for header (use same SVG inner HTML as selected option)
-  const selected = langGrid.querySelector(`[data-lang="${code}"]`);
-  if(selected){
-    const flagSvg = selected.querySelector('svg').outerHTML;
-    flagMini.innerHTML = flagSvg;
-  }
-};
-
-const openLangModal = (sourceBtn) => {
-  langBackdrop.classList.add('open');
-  langBackdrop.setAttribute('aria-hidden','false');
-  // accessibility
-  langBackdrop.querySelector('.modal').focus();
-  document.body.style.overflow = 'hidden';
-  langBtn.setAttribute('aria-expanded','true');
-};
-
-const closeLangModal = ()=>{
-  langBackdrop.classList.remove('open');
-  langBackdrop.setAttribute('aria-hidden','true');
-  document.body.style.overflow = '';
-  langBtn.setAttribute('aria-expanded','false');
-  langBtn.focus();
-};
-
-langBtn.addEventListener('click', ()=> openLangModal());
-langBtn2.addEventListener('click', ()=> openLangModal());
-langClose.addEventListener('click', closeLangModal);
-langBackdrop.addEventListener('click', (e)=>{
-  if(e.target === langBackdrop) closeLangModal();
-});
-window.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape'){
-    if(langBackdrop.classList.contains('open')) closeLangModal();
-    if($('#legal-backdrop').classList.contains('open')) closeLegalModal();
-    if(navOverlay.classList.contains('open')){ navOverlay.classList.remove('open'); burger.setAttribute('aria-expanded','false'); document.body.style.overflow='';}
-  }
-});
-
-/* Language selection */
-langGrid.addEventListener('click', (e)=>{
-  const btn = e.target.closest('.lang-option');
-  if(!btn) return;
-  const code = btn.dataset.lang;
-  setLang(code);
-  closeLangModal();
-});
-
-/* persist language from localStorage */
-const saved = localStorage.getItem('siteLang') || 'fr';
-setLang(saved);
-
-/* ---------- LEGAL MODAL ---------- */
-const legalLinks = $$('.legal-link');
-const legalBackdrop = $('#legal-backdrop');
-const legalTitle = $('#legal-title');
-const legalText = $('#legal-text');
-const closeLegal = $('#close-legal');
-
-const legalPages = {
-  mentions:{title:'Mentions légales', text:'Nom protégé Empire Is Yours™. Informations sur l’entreprise, siège, contact et droits.'},
-  cgu:{title:'Conditions générales', text:'Conditions d’utilisation du site, droits et obligations des utilisateurs.'},
-  privacy:{title:'Politique de confidentialité', text:'Vos données sont protégées, conservées en toute sécurité et utilisées uniquement pour les services proposés. Conformité RGPD.'}
-};
-
-legalLinks.forEach(link=>{
-  link.addEventListener('click', (e)=>{
-    e.preventDefault();
-    const page = e.target.dataset.page;
-    legalTitle.textContent = legalPages[page].title;
-    legalText.textContent = legalPages[page].text;
-    legalBackdrop.classList.add('open');
-    legalBackdrop.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  });
-});
-
-const closeLegalModal = () => {
-  legalBackdrop.classList.remove('open');
-  legalBackdrop.setAttribute('aria-hidden','true');
-  document.body.style.overflow = '';
-};
-closeLegal.addEventListener('click', closeLegalModal);
-legalBackdrop.addEventListener('click', (e)=> { if(e.target === legalBackdrop) closeLegalModal(); });
-
-/* ---------- Tiny improvements: allow keyboard tab focus inside modals ---------- */
-const trapFocus = (container) => {
-  const focusable = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-  const first = focusable[0];
-  const last = focusable[focusable.length-1];
-  container.addEventListener('keydown', (e)=>{
-    if(e.key !== 'Tab') return;
-    if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
-    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
-  });
-};
-trapFocus($('#lang-backdrop').querySelector('.modal'));
-trapFocus($('#legal-backdrop').querySelector('.modal'));
-
-/* ---------- Polishing: ensure anchor focus visible on click (accessibility) ---------- */
-$$('a').forEach(a=>{
-  a.addEventListener('click', ()=> {
-    setTimeout(()=> a.classList.add('visited-temp'), 800);
-  });
-});
-
-</script>
+        // Gestion du formulaire
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Merci de votre inscription au fan club! Vous recevrez bientôt un email de confirmation.');
+                form.reset();
+            });
+        }
+    </script>
 </body>
 </html>
