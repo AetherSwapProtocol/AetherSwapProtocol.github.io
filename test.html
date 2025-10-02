@@ -1,110 +1,137 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Werenoi Fans - Rassemblement des Fans">
-    <meta property="og:description" content="Hommage à Werenoi, rappeur français disparu. Retrouvez tous ses réseaux sociaux en un seul endroit.">
-    <meta property="og:image" content="https://example.com/og-image.jpg">
-    <meta property="og:url" content="https://www.werenoifans.fr">
-    <title>Werenoi Fans - Rassemblement des Fans</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f7fafc;
-            color: #2d3748;
-        }
-        .social-btn {
-            transition: all 0.3s ease;
-        }
-        .social-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Werenoi Fans - Hommage & Communauté</title>
+<meta name="description" content="Hommage à Werenoi et rassemblement de ses fans. Retrouvez tous ses réseaux sociaux en un seul endroit.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/3.3.3/tailwind.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/line-awesome/css/line-awesome.min.css">
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: #111827;
+    color: #f8fafc;
+  }
+  .social-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #1f2937;
+    cursor: pointer;
+  }
+  .social-btn i {
+    font-size: 3rem;
+    transition: transform 0.3s ease;
+  }
+  .social-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    background: linear-gradient(135deg,#ff416c,#ff4b2b);
+  }
+  .social-btn:hover i {
+    transform: scale(1.2) rotate(10deg);
+  }
+  .social-name {
+    margin-top: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+  .social-btn:hover .social-name {
+    color: #fff;
+  }
+  .hero {
+    background: url('https://picsum.photos/1200/600?blur=2') center/cover no-repeat;
+    position: relative;
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(17,24,39,0.7);
+  }
+</style>
 </head>
 <body class="min-h-screen">
-    <div class="container mx-auto px-4 py-12 max-w-4xl">
-        <header class="text-center mb-16">
-            <h1 class="text-4xl md:text-5xl font-bold text-primary mb-4">Werenoi Fans</h1>
-            <p class="text-xl text-secondary">Hommage à Werenoi, rappeur français disparu</p>
-        </header>
 
-        <section class="bg-white rounded-lg shadow-sm p-6 mb-12">
-            <h2 class="text-2xl font-semibold text-primary mb-4">À propos</h2>
-            <p class="text-gray-700 leading-relaxed">
-                Werenoi, de son vrai nom Jérémy Bana Owona, est né le 30 janvier 1994 à Melun et est décédé le 17 mai 2025 à Paris à l'âge de 31 ans.  [oai_citation:0‡Le Monde.fr](https://www.lemonde.fr/disparitions/article/2025/05/17/la-mort-du-rappeur-francais-werenoi-a-31-ans-en-pleine-gloire_6606583_3382.html?utm_source=chatgpt.com)
-                Ce site est un projet non-officiel créé par des fans pour rassembler la communauté autour de sa musique et de son héritage.
-            </p>
-        </section>
+<!-- Header Hero -->
+<section class="hero h-screen flex items-center justify-center">
+  <div class="hero-overlay"></div>
+  <div class="text-center relative z-10 px-4">
+    <h1 class="text-5xl md:text-6xl font-bold mb-4">Werenoi Fans</h1>
+    <p class="text-xl md:text-2xl mb-6">Hommage à Werenoi - Rassemblement de sa communauté</p>
+    <p class="text-gray-300 max-w-xl mx-auto">Ce site non-officiel est créé par des fans pour centraliser tous les liens sociaux et partager son héritage musical et artistique.</p>
+  </div>
+</section>
 
-        <section class="mb-16">
-            <h2 class="text-2xl font-semibold text-primary mb-8 text-center">Retrouvez Werenoi sur</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <a href="https://t.me/WerenoiFanZone" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
-                    <div class="mb-4">
-                        <i class="fab fa-telegram text-4xl text-[#0088cc]"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-primary mb-2">Telegram</h3>
-                    <p class="text-gray-600">Rejoignez la communauté Telegram</p>
-                </a>
+<!-- Section Réseaux Sociaux -->
+<section class="py-16 px-4 max-w-6xl mx-auto">
+  <h2 class="text-3xl font-bold text-center mb-12">Retrouvez Werenoi & la communauté sur</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-8">
 
-                <a href="https://www.tiktok.com/@we_renoi77" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
-                    <div class="mb-4">
-                        <i class="fab fa-tiktok text-4xl text-black"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-primary mb-2">TikTok</h3>
-                    <p class="text-gray-600">Découvrez les vidéos TikTok</p>
-                </a>
+    <a href="https://t.me/WerenoiFanZone" target="_blank" class="social-btn">
+      <i class="lab la-telegram text-[#0088cc]"></i>
+      <span class="social-name">Telegram</span>
+    </a>
 
-                <a href="https://www.instagram.com/laleagueonly" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
-                    <div class="mb-4">
-                        <i class="fab fa-instagram text-4xl text-[#E1306C]"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-primary mb-2">Instagram</h3>
-                    <p class="text-gray-600">Explorez les photos et stories</p>
-                </a>
+    <a href="https://www.tiktok.com/@we_renoi77" target="_blank" class="social-btn">
+      <i class="lab la-tiktok text-white"></i>
+      <span class="social-name">TikTok</span>
+    </a>
 
-                <a href="https://snapchat.com/t/nWhbAvDb" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
-                    <div class="mb-4">
-                        <i class="fab fa-snapchat-ghost text-4xl text-[#FFFC00]"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-primary mb-2">Snapchat</h3>
-                    <p class="text-gray-600">Suivez les stories Snapchat</p>
-                </a>
+    <a href="https://www.instagram.com/laleagueonly" target="_blank" class="social-btn">
+      <i class="lab la-instagram text-[#E1306C]"></i>
+      <span class="social-name">Instagram</span>
+    </a>
 
-                <a href="https://youtube.com/@laleagueonly" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
-                    <div class="mb-4">
-                        <i class="fab fa-youtube text-4xl text-[#FF0000]"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-primary mb-2">YouTube</h3>
-                    <p class="text-gray-600">Regardez les clips et performances</p>
-                </a>
+    <a href="https://snapchat.com/t/nWhbAvDb" target="_blank" class="social-btn">
+      <i class="lab la-snapchat-ghost text-[#FFFC00]"></i>
+      <span class="social-name">Snapchat</span>
+    </a>
 
-                <a href="https://x.com/laleagueonly" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
-                    <div class="mb-4">
-                        <i class="fab fa-twitter text-4xl text-[#1DA1F2]"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-primary mb-2">X (anciennement Twitter)</h3>
-                    <p class="text-gray-600">Suivez les actualités sur X</p>
-                </a>
-            </div>
-        </section>
+    <a href="https://youtube.com/@laleagueonly" target="_blank" class="social-btn">
+      <i class="lab la-youtube text-[#FF0000]"></i>
+      <span class="social-name">YouTube</span>
+    </a>
 
-        <footer class="text-center pt-8 border-t border-gray-200">
-            <div class="mb-6">
-                <p class="text-sm text-gray-600 mb-4">
-                    Ce site est un projet non-officiel créé par des fans. Tous les droits sur la musique et l'image de Werenoi appartiennent à l'artiste et à son management.
-                </p>
-                <p class="text-sm text-gray-600">
-                    Contact : <a href="mailto:contact@werenoifans.fr" class="text-primary hover:underline">contact@werenoifans.fr</a>
-                </p>
-            </div>
-            <p class="text-xs text-gray-500">
-                &copy; 2025 Werenoi Fans - Site non-officiel
-            </p>
-        </footer>
-    </div>
+    <a href="https://x.com/laleagueonly" target="_blank" class="social-btn">
+      <i class="lab la-x text-[#1DA1F2]"></i>
+      <span class="social-name">X</span>
+    </a>
+
+  </div>
+</section>
+
+<!-- Section Info & Hommage -->
+<section class="py-16 px-4 bg-gray-900">
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="text-3xl font-bold mb-6">Hommage à Werenoi</h2>
+    <p class="text-gray-300 mb-4">
+      Werenoi, de son vrai nom Jérémy Bana Owona, nous a tragiquement quittés le 17 mai 2025 à l'âge de 31 ans.
+      Ce site est créé par ses fans pour honorer sa mémoire et rassembler sa communauté.
+    </p>
+    <p class="text-gray-300">
+      Retrouvez tous ses contenus, discutez avec d'autres fans et continuez à célébrer son héritage musical et artistique.
+    </p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-8 text-center bg-gray-800 text-gray-400">
+  <p class="mb-4 text-sm">
+    Ce site est un projet non-officiel créé par des fans. Tous les droits sur la musique et l'image de Werenoi appartiennent à l'artiste et à son management.
+  </p>
+  <p class="text-sm">
+    Contact : <a href="mailto:contact@werenoifans.fr" class="text-white hover:underline">contact@werenoifans.fr</a>
+  </p>
+  <p class="text-xs mt-4">&copy; 2026 Werenoi Fans - Site non-officiel</p>
+</footer>
+
 </body>
 </html>
