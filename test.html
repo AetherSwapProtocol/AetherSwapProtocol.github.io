@@ -1,444 +1,110 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <base target="_self">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Werenoi Fan Club - Rassemblement des Fans</title>
-    <meta name="description" content="Site officiel du fan club de Werenoi, le rappeur français. Actualités, musique, événements et communauté de fans.">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#1a365d",
-                        secondary: "#2d3748",
-                        accent: "#e53e3e"
-                    },
-                    fontFamily: {
-                        'montserrat': ['Montserrat', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+    <meta property="og:title" content="Werenoi Fans - Rassemblement des Fans">
+    <meta property="og:description" content="Hommage à Werenoi, rappeur français disparu. Retrouvez tous ses réseaux sociaux en un seul endroit.">
+    <meta property="og:image" content="https://example.com/og-image.jpg">
+    <meta property="og:url" content="https://www.werenoifans.fr">
+    <title>Werenoi Fans - Rassemblement des Fans</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <style>
-        .hero-pattern {
-            background: linear-gradient(135deg, rgba(26, 54, 93, 0.9) 0%, rgba(45, 55, 72, 0.9) 100%);
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7fafc;
+            color: #2d3748;
         }
-        .album-cover {
-            transition: transform 0.3s ease;
+        .social-btn {
+            transition: all 0.3s ease;
         }
-        .album-cover:hover {
-            transform: scale(1.05);
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body class="min-h-screen bg-gray-100 font-montserrat">
-    <!-- Header avec navigation -->
-    <header class="bg-primary text-white shadow-lg sticky top-0 z-50">
-        <nav class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center">
-                    <h1 class="text-2xl font-bold">WERENOI FAN CLUB</h1>
-                </div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="#accueil" class="hover:text-accent transition-colors">Accueil</a>
-                    <a href="#musique" class="hover:text-accent transition-colors">Musique</a>
-                    <a href="#actualites" class="hover:text-accent transition-colors">Actualités</a>
-                    <a href="#evenements" class="hover:text-accent transition-colors">Événements</a>
-                    <a href="#galerie" class="hover:text-accent transition-colors">Galerie</a>
-                    <a href="#communaute" class="hover:text-accent transition-colors">Communauté</a>
-                </div>
-                <div class="md:hidden">
-                    <button id="mobile-menu-button" class="text-white focus:outline-none">
-                        <i class="fas fa-bars text-2xl"></i>
-                    </button>
-                </div>
-            </div>
-            <!-- Menu mobile -->
-            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
-                <div class="flex flex-col space-y-3">
-                    <a href="#accueil" class="hover:text-accent transition-colors">Accueil</a>
-                    <a href="#musique" class="hover:text-accent transition-colors">Musique</a>
-                    <a href="#actualites" class="hover:text-accent transition-colors">Actualités</a>
-                    <a href="#evenements" class="hover:text-accent transition-colors">Événements</a>
-                    <a href="#galerie" class="hover:text-accent transition-colors">Galerie</a>
-                    <a href="#communaute" class="hover:text-accent transition-colors">Communauté</a>
-                </div>
-            </div>
-        </nav>
-    </header>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-12 max-w-4xl">
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-primary mb-4">Werenoi Fans</h1>
+            <p class="text-xl text-secondary">Hommage à Werenoi, rappeur français disparu</p>
+        </header>
 
-    <!-- Section Hero -->
-    <section id="accueil" class="relative py-20 bg-gray-900 text-white">
-        <div class="absolute inset-0 hero-pattern"></div>
-        <div class="container mx-auto px-4 relative z-10">
-            <div class="flex flex-col items-center text-center">
-                <h2 class="text-4xl md:text-6xl font-bold mb-6">WERENOI</h2>
-                <p class="text-xl md:text-2xl mb-8">Rassemblement officiel des fans</p>
-                <div class="flex space-x-4">
-                    <button class="bg-accent hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full transition-colors">
-                        Rejoindre le club
-                    </button>
-                    <button class="border-2 border-white hover:bg-white hover:text-primary text-white font-bold py-3 px-6 rounded-full transition-colors">
-                        Découvrir la musique
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
+        <section class="bg-white rounded-lg shadow-sm p-6 mb-12">
+            <h2 class="text-2xl font-semibold text-primary mb-4">À propos</h2>
+            <p class="text-gray-700 leading-relaxed">
+                Werenoi, de son vrai nom Jérémy Bana Owona, est né le 30 janvier 1994 à Melun et est décédé le 17 mai 2025 à Paris à l'âge de 31 ans.  [oai_citation:0‡Le Monde.fr](https://www.lemonde.fr/disparitions/article/2025/05/17/la-mort-du-rappeur-francais-werenoi-a-31-ans-en-pleine-gloire_6606583_3382.html?utm_source=chatgpt.com)
+                Ce site est un projet non-officiel créé par des fans pour rassembler la communauté autour de sa musique et de son héritage.
+            </p>
+        </section>
 
-    <!-- Section À propos -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center">
-                <div class="md:w-1/2 mb-8 md:mb-0">
-                    <img src="https://picsum.photos/500/600?random=1" alt="Werenoi portrait" class="rounded-lg shadow-xl w-full" loading="lazy">
-                </div>
-                <div class="md:w-1/2 md:pl-12">
-                    <h2 class="text-3xl font-bold mb-6 text-primary">Qui est Werenoi?</h2>
-                    <p class="text-lg text-gray-700 mb-4">
-                        Werenoi, de son vrai nom Mathieu Morand, est un rappeur français originaire de Lyon. 
-                        Membre du collectif 667, il s'est fait connaître par son flow unique et ses textes percutants.
-                    </p>
-                    <p class="text-lg text-gray-700 mb-6">
-                        Depuis ses débuts, Werenoi a su se construire une place importante dans le paysage du rap français,
-                        avec des projets acclamés par la critique et un public toujours plus nombreux.
-                    </p>
-                    <div class="flex space-x-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-microphone text-accent text-2xl mr-2"></i>
-                            <span class="font-semibold">Albums: 3</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-users text-accent text-2xl mr-2"></i>
-                            <span class="font-semibold">Fans: 250K+</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-music text-accent text-2xl mr-2"></i>
-                            <span class="font-semibold">Titres: 50+</span>
-                        </div>
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold text-primary mb-8 text-center">Retrouvez Werenoi sur</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <a href="https://t.me/WerenoiFanZone" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
+                    <div class="mb-4">
+                        <i class="fab fa-telegram text-4xl text-[#0088cc]"></i>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                    <h3 class="text-xl font-semibold text-primary mb-2">Telegram</h3>
+                    <p class="text-gray-600">Rejoignez la communauté Telegram</p>
+                </a>
 
-    <!-- Section Musique -->
-    <section id="musique" class="py-16 bg-gray-100">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12 text-primary">Discographie</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <img src="https://picsum.photos/400/400?random=2" alt="Album Carré" class="w-full album-cover" loading="lazy">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">Carré (2022)</h3>
-                        <p class="text-gray-600 mb-4">Album studio avec des featurings prestigieux</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-accent font-semibold">15 titres</span>
-                            <button class="bg-primary hover:bg-secondary text-white py-2 px-4 rounded transition-colors">
-                                Écouter
-                            </button>
-                        </div>
+                <a href="https://www.tiktok.com/@we_renoi77" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
+                    <div class="mb-4">
+                        <i class="fab fa-tiktok text-4xl text-black"></i>
                     </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <img src="https://picsum.photos/400/400?random=3" alt="Album Telegram" class="w-full album-cover" loading="lazy">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">Telegram (2020)</h3>
-                        <p class="text-gray-600 mb-4">Projet qui a confirmé son talent</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-accent font-semibold">12 titres</span>
-                            <button class="bg-primary hover:bg-secondary text-white py-2 px-4 rounded transition-colors">
-                                Écouter
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <img src="https://picsum.photos/400/400?random=4" alt="Mixtape 667" class="w-full album-cover" loading="lazy">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">Avec le 667 (2019)</h3>
-                        <p class="text-gray-600 mb-4">Collaboration avec le collectif</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-accent font-semibold">10 titres</span>
-                            <button class="bg-primary hover:bg-secondary text-white py-2 px-4 rounded transition-colors">
-                                Écouter
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                    <h3 class="text-xl font-semibold text-primary mb-2">TikTok</h3>
+                    <p class="text-gray-600">Découvrez les vidéos TikTok</p>
+                </a>
 
-    <!-- Section Actualités -->
-    <section id="actualites" class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12 text-primary">Dernières Actualités</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md">
-                    <img src="https://picsum.photos/400/250?random=5" alt="Nouveau single" class="w-full" loading="lazy">
-                    <div class="p-6">
-                        <span class="text-sm text-accent font-semibold">15 Novembre 2023</span>
-                        <h3 class="text-xl font-bold my-2">Nouveau single en featuring</h3>
-                        <p class="text-gray-600">Werenoi dévoile un nouveau titre en collaboration avec un artiste surprise.</p>
-                        <a href="#" class="inline-block mt-4 text-primary hover:text-accent font-semibold">Lire plus →</a>
+                <a href="https://www.instagram.com/laleagueonly" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
+                    <div class="mb-4">
+                        <i class="fab fa-instagram text-4xl text-[#E1306C]"></i>
                     </div>
-                </div>
-                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md">
-                    <img src="https://picsum.photos/400/250?random=6" alt="Concert annoncé" class="w-full" loading="lazy">
-                    <div class="p-6">
-                        <span class="text-sm text-accent font-semibold">8 Novembre 2023</span>
-                        <h3 class="text-xl font-bold my-2">Tournée 2024 annoncée</h3>
-                        <p class="text-gray-600">Une nouvelle tournée avec des dates dans toute la France vient d'être annoncée.</p>
-                        <a href="#" class="inline-block mt-4 text-primary hover:text-accent font-semibold">Lire plus →</a>
-                    </div>
-                </div>
-                <div class="bg-gray-50 rounded-lg overflow-hidden shadow-md">
-                    <img src="https://picsum.photos/400/250?random=7" alt="Interview exclusive" class="w-full" loading="lazy">
-                    <div class="p-6">
-                        <span class="text-sm text-accent font-semibold">1 Novembre 2023</span>
-                        <h3 class="text-xl font-bold my-2">Interview exclusive</h3>
-                        <p class="text-gray-600">Werenoi se confie sur son parcours et ses projets futurs dans une interview exclusive.</p>
-                        <a href="#" class="inline-block mt-4 text-primary hover:text-accent font-semibold">Lire plus →</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                    <h3 class="text-xl font-semibold text-primary mb-2">Instagram</h3>
+                    <p class="text-gray-600">Explorez les photos et stories</p>
+                </a>
 
-    <!-- Section Événements -->
-    <section id="evenements" class="py-16 bg-primary text-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12">Prochains Événements</h2>
-            <div class="max-w-3xl mx-auto">
-                <div class="bg-secondary rounded-lg p-6 mb-6">
-                    <div class="flex flex-col md:flex-row items-center">
-                        <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
-                            <div class="bg-accent rounded-lg p-4 text-center w-20">
-                                <div class="text-2xl font-bold">15</div>
-                                <div class="text-sm">DEC</div>
-                            </div>
-                        </div>
-                        <div class="flex-grow">
-                            <h3 class="text-xl font-bold">Paris - Zenith</h3>
-                            <p class="text-gray-300">Concert exceptionnel avec invités surprises</p>
-                        </div>
-                        <div class="flex-shrink-0 mt-4 md:mt-0">
-                            <button class="bg-accent hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors">
-                                Billetterie
-                            </button>
-                        </div>
+                <a href="https://snapchat.com/t/nWhbAvDb" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
+                    <div class="mb-4">
+                        <i class="fab fa-snapchat-ghost text-4xl text-[#FFFC00]"></i>
                     </div>
-                </div>
-                <div class="bg-secondary rounded-lg p-6 mb-6">
-                    <div class="flex flex-col md:flex-row items-center">
-                        <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
-                            <div class="bg-accent rounded-lg p-4 text-center w-20">
-                                <div class="text-2xl font-bold">22</div>
-                                <div class="text-sm">JAN</div>
-                            </div>
-                        </div>
-                        <div class="flex-grow">
-                            <h3 class="text-xl font-bold">Lyon - Halle Tony Garnier</h3>
-                            <p class="text-gray-300">Retour aux sources pour Werenoi</p>
-                        </div>
-                        <div class="flex-shrink-0 mt-4 md:mt-0">
-                            <button class="bg-accent hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors">
-                                Billetterie
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-secondary rounded-lg p-6">
-                    <div class="flex flex-col md:flex-row items-center">
-                        <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
-                            <div class="bg-accent rounded-lg p-4 text-center w-20">
-                                <div class="text-2xl font-bold">5</div>
-                                <div class="text-sm">FÉV</div>
-                            </div>
-                        </div>
-                        <div class="flex-grow">
-                            <h3 class="text-xl font-bold">Marseille - Le Dôme</h3>
-                            <p class="text-gray-300">Première date à Marseille</p>
-                        </div>
-                        <div class="flex-shrink-0 mt-4 md:mt-0">
-                            <button class="bg-accent hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors">
-                                Billetterie
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                    <h3 class="text-xl font-semibold text-primary mb-2">Snapchat</h3>
+                    <p class="text-gray-600">Suivez les stories Snapchat</p>
+                </a>
 
-    <!-- Section Communauté -->
-    <section id="communaute" class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12 text-primary">Rejoignez la Communauté</h2>
-            <div class="max-w-2xl mx-auto bg-gray-50 rounded-lg p-8 shadow-md">
-                <h3 class="text-2xl font-bold mb-6 text-center">Inscription au Fan Club</h3>
-                <p class="text-gray-600 text-center mb-6">
-                    Rejoignez la communauté officielle des fans de Werenoi et recevez des contenus exclusifs, 
-                    des pré-accès aux concerts et bien plus encore!
+                <a href="https://youtube.com/@laleagueonly" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
+                    <div class="mb-4">
+                        <i class="fab fa-youtube text-4xl text-[#FF0000]"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-2">YouTube</h3>
+                    <p class="text-gray-600">Regardez les clips et performances</p>
+                </a>
+
+                <a href="https://x.com/laleagueonly" class="social-btn block bg-white rounded-lg shadow-sm p-6 text-center hover:bg-gray-50 border border-gray-100">
+                    <div class="mb-4">
+                        <i class="fab fa-twitter text-4xl text-[#1DA1F2]"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary mb-2">X (anciennement Twitter)</h3>
+                    <p class="text-gray-600">Suivez les actualités sur X</p>
+                </a>
+            </div>
+        </section>
+
+        <footer class="text-center pt-8 border-t border-gray-200">
+            <div class="mb-6">
+                <p class="text-sm text-gray-600 mb-4">
+                    Ce site est un projet non-officiel créé par des fans. Tous les droits sur la musique et l'image de Werenoi appartiennent à l'artiste et à son management.
                 </p>
-                <form class="space-y-4">
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div>
-                        <label for="pseudo" class="block text-sm font-medium text-gray-700 mb-1">Pseudo</label>
-                        <input type="text" id="pseudo" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div>
-                        <label for="ville" class="block text-sm font-medium text-gray-700 mb-1">Ville</label>
-                        <input type="text" id="ville" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                    </div>
-                    <button type="submit" class="w-full bg-primary hover:bg-secondary text-white font-bold py-3 px-4 rounded-md transition-colors">
-                        Rejoindre le club
-                    </button>
-                </form>
+                <p class="text-sm text-gray-600">
+                    Contact : <a href="mailto:contact@werenoifans.fr" class="text-primary hover:underline">contact@werenoifans.fr</a>
+                </p>
             </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-secondary text-white py-12">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Werenoi Fan Club</h3>
-                    <p class="text-gray-300">Le site officiel de rassemblement des fans de Werenoi.</p>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Liens Rapides</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#accueil" class="text-gray-300 hover:text-white transition-colors">Accueil</a></li>
-                        <li><a href="#musique" class="text-gray-300 hover:text-white transition-colors">Musique</a></li>
-                        <li><a href="#actualites" class="text-gray-300 hover:text-white transition-colors">Actualités</a></li>
-                        <li><a href="#evenements" class="text-gray-300 hover:text-white transition-colors">Événements</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Ressources</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Paroles</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Photos</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Vidéos</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Presse</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Suivez-nous</h4>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors text-2xl"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors text-2xl"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors text-2xl"><i class="fab fa-youtube"></i></a>
-                        <a href="#" class="text-gray-300 hover:text-white transition-colors text-2xl"><i class="fab fa-tiktok"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2023 Werenoi Fan Club. Tous droits réservés.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Données pour le site
-        const albums = [
-            { 
-                "id": 1, 
-                "title": "Carré", 
-                "year": "2022", 
-                "tracks": 15, 
-                "description": "Album studio avec des featurings prestigieux",
-                "image": "https://picsum.photos/400/400?random=2"
-            },
-            { 
-                "id": 2, 
-                "title": "Telegram", 
-                "year": "2020", 
-                "tracks": 12, 
-                "description": "Projet qui a confirmé son talent",
-                "image": "https://picsum.photos/400/400?random=3"
-            },
-            { 
-                "id": 3, 
-                "title": "Avec le 667", 
-                "year": "2019", 
-                "tracks": 10, 
-                "description": "Collaboration avec le collectif",
-                "image": "https://picsum.photos/400/400?random=4"
-            }
-        ];
-
-        const events = [
-            {
-                "id": 1,
-                "date": "15 DEC",
-                "day": 15,
-                "month": "DEC",
-                "venue": "Paris - Zenith",
-                "description": "Concert exceptionnel avec invités surprises"
-            },
-            {
-                "id": 2,
-                "date": "22 JAN",
-                "day": 22,
-                "month": "JAN",
-                "venue": "Lyon - Halle Tony Garnier",
-                "description": "Retour aux sources pour Werenoi"
-            },
-            {
-                "id": 3,
-                "date": "5 FÉV",
-                "day": 5,
-                "month": "FÉV",
-                "venue": "Marseille - Le Dôme",
-                "description": "Première date à Marseille"
-            }
-        ];
-
-        // Gestion du menu mobile
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        });
-
-        // Navigation fluide
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                if (targetId !== '#') {
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 80,
-                            behavior: 'smooth'
-                        });
-                    }
-                }
-            });
-        });
-
-        // Gestion du formulaire
-        const form = document.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                alert('Merci de votre inscription au fan club! Vous recevrez bientôt un email de confirmation.');
-                form.reset();
-            });
-        }
-    </script>
+            <p class="text-xs text-gray-500">
+                &copy; 2025 Werenoi Fans - Site non-officiel
+            </p>
+        </footer>
+    </div>
 </body>
 </html>
