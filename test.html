@@ -3,62 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Werenoi Fans - Communauté & Hommage</title>
+<title>Werenoi Fans — Communauté & Hommage</title>
 <meta name="description" content="Hommage à Werenoi et rassemblement de ses fans. Retrouvez tous ses réseaux sociaux en un seul endroit.">
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <style>
-/* Global */
+/* ===== GLOBAL ===== */
 body {
-  font-family: 'Arial', sans-serif;
-  background: #0f1117;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #0f1117, #1a1c24);
   color: #f0f0f0;
-  scroll-behavior: smooth;
+  margin: 0;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
-a { text-decoration: none; }
 
-/* Hero */
+/* ===== HERO ===== */
 .hero {
   position: relative;
   height: 95vh;
-  background: url('https://picsum.photos/1600/900?blur=2') center/cover no-repeat fixed;
+  overflow: hidden;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   text-align: center;
+  perspective: 1px;
+  transform-style: preserve-3d;
 }
-.hero::before {
-  content: '';
+.hero-bg {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.9));
-  z-index: 1;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: url('https://picsum.photos/1600/900?blur=2') center/cover no-repeat fixed;
+  transform: translateZ(-1px) scale(2);
+  z-index: -1;
+}
+.hero-overlay {
+  position: absolute;
+  inset:0;
+  background: rgba(0,0,0,0.6);
 }
 .hero-content {
   position: relative;
-  z-index: 2;
-  animation: fadeIn 1.5s ease-out forwards;
+  z-index:2;
+  animation: fadeInUp 1.5s ease-out forwards;
 }
 .hero h1 {
   font-size: 4rem;
   font-weight: 900;
-  color: #ff4b2b;
-  text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+  color: #ff416c;
+  text-shadow: 2px 2px 20px rgba(0,0,0,0.7);
 }
 .hero p {
   font-size: 1.5rem;
-  color: #fff;
   margin-top: 1rem;
+  color: #fff;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px);}
-  to { opacity: 1; transform: translateY(0);}
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from { opacity:0; transform: translateY(30px);}
+  to { opacity:1; transform: translateY(0);}
 }
 
-/* Social Grid */
+/* ===== SOCIAL GRID ===== */
 .social-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
@@ -68,57 +75,68 @@ a { text-decoration: none; }
   margin: 0 auto;
 }
 .social-widget {
-  background: #1f2937;
+  position: relative;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
   border-radius: 1rem;
   padding: 2rem;
   text-align: center;
-  transition: all 0.4s ease;
   cursor: pointer;
-  position: relative;
+  transition: all 0.4s ease;
   overflow: hidden;
 }
 .social-widget::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, #ff416c, #ff4b2b, #1DB954, #1DA1F2, #FFFC00);
+  top:-50%; left:-50%;
+  width:200%; height:200%;
+  background: linear-gradient(45deg, #ff416c,#ff4b2b,#1DB954,#1DA1F2,#FFFC00);
   border-radius: 50%;
-  opacity: 0.15;
-  animation: rotate 8s linear infinite;
-  z-index: 0;
+  opacity:0.1;
+  animation: rotate 10s linear infinite;
+  z-index:0;
 }
-@keyframes rotate { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
-.social-widget:hover { transform: translateY(-12px) scale(1.05); box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
-.social-widget i {
-  font-size: 3rem;
+@keyframes rotate {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+.social-widget:hover {
+  transform: translateY(-12px) scale(1.05);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+.social-widget img {
+  width: 48px;
   margin-bottom: 0.5rem;
-  z-index: 1;
   position: relative;
+  z-index:1;
   transition: all 0.3s ease;
 }
-.social-widget:hover i { transform: scale(1.4) rotate(10deg); }
-.social-name { font-weight: 700; font-size: 1.25rem; z-index:1; position: relative; }
-.social-desc { font-size: 0.875rem; color: #cbd5e0; z-index:1; position: relative; }
-
-/* Pulse animation */
-.pulse {
-  animation: pulseAnim 2s infinite;
+.social-widget:hover img {
+  transform: scale(1.4) rotate(10deg);
 }
-@keyframes pulseAnim {
-  0% { transform: scale(1);}
-  50% { transform: scale(1.1);}
-  100% { transform: scale(1);}
+.social-name {
+  font-weight: 700;
+  font-size: 1.25rem;
+  position: relative;
+  z-index:1;
+}
+.social-desc {
+  font-size: 0.875rem;
+  color: #cbd5e0;
+  position: relative;
+  z-index:1;
 }
 
-/* Info Section */
+/* ===== HOMMAGE SECTION ===== */
 section.info {
   padding: 5rem 1rem;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   text-align: center;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  margin-top: 3rem;
 }
 section.info h2 {
   font-size: 2.5rem;
@@ -132,88 +150,92 @@ section.info p {
   font-size: 1.1rem;
 }
 
-/* Footer */
-footer {
-  background: #111827;
-  text-align: center;
-  padding: 2rem 1rem;
-  color: #9ca3af;
-}
-footer a { color: #ff416c; }
-
-/* Floating buttons */
+/* ===== FLOATING BUTTONS ===== */
 .floating-btns {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom:2rem; right:2rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  z-index: 1000;
+  gap:1rem;
+  z-index:1000;
 }
 .floating-btns a {
-  background: #ff4b2b;
-  color: #fff;
-  padding: 0.8rem 1rem;
-  border-radius: 9999px;
-  font-weight: bold;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  display:flex; align-items:center; gap:0.5rem;
+  background:#ff4b2b; color:#fff;
+  padding:0.8rem 1rem;
+  border-radius:9999px;
+  font-weight:bold;
+  box-shadow:0 8px 20px rgba(0,0,0,0.4);
   transition: all 0.3s ease;
 }
-.floating-btns a:hover { transform: translateY(-5px) scale(1.1); }
+.floating-btns a:hover {
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 15px 30px rgba(255,75,43,0.5);
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background:#111827;
+  text-align:center;
+  padding:2rem 1rem;
+  color:#9ca3af;
+}
+footer a { color:#ff416c; }
 
 </style>
 </head>
 <body>
 
-<!-- Hero -->
+<!-- HERO -->
 <section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
   <div class="hero-content">
     <h1>Werenoi Fans</h1>
     <p>Hommage à Werenoi et rassemblement de sa communauté. Tous ses réseaux en un seul endroit.</p>
   </div>
 </section>
 
-<!-- Réseaux Sociaux -->
+<!-- SOCIAL GRID -->
 <section class="social-grid">
-  <a href="https://t.me/WerenoiFanZone" target="_blank" class="social-widget pulse">
-    <i class="fab fa-telegram text-[#0088cc]"></i>
+  <a href="https://t.me/WerenoiFanZone" target="_blank" class="social-widget">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg">
     <div class="social-name">Telegram</div>
     <div class="social-desc">Rejoignez la communauté</div>
   </a>
 
-  <a href="https://www.tiktok.com/@we_renoi77" target="_blank" class="social-widget pulse">
-    <i class="fab fa-tiktok text-white"></i>
+  <a href="https://www.tiktok.com/@we_renoi77" target="_blank" class="social-widget">
+    <img src="https://upload.wikimedia.org/wikipedia/en/6/69/TikTok_logo.svg">
     <div class="social-name">TikTok</div>
     <div class="social-desc">Vidéos & tendances</div>
   </a>
 
-  <a href="https://www.instagram.com/laleagueonly" target="_blank" class="social-widget pulse">
-    <i class="fab fa-instagram text-[#E1306C]"></i>
+  <a href="https://www.instagram.com/laleagueonly" target="_blank" class="social-widget">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg">
     <div class="social-name">Instagram</div>
     <div class="social-desc">Photos & stories</div>
   </a>
 
-  <a href="https://snapchat.com/t/nWhbAvDb" target="_blank" class="social-widget pulse">
-    <i class="fab fa-snapchat-ghost text-[#FFFC00]"></i>
+  <a href="https://snapchat.com/t/nWhbAvDb" target="_blank" class="social-widget">
+    <img src="https://upload.wikimedia.org/wikipedia/en/c/c4/Snapchat_logo.svg">
     <div class="social-name">Snapchat</div>
     <div class="social-desc">Suivez-nous</div>
   </a>
 
-  <a href="https://youtube.com/@laleagueonly" target="_blank" class="social-widget pulse">
-    <i class="fab fa-youtube text-[#FF0000]"></i>
+  <a href="https://youtube.com/@laleagueonly" target="_blank" class="social-widget">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg">
     <div class="social-name">YouTube</div>
     <div class="social-desc">Clips & lives</div>
   </a>
 
-  <a href="https://x.com/laleagueonly" target="_blank" class="social-widget pulse">
-    <i class="fab fa-x text-[#1DA1F2]"></i>
+  <a href="https://x.com/laleagueonly" target="_blank" class="social-widget">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/X_logo_2023.svg">
     <div class="social-name">X</div>
     <div class="social-desc">Actualités & tweets</div>
   </a>
 </section>
 
-<!-- Hommage -->
+<!-- HOMMAGE SECTION -->
 <section class="info">
   <h2>Hommage à Werenoi</h2>
   <p>Werenoi, de son vrai nom Jérémy Bana Owona, nous a tragiquement quittés le 17 mai 2025 à l'âge de 31 ans.  
@@ -221,13 +243,13 @@ footer a { color: #ff416c; }
      Retrouvez tous ses contenus et continuez à célébrer son héritage musical et artistique.</p>
 </section>
 
-<!-- Floating buttons -->
+<!-- FLOATING BUTTONS -->
 <div class="floating-btns">
-  <a href="https://t.me/WerenoiFanZone" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
-  <a href="https://www.tiktok.com/@we_renoi77" target="_blank"><i class="fab fa-tiktok"></i> TikTok</a>
+  <a href="https://t.me/WerenoiFanZone" target="_blank">📨 Telegram</a>
+  <a href="https://www.tiktok.com/@we_renoi77" target="_blank">🎵 TikTok</a>
 </div>
 
-<!-- Footer -->
+<!-- FOOTER -->
 <footer>
   <p>Projet non-officiel créé par des fans. Tous droits sur la musique et l'image de Werenoi appartiennent à l'artiste et à son management.</p>
   <p>Contact : <a href="mailto:contact@werenoifans.fr">contact@werenoifans.fr</a></p>
