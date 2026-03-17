@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Werenoi Fans — Communauté & Hommage</title>
-<meta name="description" content="Hommage à Werenoi et rassemblement de ses fans. Retrouvez tous ses réseaux sociaux en un seul endroit.">
+<title>La League Only — Communauté & Réseaux</title>
+<meta name="description" content="La League Only : retrouvez tous les réseaux sociaux officiels en un seul endroit.">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 /* ===== GLOBAL ===== */
@@ -21,36 +21,28 @@ body {
 .hero {
   position: relative;
   height: 95vh;
-  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  perspective: 1px;
-  transform-style: preserve-3d;
+  overflow: hidden;
 }
 .hero-bg {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top:0; left:0;
+  width:100%; height:100%;
   background: url('https://picsum.photos/1600/900?blur=2') center/cover no-repeat fixed;
-  transform: translateZ(-1px) scale(2);
+  filter: brightness(0.4);
   z-index: -1;
 }
-.hero-overlay {
-  position: absolute;
-  inset:0;
-  background: rgba(0,0,0,0.6);
-}
 .hero-content {
-  position: relative;
   z-index:2;
   animation: fadeInUp 1.5s ease-out forwards;
 }
 .hero h1 {
   font-size: 4rem;
   font-weight: 900;
-  color: #ff416c;
+  color: #00ffff;
   text-shadow: 2px 2px 20px rgba(0,0,0,0.7);
 }
 .hero p {
@@ -77,7 +69,7 @@ body {
 .social-widget {
   position: relative;
   background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   border-radius: 1rem;
   padding: 2rem;
   text-align: center;
@@ -90,7 +82,7 @@ body {
   position: absolute;
   top:-50%; left:-50%;
   width:200%; height:200%;
-  background: linear-gradient(45deg, #ff416c,#ff4b2b,#1DB954,#1DA1F2,#FFFC00);
+  background: linear-gradient(45deg, #00ffff, #ff00ff, #00ff00, #ffcc00);
   border-radius: 50%;
   opacity:0.1;
   animation: rotate 10s linear infinite;
@@ -102,7 +94,7 @@ body {
 }
 .social-widget:hover {
   transform: translateY(-12px) scale(1.05);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  box-shadow: 0 20px 50px rgba(0,255,255,0.3);
 }
 .social-widget img {
   width: 48px;
@@ -112,7 +104,7 @@ body {
   transition: all 0.3s ease;
 }
 .social-widget:hover img {
-  transform: scale(1.4) rotate(10deg);
+  transform: scale(1.3) rotate(10deg);
 }
 .social-name {
   font-weight: 700;
@@ -127,50 +119,26 @@ body {
   z-index:1;
 }
 
-/* ===== HOMMAGE SECTION ===== */
+/* ===== INFO SECTION ===== */
 section.info {
   padding: 5rem 1rem;
   max-width: 900px;
-  margin: 0 auto;
+  margin: 3rem auto;
   text-align: center;
   background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   border-radius: 1rem;
-  margin-top: 3rem;
 }
 section.info h2 {
   font-size: 2.5rem;
   font-weight: 900;
-  color: #ff416c;
+  color: #00ffff;
   margin-bottom: 1rem;
 }
 section.info p {
   color: #e2e8f0;
   line-height: 1.8;
   font-size: 1.1rem;
-}
-
-/* ===== FLOATING BUTTONS ===== */
-.floating-btns {
-  position: fixed;
-  bottom:2rem; right:2rem;
-  display: flex;
-  flex-direction: column;
-  gap:1rem;
-  z-index:1000;
-}
-.floating-btns a {
-  display:flex; align-items:center; gap:0.5rem;
-  background:#ff4b2b; color:#fff;
-  padding:0.8rem 1rem;
-  border-radius:9999px;
-  font-weight:bold;
-  box-shadow:0 8px 20px rgba(0,0,0,0.4);
-  transition: all 0.3s ease;
-}
-.floating-btns a:hover {
-  transform: translateY(-5px) scale(1.1);
-  box-shadow: 0 15px 30px rgba(255,75,43,0.5);
 }
 
 /* ===== FOOTER ===== */
@@ -180,7 +148,7 @@ footer {
   padding:2rem 1rem;
   color:#9ca3af;
 }
-footer a { color:#ff416c; }
+footer a { color:#00ffff; }
 
 </style>
 </head>
@@ -189,31 +157,18 @@ footer a { color:#ff416c; }
 <!-- HERO -->
 <section class="hero">
   <div class="hero-bg"></div>
-  <div class="hero-overlay"></div>
   <div class="hero-content">
-    <h1>Werenoi Fans</h1>
-    <p>Hommage à Werenoi et rassemblement de sa communauté. Tous ses réseaux en un seul endroit.</p>
+    <h1>La League Only</h1>
+    <p>Retrouvez tous nos réseaux officiels en un seul endroit.</p>
   </div>
 </section>
 
 <!-- SOCIAL GRID -->
 <section class="social-grid">
-  <a href="https://t.me/WerenoiFanZone" target="_blank" class="social-widget">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg">
-    <div class="social-name">Telegram</div>
-    <div class="social-desc">Rejoignez la communauté</div>
-  </a>
-
-  <a href="https://www.tiktok.com/@we_renoi77" target="_blank" class="social-widget">
-    <img src="https://upload.wikimedia.org/wikipedia/en/6/69/TikTok_logo.svg">
-    <div class="social-name">TikTok</div>
-    <div class="social-desc">Vidéos & tendances</div>
-  </a>
-
-  <a href="https://www.instagram.com/laleagueonly" target="_blank" class="social-widget">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg">
-    <div class="social-name">Instagram</div>
-    <div class="social-desc">Photos & stories</div>
+  <a href="https://www.youtube.com/@laleagueonly" target="_blank" class="social-widget">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg">
+    <div class="social-name">YouTube</div>
+    <div class="social-desc">Clips & lives</div>
   </a>
 
   <a href="https://snapchat.com/t/nWhbAvDb" target="_blank" class="social-widget">
@@ -222,38 +177,41 @@ footer a { color:#ff416c; }
     <div class="social-desc">Suivez-nous</div>
   </a>
 
-  <a href="https://youtube.com/@laleagueonly" target="_blank" class="social-widget">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg">
-    <div class="social-name">YouTube</div>
-    <div class="social-desc">Clips & lives</div>
-  </a>
-
   <a href="https://x.com/laleagueonly" target="_blank" class="social-widget">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/X_logo_2023.svg">
     <div class="social-name">X</div>
     <div class="social-desc">Actualités & tweets</div>
   </a>
+
+  <a href="https://www.instagram.com/laleagueonly" target="_blank" class="social-widget">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg">
+    <div class="social-name">Instagram</div>
+    <div class="social-desc">Photos & stories</div>
+  </a>
+
+  <a href="https://t.me/laleagueonly" target="_blank" class="social-widget">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg">
+    <div class="social-name">Telegram</div>
+    <div class="social-desc">Rejoignez la communauté</div>
+  </a>
+
+  <a href="https://www.tiktok.com/@laleagueonly" target="_blank" class="social-widget">
+    <img src="https://upload.wikimedia.org/wikipedia/en/6/69/TikTok_logo.svg">
+    <div class="social-name">TikTok</div>
+    <div class="social-desc">Vidéos & tendances</div>
+  </a>
 </section>
 
-<!-- HOMMAGE SECTION -->
+<!-- INFO SECTION -->
 <section class="info">
-  <h2>Hommage à Werenoi</h2>
-  <p>Werenoi, de son vrai nom Jérémy Bana Owona, nous a tragiquement quittés le 17 mai 2025 à l'âge de 31 ans.  
-     Ce site est un projet non-officiel créé par ses fans pour honorer sa mémoire et rassembler la communauté.  
-     Retrouvez tous ses contenus et continuez à célébrer son héritage musical et artistique.</p>
+  <h2>À propos de La League Only</h2>
+  <p>La League Only est la plateforme officielle pour retrouver tous nos réseaux et contenus.  
+  Rejoignez-nous et restez connecté avec nos dernières vidéos, stories et actualités en temps réel.</p>
 </section>
-
-<!-- FLOATING BUTTONS -->
-<div class="floating-btns">
-  <a href="https://t.me/WerenoiFanZone" target="_blank">📨 Telegram</a>
-  <a href="https://www.tiktok.com/@we_renoi77" target="_blank">🎵 TikTok</a>
-</div>
 
 <!-- FOOTER -->
 <footer>
-  <p>Projet non-officiel créé par des fans. Tous droits sur la musique et l'image de Werenoi appartiennent à l'artiste et à son management.</p>
-  <p>Contact : <a href="mailto:contact@werenoifans.fr">contact@werenoifans.fr</a></p>
-  <p>&copy; 2026 Werenoi Fans</p>
+  <p>&copy; 2026 La League Only. Tous droits réservés.</p>
 </footer>
 
 </body>
